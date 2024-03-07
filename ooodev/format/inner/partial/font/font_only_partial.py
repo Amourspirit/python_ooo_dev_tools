@@ -1,10 +1,9 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import font_only_factory
-from ooodev.loader import lo as mLo
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -23,13 +22,15 @@ class FontOnlyPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_font_only",
+            after_event="after_style_font_only",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_font_only"
-        self.__styler.before_event_name = "before_style_font_only"
 
     def style_font(
         self,

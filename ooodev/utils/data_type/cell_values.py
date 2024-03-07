@@ -1,12 +1,17 @@
 from __future__ import annotations
 import contextlib
 from dataclasses import dataclass
+from typing import cast, TYPE_CHECKING
 import uno
 from ooo.dyn.table.cell_address import CellAddress
 
+from ooodev.loader import lo as mLo
 from ooodev.utils import table_helper as mTb
-from ooodev.office import calc as mCalc
 from ooodev.utils.decorator import enforce
+from ooodev.loader.inst.doc_type import DocType
+
+if TYPE_CHECKING:
+    from ooodev.calc.calc_doc import CalcDoc
 
 
 @enforce.enforce_types
@@ -26,6 +31,7 @@ class CellValues:
     """
     Sheet index that this cell value belongs to.
     ``-1`` means no sheet is defined for this instance.
+    ``-2`` means no sheet is defined for this instance and not attempt to get the sheet should be made.
     """
 
     def __post_init__(self):
@@ -74,13 +80,16 @@ class CellValues:
         if isinstance(cell_val, str):
             # split will cover if a range is passed in, return first cell
             parts = mTb.TableHelper.get_cell_parts(cell_val)
-            idx = -1
+            idx = -2
             row = parts.row - 1
             col = mTb.TableHelper.col_name_to_int(parts.col, True)
             if parts.sheet:
                 with contextlib.suppress(Exception):
-                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=parts.sheet)
-                    idx = mCalc.Calc.get_sheet_index(sheet=sheet)
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_sheet(sheet_name=parts.sheet)
+                        idx = sheet.get_sheet_index()
         elif isinstance(cell_val, mCellObj.CellObj):
             idx = cell_val.sheet_idx
             row = cell_val.row - 1

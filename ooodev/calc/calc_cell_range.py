@@ -38,6 +38,7 @@ from ooodev.format.inner.partial.style.style_property_partial import StyleProper
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc import calc_cell as mCalcCell
+from ooodev.adapter.table.cell_properties2_partial_props import CellProperties2PartialProps
 
 
 if TYPE_CHECKING:
@@ -68,10 +69,11 @@ class CalcCellRange(
     CalcDocPropPartial,
     CalcSheetPropPartial,
     SheetCellRangeComp,
+    EventsPartial,
+    CellProperties2PartialProps,
     QiPartial,
     PropPartial,
     StylePartial,
-    EventsPartial,
     ServicePartial,
     FontOnlyPartial,
     FontEffectsPartial,
@@ -109,10 +111,11 @@ class CalcCellRange(
                 self._range_obj = mCalc.Calc.get_range_obj(rng)
                 cell_range = mCalc.Calc.get_cell_range(sheet=self.calc_sheet.component, range_obj=self._range_obj)
         SheetCellRangeComp.__init__(self, cell_range)  # type: ignore
+        EventsPartial.__init__(self)
+        CellProperties2PartialProps.__init__(self, component=cell_range)  # type: ignore
         QiPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cell_range)
-        EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=self.lo_inst)
         FontEffectsPartial.__init__(

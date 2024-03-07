@@ -1,12 +1,12 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload
+from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic, overload
+import contextlib
 import uno
 from com.sun.star.text import XTextRange
 
 from ooodev.adapter.text.relative_text_content_insert_partial import RelativeTextContentInsertPartial
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -14,12 +14,13 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_paragraphs as mWriteParagraphs
-from ooodev.write import write_text_tables as mWriteTextTables
+from ooodev.write.write_text_content import WriteTextContent
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
     from com.sun.star.text import XTextRange
     from com.sun.star.text import XTextContent
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.write.write_text_cursor import WriteTextCursor
     from ooodev.write.write_text_range import WriteTextRange
 
@@ -65,10 +66,6 @@ class WriteText(
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:
         """Returns the paragraphs of this text."""
         return mWriteParagraphs.WriteParagraphs(owner=self.owner, component=self.component, lo_inst=self.lo_inst)
-
-    def get_text_tables(self) -> mWriteTextTables.WriteTextTables[T]:
-        """Returns the text tables of this text."""
-        return mWriteTextTables.WriteTextTables(owner=self.owner, component=self.component, lo_inst=self.lo_inst)
 
     @overload
     def insert_text_content(self, content: XTextContent, absorb: bool) -> None:
@@ -124,8 +121,8 @@ class WriteText(
         """
         if rng is None:
             rng = self.lo_inst.qi(XTextRange, self.owner.component)
-            if rng is None:
-                raise TypeError("owner must be XTextRange when rng is None")
+        if rng is None:
+            raise TypeError("owner must be XTextRange when rng is None")
         TextComp.insert_text_content(self, rng, content, absorb)
 
     # region SimpleTextPartial overrides
@@ -165,6 +162,34 @@ class WriteText(
         return WriteTextCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
 
     # endregion SimpleTextPartial overrides
+
+    # region EnumerationAccessPartial overrides
+    def _is_next_element_valid(self, element: Any) -> bool:
+        """
+        Gets if the next element is valid.
+        This method is called when iterating over the elements of this class.
+
+        Args:
+            element (Any): Element
+
+        Returns:
+            bool: True in this class but can be overridden in child classes.
+        """
+        with contextlib.suppress(Exception):
+            return element.supportsService("com.sun.star.text.TextContent")
+        return False
+
+    def __next__(self) -> WriteTextContent[WriteText[T]]:
+        """
+        Gets the next element.
+
+        Returns:
+            WriteTextContent[WriteText[T]]: Next element.
+        """
+        result = super().__next__()
+        return WriteTextContent(owner=self, component=result, lo_inst=self.lo_inst)
+
+    # endregion EnumerationAccessPartial overrides
 
     # region Properties
     @property

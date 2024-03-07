@@ -13,6 +13,8 @@ Submodules
    ooodev.adapter.style.character_properties_complex_comp
    ooodev.adapter.style.character_properties_partial
    ooodev.adapter.style.character_style_comp
+   ooodev.adapter.style.drop_cap_format_struct_comp
+   ooodev.adapter.style.line_spacing_struct_comp
    ooodev.adapter.style.page_style_comp
    ooodev.adapter.style.paragraph_properties_comp
    ooodev.adapter.style.paragraph_properties_partial

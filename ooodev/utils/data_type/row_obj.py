@@ -15,6 +15,10 @@ class RowObj(BaseIntValue):
     """
     Column info.
 
+    ..seealso::
+        - :ref:`help_ooodev.utils.data_type.row_obj.RowObj`
+        - :ref:`ooodev.utils.data_type.row_obj.RowObj`
+
     .. versionadded:: 0.8.2
     """
 
@@ -201,6 +205,7 @@ class RowObj(BaseIntValue):
     @property
     def next(self) -> RowObj:
         """Gets the nex row"""
+        # pylint: disable=no-member
         try:
             n = self._next  # type: ignore
             if n() is None:
@@ -219,6 +224,7 @@ class RowObj(BaseIntValue):
         Raises:
             IndexError: If previous row is out of range
         """
+        # pylint: disable=no-member
         try:
             p = self._prev  # type: ignore
             if p() is None:

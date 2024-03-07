@@ -1,7 +1,7 @@
 # region imports
 from __future__ import annotations
 import contextlib
-from typing import TYPE_CHECKING, Generator, cast, overload
+from typing import Any, TYPE_CHECKING, Generator, cast, overload
 from dataclasses import dataclass, field
 from weakref import ref
 import uno
@@ -12,16 +12,17 @@ from ooodev.loader import lo as mLo
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import table_helper as mTb
-from ooodev.office import calc as mCalc
 from ooodev.utils.decorator import enforce
+from ooodev.loader.inst.doc_type import DocType
 
 
 if TYPE_CHECKING:
-    from . import cell_values as mCellVals
     from com.sun.star.table import CellAddress
+    from ooo.dyn.table.cell_range_address import CellRangeAddress
+    from ooodev.utils.data_type import cell_values as mCellVals
+    from ooodev.calc.calc_doc import CalcDoc
 
     # from com.sun.star.table import CellRangeAddress
-    from ooo.dyn.table.cell_range_address import CellRangeAddress
 # endregion imports
 
 
@@ -30,6 +31,12 @@ if TYPE_CHECKING:
 class RangeObj:
     """
     Range Parts
+
+    .. seealso::
+        - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj`
+
+    .. versionchanged:: 0.32.0
+        Added support for ``__contains__`` and ``__iter__`` methods. If sheet_idx is set to -2 then no attempt is made to get the sheet index or name from spreadsheet.
 
     .. versionadded:: 0.8.2
     """
@@ -49,7 +56,11 @@ class RangeObj:
     end: mCellObj.CellObj = field(init=False, repr=False, hash=False)
     """End Cell Object"""
     sheet_idx: int = -1
-    """Sheet index that this range value belongs to"""
+    """
+    Sheet index that this cell value belongs to.
+    If value is ``-1`` then the active spreadsheet, if available, is used to get the sheet index.
+    If the value is ``-2`` then no sheet index is applied and sheet name will always return and empty string.
+    """
 
     def __post_init__(self):
         row_start = self.row_start
@@ -75,15 +86,71 @@ class RangeObj:
 
         object.__setattr__(self, "start", start)
         object.__setattr__(self, "end", end)
-        if self.sheet_idx < 0:
+        if self.sheet_idx == -1:
             with contextlib.suppress(Exception):
-                if mLo.Lo.is_loaded:
-                    idx = mCalc.Calc.get_sheet_index()
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
+                    name = sheet.name
                     object.__setattr__(self, "sheet_idx", idx)
+                    object.__setattr__(self, "_sheet_name", name)
+        if self.sheet_idx < -1:
+            object.__setattr__(self, "_sheet_name", "")
 
     # endregion init
 
+    def __len__(self) -> int:
+        """
+        Get the number of cells in the range.
+
+        Returns:
+            int: Number of cells in range.
+        """
+        return self.cell_count
+
     # region methods
+
+    def set_sheet_index(self, idx: int | None = None) -> RangeObj:
+        """
+        Set the sheet index for the range.
+
+        If ``idx`` is ``None`` then the active sheet index is used.
+
+        Setting the sheet index to -2 will cause the sheet name to always return an empty string.
+
+        Changing the sheet index will cause the sheet name to be re-evaluated.
+
+        Args:
+            idx (int, optional): Sheet index, Default ``None``.
+
+        Returns:
+            RangeObj: Self
+
+        .. versionadded:: 0.32.0
+        """
+        if idx is None:
+            try:
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
+                    name = sheet.name
+                    object.__setattr__(self, "sheet_idx", idx)
+                    object.__setattr__(self, "_sheet_name", name)
+            except Exception:
+                object.__setattr__(self, "sheet_idx", -1)
+                if hasattr(self, "_sheet_name"):
+                    object.__delattr__(self, "_sheet_name")
+            return self
+
+        if idx != self.sheet_idx:
+            object.__setattr__(self, "sheet_idx", idx)
+            if hasattr(self, "_sheet_name"):
+                object.__delattr__(self, "_sheet_name")
+        return self
 
     # region from_range()
 
@@ -105,30 +172,29 @@ class RangeObj:
         Gets a ``RangeObj`` from are range name.
 
         Args:
-            range_name (str): Range name such as ``A1:D:34``.
+            range_name (str): Range name such as ``A1:D34``.
 
         Returns:
             RangeObj: Object that represents the name range.
         """
-        cargs = CancelEventArgs("RangeObj.from_range")
-        event_data = {"range_val": range_val, "sheet_index": -1}
-        cargs.event_data = event_data
-        _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
 
-        if cargs.cancel:
-            if cargs.handled is False:
-                cargs.set("initial_event", "before_style_font_effect")
-                _Events().trigger(GblNamedEvent.EVENT_CANCELED, cargs)
+        def handel_event(args: CancelEventArgs, idx: int) -> tuple:
 
-            if cargs.handled is True:
-                if "result" in cargs.event_data:
-                    return cargs.event_data["result"]
+            ret_val = None
+            if args.cancel:
+                if args.handled is False:
+                    args.set("initial_event", "before_style_font_effect")
+                    _Events().trigger(GblNamedEvent.EVENT_CANCELED, args)
+
+                if args.handled is False:
+                    raise mEx.CancelEventError(args, "Operation canceled")
+
+                if "result" in args.event_data:
+                    ret_val = args.event_data["result"]
                 else:
-                    raise mEx.CancelEventError(cargs, "Operation canceled, no result data to return.")
-            else:
-                raise mEx.CancelEventError(cargs, "Operation canceled")
-
-        sheet_idx = int(cargs.event_data.get("sheet_index", -1))
+                    raise mEx.CancelEventError(args, "Operation canceled, no result data to return.")
+            sheet_idx = int(cargs.event_data.get("sheet_index", idx))
+            return (sheet_idx, ret_val)
 
         if hasattr(range_val, "typeName") and getattr(range_val, "typeName") == "com.sun.star.table.CellRangeAddress":
             rng = mRngValues.RangeValues.from_range(cast("CellRangeAddress", range_val))
@@ -136,14 +202,22 @@ class RangeObj:
             rng = range_val
 
         # return mTb.TableHelper.get_range_obj(range_name=str(range_val))
+        sheet_idx = -2
+        cargs = CancelEventArgs("RangeObj.from_range")
+        event_data = {"range_val": range_val, "sheet_index": sheet_idx}
+        cargs.event_data = event_data
         if isinstance(rng, mRngValues.RangeValues):
             col_start = mTb.TableHelper.make_column_name(rng.col_start, True)
             col_end = mTb.TableHelper.make_column_name(rng.col_end, True)
             row_start = rng.row_start + 1
             row_end = rng.row_end + 1
-            if sheet_idx < 0:
-                sheet_idx = rng.sheet_idx
-            sheet_idx = rng.sheet_idx
+
+            cargs.event_data["sheet_index"] = rng.sheet_idx
+            _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
+            sheet_idx, result = handel_event(cargs, rng.sheet_idx)
+            if result is not None:
+                return result
+
         else:
             parts = mTb.TableHelper.get_range_parts(str(rng))
             col_start = parts.col_start
@@ -151,10 +225,23 @@ class RangeObj:
             row_start = parts.row_start
             row_end = parts.row_end
             sheet_name = parts.sheet
-            if sheet_idx < 0 and sheet_name and mLo.Lo.is_loaded:
+            if sheet_name:
+                sheet_idx = -1
+                cargs.event_data["sheet_index"] = sheet_idx
+
+            _Events().trigger(GblNamedEvent.RANGE_OBJ_BEFORE_FROM_RANGE, cargs)
+            sheet_idx, result = handel_event(cargs, sheet_idx)
+            if result is not None:
+                return result
+
+            if sheet_idx == -1:
                 with contextlib.suppress(Exception):
-                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
-                    sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_sheet(sheet_name=sheet_name)
+                        sheet_idx = sheet.get_sheet_index()
+
         return RangeObj(
             col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=sheet_idx
         )
@@ -342,8 +429,8 @@ class RangeObj:
         return RangeObj(
             col_start=self.col_start,
             col_end=self.col_end,
-            row_start=row,
-            row_end=row,
+            row_start=row + 1,
+            row_end=row + 1,
             sheet_idx=self.sheet_idx,
         )
 
@@ -413,6 +500,9 @@ class RangeObj:
         Note:
             If cell input contains sheet info the it is use in comparison.
             Otherwise sheet is ignored.
+
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.contains`
         """
         rv = self.get_range_values()
         return rv.contains(*args, **kwargs)
@@ -473,10 +563,121 @@ class RangeObj:
 
         return row_gen()
 
+    def __getitem__(self, key: str) -> Any:
+        """
+        Get a cell object from range
+
+        Args:
+            key (int): Zero-based index of cell.
+
+        Raises:
+            TypeError: If index is not a string.
+            IndexError: If index is out of range.
+
+        Returns:
+            CellObj: Cell Object
+
+        Example:
+            .. code-block:: python
+
+                >>> rng = RangeObj.from_range("A1:C4")
+                >>> cell = rng["B3"]
+                >>> print(cell)
+                B3
+        """
+        if not isinstance(key, str):
+            raise TypeError("Index must be a string that represents a cell name such as 'A1' or 'B2'")
+
+        if not self.contains(key):
+            raise IndexError(f"Index '{key}' is out of range")
+        parts = mTb.TableHelper.get_cell_parts(key)
+        return mCellObj.CellObj(
+            col=parts.col,
+            row=parts.row,
+            range_obj=self,
+        )
+
+    def __contains__(self, value: Any) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            value (CellObj): Cell object
+            value (CellAddress): Cell address
+            value (CellValues): Cell Values
+            value (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparison.
+            Otherwise sheet is ignored.
+
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.contains`
+
+        .. versionadded:: 0.32.0
+        """
+        return self.contains(value)
+
+    def __iter__(self) -> Generator[mCellObj.CellObj, None, None]:
+        """
+        Iterates over all cells in the range.
+
+        The iteration is done in a column-major order, meaning that the cells are iterated over by column, then by row.
+
+        Example:
+            .. code-block:: python
+
+                # each cell is an instance of CellObj
+                >>> rng = RangeObj.from_range("A1:C4")
+                >>> for cell in rng:
+                >>>     print(cell)
+                A1
+                B1
+                C1
+                A2
+                B2
+                C2
+                A3
+                B3
+                C3
+                A4
+                B4
+                C4
+
+        Yields:
+            Generator[mCellObj.CellObj, None, None]: Cell Object
+
+        See Also:
+            - :ref:`help_ooodev.utils.data_type.range_obj.RangeObj.__iter__`
+
+        .. versionadded:: 0.32.0
+        """
+        # return iter(self.get_cells())
+        for cells in self.get_cells():
+            yield from cells
+
     def __str__(self) -> str:
+        """
+        Convert range to string
+
+        Returns:
+            str: Inf the format of ``A1:C4``
+        """
         return f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
 
     def __eq__(self, other: object) -> bool:
+        """
+        Compare if two ranges are equal
+
+        Args:
+            other (object): Range Object, ``RangeValues`` or str in range format such as ``A1:C4``
+
+        Returns:
+            bool: ``True`` if equal; Otherwise, ``False``
+        """
         if isinstance(other, RangeObj):
             return self.to_string(True) == other.to_string(True)
         if isinstance(other, mRngValues.RangeValues):
@@ -490,6 +691,15 @@ class RangeObj:
         return False
 
     def __add__(self, other: object) -> RangeObj:
+        """
+        Add range to another range.
+
+        Args:
+            other (object): Other Range, Row, Column, Cell or str in range format such as ``A1:C4``
+
+        Returns:
+            RangeObj: _description_
+        """
         if isinstance(other, str):
             # add cols to right of range
             cols = mTb.TableHelper.col_name_to_int(other)
@@ -648,15 +858,18 @@ class RangeObj:
             if self.sheet_idx < 0:
                 return name
             with contextlib.suppress(Exception):
-                if mLo.Lo.is_loaded:
-                    sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), idx=self.sheet_idx)
-                    name = mCalc.Calc.get_sheet_name(sheet=sheet)
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.sheets[self.sheet_idx]
+                    name = sheet.name
                     object.__setattr__(self, "_sheet_name", name)
         return name
 
     @property
     def cell_start(self) -> mCellObj.CellObj:
         """Gets the Start Cell object for Range"""
+        # pylint: disable=no-member
         try:
             co = self._cell_start  # type: ignore
             if co() is None:
@@ -670,6 +883,7 @@ class RangeObj:
     @property
     def cell_end(self) -> mCellObj.CellObj:
         """Gets the End Cell object for Range"""
+        # pylint: disable=no-member
         try:
             co = self._cell_end  # type: ignore
             if co() is None:
@@ -688,6 +902,7 @@ class RangeObj:
     @property
     def start_col_index(self) -> int:
         """Gets start column zero-based index"""
+        # pylint: disable=no-member
         try:
             return self._start_col_index  # type: ignore
         except AttributeError:
@@ -702,6 +917,7 @@ class RangeObj:
     @property
     def end_col_index(self) -> int:
         """Gets end column zero-based index"""
+        # pylint: disable=no-member
         try:
             return self._end_col_index  # type: ignore
         except AttributeError:

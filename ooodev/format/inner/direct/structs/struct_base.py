@@ -27,4 +27,8 @@ class StructBase(StyleBase):
         except AttributeError:
             raise NotImplementedError
 
+    def _set_property_name(self, name: str) -> str:
+        # sourcery skip: raise-from-previous-error
+        self._property_name = name
+
     # endregion Internal Methods

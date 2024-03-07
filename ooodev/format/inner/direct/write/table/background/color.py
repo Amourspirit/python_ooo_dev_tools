@@ -40,7 +40,11 @@ class Color(CellColor):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextTable",)
+            self._supported_services_values = (
+                "com.sun.star.text.TextTable",
+                "com.sun.star.text.CellProperties",
+                "com.sun.star.text.TextTableRow",
+            )
         return self._supported_services_values
 
     # endregion overrides

@@ -6,6 +6,7 @@ from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeE
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.util.modify_events import ModifyEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
+from ooodev.adapter.sheet.cell_range_data_partial import CellRangeDataPartial
 
 
 if TYPE_CHECKING:
@@ -13,7 +14,12 @@ if TYPE_CHECKING:
 
 
 class SheetCellRangeComp(
-    ComponentBase, ModifyEvents, ChartDataChangeEventEvents, PropertyChangeImplement, VetoableChangeImplement
+    ComponentBase,
+    ModifyEvents,
+    CellRangeDataPartial,
+    ChartDataChangeEventEvents,
+    PropertyChangeImplement,
+    VetoableChangeImplement,
 ):
     """
     Class for managing Sheet Cell Range Component.
@@ -30,6 +36,7 @@ class SheetCellRangeComp(
         """
         ComponentBase.__init__(self, component)
         # pylint: disable=no-member
+        CellRangeDataPartial.__init__(self, component=component, interface=None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         ChartDataChangeEventEvents.__init__(

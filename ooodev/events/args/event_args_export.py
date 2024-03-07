@@ -4,6 +4,7 @@ from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.type_var import PathOrStr
 
 _T = TypeVar("_T")
+# pylint: disable=protected-access
 
 
 class EventArgsExport(Generic[_T]):

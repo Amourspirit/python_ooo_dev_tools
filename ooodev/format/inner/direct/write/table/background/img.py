@@ -88,7 +88,11 @@ class Img(ParaImg):
         try:
             return self._supported_services_values
         except AttributeError:
-            self._supported_services_values = ("com.sun.star.text.TextTable",)
+            self._supported_services_values = (
+                "com.sun.star.text.TextTable",
+                "com.sun.star.text.CellProperties",
+                "com.sun.star.text.TextTableRow",
+            )
         return self._supported_services_values
 
     def _on_multi_child_style_applying(self, source: Any, event_args: KeyValCancelArgs) -> None:

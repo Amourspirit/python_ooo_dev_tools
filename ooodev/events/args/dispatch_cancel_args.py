@@ -3,6 +3,9 @@ from typing import Any
 from ooodev.events.args.dispatch_args import AbstractDispatchArgs
 from ooodev.events.args.cancel_event_args import AbstractCancelEventArgs
 
+# pylint: disable=protected-access
+# pylint: disable=assigning-non-slot
+
 
 class AbstractDispatchCancelArgs(AbstractDispatchArgs, AbstractCancelEventArgs):
     __slots__ = ()

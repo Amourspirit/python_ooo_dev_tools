@@ -6,3 +6,4 @@ data_type
     :glob:
 
     *
+    rng/index

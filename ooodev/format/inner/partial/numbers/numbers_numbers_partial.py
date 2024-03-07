@@ -3,10 +3,10 @@ from typing import Any, Dict, TYPE_CHECKING
 import uno
 
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.loader import lo as mLo
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import numbers_numbers_factory
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from ooo.dyn.lang.locale import Locale
@@ -29,13 +29,15 @@ class NumbersNumbersPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_number_number",
+            after_event="after_style_number_number",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_number_number"
-        self.__styler.before_event_name = "before_style_number_number"
 
     def style_numbers_numbers(
         self,
@@ -80,10 +82,11 @@ class NumbersNumbersPartial:
             # not critical but style is being applied later via style.empty.update()
             events.event_data["cancel_apply"] = True
 
+        styler = self.__styler
         factory = numbers_numbers_factory
         if isinstance(self, EventsPartial):
-            self.subscribe_event(event_name=self.__styler.before_event_name, callback=on_style)
-        return self.__styler.style(factory=factory)
+            self.subscribe_event(event_name=styler.before_event_name, callback=on_style)
+        return styler.style(factory=factory)
 
     def style_numbers_general(self) -> NumbersT | None:
         """
@@ -235,12 +238,13 @@ class NumbersNumbersPartial:
         Returns:
             NumbersT | None: Numbers style or ``None`` if cancelled.
         """
+        styler = self.__styler
         if isinstance(self, CalcDocPropPartial):
-            return self.__styler.style_get(
+            return styler.style_get(
                 factory=numbers_numbers_factory,
                 component=self.calc_doc.component,
             )
-        return self.__styler.style_get(factory=numbers_numbers_factory)
+        return styler.style_get(factory=numbers_numbers_factory)
 
     def style_numbers_numbers_get_from_index(self, idx: int, locale: Locale | None = None) -> NumbersT | None:
         """
@@ -255,12 +259,13 @@ class NumbersNumbersPartial:
         Hint:
             - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
         """
+        styler = self.__styler
         kwargs: Dict[str, Any] = {"index": idx}
         if locale is not None:
             kwargs["lang_locale"] = locale
         if isinstance(self, CalcDocPropPartial):
             kwargs["component"] = self.calc_doc.component
-        return self.__styler.style_get(
+        return styler.style_get(
             factory=numbers_numbers_factory,
             call_method_name="from_index",
             event_name_suffix="_from_index",
@@ -289,12 +294,13 @@ class NumbersNumbersPartial:
         Hint:
             - ``Locale`` can be imported from ``ooo.dyn.lang.locale``
         """
+        styler = self.__styler
         kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add}
         if locale is not None:
             kwargs["lang_locale"] = locale
         if isinstance(self, CalcDocPropPartial):
             kwargs["component"] = self.calc_doc.component
-        return self.__styler.style_get(
+        return styler.style_get(
             factory=numbers_numbers_factory,
             call_method_name="from_str",
             event_name_suffix="_from_index",

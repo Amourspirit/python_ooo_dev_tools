@@ -1,7 +1,11 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import contextlib
 from dataclasses import dataclass
 from ooodev.utils.data_type.base_int_value import BaseIntValue
+
+if TYPE_CHECKING:
+    from ooodev.units.angle_t import AngleT
 
 
 def _to_positive_angle(angle: int) -> int:
@@ -107,3 +111,22 @@ class Angle(BaseIntValue):
             Angle:
         """
         return Angle(0) if value == 0 else Angle(round(value / 100))
+
+    @classmethod
+    def from_unit_val(cls, value: AngleT | int) -> Angle:
+        """
+        Get instance from ``Angle`` or int value.
+
+        Args:
+            value (Angle, int): ``Angle`` or int value. If int then it is assumed to be in degrees.
+
+        Returns:
+            Angle:
+
+        .. versionadded:: 0.32.0
+        """
+        try:
+            unit = value.get_angle()  # type: ignore
+            return cls.from_angle(unit)
+        except AttributeError:
+            return cls.from_angle(int(value))  # type: ignore

@@ -1,16 +1,17 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment
-from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.utils import info as mInfo
+from ooodev.events.events import Events
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
-from ooodev.adapter.awt.font_descriptor_comp import FontDescriptorComp
+from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFileControlModel  # Service
@@ -33,41 +34,67 @@ class UnoControlFileControlModelPartial(UnoControlModelPartial):
             raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
 
         self.model: UnoControlFileControlModel
-        event_provider = self if isinstance(self, EventsPartial) else None
         UnoControlModelPartial.__init__(self)
-        self.__font_descriptor = FontDescriptorComp(self.model.FontDescriptor, event_provider)
+        self.__event_provider = Events(self)
+        self.__props = {}
 
-        if event_provider is not None:
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            if hasattr(self.model, prop_name):
+                setattr(self.model, prop_name, event_args.source.component)
 
-            def on_font_descriptor_changed(src: Any, event_args: KeyValArgs) -> None:
-                self.model.FontDescriptor = self.__font_descriptor.component
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
-            self.__fn_on_font_descriptor_changed = on_font_descriptor_changed
-            # pylint: disable=no-member
-            event_provider.subscribe_event("font_descriptor_struct_changed", self.__fn_on_font_descriptor_changed)
+        self.__event_provider.subscribe_event(
+            "com_sun_star_awt_FontDescriptor_changed", self.__fn_on_comp_struct_changed
+        )
 
-    def set_font_descriptor(self, font_descriptor: FontDescriptor) -> None:
+    def set_font_descriptor(self, font_descriptor: FontDescriptor | FontDescriptorStructComp) -> None:
         """
         Sets the font descriptor of the control.
 
         Args:
-            font_descriptor (FontDescriptor): UNO Struct - Font descriptor to set.
+            font_descriptor (FontDescriptor, FontDescriptorStructComp): UNO Struct - Font descriptor to set.
+
+        Note:
+            The ``font_descriptor`` property can also be used to set the font descriptor.
+
+        Hint:
+            - ``FontDescriptor`` can be imported from ``ooo.dyn.awt.font_descriptor``.
         """
-        # FontDescriptorComp do not have any state, so we can directly assign the component.
-        self.__font_descriptor.component = font_descriptor
-        self.model.FontDescriptor = self.__font_descriptor.component
+        self.font_descriptor = font_descriptor
 
     # region Properties
 
     @property
-    def font_descriptor(self) -> FontDescriptorComp:
+    def font_descriptor(self) -> FontDescriptorStructComp:
         """
-        Gets the Font Descriptor
+        Gets/Sets the Font Descriptor.
+
+        Setting value can be done with a ``FontDescriptor`` or ``FontDescriptorStructComp`` object.
+
+        Returns:
+            ~ooodev.adapter.awt.font_descriptor_struct_comp.FontDescriptorStructComp: Font Descriptor
 
         Hint:
-            ``set_font_descriptor()`` can be used to set the font descriptor.
+            - ``FontDescriptor`` can be imported from ``ooo.dyn.awt.font_descriptor``.
         """
-        return self.__font_descriptor
+        key = "FontDescriptor"
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(FontDescriptorStructComp, prop)
+
+    @font_descriptor.setter
+    def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
+        key = "FontDescriptor"
+        if mInfo.Info.is_instance(value, FontDescriptorStructComp):
+            self.model.FontDescriptor = value.copy()
+        else:
+            self.model.FontDescriptor = cast("FontDescriptor", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def background_color(self) -> Color:

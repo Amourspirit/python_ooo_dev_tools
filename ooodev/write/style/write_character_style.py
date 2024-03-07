@@ -17,7 +17,12 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteCharacterStyle(Generic[T], CharacterStyleComp, QiPartial, PropPartial):
-    """Represents writer Character Style."""
+    """
+    Represents writer Character Style.
+
+    . seealso::
+        - :ref:`help_writer_format_direct_cursor_char_styler`
+    """
 
     def __init__(self, owner: T, component: XStyle, lo_inst: LoInst | None = None) -> None:
         """

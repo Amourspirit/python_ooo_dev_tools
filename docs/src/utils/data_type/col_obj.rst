@@ -1,3 +1,5 @@
+.. _ooodev.utils.data_type.col_obj.ColObj:
+
 Class ColObj
 ============
 

@@ -33,6 +33,7 @@ from ooodev.format.inner.partial.style.style_property_partial import StyleProper
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.adapter.table.cell_properties2_partial_props import CellProperties2PartialProps
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Point
@@ -57,10 +58,11 @@ else:
 class CalcCell(
     LoInstPropsPartial,
     SheetCellComp,
+    EventsPartial,
+    CellProperties2PartialProps,
     QiPartial,
     PropPartial,
     StylePartial,
-    EventsPartial,
     ServicePartial,
     CalcCellPropPartial,
     CalcSheetPropPartial,
@@ -85,10 +87,11 @@ class CalcCell(
         # don't use owner.get_cell() here because it will be recursive.
         sheet_cell = mCalc.Calc.get_cell(sheet=owner.component, cell_obj=self._cell_obj)
         SheetCellComp.__init__(self, sheet_cell)  # type: ignore
+        EventsPartial.__init__(self)
+        CellProperties2PartialProps.__init__(self, component=sheet_cell)  # type: ignore
         QiPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet_cell)
-        EventsPartial.__init__(self)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         CalcCellPropPartial.__init__(self, obj=self)
         CalcSheetPropPartial.__init__(self, obj=owner)
@@ -145,7 +148,7 @@ class CalcCell(
         .. versionadded:: 0.28.4
         """
         # pylint: disable=import-outside-toplevel
-        from .calc_cell_text_cursor import CalcCellTextCursor
+        from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
 
         cursor = self.component.createTextCursor()
         return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
@@ -165,7 +168,7 @@ class CalcCell(
         .. versionadded:: 0.28.4
         """
         # pylint: disable=import-outside-toplevel
-        from .calc_cell_text_cursor import CalcCellTextCursor
+        from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
 
         cursor = self.component.createTextCursorByRange(text_position)
         return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)

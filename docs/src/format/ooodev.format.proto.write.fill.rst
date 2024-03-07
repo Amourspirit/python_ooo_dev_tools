@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ooodev.format.proto.write.fill.area
    ooodev.format.proto.write.fill.transparent
 
 Module contents

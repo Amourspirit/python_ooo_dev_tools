@@ -2,11 +2,10 @@ from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import uno
 
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.loader import lo as mLo
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner import style_factory
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -30,13 +29,15 @@ class NumbersNumbersPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_number_number",
+            after_event="after_style_number_number",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_number_number"
-        self.__styler.before_event_name = "before_style_number_number"
 
     def _NumbersNumbersPartial_get_chart_doc(self) -> XChartDocument:
         if isinstance(self, ChartDocPropPartial):
@@ -110,10 +111,11 @@ class NumbersNumbersPartial:
         Returns:
             NumbersT | None: Numbers style or ``None`` if cancelled.
         """
+        styler = self.__styler
         kwargs: Dict[str, Any] = {"index": idx}
         if locale is not None:
             kwargs["lang_locale"] = locale
-        return self.__styler.style_get(
+        return styler.style_get(
             factory=style_factory.chart2_series_data_labels_numbers_factory,
             chart_doc=self._NumbersNumbersPartial_get_chart_doc(),
             call_method_name="from_index",
@@ -140,10 +142,11 @@ class NumbersNumbersPartial:
         Returns:
             NumbersT | None: Number style or ``None`` if cancelled.
         """
+        styler = self.__styler
         kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add, "source_format": source_format}
         if locale is not None:
             kwargs["lang_locale"] = locale
-        return self.__styler.style_get(
+        return styler.style_get(
             factory=style_factory.chart2_series_data_labels_numbers_factory,
             chart_doc=self._NumbersNumbersPartial_get_chart_doc(),
             call_method_name="from_str",

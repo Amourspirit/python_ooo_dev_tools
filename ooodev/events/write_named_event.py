@@ -139,3 +139,5 @@ class WriteNamedEvent:
 
     CHARACTER_STYLE_APPLYING = "write_character_style_applying"
     CHARACTER_STYLE_APPLIED = "write_character_style_applied"
+    TABLE_STYLE_APPLYING = "write_table_style_applying"
+    TABLE_STYLE_APPLIED = "write_table_style_applied"

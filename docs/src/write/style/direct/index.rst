@@ -8,3 +8,4 @@ direct
     :glob:
 
     *
+    table/index

@@ -6,6 +6,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.events.write_named_event import WriteNamedEvent
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.format.inner.partial.calc.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
 from ooodev.format.inner.partial.font.font_partial import FontPartial
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 class CharacterStyler(
     WriteDocPropPartial,
     EventsPartial,
+    LoInstPropsPartial,
     FontOnlyPartial,
     FontEffectsPartial,
     FontPartial,
@@ -87,6 +89,7 @@ class CharacterStyler(
             component (Any): component instance. Usually a ``XTextCursor``.
         """
         WriteDocPropPartial.__init__(self, obj=write_doc)
+        LoInstPropsPartial.__init__(self, lo_inst=write_doc.lo_inst)
         EventsPartial.__init__(self)
 
         FontOnlyPartial.__init__(

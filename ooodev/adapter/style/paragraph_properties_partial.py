@@ -1,14 +1,17 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple
+from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
 import uno
-
+from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
 
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils import info as mInfo
+from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
+from ooodev.adapter.style.drop_cap_format_struct_comp import DropCapFormatStructComp
+from ooodev.adapter.style.line_spacing_struct_comp import LineSpacingStructComp
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.adapter.container.index_replace_comp import IndexReplaceComp
-from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
+from ooodev.events.events import Events
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -19,13 +22,14 @@ if TYPE_CHECKING:
     from com.sun.star.style import LineSpacing  # struct
     from com.sun.star.style import ParagraphProperties
     from com.sun.star.style import TabStop
-    from com.sun.star.style.BreakType import BreakTypeProto  # type: ignore
-    from com.sun.star.style.GraphicLocation import GraphicLocationProto  # type: ignore
-    from com.sun.star.style.ParagraphAdjust import ParagraphAdjustProto  # type: ignore
-    from com.sun.star.table import BorderLine
+    from com.sun.star.table import BorderLine2
     from com.sun.star.table import ShadowFormat  # struct
-    from com.sun.star.util import Color  # type def
+    from ooo.dyn.style.break_type import BreakType
+    from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
+    from ooo.dyn.style.graphic_location import GraphicLocation
+    from ooodev.utils.color import Color  # type def
     from ooodev.units.unit_obj import UnitT
+    from ooodev.events.args.key_val_args import KeyValArgs
 
 
 class ParagraphPropertiesPartial:
@@ -45,6 +49,25 @@ class ParagraphPropertiesPartial:
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``ParagraphProperties``.
         """
         self.__component = component
+        self.__event_provider = Events(self)
+        self.__props = {}
+
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
+
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
+        # pylint: disable=no-member
+        self.__event_provider.subscribe_event(
+            "com_sun_star_style_DropCapFormat_changed", self.__fn_on_comp_struct_changed
+        )
+        self.__event_provider.subscribe_event(
+            "com_sun_star_table_BorderLine2_changed", self.__fn_on_comp_struct_changed
+        )
+        self.__event_provider.subscribe_event(
+            "com_sun_star_style_LineSpacing_changed", self.__fn_on_comp_struct_changed
+        )
 
     # region ParagraphProperties
     @property
@@ -101,20 +124,40 @@ class ParagraphPropertiesPartial:
             self.__component.BorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
-    def bottom_border(self) -> BorderLine | None:
+    def bottom_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets the bottom border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.BottomBorder
-        return None
+        key = "BottomBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.BottomBorder, key, self.__event_provider)  # type: ignore
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @bottom_border.setter
-    def bottom_border(self, value: BorderLine) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.BottomBorder = value
+    def bottom_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "BottomBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.BottomBorder = value.copy()
+        else:
+            self.__component.BottomBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def bottom_border_distance(self) -> UnitMM100 | None:
@@ -135,20 +178,26 @@ class ParagraphPropertiesPartial:
             self.__component.BottomBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
-    def break_type(self) -> BreakTypeProto | None:
+    def break_type(self) -> BreakType | None:
         """
         Gets/Sets the type of break that is applied at the beginning of the table.
 
         **optional**
+
+        Returns:
+            BreakType | None: Returns BreakType or None if not supported.
+
+        Hint:
+            - ``BreakType`` can be imported from ``ooo.dyn.style.break_type``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.BreakType
+            return self.__component.BreakType  # type: ignore
         return None
 
     @break_type.setter
-    def break_type(self, value: BreakTypeProto) -> None:
+    def break_type(self, value: BreakType) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.BreakType = value
+            self.__component.BreakType = value  # type: ignore
 
     @property
     def continuing_previous_sub_tree(self) -> bool | None:
@@ -178,19 +227,38 @@ class ParagraphPropertiesPartial:
             self.__component.DropCapCharStyleName = value
 
     @property
-    def drop_cap_format(self) -> DropCapFormat | None:
+    def drop_cap_format(self) -> DropCapFormatStructComp | None:
         """
         Gets/Sets whether the first characters of the paragraph are displayed in capital letters and how they are formatted.
 
         **optional**
+
+        Returns:
+            DropCapFormatStructComp: Drop cap format or None if not supported.
+
+        Hint:
+            - ``DropCapFormat`` can be imported from ``ooo.dyn.style.drop_cap_format``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.DropCapFormat
+        key = "DropCapFormat"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = DropCapFormatStructComp(self.__component.DropCapFormat, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(DropCapFormatStructComp, prop)
 
     @drop_cap_format.setter
-    def drop_cap_format(self, value: DropCapFormat) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.DropCapFormat = value
+    def drop_cap_format(self, value: DropCapFormat | DropCapFormatStructComp) -> None:
+        key = "DropCapFormat"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, DropCapFormatStructComp):
+            self.__component.DropCapFormat = value.copy()
+        else:
+            self.__component.DropCapFormat = cast("DropCapFormat", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def drop_cap_whole_word(self) -> bool | None:
@@ -209,19 +277,32 @@ class ParagraphPropertiesPartial:
             self.__component.DropCapWholeWord = value
 
     @property
-    def left_border(self) -> BorderLine | None:
+    def left_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets the left border of the object.
 
         **optional**
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.LeftBorder
+        key = "LeftBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.LeftBorder, key, self.__event_provider)  # type: ignore
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @left_border.setter
-    def left_border(self, value: BorderLine) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.LeftBorder = value
+    def left_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "LeftBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.LeftBorder = value.copy()
+        else:
+            self.__component.LeftBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def left_border_distance(self) -> UnitMM100 | None:
@@ -314,6 +395,9 @@ class ParagraphPropertiesPartial:
         **optional**
         """
         with contextlib.suppress(AttributeError):
+            rules = self.__component.NumberingRules
+            if rules is None:
+                return None
             return IndexReplaceComp(self.__component.NumberingRules)
 
     @numbering_rules.setter
@@ -422,15 +506,21 @@ class ParagraphPropertiesPartial:
         return None
 
     @property
-    def para_adjust(self) -> ParagraphAdjustProto:
+    def para_adjust(self) -> ParagraphAdjust:
         """
         Gets/Sets the adjustment of a paragraph.
+
+        Returns:
+            ParagraphAdjust: Paragraph adjustment.
+
+        Hint:
+            - ``ParagraphAdjust`` can be imported from ``ooo.dyn.style.paragraph_adjust``
         """
-        return self.__component.ParaAdjust
+        return self.__component.ParaAdjust  # type: ignore
 
     @para_adjust.setter
-    def para_adjust(self, value: ParagraphAdjustProto) -> None:
-        self.__component.ParaAdjust = value
+    def para_adjust(self, value: ParagraphAdjust) -> None:
+        self.__component.ParaAdjust = value  # type: ignore
 
     @property
     def para_back_color(self) -> Color | None:
@@ -438,15 +528,18 @@ class ParagraphPropertiesPartial:
         Gets/Sets the paragraph background color.
 
         **optional**
+
+        Returns:
+            ~ooodev.utils.color.Color | None: Color or None if not supported.
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.ParaBackColor
+            return self.__component.ParaBackColor  # type: ignore
         return None
 
     @para_back_color.setter
     def para_back_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.ParaBackColor = value
+            self.__component.ParaBackColor = value  # type: ignore
 
     @property
     def para_back_graphic(self) -> XGraphic | None:
@@ -481,19 +574,25 @@ class ParagraphPropertiesPartial:
             self.__component.ParaBackGraphicFilter = value
 
     @property
-    def para_back_graphic_location(self) -> GraphicLocationProto | None:
+    def para_back_graphic_location(self) -> GraphicLocation | None:
         """
         Gets/Sets the value for the position of a background graphic.
 
         **optional**
+
+        Returns:
+            GraphicLocation | None: Returns GraphicLocation or None if not supported.
+
+        Hint:
+            - ``GraphicLocation`` can be imported from ``ooo.dyn.style.graphic_location``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.ParaBackGraphicLocation
+            return self.__component.ParaBackGraphicLocation  # type: ignore
 
     @para_back_graphic_location.setter
-    def para_back_graphic_location(self, value: GraphicLocationProto) -> None:
+    def para_back_graphic_location(self, value: GraphicLocation) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.ParaBackGraphicLocation = value
+            self.__component.ParaBackGraphicLocation = value  # type: ignore
 
     @property
     def para_back_graphic_url(self) -> str | None:
@@ -871,20 +970,40 @@ class ParagraphPropertiesPartial:
             self.__component.ParaLineNumberStartValue = value
 
     @property
-    def para_line_spacing(self) -> LineSpacing | None:
+    def para_line_spacing(self) -> LineSpacingStructComp | None:
         """
         Gets/Sets the type of the line spacing of a paragraph.
 
+        Setting value can be done with a ``LineSpacing`` or ``LineSpacingStructComp`` object.
+
         **optional**
+
+        Returns:
+            LineSpacingStructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``LineSpacing`` can be imported from ``ooo.dyn.style.line_spacing``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.ParaLineSpacing
-        return None
+        key = "ParaLineSpacing"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = LineSpacingStructComp(self.__component.ParaLineSpacing, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(LineSpacingStructComp, prop)
 
     @para_line_spacing.setter
-    def para_line_spacing(self, value: LineSpacing) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.ParaLineSpacing = value
+    def para_line_spacing(self, value: LineSpacing | LineSpacingStructComp) -> None:
+        key = "ParaLineSpacing"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, LineSpacingStructComp):
+            self.__component.ParaLineSpacing = value.copy()
+        else:
+            self.__component.ParaLineSpacing = cast("LineSpacing", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def para_orphans(self) -> int | None:
@@ -1010,7 +1129,8 @@ class ParagraphPropertiesPartial:
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return NameContainerComp(self.__component.ParaUserDefinedAttributes)
+            uda = self.__component.ParaUserDefinedAttributes
+            return None if uda is None else NameContainerComp(uda)
         return None
 
     @para_user_defined_attributes.setter
@@ -1056,20 +1176,40 @@ class ParagraphPropertiesPartial:
             self.__component.ParaWidows = value
 
     @property
-    def right_border(self) -> BorderLine | None:
+    def right_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets the right border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.RightBorder
-        return None
+        key = "RightBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.RightBorder, key, self.__event_provider)  # type: ignore
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @right_border.setter
-    def right_border(self, value: BorderLine) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.RightBorder = value
+    def right_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "RightBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.RightBorder = value.copy()
+        else:
+            self.__component.RightBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def right_border_distance(self) -> UnitMM100 | None:
@@ -1090,20 +1230,40 @@ class ParagraphPropertiesPartial:
             self.__component.RightBorderDistance = UnitMM100.from_unit_val(value).value
 
     @property
-    def top_border(self) -> BorderLine | None:
+    def top_border(self) -> BorderLine2StructComp | None:
         """
         Gets/Sets the top border of the object.
 
+        Setting value can be done with a ``BorderLine2`` or ``BorderLine2StructComp`` object.
+
         **optional**
+
+        Returns:
+            BorderLine2StructComp | None: Returns BorderLine2 or None if not supported.
+
+        Hint:
+            - ``BorderLine2`` can be imported from ``ooo.dyn.table.border_line2``
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.TopBorder
-        return None
+        key = "TopBorder"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = BorderLine2StructComp(self.__component.TopBorder, key, self.__event_provider)  # type: ignore
+            self.__props[key] = prop
+        return cast(BorderLine2StructComp, prop)
 
     @top_border.setter
-    def top_border(self, value: BorderLine) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.TopBorder = value
+    def top_border(self, value: BorderLine2 | BorderLine2StructComp) -> None:
+        key = "TopBorder"
+        if not hasattr(self.__component, key):
+            return
+        if mInfo.Info.is_instance(value, BorderLine2StructComp):
+            self.__component.TopBorder = value.copy()
+        else:
+            self.__component.TopBorder = cast("BorderLine2", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def top_border_distance(self) -> UnitMM100 | None:

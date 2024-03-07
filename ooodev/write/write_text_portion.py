@@ -1,22 +1,32 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.text.text_portion_comp import TextPortionComp
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+
+if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
 
 T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextPortion(
-    Generic[T], LoInstPropsPartial, TextPortionComp, WriteDocPropPartial, QiPartial, PropPartial, StylePartial
+    Generic[T],
+    LoInstPropsPartial,
+    TextPortionComp,
+    WriteDocPropPartial,
+    QiPartial,
+    ServicePartial,
+    PropPartial,
+    StylePartial,
 ):
     """
     Represents writer paragraph content.
@@ -42,6 +52,7 @@ class WriteTextPortion(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextPortionComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         # self.__doc = doc

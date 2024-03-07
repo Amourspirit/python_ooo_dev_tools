@@ -8,13 +8,17 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.exceptions import ex as mEx
-from ooodev.format.inner.direct.structs.side import LineSize
 from ooodev.format.inner.direct.structs.side import BorderLineKind
+from ooodev.format.inner.direct.structs.side import LineSize
+from ooodev.loader import lo as mLo
 from ooodev.mock import mock_g
 from ooodev.utils.color import StandardColor
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.write.char.border.padding import Shadow, Padding
+    from ooodev.format.inner.direct.write.char.border.padding import Padding
+    from ooodev.format.inner.direct.write.char.border.shadow import Shadow
     from ooodev.format.inner.direct.structs.side import Side
     from ooodev.format.inner.direct.write.char.border.borders import Borders
     from ooodev.utils.color import Color
@@ -49,8 +53,8 @@ class WriteCharBordersPartial:
             top (Side | None, optional): Determines the line style at the top edge.
             bottom (Side | None, optional): Determines the line style at the bottom edge.
             border_side (Side | None, optional): Determines the line style at the top, bottom, left, right edges. If this argument has a value then arguments ``top``, ``bottom``, ``left``, ``right`` are ignored
-            shadow (Shadow | None, optional): Character Shadow
-            padding (Padding | None, optional): Character padding
+            shadow (~ooodev.format.inner.direct.write.char.border.shadow.Shadow | None, optional): Character Shadow
+            padding (~ooodev.format.inner.direct.write.char.border.padding.Padding | None, optional): Character padding
 
         Raises:
             CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
@@ -65,7 +69,7 @@ class WriteCharBordersPartial:
             - ``Borders`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.write.char.border.shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``side`` can be imported from ``ooodev.format.writer.direct.char.borders``
@@ -127,7 +131,13 @@ class WriteCharBordersPartial:
         if has_events:
             fe.add_event_observer(self.event_observer)  # type: ignore
 
-        fe.apply(comp)
+        if isinstance(self, LoInstPropsPartial):
+            lo_inst = self.lo_inst
+        else:
+            lo_inst = mLo.Lo.current_lo
+        with LoContext(lo_inst):
+            fe.apply(comp)
+
         fe.set_update_obj(comp)
         if cargs is not None:
             # pylint: disable=no-member
@@ -160,12 +170,12 @@ class WriteCharBordersPartial:
             CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
 
         Returns:
-            Borders | None: Attribute Options Style instance or ``None`` if cancelled.
+            Borders | None: Borders Style instance or ``None`` if cancelled.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``BorderLine2`` can be imported from ``ooodev.format.writer.direct.char.borders``
-            - ``BorderLineKind`` can be imported from `216+ `ooodev.format.writer.direct.char.borders``
+            - ``BorderLineKind`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Padding`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Shadow`` can be imported from ``ooodev.format.writer.direct.char.borders``
@@ -207,7 +217,7 @@ class WriteCharBordersPartial:
             CancelEventError: If the event ``before_style_char_borders`` is cancelled and not handled.
 
         Returns:
-            Borders | None: Attribute Options Style instance or ``None`` if cancelled.
+            Borders | None: Borders Style instance or ``None`` if cancelled.
 
         """
         # pylint: disable=import-outside-toplevel

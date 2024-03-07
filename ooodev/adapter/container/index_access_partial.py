@@ -29,6 +29,19 @@ class IndexAccessPartial(ElementAccessPartial):
         self.__component = component
         self.__current_index = -1
 
+    def _is_next_index_element_valid(self, element: Any) -> bool:
+        """
+        Gets if the next element is valid.
+        This method is called when iterating over the elements of this class.
+
+        Args:
+            element (Any): Element
+
+        Returns:
+            bool: True in this class but can be overridden in child classes.
+        """
+        return True
+
     def __iter__(self):
         self.__current_index = -1
         return self
@@ -39,7 +52,12 @@ class IndexAccessPartial(ElementAccessPartial):
             self.__current_index = -1
             raise StopIteration
         # don't use self.get_by_index() here, it may be overridden in child class
-        return self.__component.getByIndex(self.__current_index)
+        next_element = self.__component.getByIndex(self.__current_index)
+        if self._is_next_index_element_valid(next_element):
+            return next_element
+        # this method may be overridden in child classes and called with super()
+        # Call recursively using IndexAccessPartial
+        return IndexAccessPartial.__next__(self)
 
     def __len__(self) -> int:
         """.. versionadded:: 0.20.2"""

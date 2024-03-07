@@ -10,6 +10,9 @@ if TYPE_CHECKING:
     from ooodev.format.proto.area.fill_color_t import FillColorT
     from ooodev.format.proto.write.char.font.font_t import FontT
     from ooodev.format.proto.chart2.area.chart_fill_gradient_t import ChartFillGradientT
+
+    # from ooodev.format.proto.area.fill_img_t import FillImgT as AreaFillImgT
+    from ooodev.format.proto.write.fill.area.fill_img_t import FillImgT as WriteFillImgT
     from ooodev.format.proto.chart2.area.chart_fill_img_t import ChartFillImgT
     from ooodev.format.proto.chart2.area.chart_fill_pattern_t import ChartFillPatternT
     from ooodev.format.proto.chart2.area.chart_fill_hatch_t import ChartFillHatchT
@@ -63,6 +66,7 @@ else:
     CalcAlignPropertiesT = Any
     CalcBordersT = Any
     WriteCharFontPositionT = Any
+    WriteFillImgT = Any
 
 # pylint: disable=import-outside-toplevel
 
@@ -275,6 +279,11 @@ def area_color_factory(name: str) -> Type[FillColorT]:
         from ooodev.format.inner.direct.calc.background.color import Color as Color6
 
         return Color6
+
+    if name == "ooodev.write.table.background":
+        from ooodev.format.inner.direct.write.table.background.color import Color as Color7
+
+        return Color7
     raise ValueError(f"Invalid name: {name}")
 
 
@@ -351,6 +360,18 @@ def area_transparency_gradient_factory(name: str) -> Type[TransparencyGradientT]
     raise ValueError(f"Invalid name: {name}")
 
 
+def write_area_img_factory(name: str) -> Type[WriteFillImgT]:
+    if name == "ooodev.write.table.background":
+        from ooodev.format.inner.direct.write.table.background.img import Img as Img1
+
+        return Img1
+
+    # if name == "ooodev.chart2.general":
+    # ooodev.format.inner.direct.write.table.background.img
+
+    raise ValueError(f"Invalid name: {name}")
+
+
 # def area_gradient_factory(name: str) -> Type[FillGradientT]:
 #     if name == "ooodev.chart2.general":
 #         # from ooodev.format.inner.direct.chart2.chart.area.color import Gradient
@@ -415,6 +436,9 @@ def chart2_area_img_factory(name: str) -> Type[ChartFillImgT]:
         from ooodev.format.inner.direct.chart2.title.area.img import Img as Img24
 
         return Img24
+
+    # if name == "ooodev.chart2.general":
+    # ooodev.format.inner.direct.write.table.background.img
 
     raise ValueError(f"Invalid name: {name}")
 
@@ -664,6 +688,7 @@ if mock_g.FULL_IMPORT:
     from ooodev.format.inner.direct.chart2.series.data_series.area.color import Color as Color4
     from ooodev.format.inner.direct.chart2.title.area.color import Color as Color5
     from ooodev.format.inner.direct.calc.background.color import Color as Color6
+    from ooodev.format.inner.direct.write.table.background.color import Color as Color7
     from ooodev.format.draw.direct.transparency.transparency import Transparency as Transparency1
     from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as Transparency2
     from ooodev.format.writer.direct.shape.transparency.transparency import Transparency as Transparency3

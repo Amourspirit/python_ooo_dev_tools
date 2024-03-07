@@ -90,6 +90,7 @@ if TYPE_CHECKING:
     from ooodev.write.search.write_search_replace import WriteSearchReplace
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.write_text_ranges import WriteTextRanges
+    from ooodev.write.table.write_tables import WriteTables
 
 
 class WriteDoc(
@@ -143,6 +144,7 @@ class WriteDoc(
 
         TextDocumentComp.__init__(self, doc)  # type: ignore
         ReplaceablePartial.__init__(self, component=doc, interface=None)  # type: ignore
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocumentEventEvents.__init__(self, trigger_args=generic_args, cb=self._on_document_event_add_remove)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
@@ -162,6 +164,7 @@ class WriteDoc(
         self._draw_page = None
         self._draw_pages = None
         self._text_frames = None
+        self._tables = None
 
     # region Lazy Listeners
 
@@ -1339,9 +1342,26 @@ class WriteDoc(
             self._text_frames = WriteTextFrames(owner=self, frames=name_access, lo_inst=self.lo_inst)
         return self._text_frames
 
+    @property
+    def tables(self) -> WriteTables:
+        """
+        Gets tables.
+
+        Returns:
+            WriteTables: Tables
+        """
+        if self._tables is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.write.table.write_tables import WriteTables
+
+            self._tables = WriteTables(owner=self, component=self.component.getTextTables(), lo_inst=self.lo_inst)
+        return self._tables
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
-    from .search.write_search_replace import WriteSearchReplace
+    from ooodev.write.table.write_tables import WriteTables
+    from ooodev.write.search.write_search_replace import WriteSearchReplace
     from ooodev.write.write_text_ranges import WriteTextRanges

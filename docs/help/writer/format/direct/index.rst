@@ -6,6 +6,7 @@ Direct
 .. toctree::
     :maxdepth: 2
 
+    cursor/index
     char/index
     para/index
     shape/index

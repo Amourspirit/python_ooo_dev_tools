@@ -12,6 +12,8 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
+from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
@@ -26,6 +28,8 @@ else:
 class CalcCellTextCursor(
     LoInstPropsPartial,
     TextCursorComp,
+    CharacterPropertiesPartial,
+    ParagraphPropertiesPartial,
     QiPartial,
     PropPartial,
     TextCursorPartial["CalcCellTextCursor"],
@@ -41,6 +45,8 @@ class CalcCellTextCursor(
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextCursorComp.__init__(self, cursor)  # type: ignore
+        CharacterPropertiesPartial.__init__(self, component=cursor)  # type: ignore
+        ParagraphPropertiesPartial.__init__(self, component=cursor)  # type: ignore
         QiPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         TextCursorPartial.__init__(self, owner=self, component=self.component, lo_inst=self.lo_inst)

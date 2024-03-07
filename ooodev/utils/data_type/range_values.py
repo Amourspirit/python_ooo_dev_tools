@@ -1,26 +1,29 @@
 from __future__ import annotations
 import contextlib
-from typing import TYPE_CHECKING
+from typing import Any, cast, overload, TYPE_CHECKING
 from dataclasses import dataclass
-from typing import cast, overload
-
-from ooodev.loader import lo as mLo
-from ooodev.utils import table_helper as mTb
-from ooodev.office import calc as mCalc
-from ooodev.utils.decorator import enforce
-
 import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
+from ooodev.loader import lo as mLo
+from ooodev.utils import table_helper as mTb
+from ooodev.utils.decorator import enforce
+from ooodev.loader.inst.doc_type import DocType
+
+
 if TYPE_CHECKING:
     from ooo.lo.table.cell_address import CellAddress
+    from ooodev.calc.calc_doc import CalcDoc
 
 
 @enforce.enforce_types
 @dataclass(frozen=True)
 class RangeValues:
     """
-    Range Parts. Intended to be zero-based indexes
+    Range Parts. Intended to be zero-based indexes.
+
+    .. versionchanged:: 0.32.0
+        Added support for ``__contains__`` and method. If sheet_idx is set to -2 then no attempt is made to get the sheet index from spreadsheet.
 
     .. versionadded:: 0.8.2
     """
@@ -60,10 +63,13 @@ class RangeValues:
             object.__setattr__(self, "row_start", row_start)
             object.__setattr__(self, "row_end", row_end)
 
-        if self.sheet_idx < 0:
+        if self.sheet_idx == -1:
             with contextlib.suppress(Exception):
-                if mLo.Lo.is_loaded:
-                    idx = mCalc.Calc.get_sheet_index()
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
                     object.__setattr__(self, "sheet_idx", idx)
 
     def __eq__(self, other: object) -> bool:
@@ -318,10 +324,14 @@ class RangeValues:
             col_end = mTb.TableHelper.col_name_to_int(parts.col_end, True)
             row_start = parts.row_start - 1
             row_end = parts.row_end - 1
-            sheet_idx = -1
-            if sheet_name := parts.sheet:
-                sheet = mCalc.Calc.get_sheet(doc=mCalc.Calc.get_current_doc(), sheet_name=sheet_name)
-                sheet_idx = mCalc.Calc.get_sheet_index(sheet)
+            sheet_idx = -2
+            if parts.sheet:
+                with contextlib.suppress(Exception):
+                    # pylint: disable=no-member
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_sheet(sheet_name=parts.sheet)
+                        sheet_idx = sheet.get_sheet_index()
         else:
             # CellRange
             col_start = range_val.StartColumn
@@ -394,6 +404,26 @@ class RangeValues:
         return self.is_single_col() and self.is_single_row()
 
     # region contains()
+    def __contains__(self, value: Any) -> bool:
+        """
+        Gets if current instance contains a cell value.
+
+        Args:
+            value (CellObj): Cell object
+            value (CellAddress): Cell address
+            value (CellValues): Cell Values
+            value (str): Cell name
+
+        Returns:
+            bool: ``True`` if instance contains cell; Otherwise, ``False``.
+
+        Note:
+            If cell input contains sheet info the it is use in comparison.
+            Otherwise sheet is ignored.
+
+        .. versionadded:: 0.32.0
+        """
+        return self.contains(value)
 
     @overload
     def contains(self, cell_obj: mCellObj.CellObj) -> bool: ...

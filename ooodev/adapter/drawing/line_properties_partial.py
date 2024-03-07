@@ -1,19 +1,23 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import contextlib
 import uno
 
+from ooodev.adapter.drawing.line_dash_struct_comp import LineDashStructComp
 from ooodev.units.unit_mm100 import UnitMM100
+from ooodev.events.events import Events
+from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import LineDash  # Struct
     from com.sun.star.drawing import LineProperties
     from com.sun.star.drawing import PolyPolygonBezierCoords  # Struct
-    from com.sun.star.drawing.LineCap import LineCapProto  # type: ignore
-    from com.sun.star.drawing.LineJoint import LineJointProto  # type: ignore
-    from com.sun.star.drawing.LineStyle import LineStyleProto  # type: ignore
     from com.sun.star.util import Color  # type def
+    from ooo.dyn.drawing.line_cap import LineCap
+    from ooo.dyn.drawing.line_joint import LineJoint
+    from ooo.dyn.drawing.line_style import LineStyle
     from ooodev.units.unit_obj import UnitT
+    from ooodev.events.args.key_val_args import KeyValArgs
 
 
 class LinePropertiesPartial:
@@ -33,23 +37,42 @@ class LinePropertiesPartial:
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``LineProperties``.
         """
         self.__component = component
+        self.__event_provider = Events(self)
+        self.__props = {}
+
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
+
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
+        # pylint: disable=no-member
+        self.__event_provider.subscribe_event(
+            "com_sun_star_drawing_LineDash_changed", self.__fn_on_comp_struct_changed
+        )
 
     # region LineProperties
     @property
-    def line_cap(self) -> LineCapProto | None:
+    def line_cap(self) -> LineCap | None:
         """
         Gets/Sets the rendering of ends of thick lines.
 
         **optional**:
+
+        Returns:
+            LineCap: The line cap.
+
+        Hint:
+            - ``LineCap`` can be imported from ``ooo.dyn.drawing.line_cap``
         """
         with contextlib.suppress(AttributeError):
-            return self.__component.LineCap
+            return self.__component.LineCap  # type: ignore
         return None
 
     @line_cap.setter
-    def line_cap(self, value: LineCapProto) -> None:
+    def line_cap(self, value: LineCap) -> None:
         with contextlib.suppress(AttributeError):
-            self.__component.LineCap = value
+            self.__component.LineCap = value  # type: ignore
 
     @property
     def line_color(self) -> Color:
@@ -63,15 +86,34 @@ class LinePropertiesPartial:
         self.__component.LineColor = value
 
     @property
-    def line_dash(self) -> LineDash:
+    def line_dash(self) -> LineDashStructComp:
         """
         Gets/Sets the dash of the line.
+
+        When setting the value can be a ``LineDash`` or a ``LineDashStructComp``.
+
+        Returns:
+            LineDashStructComp: The line dash.
+
+        Hint:
+            - ``LineDash`` can be imported from ``ooo.dyn.drawing.line_dash``
         """
-        return self.__component.LineDash
+        key = "LineDash"
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = LineDashStructComp(self.__component.LineDash, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(LineDashStructComp, prop)
 
     @line_dash.setter
-    def line_dash(self, value: LineDash) -> None:
-        self.__component.LineDash = value
+    def line_dash(self, value: LineDash | LineDashStructComp) -> None:
+        key = "LineDash"
+        if mInfo.Info.is_instance(value, LineDashStructComp):
+            self.__component.LineDash = value.copy()
+        else:
+            self.__component.LineDash = cast("LineDash", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def line_dash_name(self) -> str:
@@ -153,15 +195,21 @@ class LinePropertiesPartial:
             self.__component.LineEndWidth = value
 
     @property
-    def line_joint(self) -> LineJointProto:
+    def line_joint(self) -> LineJoint:
         """
         Gets/Sets the rendering of joints between thick lines.
+
+        Returns:
+            LineJoint: The line joint.
+
+        Hint:
+            - ``LineJoint`` can be imported from ``ooo.dyn.drawing.line_joint``
         """
-        return self.__component.LineJoint
+        return self.__component.LineJoint  # type: ignore
 
     @line_joint.setter
-    def line_joint(self, value: LineJointProto) -> None:
-        self.__component.LineJoint = value
+    def line_joint(self, value: LineJoint) -> None:
+        self.__component.LineJoint = value  # type: ignore
 
     @property
     def line_start(self) -> PolyPolygonBezierCoords | None:
@@ -232,15 +280,21 @@ class LinePropertiesPartial:
             self.__component.LineStartWidth = value
 
     @property
-    def line_style(self) -> LineStyleProto:
+    def line_style(self) -> LineStyle:
         """
         Gets/Sets the type of the line.
+
+        Return:
+            LineStyle: Line Style.
+
+        Hint:
+            - ``LineStyle`` can be imported from ``ooo.dyn.drawing.line_style``
         """
-        return self.__component.LineStyle
+        return self.__component.LineStyle  # type: ignore
 
     @line_style.setter
-    def line_style(self, value: LineStyleProto) -> None:
-        self.__component.LineStyle = value
+    def line_style(self, value: LineStyle) -> None:
+        self.__component.LineStyle = value  # type: ignore
 
     @property
     def line_transparence(self) -> int:

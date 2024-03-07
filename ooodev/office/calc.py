@@ -8589,6 +8589,13 @@ class Calc:
 
         .. versionadded:: 0.8.2
         """
+
+        def get_range(range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
+
+            if range_obj.sheet_idx < 0:
+                return range_obj.set_sheet_index()
+            return range_obj
+
         kargs_len = len(kwargs)
         count = len(args) + kargs_len
         if count == 1:
@@ -8600,13 +8607,14 @@ class Calc:
 
             if val:
                 if mInfo.Info.is_instance(val, mRngObj.RangeObj):
-                    return val
+                    return get_range(val)
                 if mInfo.Info.is_instance(val, str):
-                    return mRngObj.RangeObj.from_range(val)
+                    return get_range(mRngObj.RangeObj.from_range(range_val=val))
                 if mInfo.Info.is_instance(val, mCellObj.CellObj):
-                    return val.get_range_obj()
+                    return get_range(val.get_range_obj())
+
         range_name = cls.get_range_str(*args, **kwargs)
-        return mRngObj.RangeObj.from_range(range_val=range_name)
+        return get_range(mRngObj.RangeObj.from_range(range_name))
 
     # endregion get_range_obj()
 
@@ -9011,6 +9019,12 @@ class Calc:
             ka[2] = ka.get("row")
             return ka
 
+        def get_cell(cell_obj: mCellObj.CellObj) -> mCellObj.CellObj:
+
+            if cell_obj.sheet_idx < 0:
+                return cell_obj.set_sheet_index()
+            return cell_obj
+
         if count not in (1, 2):
             raise TypeError("get_cell_obj() got an invalid number of arguments")
 
@@ -9019,17 +9033,19 @@ class Calc:
             kargs[ordered_keys[i]] = arg
 
         if count == 2:
-            return mCellObj.CellObj.from_idx(col_idx=kargs[1], row_idx=kargs[2], sheet_idx=cls.get_sheet_index())
+            return get_cell(
+                mCellObj.CellObj.from_idx(col_idx=kargs[1], row_idx=kargs[2], sheet_idx=cls.get_sheet_index())
+            )
 
         arg = kargs[1]
         if isinstance(arg, mCellObj.CellObj):
-            return arg
+            return get_cell(arg)
 
         if isinstance(arg, str):
-            return mCellObj.CellObj.from_cell(arg)
+            return get_cell(mCellObj.CellObj.from_cell(arg))
 
         if mInfo.Info.is_type_struct(arg, "com.sun.star.table.CellAddress"):
-            return mCellObj.CellObj.from_cell(arg)
+            return get_cell(mCellObj.CellObj.from_cell(arg))
 
         return mCellObj.CellObj.from_cell(cls.get_cell_str(*args, **kwargs))
 

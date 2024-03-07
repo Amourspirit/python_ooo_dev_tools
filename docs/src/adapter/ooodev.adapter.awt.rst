@@ -28,7 +28,8 @@ Submodules
    ooodev.adapter.awt.enhanced_mouse_click_handler
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
-   ooodev.adapter.awt.font_descriptor_comp
+   ooodev.adapter.awt.font_descriptor_struct_comp
+   ooodev.adapter.awt.gradient_struct_comp
    ooodev.adapter.awt.index_container_comp
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_list_events
@@ -46,6 +47,9 @@ Submodules
    ooodev.adapter.awt.mouse_motion_listener
    ooodev.adapter.awt.paint_events
    ooodev.adapter.awt.paint_listener
+   ooodev.adapter.awt.point_struct_comp
+   ooodev.adapter.awt.rectangle_struct_comp
+   ooodev.adapter.awt.size_struct_comp
    ooodev.adapter.awt.spin_events
    ooodev.adapter.awt.spin_listener
    ooodev.adapter.awt.spin_value_partial

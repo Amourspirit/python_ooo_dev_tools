@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.util.cell_protection_struct_comp
    ooodev.adapter.util.changes_events
    ooodev.adapter.util.changes_listener
    ooodev.adapter.util.cloneable_partial

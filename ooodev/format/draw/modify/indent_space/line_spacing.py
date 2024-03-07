@@ -11,7 +11,7 @@ import uno
 from ooodev.format.draw.direct.para.indent_spacing.line_spacing import LineSpacing as InnerLineSpacing
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics
-from ooodev.format.inner.direct.structs.line_spacing_struct import ModeKind
+from ooodev.utils.kind.line_spacing_mode_kind import ModeKind
 from ooodev.format.inner.modify.draw.para_style_base_multi import ParaStyleBaseMulti
 
 if TYPE_CHECKING:

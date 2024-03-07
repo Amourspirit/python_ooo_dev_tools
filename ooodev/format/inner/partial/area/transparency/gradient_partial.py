@@ -1,18 +1,13 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
-from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
-from ooodev.events.gbl_named_event import GblNamedEvent
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_factory import area_transparency_gradient_factory
-from ooodev.loader import lo as mLo
-from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -33,11 +28,15 @@ class GradientPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__lo_inst = lo_inst
-        self.__factory_name = factory_name
-        self.__component = component
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_area_transparency_gradient",
+            after_event="after_style_area_transparency_gradient",
+            lo_inst=lo_inst,
+        )
+        if isinstance(self, EventsPartial):
+            self.__styler.add_event_observers(self.event_observer)
 
     def _GradientPartial_transparency_get_chart_doc(self) -> XChartDocument | None:
         return None
@@ -81,58 +80,19 @@ class GradientPartial:
         """
         # pylint: disable=assignment-from-none
         doc = self._GradientPartial_transparency_get_chart_doc()
-        comp = self.__component
-        factory_name = self.__factory_name
-        has_events = False
-        cargs = None
-        if isinstance(self, EventsPartial):
-            has_events = True
-            cargs = CancelEventArgs(self.style_area_transparency_gradient.__qualname__)
-            event_data: Dict[str, Any] = {
-                "style": style,
-                "offset": offset,
-                "angle": angle,
-                "border": border,
-                "grad_intensity": grad_intensity,
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_area_transparency_gradient", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_area_transparency_gradient")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style Font Effects has been cancelled.")
-                else:
-                    return None
-            style = cargs.event_data.get("style", style)
-            offset = cargs.event_data.get("offset", offset)
-            angle = cargs.event_data.get("angle", angle)
-            border = cargs.event_data.get("border", border)
-            grad_intensity = cargs.event_data.get("grad_intensity", grad_intensity)
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = area_transparency_gradient_factory(factory_name)
+        styler = self.__styler
+        factory = area_transparency_gradient_factory
+        kwargs = {
+            "style": style,
+            "offset": offset,
+            "angle": angle,
+            "border": border,
+            "grad_intensity": grad_intensity,
+        }
         if doc is None:
-            fe = styler(style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity)
-        else:
-            fe = styler(
-                chart_doc=doc, style=style, offset=offset, angle=angle, border=border, grad_intensity=grad_intensity
-            )
-
-        if has_events:
-            fe.add_event_observer(self.event_observer)  # type: ignore
-
-        with LoContext(self.__lo_inst):
-            fe.apply(comp)
-        fe.set_update_obj(comp)
-        if has_events:
-            self.trigger_event("after_style_area_transparency_gradient", EventArgs.from_args(cargs))  # type: ignore
-        return fe
+            return styler.style(factory=factory, **kwargs)
+        kwargs["chart_doc"] = doc
+        return styler.style(factory=factory, **kwargs)
 
     def style_area_transparency_gradient_get(self) -> GradientT | None:
         """
@@ -146,36 +106,9 @@ class GradientPartial:
         """
         # pylint: disable=assignment-from-none
         doc = self._GradientPartial_transparency_get_chart_doc()
-        comp = self.__component
-        factory_name = self.__factory_name
-        cargs = None
-        if isinstance(self, EventsPartial):
-            cargs = CancelEventArgs(self.style_area_transparency_gradient_get.__qualname__)
-            event_data: Dict[str, Any] = {
-                "factory_name": factory_name,
-                "this_component": comp,
-            }
-            cargs.event_data = event_data
-            self.trigger_event("before_style_area_transparency_gradient_get", cargs)
-            if cargs.cancel is True:
-                if cargs.handled is not False:
-                    return None
-                cargs.set("initial_event", "before_style_area_transparency_gradient_get")
-                self.trigger_event(GblNamedEvent.EVENT_CANCELED, cargs)
-                if cargs.handled is False:
-                    raise mEx.CancelEventError(cargs, "Style get has been cancelled.")
-                else:
-                    return None
-            factory_name = cargs.event_data.get("factory_name", factory_name)
-            comp = cargs.event_data.get("this_component", comp)
-
-        styler = area_transparency_gradient_factory(factory_name)
-        try:
-            if doc is None:
-                style = styler.from_obj(obj=comp)
-            else:
-                style = styler.from_obj(chart_doc=doc, obj=comp)
-        except mEx.DisabledMethodError:
-            return None
-        style.set_update_obj(comp)
-        return style
+        styler = self.__styler
+        return (
+            styler.style_get(factory=area_transparency_gradient_factory)
+            if doc is None
+            else styler.style_get(factory=area_transparency_gradient_factory, chart_doc=doc)
+        )

@@ -7,6 +7,8 @@ from com.sun.star.text import XTextViewCursor
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
+from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 from ooodev.adapter.text.text_view_cursor_comp import TextViewCursorComp
 from ooodev.adapter.view.line_cursor_partial import LineCursorPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -39,6 +41,8 @@ class WriteTextViewCursor(
     TextCursorPartial[T],
     Generic[T],
     TextViewCursorComp,
+    CharacterPropertiesPartial,
+    ParagraphPropertiesPartial,
     LineCursorPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -67,6 +71,8 @@ class WriteTextViewCursor(
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextCursorPartial.__init__(self, owner=owner, component=component, lo_inst=self.lo_inst)
         TextViewCursorComp.__init__(self, component)  # type: ignore
+        CharacterPropertiesPartial.__init__(self, component=component)  # type: ignore
+        ParagraphPropertiesPartial.__init__(self, component=component)  # type: ignore
         LineCursorPartial.__init__(self, component, None)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore

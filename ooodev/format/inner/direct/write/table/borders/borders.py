@@ -20,7 +20,7 @@ from ooodev.format.inner.direct.calc.border.shadow import Shadow
 from ooodev.format.inner.common.props.prop_pair import PropPair
 from ooodev.format.inner.common.props.struct_border_table_props import StructBorderTableProps
 from ooodev.format.inner.common.props.table_borders_props import TableBordersProps
-from ooodev.format.inner.direct.structs.side import Side as Side
+from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.direct.structs.table_border_distances_struct import TableBorderDistancesStruct
 from ooodev.format.inner.direct.structs.table_border_struct import TableBorderStruct
 
@@ -81,6 +81,15 @@ class Borders(StyleMulti):
         Returns:
             None:
 
+        Hint:
+            - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Padding`` can be imported from ``ooodev.format.inner.direct.calc.border.padding``
+            - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
+            - ``side`` can be imported from ``ooodev.format.inner.direct.structs.side``
+            - ``ShadowLocation`` can be imported ``from ooo.dyn.table.shadow_location``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow``
+
         See Also:
             - :ref:`help_writer_format_direct_table_borders`
         """
@@ -120,9 +129,9 @@ class Borders(StyleMulti):
         if merge_adjacent is not None:
             self.prop_merge_adjacent = merge_adjacent
         if border_table.prop_has_attribs:
-            self._set_style("border_table", border_table)
+            self._set_style("border_table", border_table)  # type: ignore
         if tb_padding_struct is not None:
-            self._set_style("padding", tb_padding_struct)
+            self._set_style("padding", tb_padding_struct)  # type: ignore
         if shadow_fmt is not None:
             self._set_style("shadow", shadow_fmt)
 
@@ -163,10 +172,10 @@ class Borders(StyleMulti):
 
     # region Overrides
 
-    def _on_modifying(self, source: Any, event: CancelEventArgs) -> None:
+    def _on_modifying(self, source: Any, event_args: CancelEventArgs) -> None:
         if self._is_default_inst:
             raise ValueError("Modifying a default instance is not allowed")
-        return super()._on_modifying(source, event)
+        return super()._on_modifying(source, event_args)
 
     def _supported_services(self) -> Tuple[str, ...]:
         try:
@@ -231,7 +240,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: ``Borders`` instance that represents ``obj`` border properties.
         """
-
+        # pylint: disable=protected-access
         inst = cls(**kwargs)
         if not inst._is_valid_obj(obj):
             raise mEx.NotSupportedError(f'Object is not supported for conversion to "{cls.__name__}"')
@@ -251,6 +260,7 @@ class Borders(StyleMulti):
 
     # region Style Methods
     def _fmt_get_border_table(self: _TBorders, value: Side | None, side: str) -> Tuple[_TBorders, bool]:
+        # pylint: disable=protected-access
         cp = self.copy()
         has_style = cp._has_style("border_table")
 
@@ -262,7 +272,7 @@ class Borders(StyleMulti):
         if not has_style:
             args = {side: value, "_cattribs": self._get_tb_cattribs()}
             border_table = TableBorderStruct(**args)
-            cp._set_style("border_table", border_table)
+            cp._set_style("border_table", border_table)  # type: ignore
             return (cp, True)
         return (cp, False)
 
@@ -276,6 +286,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "border_side")
         if ret:
             return cp
@@ -296,6 +307,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "left")
         if ret:
             return cp
@@ -314,6 +326,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "right")
         if ret:
             return cp
@@ -332,6 +345,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "top")
         if ret:
             return cp
@@ -349,6 +363,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "bottom")
         if ret:
             return cp
@@ -367,6 +382,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "horizontal")
         if ret:
             return cp
@@ -385,6 +401,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp, ret = self._fmt_get_border_table(value, "vertical")
         if ret:
             return cp
@@ -403,6 +420,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp = self.copy()
 
         bt = cast(TableBorderStruct, cp._get_style_inst("distance"))
@@ -419,6 +437,7 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
         cp = self.copy()
         if value is None:
             cp._remove_style("shadow")
@@ -437,6 +456,8 @@ class Borders(StyleMulti):
         Returns:
             Borders: Borders instance
         """
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         cp = self.copy()
         if value is None:
             cp._remove_style("padding")
@@ -448,7 +469,7 @@ class Borders(StyleMulti):
                 bottom=value.prop_bottom or 0,
                 _cattribs=self._get_tbd_cattribs(),  # type: ignore
             )
-            cp._set_style("padding", tb_padding_struct)
+            cp._set_style("padding", tb_padding_struct)  # type: ignore
         return cp
 
     # endregion Style Methods
@@ -529,6 +550,8 @@ class Borders(StyleMulti):
     @property
     def default(self: _TBorders) -> _TBorders:  # type: ignore[misc]
         """Gets Default Border."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._default_inst
         except AttributeError:
@@ -541,6 +564,8 @@ class Borders(StyleMulti):
     @property
     def empty(self: _TBorders) -> _TBorders:  # type: ignore[misc]
         """Gets Empty Border. When style is applied formatting is removed."""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._empty_inst
         except AttributeError:

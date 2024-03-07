@@ -221,7 +221,7 @@ class Side(StructBase):
         if color < 0:
             raise ValueError("color must be a positive value")
         if self._pts < 0.0:
-            raise ValueError("width must be a postivie value")
+            raise ValueError("width must be a positive value")
         if self._pts > 9.0000001:
             raise ValueError("Maximum width allowed is 9pt")
 
@@ -421,7 +421,7 @@ class Side(StructBase):
             return
 
         struct = self.get_uno_struct()
-        props = {self._get_property_name(): struct}
+        props = {self.property_name: struct}
         super().apply(obj=obj, override_dv=props)
 
     # endregion apply()
@@ -435,7 +435,7 @@ class Side(StructBase):
 
     def copy(self: _TSide, **kwargs) -> _TSide:
         """Gets a copy of instance as a new instance"""
-
+        # pylint: disable=protected-access
         cp = super().copy(**kwargs)
         cp._pts = self._pts
         self._copy_missing_attribs(self, cp, "_property_name", "_supported_services_values")
@@ -525,6 +525,7 @@ class Side(StructBase):
         Returns:
             Side: instance.
         """
+        # pylint: disable=protected-access
         pt_width = round(UnitConvert.convert(num=border.LineWidth, frm=UnitLength.MM100, to=UnitLength.PT), 2)
         inst = cls(width=pt_width, **kwargs)
         inst._set("Color", border.Color)
@@ -721,6 +722,19 @@ class Side(StructBase):
         self._set("Color", value)
 
     @property
+    def property_name(self) -> str:
+        """
+        Gets/Sets property name
+
+        This is the name of the property that the side should be applied to. Such as ``LeftBorder``, ``RightBorder`` etc.
+        """
+        return self._get_property_name()
+
+    @property_name.setter
+    def property_name(self, value: str) -> None:
+        self._set_property_name(value)
+
+    @property
     def prop_width(self) -> UnitPT:
         """
         Gets borderline Width.
@@ -733,6 +747,8 @@ class Side(StructBase):
     @property
     def empty(self: _TSide) -> _TSide:
         """Gets an empty side. When applied formatting is removed"""
+        # pylint: disable=protected-access
+        # pylint: disable=unexpected-keyword-arg
         try:
             return self._empty_inst
         except AttributeError:

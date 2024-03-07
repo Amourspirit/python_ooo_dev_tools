@@ -11,6 +11,7 @@ Submodules
    ooodev.adapter.sheet.activation_event_events
    ooodev.adapter.sheet.activation_event_listener
    ooodev.adapter.sheet.cell_range_access_partial
+   ooodev.adapter.sheet.cell_range_data_partial
    ooodev.adapter.sheet.cell_range_referrer_partial
    ooodev.adapter.sheet.enhanced_mouse_click_broadcaster_partial
    ooodev.adapter.sheet.range_selection_change_events

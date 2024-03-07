@@ -207,7 +207,7 @@ class ChartAxis(
         from com.sun.star.chart2 import XTitled
         from com.sun.star.chart2 import XTitle
         from com.sun.star.chart2 import XFormattedString
-        from .chart_title import ChartTitle
+        from ooodev.calc.chart2.chart_title import ChartTitle
 
         try:
             x_title = self.lo_inst.create_instance_mcf(XTitle, "com.sun.star.chart2.Title", raise_err=True)
@@ -281,4 +281,4 @@ if mock_g.FULL_IMPORT:
     from com.sun.star.chart2 import XFormattedString
     from com.sun.star.chart2 import XTitle
     from com.sun.star.chart2 import XTitled
-    from .chart_title import ChartTitle
+    from ooodev.calc.chart2.chart_title import ChartTitle

@@ -1,19 +1,25 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import contextlib
 import uno
 
+from ooodev.adapter.awt.gradient_struct_comp import GradientStructComp
+from ooodev.adapter.drawing.hatch_struct_comp import HatchStructComp
+from ooodev.adapter.text.graphic_crop_struct_comp import GraphicCropStructComp
+from ooodev.events.events import Events
+from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties
     from com.sun.star.util import Color  # type def
     from com.sun.star.awt import XBitmap
-    from com.sun.star.drawing.BitmapMode import BitmapModeProto  # type: ignore
-    from com.sun.star.drawing.RectanglePoint import RectanglePointProto  # type: ignore
-    from com.sun.star.drawing.FillStyle import FillStyleProto  # type: ignore
     from com.sun.star.awt import Gradient  # Struct
     from com.sun.star.drawing import Hatch  # Struct
     from com.sun.star.text import GraphicCrop  # Struct
+    from ooo.dyn.drawing.rectangle_point import RectanglePoint
+    from ooo.dyn.drawing.fill_style import FillStyle
+    from ooo.dyn.drawing.bitmap_mode import BitmapMode
+    from ooodev.events.args.key_val_args import KeyValArgs
 
 
 class FillPropertiesPartial:
@@ -32,7 +38,19 @@ class FillPropertiesPartial:
             component (FillProperties): UNO Component that implements ``com.sun.star.drawing.FillProperties`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``FillProperties``.
         """
+        self.__event_provider = Events(self)
+        self.__props = {}
         self.__component = component
+
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
+
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
+        # pylint: disable=no-member
+        self.__event_provider.subscribe_event("com_sun_star_awt_Gradient_changed", self.__fn_on_comp_struct_changed)
+        self.__event_provider.subscribe_event("com_sun_star_drawing_Hatch_changed", self.__fn_on_comp_struct_changed)
 
     # region FillProperties
     @property
@@ -81,7 +99,7 @@ class FillPropertiesPartial:
         self.__component.FillBitmapLogicalSize = value
 
     @property
-    def fill_bitmap_mode(self) -> BitmapModeProto:
+    def fill_bitmap_mode(self) -> BitmapMode:
         """
         Gets/Sets how an area is filled with a single bitmap.
 
@@ -94,12 +112,18 @@ class FillPropertiesPartial:
         If set to ``BitmapMode.STRETCH``, the property ``fill_bitmap_stretch`` is set to ``True``, and the property ``fill_bitmap_tile`` is set to ``False``.
 
         If set to ``BitmapMode.NO_REPEAT``, both properties ``fill_bitmap_stretch`` and ``fill_bitmap_tile`` are set to ``False``.
+
+        Returns:
+            BitmapMode: Bitmap Mode
+
+        Hint:
+            - ``BitmapMode`` can be imported from ``ooo.dyn.drawing.bitmap_mode``.
         """
-        return self.__component.FillBitmapMode
+        return self.__component.FillBitmapMode  # type: ignore
 
     @fill_bitmap_mode.setter
-    def fill_bitmap_mode(self, value: BitmapModeProto) -> None:
-        self.__component.FillBitmapMode = value
+    def fill_bitmap_mode(self, value: BitmapMode) -> None:
+        self.__component.FillBitmapMode = value  # type: ignore
 
     @property
     def fill_bitmap_name(self) -> str:
@@ -161,15 +185,21 @@ class FillPropertiesPartial:
         self.__component.FillBitmapPositionOffsetY = value
 
     @property
-    def fill_bitmap_rectangle_point(self) -> RectanglePointProto:
+    def fill_bitmap_rectangle_point(self) -> RectanglePoint:
         """
         Gets/Sets - RectanglePoint specifies the position inside of the bitmap to use as the top left position for rendering.
+
+        Returns:
+            RectanglePoint: RectanglePoint specifies the position inside of the bitmap to use as the top left position for rendering.
+
+        Hint:
+            - ``RectanglePoint`` can be imported from ``ooo.dyn.drawing.rectangle_point``.
         """
-        return self.__component.FillBitmapRectanglePoint
+        return self.__component.FillBitmapRectanglePoint  # type: ignore
 
     @fill_bitmap_rectangle_point.setter
-    def fill_bitmap_rectangle_point(self, value: RectanglePointProto) -> None:
-        self.__component.FillBitmapRectanglePoint = value
+    def fill_bitmap_rectangle_point(self, value: RectanglePoint) -> None:
+        self.__component.FillBitmapRectanglePoint = value  # type: ignore
 
     @property
     def fill_bitmap_size_x(self) -> int:
@@ -291,22 +321,42 @@ class FillPropertiesPartial:
         self.__component.FillColor = value
 
     @property
-    def fill_gradient(self) -> Gradient | None:
+    def fill_gradient(self) -> GradientStructComp | None:
         """
         Gets/Sets the gradient used for filling.
 
         If the property ``fill_style`` is set to ``FillStyle.GRADIENT``, this describes the gradient used.
 
+        Note when setting the gradient it can be a ``GradientStructComp`` or a ``Gradient`` struct.
+
         **optional**
+
+        Returns:
+            GradientStructComp | None: Gradient Struct Component or None if not supported.
+
+        Hint:
+            - ``Gradient`` can be imported from ``ooo.dyn.awt.gradient``.
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.FillGradient
-        return None
+        key = "FillGradient"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = GradientStructComp(self.__component.FillGradient, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(GradientStructComp, prop)
 
     @fill_gradient.setter
-    def fill_gradient(self, value: Gradient) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.FillGradient = value
+    def fill_gradient(self, value: Gradient | GradientStructComp) -> None:
+        key = "FillGradient"
+        if not hasattr(self.__component, key):
+            return None
+        if mInfo.Info.is_instance(value, GradientStructComp):
+            self.__component.FillGradient = value.copy()
+        else:
+            self.__component.FillGradient = cast("Gradient", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def fill_gradient_name(self) -> str:
@@ -322,7 +372,7 @@ class FillPropertiesPartial:
         self.__component.FillGradientName = value
 
     @property
-    def fill_hatch(self) -> Hatch | None:
+    def fill_hatch(self) -> HatchStructComp | None:
         """
         Gets/Sets the hatch used for filling.
 
@@ -330,14 +380,26 @@ class FillPropertiesPartial:
 
         **optional**
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.FillHatch
-        return None
+        key = "FillHatch"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = HatchStructComp(self.__component.FillHatch, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(HatchStructComp, prop)
 
     @fill_hatch.setter
-    def fill_hatch(self, value: Hatch) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.FillHatch = value
+    def fill_hatch(self, value: Hatch | HatchStructComp) -> None:
+        key = "FillHatch"
+        if not hasattr(self.__component, key):
+            return None
+        if mInfo.Info.is_instance(value, HatchStructComp):
+            self.__component.FillHatch = value.copy()
+        else:
+            self.__component.FillHatch = cast("Hatch", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def fill_hatch_name(self) -> str:
@@ -353,15 +415,21 @@ class FillPropertiesPartial:
         self.__component.FillHatchName = value
 
     @property
-    def fill_style(self) -> FillStyleProto:
+    def fill_style(self) -> FillStyle:
         """
         Gets/Sets the enumeration selects the style the area will be filled with.
+
+        Returns:
+            FillStyle: Fill Style
+
+        Hint:
+            - ``FillStyle`` can be imported from ``ooo.dyn.drawing.fill_style``.
         """
-        return self.__component.FillStyle
+        return self.__component.FillStyle  # type: ignore
 
     @fill_style.setter
-    def fill_style(self, value: FillStyleProto) -> None:
-        self.__component.FillStyle = value
+    def fill_style(self, value: FillStyle) -> None:
+        self.__component.FillStyle = value  # type: ignore
 
     @property
     def fill_transparence(self) -> int:
@@ -377,20 +445,40 @@ class FillPropertiesPartial:
         self.__component.FillTransparence = value
 
     @property
-    def fill_transparence_gradient(self) -> Gradient | None:
+    def fill_transparence_gradient(self) -> GradientStructComp | None:
         """
         Gets/Sets the transparency of the fill area as a gradient.
 
+        Note when setting the gradient it can be a ``GradientStructComp`` or a ``Gradient`` struct.
+
         **optional**
+
+        Returns:
+            GradientStructComp | None: Gradient Struct Component or None if not supported.
+
+        Hint:
+            - ``Gradient`` can be imported from ``ooo.dyn.awt.gradient``.
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.FillTransparenceGradient
-        return None
+        key = "FillTransparenceGradient"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = GradientStructComp(self.__component.FillTransparenceGradient, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(GradientStructComp, prop)
 
     @fill_transparence_gradient.setter
     def fill_transparence_gradient(self, value: Gradient) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.FillTransparenceGradient = value
+        key = "FillTransparenceGradient"
+        if not hasattr(self.__component, key):
+            return None
+        if mInfo.Info.is_instance(value, GradientStructComp):
+            self.__component.FillTransparenceGradient = value.copy()
+        else:
+            self.__component.FillTransparenceGradient = cast("Gradient", value)
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def fill_transparence_gradient_name(self) -> str:
@@ -428,22 +516,42 @@ class FillPropertiesPartial:
             self.__component.FillUseSlideBackground = value
 
     @property
-    def graphic_crop(self) -> GraphicCrop | None:
+    def graphic_crop(self) -> GraphicCropStructComp | None:
         """
         Gets/Sets the cropping of the object.
 
         If the property ``fill_bitmap_mode`` is set to ``BitmapMode.STRETCH``, this is the cropping,
         otherwise it is empty.
 
+        When setting the cropping it can be a ``GraphicCropStructComp`` or a ``GraphicCrop`` struct.
+
         **optional**
+
+        Returns:
+            GraphicCropStructComp | None: Graphic Crop Struct Component or None if not supported.
+
+        Hint:
+            - ``GraphicCrop`` can be imported from ``ooo.dyn.text.graphic_crop``.
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.GraphicCrop
-        return None
+        key = "GraphicCrop"
+        if not hasattr(self.__component, key):
+            return None
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = GraphicCropStructComp(self.__component.GraphicCrop, key, self.__event_provider)
+            self.__props[key] = prop
+        return cast(GraphicCropStructComp, prop)
 
     @graphic_crop.setter
-    def graphic_crop(self, value: GraphicCrop) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.GraphicCrop = value
+    def graphic_crop(self, value: GraphicCrop | GraphicCropStructComp) -> None:
+        key = "GraphicCrop"
+        if not hasattr(self.__component, key):
+            return None
+        if mInfo.Info.is_instance(value, GraphicCropStructComp):
+            self.__component.GraphicCrop = value.copy()
+        else:
+            self.__component.GraphicCrop = cast("GraphicCrop", value)
+        if key in self.__props:
+            del self.__props[key]
 
     # endregion FillProperties

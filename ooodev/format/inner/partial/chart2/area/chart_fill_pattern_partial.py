@@ -2,10 +2,9 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
-from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.format.inner.partial.factory_styler import FactoryStyler
 from ooodev.format.inner.style_factory import chart2_area_pattern_factory
-from ooodev.loader import lo as mLo
+from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
+from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.chart2 import XChartDocument
@@ -26,13 +25,15 @@ class ChartFillPatternPartial:
     """
 
     def __init__(self, factory_name: str, component: Any, lo_inst: LoInst | None = None) -> None:
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        self.__styler = FactoryStyler(factory_name=factory_name, component=component, lo_inst=lo_inst)
+        self.__styler = DefaultFactoryStyler(
+            factory_name=factory_name,
+            component=component,
+            before_event="before_style_area_pattern",
+            after_event="after_style_area_pattern",
+            lo_inst=lo_inst,
+        )
         if isinstance(self, EventsPartial):
             self.__styler.add_event_observers(self.event_observer)
-        self.__styler.after_event_name = "after_style_area_pattern"
-        self.__styler.before_event_name = "before_style_area_pattern"
 
     def _ChartFillPatternPartial__get_chart_doc(self) -> XChartDocument:
         if isinstance(self, ChartDocPropPartial):
@@ -104,8 +105,9 @@ class ChartFillPatternPartial:
         Hint:
             - ``PresetPatternKind`` can be imported from ``ooodev.format.inner.preset.preset_pattern``
         """
+        styler = self.__styler
         doc = self._ChartFillPatternPartial__get_chart_doc()
-        fe = self.__styler.style_get(
+        fe = styler.style_get(
             factory=chart2_area_pattern_factory,
             call_method_name="from_preset",
             event_name_suffix="_from_preset",
@@ -113,5 +115,5 @@ class ChartFillPatternPartial:
             chart_doc=doc,
             preset=preset,
         )
-        self.__styler.style_apply(style=fe, chart_doc=doc, preset=preset)
+        styler.style_apply(style=fe, chart_doc=doc, preset=preset)
         return fe

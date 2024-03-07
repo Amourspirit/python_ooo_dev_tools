@@ -13,3 +13,4 @@ write
     partial/index
     search/index
     style/index
+    table/index

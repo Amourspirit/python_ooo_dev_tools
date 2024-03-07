@@ -45,6 +45,7 @@ Submodules
 
    ooodev.adapter.adapter_base
    ooodev.adapter.component_base
+   ooodev.adapter.struct_base
 
 Module contents
 ---------------
