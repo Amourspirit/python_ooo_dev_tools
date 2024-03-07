@@ -3294,10 +3294,12 @@ class Write(mSel.Selection):
             if table is None:
                 raise ValueError("Null Value")
         except Exception as e:
-            raise mEx.CreateInstanceMsfError(XTextTable, "com.sun.star.text.TextTable")
+            raise mEx.CreateInstanceMsfError(XTextTable, "com.sun.star.text.TextTable") from e
 
         try:
             num_cols = len(table_data[0])
+            if num_cols == 0:
+                raise ValueError("table_data has no columns")
             mLo.Lo.print(f"Creating table rows: {num_rows}, cols: {num_cols}")
             table.initialize(num_rows, num_cols)
 

@@ -53,17 +53,18 @@ class CellObj:
             raise AssertionError from e
         check(self.row >= 1, f"{self}", f"Expected a row of 1 or greater. Got: {self.row}")
         if self.sheet_idx == -1:
-            if self.range_obj:
-                if self.range_obj.sheet_idx >= 0:
-                    object.__setattr__(self, "sheet_idx", self.range_obj.sheet_idx)
-            else:
-                with contextlib.suppress(Exception):
-                    # pylint: disable=no-member
-                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
-                        doc = cast("CalcDoc", mLo.Lo.current_doc)
-                        sheet = doc.get_active_sheet()
-                        idx = sheet.get_sheet_index()
-                        object.__setattr__(self, "sheet_idx", idx)
+            # do not use the commented out code below!!! It will cause recursion error.
+            # if self.range_obj:
+            #     if self.range_obj.sheet_idx >= 0:
+            #         object.__setattr__(self, "sheet_idx", self.range_obj.sheet_idx)
+            # else:
+            with contextlib.suppress(Exception):
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.get_active_sheet()
+                    idx = sheet.get_sheet_index()
+                    object.__setattr__(self, "sheet_idx", idx)
 
     # endregion init
 

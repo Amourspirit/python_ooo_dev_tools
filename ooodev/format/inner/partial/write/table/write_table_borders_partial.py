@@ -49,7 +49,7 @@ class WriteTableBordersPartial:
         merge_adjacent: bool | None = None,
     ) -> Borders | None:
         """
-        Style Write Character Borders.
+        Style Write Table Borders.
 
         Args:
             left (Side,, optional): Specifies the line style at the left edge.
@@ -69,7 +69,7 @@ class WriteTableBordersPartial:
             CancelEventError: If the event ``before_style_table_borders`` is cancelled and not handled.
 
         Returns:
-            Borders | None: Attribute Options Style instance or ``None`` if cancelled.
+            Borders | None: Border Style instance or ``None`` if cancelled.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooodev.format.writer.direct.char.borders``
@@ -78,7 +78,7 @@ class WriteTableBordersPartial:
             - ``Borders`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``LineSize`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Padding`` can be imported from ``ooodev.format.inner.direct.calc.border.padding``
-            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow.Shadow``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``Side`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``side`` can be imported from ``ooodev.format.writer.direct.char.borders``
@@ -178,7 +178,7 @@ class WriteTableBordersPartial:
         padding: Padding | None = None,
     ) -> Borders | None:
         """
-        Style All Write Character Borders.
+        Style All Write Table Borders.
 
         Args:
             line (BorderLineStyleEnum, optional): Line Style of the border. Default ``BorderLineKind.SOLID``.
@@ -199,7 +199,7 @@ class WriteTableBordersPartial:
             - ``BorderLineKind`` can be imported from ``ooodev.format.inner.direct.structs.side``
             - ``LineSize`` can be imported from ``ooodev.format.inner.direct.structs.side``
             - ``Padding`` can be imported from ``ooodev.format.inner.direct.calc.border.padding``
-            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow.Shadow``
+            - ``Shadow`` can be imported from ``ooodev.format.inner.direct.calc.border.shadow``
             - ``ShadowFormat`` can be imported from ``ooodev.format.writer.direct.char.borders``
             - ``ShadowLocation`` can be imported ``from ooo.dyn.table.shadow_location``
 
@@ -224,7 +224,7 @@ class WriteTableBordersPartial:
         all_sides: float | UnitT | None = None,
     ) -> Borders | None:
         """
-        Style Padding for Write Characters.
+        Style Padding for Write Table.
 
         Args:
             left (float, UnitT, optional): Left (in ``mm`` units) or :ref:`proto_unit_obj`.

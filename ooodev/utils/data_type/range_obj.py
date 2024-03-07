@@ -101,6 +101,15 @@ class RangeObj:
 
     # endregion init
 
+    def __len__(self) -> int:
+        """
+        Get the number of cells in the range.
+
+        Returns:
+            int: Number of cells in range.
+        """
+        return self.cell_count
+
     # region methods
 
     def set_sheet_index(self, idx: int | None = None) -> RangeObj:

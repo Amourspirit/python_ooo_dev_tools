@@ -8,6 +8,7 @@ from ooodev.events.style_named_event import StyleNameEvent
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
 from ooodev.format.inner.partial.write.area.write_table_fill_img_partial import WriteTableFillImgPartial
 from ooodev.format.inner.partial.write.table.write_table_borders_partial import WriteTableBordersPartial
+from ooodev.format.inner.partial.write.table.write_table_properties_partial import WriteTablePropertiesPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
@@ -27,6 +28,7 @@ class TableStyler(
     FillColorPartial,
     WriteTableFillImgPartial,
     WriteTableBordersPartial,
+    WriteTablePropertiesPartial,
     TheDictionaryPartial,
 ):
     """
@@ -70,6 +72,7 @@ class TableStyler(
             self, factory_name="ooodev.write.table.background", component=component, lo_inst=self.write_doc.lo_inst
         )
         WriteTableBordersPartial.__init__(self, component=component)
+        WriteTablePropertiesPartial.__init__(self, component=component)
 
         # The dictionary can be used to add extra data to the object. This is useful for event handling.
         TheDictionaryPartial.__init__(self)

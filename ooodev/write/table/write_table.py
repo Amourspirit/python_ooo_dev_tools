@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, overload, TYPE_CHECKING, Tuple, TypeVar, Generic
+from typing import Any, overload, Sequence, TYPE_CHECKING, Tuple, TypeVar, Generic, Generator
 import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 
@@ -111,6 +111,11 @@ class WriteTable(
         """
         return self.get_cell(key)
 
+    def __iter__(self) -> Generator[WriteTableCell, None, None]:
+        """Iterates through the cells of the table."""
+        for cell in self.get_cell_names():
+            yield self.get_cell_by_name(cell)
+
     # region TextTablePartial overrides
     def get_columns(self) -> WriteTableColumns:
         """
@@ -165,7 +170,6 @@ class WriteTable(
         Args:
             col (int): Column. Zero Based column index.
             row (int): Row. Zero Based row index.
-            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-1``.
 
         Returns:
             WriteTableCell: Cell Object.
@@ -436,6 +440,208 @@ class WriteTable(
             raise IndexError(f"Index out of range: left:{left}, top:{top}, right:{right}, bottom:{bottom}") from e
 
     # endregion CellRangePartial Overrides
+
+    # region Ensure Column/Row Count
+
+    # region ensure_colum_row()
+    @overload
+    def ensure_colum_row(self, cell_obj: CellObj) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            cell_obj (CellObj): Cell Object.
+
+        Returns:
+            None: None
+        """
+        ...
+
+    @overload
+    def ensure_colum_row(self, col: int, row: int) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            col (int): Column. Zero Based column index.
+            row (int): Row. Zero Based row index.
+
+        Returns:
+            None: None
+        """
+        ...
+
+    @overload
+    def ensure_colum_row(self, addr: CellAddress) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            addr (CellAddress): Cell Address.
+
+        Returns:
+            None: None
+        """
+        ...
+
+    @overload
+    def ensure_colum_row(self, cell: XCell) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            None: None
+        """
+        ...
+
+    @overload
+    def ensure_colum_row(self, val: CellValues) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            val (CellValues): Cell values.
+
+        Returns:
+            None: None
+
+        Hint:
+            - ``CellValues`` can be imported from ``ooodev.utils.data_type.cell_values``
+        """
+        ...
+
+    @overload
+    def ensure_colum_row(self, name: str) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Args:
+            name (str): Cell name such as as ``A23`` or ``Sheet1.A23``
+
+        Returns:
+            None: None
+        """
+        ...
+
+    def ensure_colum_row(self, *args, **kwargs) -> None:
+        """
+        Ensures that the table has at least the specified number of columns and rows.
+
+        Returns:
+            None: None
+        """
+        cell_obj = self.write_table.range_converter.get_cell_obj(*args, **kwargs)
+        self.ensure_column_count(cell_obj.col_obj.index + 1)
+        self.ensure_row_count(cell_obj.row)
+
+    # endregion ensure_colum_row()
+
+    # endregion Ensure Column/Row Count
+
+    def ensure_column_count(self, count: int) -> int:
+        """
+        Ensures that the table has at least the specified number of columns.
+
+        Args:
+            count (int): Number of columns.
+
+        Returns:
+            int: Number of columns.
+        """
+
+        current_count = len(self.columns)
+        if current_count >= count:
+            return current_count
+        self.columns.append_columns(count - current_count)
+        return len(self.columns)
+
+    def ensure_row_count(self, count: int) -> int:
+        """
+        Ensures that the table has at least the specified number of rows.
+
+        Args:
+            count (int): Number of rows.
+
+        Returns:
+            int: Number of rows.
+        """
+        current_count = len(self.rows)
+        if current_count >= count:
+            return current_count
+        self.rows.append_rows(count - current_count)
+        return len(self.rows)
+
+    def get_table_range(self) -> RangeObj:
+        """
+        Gets a range object from a range string.
+
+        Args:
+            rng (str): Range string.
+
+        Returns:
+            RangeObj: Range Object.
+        """
+        cursor = self.create_cursor_by_cell_name("A1")
+        cursor.goto_start()
+        cursor.goto_end(True)
+        return cursor.get_range_obj()
+
+    def set_data_array_cell(
+        self, data: Sequence[Sequence[Any]], cell: str | CellObj, ensure_rows: bool = True, ensure_cols: bool = False
+    ) -> None:
+        """
+        Sets the data array to the table starting from the specified cell.
+
+        Args:
+            data (Sequence[Sequence[Any]]): 2D Data array representing the table.
+            cell (str | CellObj): Cell name or Cell Object.
+            ensure_rows (bool, optional): Specifies if rows should be added if there are not enough in the table to allow the data to be added. Defaults to ``True``.
+            ensure_cols (bool, optional): Specifies if columns should be added if there are not enough in the table to allow the data to be added. Defaults to ``False``.
+
+        Returns:
+            None:
+
+        Example:
+            In this example there are ``4`` columns and ``25`` rows in the table. The data array is ``4x25``.
+            After adding the data array to the table, the table will have ``5`` columns and ``26`` rows.
+            This is because we started the data array from the cell ``B2``.
+            By setting ``ensure_rows`` to ``True`` and ``ensure_cols`` to ``True``, the table will have enough rows and columns to accommodate the data array.
+
+            .. code-block:: python
+
+                >>> cursor = doc.get_cursor()
+                # add a table with a single cell empty cell
+                >>> _ = cursor.add_table(table_data=[[[]]], first_row_header=False)
+                >>> tbl.set_data_array_cell(tbl_data, cell="B2", ensure_cols=True, ensure_rows=True)
+                >>> print(len(tbl.rows))
+                26
+                >>> print(len(tbl.columns))
+                5
+                >>> cell = tbl["E24"]
+                >>> print(cell.value)
+                "Marc Forster"
+        """
+        if isinstance(cell, str):
+            cell = self.range_converter.get_cell_obj_from_str(cell)
+        # ensure there are enough rows and columns
+        data_rng = self.range_converter.get_range_from_2d(data)
+        data_rng_addr = data_rng.get_cell_range_address()
+        cell_addr = cell.get_cell_address()
+        if ensure_rows:
+            min_row = cell_addr.Row + data_rng_addr.EndRow + 1
+            self.ensure_row_count(min_row)
+        if ensure_cols:
+            min_col = cell_addr.Column + data_rng_addr.EndColumn + 1
+            self.ensure_column_count(min_col)
+        data_rng_addr.StartRow += cell_addr.Row
+        data_rng_addr.StartColumn += cell_addr.Column
+        data_rng_addr.EndRow += cell_addr.Row
+        data_rng_addr.EndColumn += cell_addr.Column
+        data_rng = self.get_cell_range(data_rng_addr)
+        data_rng.set_data_array(data)
 
     # region Properties
     @property

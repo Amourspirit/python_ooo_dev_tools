@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
+from typing import Any, TYPE_CHECKING, Tuple, Sequence
 
 from com.sun.star.sheet import XCellRangeData
 
@@ -44,12 +44,17 @@ class CellRangeDataPartial:
         """
         return self.__component.getDataArray()
 
-    def set_data_array(self, array: Tuple[Tuple[Any, ...], ...]) -> None:
+    def set_data_array(self, array: Sequence[Sequence[Any]]) -> None:
         """
         Fills the cell range with values from an array.
 
         The size of the array must be the same as the size of the cell range. Each element of the array must contain a float or a string.
+
+        Warning:
+            The size of the array must be the same as the size of the cell range.
+            This means when setting table data the table must be the same size as the data.
+            When setting a table range the array must be the same size as the range.
         """
-        self.__component.setDataArray(array)
+        self.__component.setDataArray(array)  # type: ignore
 
     # endregion XCellRangeData

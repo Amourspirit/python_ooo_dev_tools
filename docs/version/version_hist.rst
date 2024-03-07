@@ -5,7 +5,9 @@ Version History
 Version 0.32.0
 ==============
 
-Many classes added for working with Writer Tables.
+Many classes added for working with Writer Tables. See :ref:`ns_write_table` namespace.
+
+Other additions to Write to make accessing various parts of the document easier.
 
 Other minor updates and bug fixes.
 

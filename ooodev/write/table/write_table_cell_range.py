@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, overload, Generator, TYPE_CHECKING, Tuple
+from typing import Any, overload, Generator, TYPE_CHECKING, Tuple, Sequence
 import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 
@@ -121,13 +121,18 @@ class WriteTableCellRange(
         return f"{self.__class__.__name__}(range={self.range_obj})"
 
     # region CellRangeDataPartial overrides
-    def set_data_array(self, array: Tuple[Tuple[Any, ...], ...]) -> None:
+    def set_data_array(self, array: Sequence[Sequence[Any]]) -> None:
         """
         Fills the cell range with values from an array.
 
         The size of the array must be the same as the size of the cell range. Each element of the array must contain a float or a string.
+
+        Warning:
+            The size of the array must be the same as the size of the cell range.
+            This means when setting table data the table must be the same size as the data.
+            When setting a table range the array must be the same size as the range.
         """
-        self.component.setDataArray(array)
+        self.component.setDataArray(array)  # type: ignore
 
     # endregion CellRangeDataPartial overrides
     # region get_cell()
@@ -166,7 +171,6 @@ class WriteTableCellRange(
         Args:
             col (int): Column. Zero Based column index.
             row (int): Row. Zero Based row index.
-            sheet_idx (int, optional): Sheet index that this cell value belongs to. Default is ``-1``.
 
         Returns:
             WriteTableCell: Cell Object.

@@ -1,5 +1,3 @@
-.. _ns_write_table:
-
 table
 =====
 
@@ -8,4 +6,3 @@ table
     :glob:
 
     *
-    partial/index

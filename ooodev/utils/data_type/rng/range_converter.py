@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, overload, TYPE_CHECKING, Tuple
+from typing import Any, cast, overload, Sequence, TYPE_CHECKING, Tuple
 import contextlib
 import uno
 from com.sun.star.container import XNamed
@@ -463,11 +463,12 @@ class RangeConverter(LoInstPropsPartial):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = {"col", "addr", "cell", "val", "name", "values", "cell_obj"}
+            valid_keys = {"col", "row", "addr", "cell", "val", "name", "values", "cell_obj", "sheet_idx"}
             check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_cell_obj() got an unexpected keyword argument")
-            for key in valid_keys:
+            keys = {"col", "addr", "cell", "val", "name", "values", "cell_obj"}
+            for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
@@ -1005,11 +1006,24 @@ class RangeConverter(LoInstPropsPartial):
             ka = {}
             if kargs_len == 0:
                 return ka
-            valid_keys = {"range_obj", "cell_obj", "col_start", "addr", "rng", "cell_range", "rng_name"}
+            valid_keys = {
+                "range_obj",
+                "cell_obj",
+                "addr",
+                "rng",
+                "cell_range",
+                "rng_name",
+                "row_start",
+                "col_start",
+                "col_end",
+                "row_end",
+                "sheet_idx",
+            }
             check = all(key in valid_keys for key in kwargs)
             if not check:
                 raise TypeError("get_range_obj() got an unexpected keyword argument")
-            for key in valid_keys:
+            keys = valid_keys = {"range_obj", "cell_obj", "col_start", "addr", "rng", "cell_range", "rng_name"}
+            for key in keys:
                 if key in kwargs:
                     ka[1] = kwargs[key]
                     break
@@ -1052,6 +1066,21 @@ class RangeConverter(LoInstPropsPartial):
         return self.rng_from_cell_rng(arg1)
 
     # endregion get_range_obj() method
+
+    def get_range_from_2d(self, data: Sequence[Sequence[Any]]) -> RangeObj:
+        """
+        Creates a range object from a 2D array of data.
+
+        Args:
+            data (Sequence[Sequence[Any]]): 2D array of data.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        row_count = len(data)
+        col_count = len(data[0])
+        return self.rng_from_position(0, 0, col_count - 1, row_count - 1)
+
     # endregion Range Converters to RangeObj
 
     def get_offset_range_obj(self, range_obj: RangeObj) -> RangeObj:
