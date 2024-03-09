@@ -166,10 +166,10 @@ class LineSize(Enum):
 
     def get_value_pt(self) -> float:
         """
-        Gets instance value in ``px`` (pixel) units.
+        Gets instance value in ``pt`` (point) units.
 
         Returns:
-            float: Value in ``px`` units.
+            float: Value in ``pt`` units.
         """
         return self.value[1]
 
