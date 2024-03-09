@@ -3,6 +3,12 @@
 Linux Linking Paths for Development
 ===================================
 
+.. contents:: Table of Contents
+    :local:
+    :backlinks: top
+    :depth: 1
+
+
 When developing on Linux, you may need to link to libraries that are not part of LibreOffice.
 This guide is one of several ways that develop environments can be set up to work with LibreOffice.
 See also |live_office|_ for a Codespace that is ready to go.
@@ -15,6 +21,8 @@ Setting up Virtual Environment
 ------------------------------
 
 First, create a virtual environment for your project.
+
+The path for the project root directory is ``~/Documents/Projects/Python/LibreOffice/demo_env`` for this demo.
 
 .. code-block:: bash
 

@@ -16,6 +16,7 @@ Covered here are the basics of installing packages with pip and creating virtual
     :titlesonly:
     :caption: Linux
 
+    linux_linking_paths
     linux_lo_install_pip
     linux_install_pkg_zaz_pip
     linux_manual_venv
