@@ -116,19 +116,18 @@ This simple script starts python, Loads LibreOffice Writer, and writes ``Hello W
     >.\python.exe
     Python 3.8.16 (default, Apr 28 2023, 02:01:33) [MSC v.1929 64 bit (AMD64)] on win32
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.loader.lo import Lo
-    >>> from ooodev.office.write import Write
-    >>> from ooodev.utils.gui import GUI
+    >>> from ooodev.loader import Lo
+    >>> from ooodev.write import WriteDoc
     >>> 
     >>> def say_hello():
-    ...     cursor = Write.get_cursor(Write.active_doc)
-    ...     Write.append_para(cursor=cursor, text="Hello World!")
+    ...     doc = WriteDoc.from_current_doc()
+    ...     cursor = doc.get_cursor()
+    ...     cursor.append_para(text="Hello World!")
     ...
     >>> _ = Lo.load_office(Lo.ConnectSocket())
-    >>> doc = Write.create_doc()
-    >>> GUI.set_visible(visible=True, doc=doc)
+    >>> doc = WriteDoc.create_doc(visible=True)
     >>> say_hello()
-    >>> Lo.close_doc(doc)
+    >>> doc.close()
     >>> Lo.close_office()
     True
     >>>

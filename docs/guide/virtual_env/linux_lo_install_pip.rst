@@ -110,17 +110,16 @@ See: :ref:`guide_apso_installation`.
 .. code-block:: python
 
     APSO python console [LibreOffice]
-    3.8.16 (default, Apr 28 2023, 09:24:49) [MSC v.1929 32 bit (Intel)]
+    3.10.11 (main, Nov 10 2011, 15:00:00) [GCC 12.2.0]
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.loader.lo import Lo
-    >>> from ooodev.office.write import Write
-    >>>
+    >>> from ooodev.write import WriteDoc
     >>> def say_hello():
-    ...     cursor = Write.get_cursor(Write.active_doc)
-    ...     Write.append_para(cursor=cursor, text="Hello World!")
-    ... 
+    ...     doc = WriteDoc.from_current_doc()
+    ...     cursor = doc.get_cursor()
+    ...     cursor.append_para(text="Hello World!")
+    ...
     >>> say_hello()
-    >>> 
+    >>>
 
 
 .. image:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/b370cae2-a6f6-41b7-9dfb-be6e4514bbf6
