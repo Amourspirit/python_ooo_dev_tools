@@ -119,11 +119,12 @@ See: :ref:`guide_apso_installation`.
     3.8.16 (default, Apr 28 2023, 09:24:49) [MSC v.1929 32 bit (Intel)]
     Type "help", "copyright", "credits" or "license" for more information.
     >>> from ooodev.loader.lo import Lo
-    >>> from ooodev.office.write import Write
+    >>> from ooodev.write import WriteDoc
     >>>
     >>> def say_hello():
-    ...     cursor = Write.get_cursor(Write.active_doc)
-    ...     Write.append_para(cursor=cursor, text="Hello World!")
+    ...     doc = WriteDoc.from_current_doc()
+    ...     cursor = doc.get_cursor()
+    ...     cursor.append_para(text="Hello World!")
     ... 
     >>> say_hello()
     >>> 

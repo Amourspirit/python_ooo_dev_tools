@@ -31,22 +31,22 @@ class WriteTables(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextTable
 
     Example:
 
-    .. code-block:: python
+        .. code-block:: python
 
-        doc = WriteDoc.create_doc(loader=loader, visible=True)
-        tbl_data = read_table(fnm) # get the table data from a file.
-        cursor = doc.get_cursor()
-        cursor.append_para("Table of Bond Movies")
-        cursor.append_para('The following table comes form "bondMovies.txt"\n')
+            doc = WriteDoc.create_doc(loader=loader, visible=True)
+            tbl_data = read_table(fnm) # get the table data from a file.
+            cursor = doc.get_cursor()
+            cursor.append_para("Table of Bond Movies")
+            cursor.append_para('The following table comes form "bondMovies.txt"\n')
 
-        # with doc locks the controllers while the table is being added to the document.
-        with doc:
-            cursor.add_table(table_data=tbl_data))
-            cursor.end_paragraph()
+            # with doc locks the controllers while the table is being added to the document.
+            with doc:
+                cursor.add_table(table_data=tbl_data))
+                cursor.end_paragraph()
 
-        my_table = doc.tables[-1] # get the last table added to the document.
-        cell = my_table["D3"]
-        # ...
+            my_table = doc.tables[-1] # get the last table added to the document.
+            cell = my_table["D3"]
+            # ...
     """
 
     def __init__(self, owner: T, component: Any, lo_inst: LoInst | None = None) -> None:

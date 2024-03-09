@@ -204,13 +204,12 @@ For this reason we need to set the ``soffice`` path to the snap directory.
     from __future__ import annotations
     import uno
     from pathlib import Path
-    from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.calc import CalcDoc
     from ooodev.utils.kind.zoom_kind import ZoomKind
-    from ooodev.loader.lo import Lo
+    from ooodev.loader import Lo
     from ooodev.utils import paths
     from ooodev.dialog.msgbox import (
-        MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
+        MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
     )
 
 
@@ -222,22 +221,21 @@ For this reason we need to set the ``soffice`` path to the snap directory.
             Lo.ConnectSocket(soffice="/snap/bin/libreoffice", env_vars={"PYTHONPATH": py_pth})
         )
         try:
-            doc = Calc.create_doc()
-            GUI.set_visible(True, doc)
+            doc = CalcDoc.create_doc(visible=True)
             Lo.delay(500)
-            Calc.zoom(doc, ZoomKind.ZOOM_100_PERCENT)
+            doc.zoom(ZoomKind.ZOOM_100_PERCENT)
 
-            sheet = Calc.get_sheet(doc, 0)
-            Calc.set_val(value="Hello World!", sheet=sheet, cell_name="A1")
+            sheet = doc.sheets[0]
+            sheet["A1"]value = "Hello World!"
 
-            msg_result = MsgBox.msgbox(
+            msg_result = doc.msgbox(
                 "Do you wish to close document?",
                 "All done",
                 boxtype=MessageBoxType.QUERYBOX,
                 buttons=MessageBoxButtonsEnum.BUTTONS_YES_NO,
             )
             if msg_result == MessageBoxResultsEnum.YES:
-                Lo.close_doc(doc)
+                doc.close()
                 Lo.close_office()
             else:
                 print("Keeping document open")
