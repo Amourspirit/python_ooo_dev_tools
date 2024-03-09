@@ -160,19 +160,18 @@ Run a simple test to make sure everything is working.
 .. code-block:: python
 
     >>> import uno
-    >>> from ooodev.loader.lo import Lo
-    >>> from ooodev.office.calc import Calc
-    >>> from ooodev.utils.gui import GUI
+    >>> from ooodev.loader import Lo
+    >>> from ooodev.calc import CalcDoc
     >>>
     >>> def say_hello(cell_name):
-    >>>     sheet = Calc.get_active_sheet()
-    ...     Calc.set_val(value="Hello World!", sheet=sheet, cell_name=cell_name)
+    ...     doc = CalcDoc.from_current_doc()
+    ...     sheet = doc.sheets[0]
+    ...     sheet[cell_name].value="Hello World!"
     ...
     >>> _ = Lo.load_office(Lo.ConnectSocket())
-    >>> doc = Calc.create_doc()
-    >>> GUI.set_visible(visible=True, doc=doc)
+    >>> doc = CalcDoc.create_doc(visible=True)
     >>> say_hello("A1")
-    >>> Lo.close_doc(doc)
+    >>> doc.close()
     >>> Lo.close_office()
 
 Related Links
