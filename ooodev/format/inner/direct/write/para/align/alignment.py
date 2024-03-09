@@ -75,6 +75,13 @@ class Alignment(StyleMulti):
         Returns:
             None:
 
+        Hint:
+            - ``ParagraphAdjust`` can be imported from ``ooo.dyn.style.paragraph_adjust``
+            - ``ParagraphVertAlignEnum`` can be imported from ``ooo.dyn.text.paragraph_vert_align``
+            - ``LastLineKind`` can be imported from ``ooodev.format.writer.direct.para.alignment``
+            - ``WritingMode`` can be imported from ``ooodev.format.inner.direct.write.para.align``
+            - ``WritingMode2Enum`` can be imported from ``oo.dyn.text.writing_mode2``.
+
         See Also:
 
             - :ref:`help_writer_format_direct_para_alignment`
@@ -225,6 +232,7 @@ class Alignment(StyleMulti):
             inst._set_style("txt_direction", txt_dir, *txt_dir.get_attrs())
         except Exception:
             mLo.Lo.print("Alignment.from_obj(): unable to set txt_direction style")
+        inst.set_update_obj(obj)
         return inst
 
     # endregion from_obj()

@@ -1,49 +1,39 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Generator, Tuple
 
-from ooodev.mock import mock_g
-from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
-from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
-from ooodev.adapter.text.text_table_row_comp import TextTableRowComp
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.format.inner.style_partial import StylePartial
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.data_type.cell_obj import CellObj
 from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.data_type.range_values import RangeValues
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.text import TextTableRow  # service
     from ooodev.write.table.write_table_cell import WriteTableCell
     from ooodev.write.table.write_table_cell_range import WriteTableCellRange
-    from ooodev.write.style.direct.table.row_styler import RowStyler
+
+# Write Table Column Class.
+# Write table columns have no components. component.hasElements() is always True;
+# However, component.getByIndex(0) always returns None.
+# This class has no component but gives access to the cells of the column and the range of the column.
 
 
-class WriteTableRow(
+class WriteTableColumn(
     WriteDocPropPartial,
     WriteTablePropPartial,
     EventsPartial,
-    TextTableRowComp,
     LoInstPropsPartial,
-    PropertyChangeImplement,
-    VetoableChangeImplement,
-    PropPartial,
-    StylePartial,
 ):
-    """Represents writer table row."""
+    """Represents writer table column."""
 
-    def __init__(self, owner: Any, component: TextTableRow, idx: int = -1) -> None:
+    def __init__(self, owner: Any, idx: int) -> None:
         """
         Constructor
 
         Args:
-            owner (Any): Owner of this component.
-            component (TextTableRow): UNO object that supports ``om.sun.star.text.TextTableRow`` service.
-            idx (int, optional): Index of this row. Defaults to ``-1``.
+            owner (Any): Owner of this instance.
         """
         if not isinstance(owner, WriteTablePropPartial):
             raise ValueError("owner must be a WriteTablePropPartial instance.")
@@ -51,41 +41,33 @@ class WriteTableRow(
         WriteTablePropPartial.__init__(self, obj=owner.write_table)
         EventsPartial.__init__(self)
         LoInstPropsPartial.__init__(self, lo_inst=owner.write_table.lo_inst)
-        TextTableRowComp.__init__(self, component=component)  # type: ignore
-        # pylint: disable=no-member
-        generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
-        StylePartial.__init__(self, component=component)
 
-        self._style_direct_row = None
         self._owner = owner
         self._index = idx
         self._range_obj = None
 
     def __getitem__(self, key: Any) -> WriteTableCell:
         """
-        Returns the Write Table Cell. The cell must exist in the current row.
+        Returns the Write Table Cell. The cell must exist in the current column.
 
         Args:
-            key (Any): Key. can be a integer such as ``2`` for column index (``-1`` get last cell in row, ``-2`` second last) or a string such as "A1" or a ``CellObj``.
-
-        Returns:
-            WriteTableCell: Table Cell Object.
+            key (Any): Key. can be a integer such as ``2`` for row index (``-1`` get last cell in col, ``-2`` second last) or a string such as "A1" or a ``CellObj``.
 
         Raises:
             IndexError: If the key is out of range.
 
+        Returns:
+            WriteTableCell: Table Cell Object.
+
         Note:
-            If key is an integer then it is assumed to be a column index.
+            If key is an integer then it is assumed to be a row index.
             If key is a string then it is assumed to be a cell name.
 
-            Cell names and ``CellObj`` are relative to the current row.
-            If the current row is the first row of the table then the cell names and ``CellObj`` are the same as the parent table.
-            If the row index is 3 then ``row[`A1`]`` is the same as ``table[`A4`]``.
+            Cell names and ``CellObj`` are relative to the current column.
+            If the current column is the first column of the table then the cell names and ``CellObj`` are the same as the parent table.
+            If the column index is 3 then ``col[`A1`]`` is the same as ``table[`C1`]``.
 
-            No mater the row index the first cell of the row is always ``row[0]`` or ``row['A1']``.
+            No mater the column index the first cell of the column is always ``col[0]`` or ``col['A1']``.
 
         Example:
             .. code-block:: python
@@ -99,7 +81,8 @@ class WriteTableRow(
         if isinstance(key, int):
             vals = self._get_range_values()
             index = self._get_index(key)
-            cell_obj = CellObj.from_idx(col_idx=index, row_idx=vals.row_start, sheet_idx=vals.sheet_idx)
+            cell_obj = CellObj.from_idx(col_idx=vals.col_start, row_idx=index, sheet_idx=vals.sheet_idx)
+            # pylint: disable=unsupported-membership-test
             if cell_obj not in self.range_obj:
                 raise IndexError(f"Index {key} is out of range.")
             return self.write_table[cell_obj]
@@ -109,6 +92,7 @@ class WriteTableRow(
 
     def __iter__(self) -> Generator[WriteTableCell, None, None]:
         """Iterates through the cells of the row."""
+        # pylint: disable=not-an-iterable
         if self._index < 0:
             raise IndexError("Index is not set.")
         for cell_obj in self.range_obj:
@@ -116,12 +100,8 @@ class WriteTableRow(
 
     def __repr__(self) -> str:
         if self._index < 0:
-            return f"WriteTableRow(index={self.index})"
-        return f"WriteTableRow(index={self.index}, range={self.range_obj})"
-
-    def get_cell_range(self) -> WriteTableCellRange:
-        """Gets the range of this row."""
-        return self.write_table.get_cell_range(self.range_obj)
+            return f"WriteTableColumn(index={self.index})"
+        return f"WriteTableColumn(index={self.index}, range={self.range_obj})"
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """
@@ -135,69 +115,54 @@ class WriteTableRow(
         Returns:
             int: Index value.
         """
-        count = self.range_obj.row_count
+        count = self.range_obj.col_count
         return mGenUtil.Util.get_index(idx, count, allow_greater)
+
+    def get_cell_range(self) -> WriteTableCellRange:
+        """Gets the range of this column."""
+        return self.write_table.get_cell_range(self.range_obj)
 
     def _get_range_values(self) -> RangeValues:
         """Gets the range values of this row."""
-        col_start = 0
-        col_end = len(self.write_table.columns) - 1
-        row_start = self.index
-        row_end = self.index
+        col_start = self.index
+        col_end = self.index
+        row_start = 0
+        row_end = len(self.write_table.rows) - 1
 
         return RangeValues(col_start=col_start, col_end=col_end, row_start=row_start, row_end=row_end, sheet_idx=-2)
 
-    def get_row_data(self, as_floats: bool = False) -> Tuple[float | str | None, ...]:
+    def get_column_data(self, as_floats: bool = False, start_row_idx: int = 0) -> Tuple[float | str | None, ...]:
         """
-        Gets the data of the row.
+        Gets the data of the column.
 
         Args:
             as_floats (bool, optional): If ``True`` then get all values as floats. If the cell is not a number then it is converted to ``0.0``. Defaults to ``False``.
+            start_row_idx (int, optional): Start Row Index. Zero Based. Can be negative to get from end. Defaults to ``0``.
 
         Returns:
-            Tuple[float | str | None, ...]: Row data. If ``as_floats`` is ``True`` then all values are floats.
+            Tuple[float | str | None, ...]: Column data. If ``as_floats`` is ``True`` then all values are floats.
         """
 
         cell_range = self.write_table.get_cell_range(self.range_obj)
-        return cell_range.get_row_data(idx=0, as_floats=as_floats)
+        return cell_range.get_column_data(idx=0, as_floats=as_floats, start_row_idx=start_row_idx)
 
     @property
     def owner(self) -> Any:
-        """Owner of this component."""
+        """Owner of this instance."""
         return self._owner
 
     @property
-    def style_direct(self) -> RowStyler:
-        """
-        Direct Cell Styler.
-
-        Returns:
-            CellStyler: Character Styler
-        """
-        if self._style_direct_row is None:
-            # pylint: disable=import-outside-toplevel
-            from ooodev.write.style.direct.table.row_styler import RowStyler
-
-            self._style_direct_row = RowStyler(owner=self.write_table, component=self.component)
-            self._style_direct_row.add_event_observers(self.event_observer)
-        return self._style_direct_row
-
-    @property
     def index(self) -> int:
-        """Index of this row."""
+        """Index of this column."""
         return self._index
 
     @property
     def range_obj(self) -> RangeObj:
         """
-        Range Object that represents this row cell range.
+        Range Object that represents this column cell range.
         """
         if self._range_obj is None:
             if self._index < 0:
                 raise IndexError("Index is not set.")
             self._range_obj = RangeObj.from_range(self._get_range_values())
         return self._range_obj
-
-
-if mock_g.FULL_IMPORT:
-    from ooodev.write.style.direct.table.row_styler import RowStyler

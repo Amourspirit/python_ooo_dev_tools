@@ -36,6 +36,44 @@ class RangeConverter(LoInstPropsPartial):
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
 
+    def get_cell_values(self, cell: Any) -> CellValues:
+        """
+        Gets the cell values from a cell like object.
+
+        Args:
+            cell (XCell): Cell.
+
+        Returns:
+            Tuple[int, int]: Column and Row.
+
+        See Also:
+            - :py:meth:`~ooodev.utils.data_type.rng.range_converter.get_cell_obj`
+        """
+        try:
+            cell_obj = self.get_cell_obj(cell)
+            return cell_obj.get_cell_values()
+        except Exception as e:
+            raise TypeError("cell must be an object that can be converted to a CellObj.") from e
+
+    def get_range_values(self, rng: Any) -> RangeValues:
+        """
+        Gets the range values from a range like object.
+
+        Args:
+            rng (Any): Any value that can be converted to RangeObj.
+
+        Returns:
+            Tuple[int, int]: Column and Row.
+
+        See Also:
+            - :py:meth:`~ooodev.utils.data_type.rng.range_converter.get_range_obj`
+        """
+        try:
+            range_obj = self.get_range_obj(rng)
+            return range_obj.get_range_values()
+        except Exception as e:
+            raise TypeError("rng must be an object that can be converted to RangeObj.") from e
+
     def get_safe_quoted_name(self, name: str) -> str:
         """
         Returns the name quoted if it is not alphanumeric.

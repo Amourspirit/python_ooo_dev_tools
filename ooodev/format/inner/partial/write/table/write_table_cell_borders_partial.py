@@ -51,7 +51,7 @@ class WriteTableCellBordersPartial:
             CancelEventError: If the event ``before_style_cell_borders`` is cancelled and not handled.
 
         Returns:
-            Borders | None: Attribute Options Style instance or ``None`` if cancelled.
+            Borders | None: Borders Style instance or ``None`` if cancelled.
 
         Hint:
             - ``BorderLine`` can be imported from ``ooodev.format.writer.direct.char.borders``

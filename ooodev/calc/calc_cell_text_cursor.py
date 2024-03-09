@@ -28,8 +28,6 @@ else:
 class CalcCellTextCursor(
     LoInstPropsPartial,
     TextCursorComp,
-    CharacterPropertiesPartial,
-    ParagraphPropertiesPartial,
     QiPartial,
     PropPartial,
     TextCursorPartial["CalcCellTextCursor"],
@@ -45,8 +43,6 @@ class CalcCellTextCursor(
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextCursorComp.__init__(self, cursor)  # type: ignore
-        CharacterPropertiesPartial.__init__(self, component=cursor)  # type: ignore
-        ParagraphPropertiesPartial.__init__(self, component=cursor)  # type: ignore
         QiPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=cursor, lo_inst=self.lo_inst)  # type: ignore
         TextCursorPartial.__init__(self, owner=self, component=self.component, lo_inst=self.lo_inst)

@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Any, overload, Sequence, TYPE_CHECKING, Tuple, TypeVar, Generic, Generator
+from typing import Any, cast, overload, Sequence, TYPE_CHECKING, Tuple, TypeVar, Generic, Generator
 import uno
 from com.sun.star.lang import IndexOutOfBoundsException
+from ooo.dyn.table.cell_content_type import CellContentType
 
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -642,6 +643,44 @@ class WriteTable(
         data_rng_addr.EndColumn += cell_addr.Column
         data_rng = self.get_cell_range(data_rng_addr)
         data_rng.set_data_array(data)
+
+    def get_cell_value(self, cell: XCell, formula_value: bool = False) -> float | str | None:
+        """
+        Get the cell value.
+
+        Args:
+            cell (XCell): Cell to get the value from.
+            formula_value (bool, optional): Specifies if formula value should be returned instead of the formula. Defaults to ``False``.
+
+        Returns:
+            float | str | None: Cell value.
+
+        Note:
+            - If the cell content is a float then a float is returned.
+            - If the cell content is a string or a formula then a string is returned.
+            - If the cell content is empty then ``None`` is returned.
+
+            If the cell has a formula set then if ``formula_value`` is ``False`` then the formula is returned;
+            Otherwise, the result of the formula is returned.
+        """
+        t = cast(CellContentType, cell.getType())
+        if t == CellContentType.EMPTY:
+            return None
+        if t == CellContentType.VALUE:
+            try:
+                return float(cell.getValue())
+            except ValueError:
+                return 0.0
+        if t == CellContentType.TEXT:
+            return cell.getString()  # type: ignore
+        if t == CellContentType.FORMULA:
+            if formula_value:
+                # could be a string or a float
+                val = cell.getValue()
+                # by default getValue() will return 0.0 if the formula result is a string.
+                # in the event the formula result is actually 0.0 then getString() will return '0'
+                return val if val != 0.0 else cell.getString()  # type: ignore
+            return cell.getFormula()
 
     # region Properties
     @property
