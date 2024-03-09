@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooo.dyn.table.cell_content_type import CellContentType
+from com.sun.star.table import XCell
 
 from ooodev.mock import mock_g
 from ooodev.adapter.text.cell_properties_comp import CellPropertiesComp
@@ -18,7 +18,6 @@ from ooodev.events.partial.events_partial import EventsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import XTextRange
-    from com.sun.star.table import XCell
     from ooodev.proto.component_proto import ComponentT
     from ooodev.write.table.write_cell_text_cursor import WriteCellTextCursor
     from ooodev.write.table.write_table_cell_range import WriteTableCellRange
@@ -72,20 +71,9 @@ class WriteTableCell(
         else:
             self.component.String = str(value)  # type: ignore
 
-    def _get_value(self) -> Any:
+    def _get_value(self, formula_value: bool) -> Any:
         """Get the cell value."""
-        t = cast(CellContentType, self.get_type())
-        if t == CellContentType.EMPTY:
-            return None
-        if t == CellContentType.VALUE:
-            try:
-                return float(self.get_value())
-            except ValueError:
-                return 0.0
-        if t == CellContentType.TEXT:
-            return self.component.getString()  # type: ignore
-        if t == CellContentType.FORMULA:
-            return self.get_formula()
+        return self.write_table.get_cell_value(self.qi(XCell, True), formula_value)
 
     # region get Other Cell
 
@@ -188,13 +176,36 @@ class WriteTableCell(
 
     @property
     def value(self) -> Any:
-        """Get the cell value."""
-        return self._get_value()
+        """
+        Get/Sets the cell value.
+
+        If the cell is a formula and the value is 0, then a string will be returned.
+        Use the ``float_value`` property to always get a float value.
+        """
+        return self._get_value(True)
 
     @value.setter
     def value(self, value: Any) -> None:
         """Set the cell value."""
         self._set_value(value)
+
+    @property
+    def float_value(self) -> float:
+        """
+        Get the cell float value.
+
+        When the cell is a formula and the value is 0,
+        then by default the ``value`` property will return a string.
+        This property will always return a float. If the value of the cell is not a number,
+        or cannot be converted to a number then ``0.0`` is returned.
+        """
+        val = self.value
+        if isinstance(val, float):
+            return val
+        try:
+            return float(val)
+        except (ValueError, TypeError):
+            return 0.0
 
     @property
     def owner(self) -> ComponentT:

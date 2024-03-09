@@ -9,6 +9,7 @@ from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertie
 from ooodev.adapter.table.cell_partial import CellPartial
 from ooodev.adapter.text.cell_range_comp import CellRangeComp
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.data_type.cell_values import CellValues
 from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -19,7 +20,6 @@ from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPa
 from ooodev.write.table.write_table_cell import WriteTableCell
 
 if TYPE_CHECKING:
-    from com.sun.star.text import XTextRange
     from com.sun.star.table import XCellRange
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.proto.component_proto import ComponentT
     from ooodev.utils.data_type.cell_obj import CellObj
+    from ooodev.write.table.write_table_row import WriteTableRow
 
 
 class WriteTableCellRange(
@@ -239,7 +240,7 @@ class WriteTableCellRange(
         col_index = cell_obj.col_obj.index
         row_index = cell_obj.row - 1
 
-        return self.get_cell_by_position(column=col_index, row=row_index)
+        return self.get_cell_by_position(col=col_index, row=row_index)
 
     # endregion get_cell()
 
@@ -348,43 +349,36 @@ class WriteTableCellRange(
     # endregion get Table Cell Range
 
     # region Get Row or Column
-    @overload
-    def get_column_range(self, col: int) -> WriteTableCellRange:
+
+    def get_column_range(self, col: int | str, start_row_idx: int = 0) -> WriteTableCellRange:
         """
         Returns a sub-range of cells within the range.
 
         Args:
-            col (int): Column Index. Zero Based.
+            col (int, str): Zero Based column index or a Colum Letter such as ``A``. If integer then can also be a negative value to get from end.
+            start_row_idx (int, optional): Start Row Index. Zero Based. Can be negative to get from end. Defaults to ``0``.
 
         Returns:
             WriteTableCellRange: Range object.
         """
-        ...
+        if isinstance(col, int):
+            col_count = self.range_obj.col_count
+            index = mGenUtil.Util.get_index(col, col_count)
+            col_rng = self.range_obj.get_col(index)
+        else:
+            col_rng = self.range_obj.get_col(col)
 
-    @overload
-    def get_column_range(self, col: str) -> WriteTableCellRange:
-        """
-        Returns a sub-range of cells within the range.
+        if start_row_idx > 0:
+            if start_row_idx >= col_rng.row_count:
+                raise IndexError(f"Index out of range: start_row_idx={start_row_idx}")
+            rv = col_rng.get_range_values()
+            col_rng = self.write_table.range_converter.rng_from_position(
+                col_start=rv.col_start,
+                row_start=start_row_idx,
+                col_end=rv.col_end,
+                row_end=rv.row_end,
+            )
 
-        Args:
-            col (str): Column Letter such as ``A`` or ``B``.
-
-        Returns:
-            WriteTableCellRange: Range object.
-        """
-        ...
-
-    def get_column_range(self, col: int | str) -> WriteTableCellRange:
-        """
-        Returns a sub-range of cells within the range.
-
-        Args:
-            col (int, str): Zero Based column index or a Colum Letter such as ``A``.
-
-        Returns:
-            WriteTableCellRange: Range object.
-        """
-        col_rng = self.range_obj.get_col(col)
         return self.get_cell_range_by_name(str(col_rng))
 
     def get_row_range(self, row: int) -> WriteTableCellRange:
@@ -392,20 +386,26 @@ class WriteTableCellRange(
         Returns a sub-range of cells within the range for a given row.
 
         Args:
-            row (int): Row Index. Zero Based.
+            row (int): Row Index. Zero Based. Can be negative to get from end.
 
         Returns:
             WriteTableCellRange: Range object.
         """
-        row_rng = self.range_obj.get_row(row)
+        row_count = self.range_obj.row_count
+        index = mGenUtil.Util.get_index(row, row_count)
+        row_rng = self.range_obj.get_row(index)
         return self.get_cell_range_by_name(str(row_rng))
 
     # endregion Get Row or Column
 
     # region CellRangePartial Overrides
-    def get_cell_by_position(self, column: int, row: int) -> WriteTableCell:
+    def get_cell_by_position(self, col: int, row: int) -> WriteTableCell:
         """
         Returns a single cell within the range.
+
+        Args:
+            col (int): Column. Zero Based column index. Can be negative to get from end.
+            row (int): Row. Zero Based row index. Can be negative to get from end.
 
         Raises:
             IndexError: If the index is out of range.
@@ -417,14 +417,20 @@ class WriteTableCellRange(
         # if the origin range is A1:C4 and the sub-range is A2:C2, then the cell at A2 is at column 0, row 0
         # There is no GetCellByName so some conversion is needed.
         try:
-            cell_obj = self.write_table.range_converter.get_cell_obj(values=(column, row))
+            row_count = self.range_obj.row_count
+            row_index = mGenUtil.Util.get_index(row, row_count)
+
+            col_count = self.range_obj.col_count
+            col_index = mGenUtil.Util.get_index(col, col_count)
+
+            cell_obj = self.write_table.range_converter.get_cell_obj(values=(col_index, row_index))
             return WriteTableCell(
                 owner=self,
-                component=self.component.getCellByPosition(column, row),
+                component=self.component.getCellByPosition(col, row),
                 cell_obj=cell_obj,
             )
         except IndexOutOfBoundsException as e:
-            raise IndexError(f"Index out of range. column={column}, row={row}") from e
+            raise IndexError(f"Index out of range. column={col}, row={row}") from e
 
     def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:
         """
@@ -468,10 +474,15 @@ class WriteTableCellRange(
         # pylint: disable=protected-access
 
         rng_obj = self.write_table.range_converter.rng_from_str(rng)
+        rv = rng_obj.get_range_values()
+
+        # for some reason the getCellRangeByName always does not work with the range name
+        # when I called this method during WriteTableRow.get_row_data() it crashed badly. The bridge was disposed.
 
         result = WriteTableCellRange(
             owner=self,
-            component=self.component.getCellRangeByName(rng),
+            # component=self.component.getCellRangeByName(rng), # can crash the bridge for unknown reasons.
+            component=self.component.getCellRangeByPosition(rv.col_start, rv.row_start, rv.col_end, rv.row_end),
             range_obj=self.write_table.range_converter.get_offset_range_obj(rng_obj),
         )
         result._parent = self
@@ -512,6 +523,101 @@ class WriteTableCellRange(
             raise IndexError(f"Index out of range: left:{left}, top:{top}, right:{right}, bottom:{bottom}") from e
 
     # endregion CellRangePartial Overrides
+
+    def get_row_data(self, idx: int, as_floats: bool = False) -> Tuple[float | str | None, ...]:
+        """
+        Gets the row data.
+
+        Args:
+            idx (int): Index of the row. Zero Based. Can be negative to get from end.
+            as_floats (bool, optional): If ``True`` then get all values as floats. If the cell is not a number then it is converted to ``0.0``. Defaults to ``False``.
+
+        Returns:
+            Tuple[float | str | None, ...]: Tuple of values.
+        """
+        range_row = self.get_row_range(idx)
+        data = range_row.get_data() if as_floats else range_row.get_data_array()
+        return data[0] if len(data) == 1 else data  # type: ignore
+
+    def get_column_data(
+        self, idx: int, as_floats: bool = False, start_row_idx: int = 0
+    ) -> Tuple[float | str | None, ...]:
+        """
+        Gets the column data.
+
+        Args:
+            idx (int): Index of the column. Zero Based. Can be negative to get from end.
+            as_floats (bool, optional): If ``True`` then get all values as floats. If the cell is not a number then it is converted to ``0.0``. Defaults to ``False``.
+            start_row_idx (int, optional): Start Row Index. Zero Based. Can be negative to get from end. Defaults to ``0``.
+
+        Returns:
+            Tuple[float | str | None, ...]: Tuple of values.
+        """
+        range_col = self.get_column_range(idx, start_row_idx)
+
+        data_arr = range_col.get_data() if as_floats else range_col.get_data_array()
+        data = [row[0] for row in data_arr]
+        return tuple(data)
+
+    def get_table_row_index(self, idx: int) -> int:
+        """
+        Gets the table row index from the range relative index.
+
+        The range index is the index of the row within this range.
+        A range can be a subset of the table.
+        This method returns the table row index from the range index.
+
+        Args:
+            idx (int): Row index within this range. Zero Based. Can be negative to get from end.
+
+        Returns:
+            int: Table Row Index. Zero Based.
+        """
+        row_count = self.range_obj.row_count
+        index = mGenUtil.Util.get_index(idx, row_count)
+        # get the first cell of the row
+        cell = self.get_cell_by_position(0, index)
+        cv = self.write_table.range_converter.get_cell_values(cell.cell_name)
+        return cv.row
+
+    def get_table_column_index(self, idx: int) -> int:
+        """
+        Gets the table row index from the range relative index.
+
+        The range index is the index of the row within this range.
+        A range can be a subset of the table.
+        This method returns the table row index from the range index.
+
+        Args:
+            idx (int): Column index within this range. Zero Based. Can be negative to get from end.
+
+        Returns:
+            int: Table Row Index. Zero Based.
+        """
+        col_count = self.range_obj.col_count
+        index = mGenUtil.Util.get_index(idx, col_count)
+        # get the first cell of the col
+        cell = self.get_cell_by_position(index, 0)
+        cv = self.write_table.range_converter.get_cell_values(cell.cell_name)
+        return cv.col
+
+    def get_table_range_obj(self, col_idx: int, row_idx: int) -> CellObj:
+        """
+        Gets a cell object that contains column and row where the cell is located in the actual table.
+
+        Args:
+            col_idx (int): Column index within this range. Zero Based. Can be negative to get from end.
+            row_idx (int): Row index within this range. Zero Based. Can be negative to get from end.
+
+        Returns:
+            CellObj: _description_
+        """
+        col_count = self.range_obj.col_count
+        col_index = mGenUtil.Util.get_index(col_idx, col_count)
+        row_count = self.range_obj.row_count
+        row_index = mGenUtil.Util.get_index(row_idx, row_count)
+        cell = self.get_cell_by_position(col_index, row_index)
+        return self.write_table.range_converter.get_cell_obj(cell.cell_name)
 
     @property
     def owner(self) -> ComponentT:

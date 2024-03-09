@@ -1,7 +1,7 @@
-Class WriteTableRow
-===================
+Class WriteTableColumn
+======================
 
-.. autoclass:: ooodev.write.table.write_table_row.WriteTableRow
+.. autoclass:: ooodev.write.table.write_table_column.WriteTableColumn
     :members:
     :undoc-members:
     :show-inheritance:

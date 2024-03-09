@@ -2,6 +2,13 @@
 Version History
 ***************
 
+
+Version 0.32.1
+==============
+
+Added new formatting options to Write Tables.
+
+
 Version 0.32.0
 ==============
 

@@ -16,7 +16,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.write.table.props import table_properties as tp
-    from ooodev.write.table.write_table import WriteTable
 
 
 class WriteTablePropertiesPartial:

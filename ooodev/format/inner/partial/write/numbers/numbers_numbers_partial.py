@@ -5,7 +5,7 @@ import uno
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import numbers_numbers_factory
-from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
     from ooo.dyn.lang.locale import Locale
@@ -238,10 +238,10 @@ class NumbersNumbersPartial:
             NumbersT | None: Numbers style or ``None`` if cancelled.
         """
         styler = self.__styler
-        if isinstance(self, CalcDocPropPartial):
+        if isinstance(self, WriteDocPropPartial):
             return styler.style_get(
                 factory=numbers_numbers_factory,
-                component=self.calc_doc.component,
+                component=self.write_doc.component,
             )
         return styler.style_get(factory=numbers_numbers_factory)
 
@@ -262,8 +262,8 @@ class NumbersNumbersPartial:
         kwargs: Dict[str, Any] = {"index": idx}
         if locale is not None:
             kwargs["lang_locale"] = locale
-        if isinstance(self, CalcDocPropPartial):
-            kwargs["component"] = self.calc_doc.component
+        if isinstance(self, WriteDocPropPartial):
+            kwargs["component"] = self.write_doc.component
         return styler.style_get(
             factory=numbers_numbers_factory,
             call_method_name="from_index",
@@ -297,8 +297,8 @@ class NumbersNumbersPartial:
         kwargs: Dict[str, Any] = {"nf_str": nf_str, "auto_add": auto_add}
         if locale is not None:
             kwargs["lang_locale"] = locale
-        if isinstance(self, CalcDocPropPartial):
-            kwargs["component"] = self.calc_doc.component
+        if isinstance(self, WriteDocPropPartial):
+            kwargs["component"] = self.write_doc.component
         return styler.style_get(
             factory=numbers_numbers_factory,
             call_method_name="from_str",

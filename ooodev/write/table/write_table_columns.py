@@ -6,6 +6,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPartial
 from ooodev.utils import gen_util as mGenUtil
+from ooodev.write.table.write_table_column import WriteTableColumn
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableColumns
@@ -26,6 +27,42 @@ class WriteTableColumns(WriteDocPropPartial, WriteTablePropPartial, TableColumns
         WriteTablePropPartial.__init__(self, obj=owner)
         LoInstPropsPartial.__init__(self, lo_inst=owner.lo_inst)
         TableColumnsComp.__init__(self, component=component)  # type: ignore
+        self._current_index = 0
+
+    def __getitem__(self, key: int) -> WriteTableColumn:
+        """
+        Gets the form at the specified index.
+
+        Args:
+            key (key, int): The index of the column. When getting by index can be a negative value to get from the end.
+
+        Returns:
+            WriteTableColumn: The column with the specified index.
+        """
+        index = self._get_index(key)
+        return WriteTableColumn(owner=self, idx=index)
+
+    def __iter__(self) -> WriteTableColumns:
+        """
+        Iterates over the columns.
+
+        Returns:
+            WriteTableColumns: The next column.
+        """
+        self._current_index = 0
+        return self
+
+    def __next__(self) -> WriteTableColumn:
+        """
+        Gets the next column.
+
+        Returns:
+            WriteTableColumn: The next column.
+        """
+        if self._current_index < len(self):
+            self._current_index += 1
+            return WriteTableColumn(owner=self, idx=self._current_index - 1)
+        raise StopIteration
 
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """
