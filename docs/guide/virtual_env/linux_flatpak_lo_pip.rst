@@ -346,10 +346,11 @@ Run the follow code
     APSO python console [LibreOffice]
     3.10.11 (main, Nov 10 2011, 15:00:00) [GCC 12.2.0]
     Type "help", "copyright", "credits" or "license" for more information.
-    >>> from ooodev.office.write import Write
+    >>> from ooodev.write import WriteDoc
     >>> def say_hello():
-    ...     cursor = Write.get_cursor(Write.active_doc)
-    ...     Write.append_para(cursor=cursor, text="Hello World!")
+    ...     doc = WriteDoc.from_current_doc()
+    ...     cursor = doc.get_cursor()
+    ...     cursor.append_para(text="Hello World!")
     ...
     >>> say_hello()
     >>>
