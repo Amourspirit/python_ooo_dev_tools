@@ -45,10 +45,10 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, 
         This is short hand for ``get_by_index()``
 
         Args:
-            key (key, int): The index of the cell. When getting by index can be a negative value to get from the end.
+            key (key, int): The index of the row. When getting by index can be a negative value to get from the end.
 
         Returns:
-            WriteForm: The form with the specified index or name.
+            WriteTableRow: The row with the specified index.
 
         See Also:
             - :py:meth:`~ooodev.write.table.write_table_rows.get_by_index`
@@ -80,8 +80,8 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, 
         Returns:
             Any: Row at the specified index.
         """
-        idx = self._get_index(idx)
-        return WriteTableRow(owner=self, component=self.component.getByIndex(idx))
+        index = self._get_index(idx)
+        return WriteTableRow(owner=self, component=self.component.getByIndex(index), idx=index)
 
     # endregion IndexAccessPartial overrides
 
