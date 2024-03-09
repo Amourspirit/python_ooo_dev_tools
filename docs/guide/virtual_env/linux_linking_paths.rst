@@ -31,6 +31,8 @@ The path for the project root directory is ``~/Documents/Projects/Python/LibreOf
 
 Install `ooo-dev-tools <https://pypi.org/project/ooo-dev-tools/>`__.
 This will install the `ooo-dev-tools` package, which has many useful tools for developing with LibreOffice and includes full typing (auto-complete) support for the LibreOffice API.
+The |ooo_dev_ext|_ can be installed into LibreOffice to provide access to the ``ooo-dev-tools`` package for when not in development mode. If the extension is installed, then the
+``ooo-dev-tools`` package should still be installed in the virtual environment for development purposes.
 
 .. code-block:: bash
 
@@ -65,35 +67,42 @@ Using |include_p_path|_ is the easiest way to link to LibreOffice.
 
 Start LibreOffice and open the extension manager ``Tools -> Extension Manager...`` Select ``LibreOffice Python Path`` Extension. Click on ``Options``.
 
-.. _25afb530-2304-413d-aa44-121e4c249b92:
+.. cssclass:: screen_shot
 
-.. figure:: https://github.com/Amourspirit/libreoffice-python-path-ext/assets/4193389/25afb530-2304-413d-aa44-121e4c249b92
-    :alt: Extension Manager
-    :align: center
+    .. _25afb530-2304-413d-aa44-121e4c249b92:
 
-    Extension Manager
+    .. figure:: https://github.com/Amourspirit/libreoffice-python-path-ext/assets/4193389/25afb530-2304-413d-aa44-121e4c249b92
+        :alt: Extension Manager
+        :align: center
+
+        Extension Manager
 
 Select the ``Python Paths`` option page.
 
-.. _4a739a95-f131-42c2-bb0b-c1aa73260b0b:
+.. cssclass:: screen_shot
 
-.. figure:: https://github.com/Amourspirit/libreoffice-python-path-ext/assets/4193389/4a739a95-f131-42c2-bb0b-c1aa73260b0b
-    :alt: Python Paths
-    :align: center
+    .. _4a739a95-f131-42c2-bb0b-c1aa73260b0b:
 
-    Python Paths
+    .. figure:: https://github.com/Amourspirit/libreoffice-python-path-ext/assets/4193389/4a739a95-f131-42c2-bb0b-c1aa73260b0b
+        :alt: Python Paths
+        :align: center
+        :width: 600
+
+        Python Paths
 
 Choose ``Add Folder`` and navigate to the Location of the ``site-packages`` for the virtual environment that was set up previously.
 Also add the root directory for your project, ``demo_env`` in this case.
 
-.. _981a52b5-1835-49b5-b0e4-a6cd3559538e:
+.. cssclass:: screen_shot
 
-.. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/981a52b5-1835-49b5-b0e4-a6cd3559538e
-    :alt: Add Folder
-    :align: center
-    :width: 600
+    .. _981a52b5-1835-49b5-b0e4-a6cd3559538e:
 
-    Add Folder
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/981a52b5-1835-49b5-b0e4-a6cd3559538e
+        :alt: Add Folder
+        :align: center
+        :width: 600
+
+        Add Folder
 
 After the folders have been added, click ``OK`` to close the dialog. Restart LibreOffice to apply the changes.
 
@@ -108,13 +117,15 @@ Open the APSO console. See :ref:`guide_apso_installation`.
 
 Import your module and run the ``main`` function.
 
-.. _3dbbec7c-2c26-4cdd-a9b8-fd1fa1da9176:
+.. cssclass:: screen_shot
 
-.. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3dbbec7c-2c26-4cdd-a9b8-fd1fa1da9176
-    :alt: APSO Console
-    :align: center
+    .. _3dbbec7c-2c26-4cdd-a9b8-fd1fa1da9176:
 
-    APSO Console
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/3dbbec7c-2c26-4cdd-a9b8-fd1fa1da9176
+        :alt: APSO Console
+        :align: center
+
+        APSO Console
 
 .. code-block:: python
 
@@ -157,13 +168,15 @@ Now start LibreOffice and run the Macro.
 
 ``Tools -> Macros -> Run Macro...``
 
-.. _d499a88c-d232-4daa-b3c7-d728386e5983:
+.. cssclass:: screen_shot
 
-.. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d499a88c-d232-4daa-b3c7-d728386e5983
-    :alt: Run Macro
-    :align: center
+    .. _d499a88c-d232-4daa-b3c7-d728386e5983:
 
-    Run Macro
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/d499a88c-d232-4daa-b3c7-d728386e5983
+        :alt: Run Macro
+        :align: center
+
+        Run Macro
 
 Conclusion
 ----------
@@ -183,3 +196,6 @@ When ever possible |live_office|_ is recommended for development.
 
 .. |live_office| replace:: Live LibreOffice Python
 .. _live_office: https://github.com/Amourspirit/live-libreoffice-python
+
+.. |ooo_dev_ext| replace:: OOO Development Tools Extension
+.. _ooo_dev_ext: https://extensions.libreoffice.org/en/extensions/show/41700

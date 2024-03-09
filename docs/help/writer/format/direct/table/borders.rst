@@ -8,7 +8,8 @@ Write Direct Table Borders
     :backlinks: none
     :depth: 3
 
-The :py:class:`ooodev.format.writer.direct.table.borders.Borders` c;ass is used to set the borders of a table.
+The :py:class:`ooodev.format.writer.direct.table.borders.Borders` class can be used to set the borders of a table.
+There are also other ways to set the borders of a table as noted in the examples below.
 
 Setup
 -----
@@ -27,25 +28,26 @@ General function used to run these examples.
             Padding,
             LineSize,
         )
-        from ooodev.office.write import Write
+        from ooodev.write import WriteDoc
+        from ooodev.utils.color import CommonColor
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
-        from ooodev.loader.lo import Lo
+        from ooodev.loader import Lo
         from ooodev.utils.table_helper import TableHelper
 
 
         def main() -> int:
             with Lo.Loader(Lo.ConnectPipe()):
-                doc = Write.create_doc()
-                GUI.set_visible(doc=doc)
+                doc = WriteDoc.create_doc(visible=True)
                 Lo.delay(300)
-                GUI.zoom(GUI.ZoomEnum.ZOOM_100_PERCENT)
-                cursor = Write.get_cursor(doc)
+                doc.zoom(ZoomKind.ZOOM_100_PERCENT)
+                cursor = doc.get_cursor()
 
                 tbl_data = TableHelper.make_2d_array(num_rows=5, num_cols=5)
-                table = Write.add_table(
-                    cursor=cursor,
+                # bg_img_style = TblBgImg.from_preset(PresetImageKind.PAPER_TEXTURE)
+                table = cursor.add_table(
                     table_data=tbl_data,
+                    tbl_bg_color=CommonColor.LIGHT_BLUE,
+                    tbl_fg_color=CommonColor.BLACK,
                     first_row_header=False,
                 )
 
@@ -58,10 +60,10 @@ General function used to run these examples.
                     shadow=Shadow(color=StandardColor.BLUE_DARK2),
                 )
 
-                bdr_style.apply(table)
+                bdr_style.apply(table.component)
 
                 # getting the table properties
-                tbl_bdr_style = Borders.from_obj(table)
+                tbl_bdr_style = Borders.from_obj(table.component)
                 assert tbl_bdr_style is not None
 
                 Lo.delay(1_000)
@@ -88,17 +90,45 @@ Borders
 Borders Simple
 ^^^^^^^^^^^^^^
 
+Set using style_direct
+""""""""""""""""""""""
+
+Table color can also be set using ``style_direct`` property of the table.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        table = cursor.add_table(
+            table_data=tbl_data,
+            first_row_header=False,
+            tbl_bg_color=CommonColor.LIGHT_BLUE,
+            tbl_fg_color=CommonColor.BLACK,
+        )
+        table.style_direct.style_borders_side()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+Set using styles
+""""""""""""""""
+
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
         bdr_style = Borders(border_side=Side())
-
-        table = Write.add_table(
-            cursor=cursor,
+        table = cursor.add_table(
             table_data=tbl_data,
             first_row_header=False,
+            tbl_bg_color=CommonColor.LIGHT_BLUE,
+            tbl_fg_color=CommonColor.BLACK,
             styles=[bdr_style],
         )
 
@@ -112,6 +142,7 @@ Borders Simple
 .. cssclass:: screen_shot
 
     .. _234038179-f02a8294-fa98-4c6d-b897-e50b2a509c0c:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234038179-f02a8294-fa98-4c6d-b897-e50b2a509c0c.png
         :alt: Border simple
         :figclass: align-center
@@ -123,6 +154,7 @@ Borders Simple
 .. cssclass:: screen_shot
 
     .. _234038394-d5b35e6f-1b84-4972-b990-5741fd9c19c6:
+
     .. figure:: https://user-images.githubusercontent.com/4193389/234038394-d5b35e6f-1b84-4972-b990-5741fd9c19c6.png
         :alt: Table Borders Dialog
         :figclass: align-center
@@ -131,25 +163,88 @@ Borders Simple
         Table Borders Dialog
 
 
-Borders Red Sides
-^^^^^^^^^^^^^^^^^
+Set using back_color
+""""""""""""""""""""
 
 .. tabs::
 
     .. code-tab:: python
 
         # ... other code
-        table = Write.add_table(
-            cursor=cursor,
+        table = cursor.add_table(
             table_data=tbl_data,
             first_row_header=False,
+            tbl_bg_color=CommonColor.LIGHT_BLUE,
+            tbl_fg_color=CommonColor.BLACK,
         )
 
         default_side = Side()
-        red_side = Side(line=BorderLineKind.SOLID, color=StandardColor.RED_DARK1, width=LineSize.MEDIUM)
+        red_side = Side(
+            line=BorderLineKind.SOLID, color=StandardColor.RED_DARK1, width=LineSize.MEDIUM
+        )
+        table.style_direct.style_borders(
+            left=red_side, right=red_side, top=default_side, bottom=default_side
+        )
+
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Set using style_direct
+""""""""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        table = cursor.add_table(
+            table_data=tbl_data,
+            first_row_header=False,
+            tbl_bg_color=CommonColor.LIGHT_BLUE,
+            tbl_fg_color=CommonColor.BLACK,
+        )
+
+        default_side = Side()
+        red_side = Side(
+            line=BorderLineKind.SOLID, color=StandardColor.RED_DARK1, width=LineSize.MEDIUM
+        )
+        table.style_direct.style_borders(
+            left=red_side, right=red_side, top=default_side, bottom=default_side
+        )
+
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+Set using styles
+""""""""""""""""
+
+.. tabs::
+
+    .. code-tab:: python
+
+        # ... other code
+        table = cursor.add_table(
+            table_data=tbl_data,
+            first_row_header=False,
+            tbl_bg_color=CommonColor.LIGHT_BLUE,
+            tbl_fg_color=CommonColor.BLACK,
+        )
+
+        default_side = Side()
+        red_side = Side(
+            line=BorderLineKind.SOLID, color=StandardColor.RED_DARK1, width=LineSize.MEDIUM
+        )
         bdr_style = Borders(left=red_side, top=default_side, bottom=default_side, right=red_side)
 
-        bdr_style.apply(table)
+        bdr_style.apply(table.component)
 
     .. only:: html
 
