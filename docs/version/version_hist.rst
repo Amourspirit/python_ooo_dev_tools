@@ -2,6 +2,10 @@
 Version History
 ***************
 
+Version 0.32.2
+==============
+
+Added Table Border 2 for Writer Tables.
 
 Version 0.32.1
 ==============

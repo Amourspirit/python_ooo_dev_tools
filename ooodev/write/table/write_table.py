@@ -22,7 +22,7 @@ from ooodev.write.table.write_table_cell import WriteTableCell
 from ooodev.write.table.write_table_cell_range import WriteTableCellRange
 from ooodev.write.table.write_text_table_cursor import WriteTextTableCursor
 from ooodev.events.partial.events_partial import EventsPartial
-
+from ooodev.write.table.partial.write_table_properties_partial import WriteTablePropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
@@ -47,6 +47,7 @@ class WriteTable(
     LoInstPropsPartial,
     WriteDocPropPartial,
     TextTableComp,
+    WriteTablePropertiesPartial,
     QiPartial,
     StylePartial,
     PropertyChangeImplement,
@@ -78,6 +79,7 @@ class WriteTable(
             raise TypeError("WriteDocPropPartial is not inherited by owner.")
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)  # type: ignore
         TextTableComp.__init__(self, component)  # type: ignore
+        WriteTablePropertiesPartial.__init__(self, component=component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         # pylint: disable=no-member
@@ -700,7 +702,9 @@ class WriteTable(
     @name.setter
     def name(self, name: str) -> None:
         s = name.strip().replace(" ", "_")
-        self.component.setName(s)
+        old_name = self.component.getName()
+        if s != old_name:
+            self.component.setName(s)
 
     @property
     def columns(self) -> WriteTableColumns:
