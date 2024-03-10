@@ -1266,6 +1266,9 @@ class WriteDoc(
 
         Args:
             type (ZoomKind, optional): Type of Zoom to set. Defaults to ``ZoomKind.ZOOM_100_PERCENT``.
+
+        Hint:
+            - ``ZoomKind`` can be imported from ``ooodev.utils.kind.zoom_kind``
         """
 
         def zoom_val(value: int) -> None:
