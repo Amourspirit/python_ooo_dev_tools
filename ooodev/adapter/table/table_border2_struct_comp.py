@@ -9,9 +9,11 @@ from ooodev.events.events import Events
 from ooodev.events.args.key_val_args import KeyValArgs
 from ooodev.adapter.table.border_line2_struct_comp import BorderLine2StructComp
 from ooodev.utils import info as mInfo
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from ooodev.events.events_t import EventsT
+    from ooodev.units.unit_obj import UnitT
 
 # It seems that it is necessary to assign the struct to a variable, then change the variable and assign it back to the component.
 # It is as if LibreOffice creates a new instance of the struct when it is changed.
@@ -403,20 +405,24 @@ class TableBorder2StructComp(StructBase[TableBorder2]):
             _ = self._trigger_done_event(event_args)
 
     @property
-    def distance(self) -> int:
+    def distance(self) -> UnitMM100:
         """
         Gets/Sets the distance between the lines and other contents.
 
+        When setting value it can be done with a ``int`` ( in ``1/100th mm`` units) or ``UnitT`` object.
+
         Returns:
-            int: Distance value.
+            UnitMM100: Distance value.
         """
-        return self.component.Distance  # type: ignore
+        return UnitMM100(self.component.Distance)  # type: ignore
 
     @distance.setter
-    def distance(self, value: int) -> None:
+    def distance(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_val = val.value
         old_value = self.component.Distance
-        if old_value != value:
-            event_args = self._trigger_cancel_event("Distance", old_value, value)
+        if old_value != new_val:
+            event_args = self._trigger_cancel_event("Distance", old_value, new_val)
             _ = self._trigger_done_event(event_args)
 
     @property

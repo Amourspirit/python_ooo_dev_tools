@@ -50,6 +50,9 @@ class Shadow(ShadowStruct):
         Returns:
             None:
 
+        Hint:
+            - ``ShadowLocation`` can be imported from ``ooo.dyn.table.shadow_location``
+
         See Also:
             - :ref:`help_calc_format_direct_cell_borders`
             - :ref:`help_writer_format_direct_table_borders`
