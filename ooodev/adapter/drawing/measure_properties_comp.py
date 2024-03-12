@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.drawing.measure_properties_partial import MeasurePropertiesPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import MeasureProperties  # service
 
 
-class MeasurePropertiesComp(ComponentBase):
+class MeasurePropertiesComp(ComponentBase, MeasurePropertiesPartial):
     """
     Class for managing table MeasureProperties Component.
     """
@@ -22,6 +23,7 @@ class MeasurePropertiesComp(ComponentBase):
             component (MeasureProperties): UNO MeasureProperties Component.
         """
         ComponentBase.__init__(self, component)
+        MeasurePropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

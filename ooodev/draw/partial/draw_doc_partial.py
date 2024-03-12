@@ -118,7 +118,7 @@ class DrawDocPartial(Generic[_T]):
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
-        return self.__lo_inst.close(closeable=self.__component, deliver_ownership=deliver_ownership)
+        return self.__lo_inst.close(closeable=self.__component, deliver_ownership=deliver_ownership) # type: ignore
 
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
         """

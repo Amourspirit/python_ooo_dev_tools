@@ -32,4 +32,4 @@ class ZoomKind(IntEnum):
     ZOOM_150_PERCENT = 1003
     """Zoom 150%"""
     ZOOM_200_PERCENT = 1004
-    """Zoom 2000%"""
+    """Zoom 200%"""

@@ -1,19 +1,23 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.lang.event_events import EventEvents
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.adapter.beans.property_set_partial import PropertySetPartial
+from ooodev.adapter.drawing.shape_comp import ShapeComp
+from ooodev.adapter.drawing.control_shape_partial import ControlShapePartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
 
 
-class ControlShapeComp(ComponentBase, EventEvents, PropertyChangeImplement, VetoableChangeImplement):
+class ControlShapeComp(
+    ShapeComp, ControlShapePartial, PropertySetPartial, EventEvents, PropertyChangeImplement, VetoableChangeImplement
+):
     """
-    Class for managing Volatile Result Component.
+    Class for managing Shape which contains a control.
     """
 
     # pylint: disable=unused-argument
@@ -25,7 +29,9 @@ class ControlShapeComp(ComponentBase, EventEvents, PropertyChangeImplement, Veto
         Args:
             component (ControlShape): UNO Volatile Result Component
         """
-        ComponentBase.__init__(self, component)
+        ShapeComp.__init__(self, component)
+        ControlShapePartial.__init__(self, component=component, interface=None)
+        PropertySetPartial.__init__(self, component=self.component, interface=None)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         EventEvents.__init__(self, trigger_args=generic_args, cb=self._on_event_add_remove)
@@ -49,7 +55,7 @@ class ControlShapeComp(ComponentBase, EventEvents, PropertyChangeImplement, Veto
     # region Properties
     @property
     def component(self) -> ControlShape:
-        """Volatile Result Component"""
+        """Control Shape Component"""
         # pylint: disable=no-member
         return cast("ControlShape", self._ComponentBase__get_component())  # type: ignore
 

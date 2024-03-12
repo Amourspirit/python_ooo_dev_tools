@@ -1,4 +1,5 @@
 import pytest
+import os
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -168,7 +169,8 @@ def test_replace_regex2(loader):
 
         cursor = doc.get_cursor()
         s = cursor.get_all_text()
-        assert s == "1a\n2b\n3c\n"
+        sep = os.linesep
+        assert s == f"1a{sep}2b{sep}3c{sep}"
 
         Lo.delay(delay)
     finally:
@@ -202,7 +204,8 @@ def test_replace_regex3(loader):
         assert len(finds) == 3
         desc.replace_all()
         s = cursor.get_all_text()
-        assert s == "1a\n2b\n3c\n"
+        sep = os.linesep
+        assert s == f"1a\n2b\n3c{sep}"
 
         Lo.delay(delay)
     finally:

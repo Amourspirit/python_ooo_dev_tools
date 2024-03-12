@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 from ooodev.adapter.drawing.generic_shape import GenericShapeComp
+from ooodev.adapter.drawing.shadow_properties_partial import ShadowPropertiesPartial
+from ooodev.adapter.drawing.rotation_descriptor_properties_partial import RotationDescriptorPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import GraphicObjectShape  # service
@@ -9,7 +11,9 @@ else:
     GraphicObjectShape = Any
 
 
-class GraphicObjectShapeComp(GenericShapeComp[GraphicObjectShape]):
+class GraphicObjectShapeComp(
+    GenericShapeComp[GraphicObjectShape], ShadowPropertiesPartial, RotationDescriptorPropertiesPartial
+):
     """
     Class for managing GraphicObjectShape Component.
     """
@@ -24,6 +28,8 @@ class GraphicObjectShapeComp(GenericShapeComp[GraphicObjectShape]):
             component (Any): UNO component that implements ``com.sun.star.drawing.GraphicObjectShape`` service.
         """
         GenericShapeComp.__init__(self, component)
+        ShadowPropertiesPartial.__init__(self, component=component)
+        RotationDescriptorPropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

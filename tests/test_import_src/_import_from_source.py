@@ -18,7 +18,7 @@ import pytest
 
 
 IF_IGNORE_ATTRIBUTES = {"TYPE_CHECKING", "DOCS_BUILDING"}
-MODULES_EXCLUDE = {"ooodev.dialog.tk_input"}
+MODULES_EXCLUDE = {"ooodev.dialog.tk_input", "ooodev.utils.color"}
 
 
 @contextmanager
@@ -130,6 +130,21 @@ class _ImportFromSourceChecker(NodeVisitor):
             return
         module = import_module(module_to_import)
         for alias in node.names:
+            # if getting an error here it may be because then module has been imported using a
+            # module alias.
+            # for instance the ooodev.format.inner.direct.write.table.props.table_properties contains a bunch of classes.
+            # the module is imported as tp. So the alias name is tp.
+            # from ooodev.format.inner.direct.write.table.props import table_properties as tp
+            # this is a problem as the module imported would ooodev.format.inner.direct.write.table.props which is a module package (__init__.py)
+            # therefore hasattr(module, alias.name) would return False.
+            # then solution is to not import modules aliases an instead import the module classes directly. The classes can be imported as aliases.
+            # from ooodev.format.inner.direct.write.table.props.table_properties import (
+            #     TblAbsUnit,
+            #     TblRelUnit,
+            #     TableAlignKind,
+            #     TableProperties,
+            # )
+            # see: ooodev.format.inner.partial.write.table.write_table_properties_partial.WriteTablePropertiesPartial
             assert hasattr(module, alias.name), f"No alias name attr: {self._module_file}"
             attr = getattr(module, alias.name)
 

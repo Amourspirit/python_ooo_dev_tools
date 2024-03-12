@@ -57,11 +57,11 @@ class TableBorder2StructComp(StructBase[TableBorder2]):
 
     # region Overrides
 
-    def _get_on_changed_event_name(self) -> str:
-        return "com_sun_star_table_TableBorder2_changed"
-
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_table_TableBorder2_changing"
+
+    def _get_on_changed_event_name(self) -> str:
+        return "com_sun_star_table_TableBorder2_changed"
 
     def _copy(self, src: TableBorder2 | None = None) -> TableBorder2:
         if src is None:
