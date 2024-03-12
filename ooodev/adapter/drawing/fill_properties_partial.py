@@ -36,7 +36,6 @@ class FillPropertiesPartial:
 
         Args:
             component (FillProperties): UNO Component that implements ``com.sun.star.drawing.FillProperties`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``FillProperties``.
         """
         self.__event_provider = Events(self)
         self.__props = {}
@@ -469,7 +468,7 @@ class FillPropertiesPartial:
         return cast(GradientStructComp, prop)
 
     @fill_transparence_gradient.setter
-    def fill_transparence_gradient(self, value: Gradient) -> None:
+    def fill_transparence_gradient(self, value: Gradient | GradientStructComp) -> None:
         key = "FillTransparenceGradient"
         if not hasattr(self.__component, key):
             return None

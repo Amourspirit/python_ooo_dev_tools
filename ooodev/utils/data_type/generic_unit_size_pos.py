@@ -2,17 +2,12 @@ from __future__ import annotations
 from typing import Any, Generic, TypeVar, Union, TYPE_CHECKING
 from ooodev.utils.data_type.generic_size_pos import GenericSizePos
 
-if TYPE_CHECKING:
-    from ooodev.units.unit_obj import UnitT
+from ooodev.units.unit_obj import UnitT
 
-    _T = TypeVar("_T", bound=UnitT)
-    TNum = TypeVar(name="TNum", bound=Union[int, float])
-    _TNum = TypeVar(name="_TNum", bound=Union[int, float])
+_T = TypeVar("_T", bound=UnitT)
+TNum = TypeVar(name="TNum", bound=Union[int, float])
+_TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
-else:
-    _T = Any
-    TNum = Any
-    _TNum = Any
 
 # class FloatSize(GenericSize[float]):
 #     """Represents a size with positive values of Float."""

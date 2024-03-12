@@ -15,7 +15,12 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
-    from ooodev.format.inner.direct.write.table.props import table_properties as tp
+    from ooodev.format.inner.direct.write.table.props.table_properties import (
+        TblAbsUnit,
+        TblRelUnit,
+        TableAlignKind,
+        TableProperties,
+    )
 
 
 class WriteTablePropertiesPartial:
@@ -29,14 +34,14 @@ class WriteTablePropertiesPartial:
     def style_table_props(
         self,
         *,
-        width: tp.TblAbsUnit | tp.TblRelUnit | None = None,
-        left: tp.TblAbsUnit | tp.TblRelUnit | None = None,
-        right: tp.TblAbsUnit | tp.TblRelUnit | None = None,
-        above: tp.TblAbsUnit | tp.TblRelUnit | None = None,
-        below: tp.TblAbsUnit | tp.TblRelUnit | None = None,
-        align: tp.TableAlignKind | None = None,
+        width: TblAbsUnit | TblRelUnit | None = None,
+        left: TblAbsUnit | TblRelUnit | None = None,
+        right: TblAbsUnit | TblRelUnit | None = None,
+        above: TblAbsUnit | TblRelUnit | None = None,
+        below: TblAbsUnit | TblRelUnit | None = None,
+        align: TableAlignKind | None = None,
         relative: bool = False,
-    ) -> tp.TableProperties | None:
+    ) -> TableProperties | None:
         """
         Style Write Table Properties.
 
@@ -63,7 +68,8 @@ class WriteTablePropertiesPartial:
 
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.inner.direct.write.table.props import table_properties as tp
+        # from ooodev.format.inner.direct.write.table.props import table_properties as tp
+        from ooodev.format.inner.direct.write.table.props.table_properties import TableProperties
 
         comp = self.__component
         has_events = False
@@ -105,7 +111,7 @@ class WriteTablePropertiesPartial:
 
             comp = cargs.event_data.get("this_component", comp)
 
-        fe = tp.TableProperties(
+        fe = TableProperties(
             width=width,
             left=left,
             right=right,
@@ -134,7 +140,7 @@ class WriteTablePropertiesPartial:
             self.trigger_event(StyleNameEvent.STYLE_APPLIED, event_args)  # type: ignore
         return fe
 
-    def style_table_props_get(self) -> tp.TableProperties | None:
+    def style_table_props_get(self) -> TableProperties | None:
         """
         Gets the Table Properties Style.
 
@@ -142,12 +148,12 @@ class WriteTablePropertiesPartial:
             TableProperties | None: Table Properties Style instance or ``None`` if not available.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.format.inner.direct.write.table.props import table_properties as tp
+        from ooodev.format.inner.direct.write.table.props.table_properties import TableProperties
 
         with contextlib.suppress(Exception):
-            return tp.TableProperties.from_obj(self.__component)
+            return TableProperties.from_obj(self.__component)
         return None
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.format.inner.direct.write.table.props import table_properties as tp
+    from ooodev.format.inner.direct.write.table.props.table_properties import TableAlignKind, TableProperties

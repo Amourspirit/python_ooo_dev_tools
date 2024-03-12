@@ -25,6 +25,7 @@ from ooodev.utils.kind.shape_comb_kind import ShapeCombKind as ShapeCombKind
 from ooodev.utils.kind.zoom_kind import ZoomKind as ZoomKind
 
 from .draw_doc import DrawDoc as DrawDoc
+from .draw_doc_view import DrawDocView as DrawDocView
 from .draw_form import DrawForm as DrawForm
 from .draw_forms import DrawForms as DrawForms
 from .draw_page import DrawPage as DrawPage
@@ -41,6 +42,7 @@ from .shape_collection import ShapeCollection as ShapeCollection
 
 __all__ = [
     "DrawDoc",
+    "DrawDocView",
     "DrawForm",
     "DrawForms",
     "DrawPage",

@@ -8,6 +8,20 @@ from ooodev.draw import Draw, DrawDoc, ImpressDoc
 from ooodev.loader.lo import Lo
 
 
+def test_current_controller(loader) -> None:
+    from ooodev.draw.draw_page import DrawPage
+
+    doc = DrawDoc.create_doc(loader)
+
+    controller = doc.current_controller
+    assert controller is not None
+    current_page = controller.current_page
+    assert isinstance(current_page, DrawPage)
+    visible_area = controller.visible_area
+    assert visible_area is not None
+    doc.close_doc()
+
+
 def test_master_page_draw(loader) -> None:
     doc = DrawDoc(Draw.create_draw_doc(loader))
     assert isinstance(doc, DrawDoc)

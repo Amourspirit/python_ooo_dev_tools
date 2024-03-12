@@ -3,6 +3,7 @@ from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.shape_partial import ShapePartial
 from ooodev.adapter.drawing.shape_descriptor_partial import ShapeDescriptorPartial
+from ooodev.adapter.drawing.shape_properties_partial import ShapePropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import Shape  # service
@@ -12,6 +13,7 @@ class ShapeComp(
     ComponentBase,
     ShapePartial,
     ShapeDescriptorPartial,
+    ShapePropertiesPartial,
 ):
     """
     Class for managing Shape Component.
@@ -29,6 +31,7 @@ class ShapeComp(
         ComponentBase.__init__(self, component)
         ShapePartial.__init__(self, component=component, interface=None)
         ShapeDescriptorPartial.__init__(self, component=component, interface=None)
+        ShapePropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
