@@ -4,6 +4,8 @@ from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.shape_partial import ShapePartial
 from ooodev.adapter.drawing.shape_descriptor_partial import ShapeDescriptorPartial
 from ooodev.adapter.text.text_partial import TextPartial
+from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
+from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
 
 
 T = TypeVar("T")
@@ -15,6 +17,8 @@ class GenericShapeComp(
     ShapePartial,
     ShapeDescriptorPartial,
     TextPartial,
+    CharacterPropertiesPartial,
+    ParagraphPropertiesPartial,
 ):
     """
     Class for managing Shape Component.
@@ -33,6 +37,8 @@ class GenericShapeComp(
         ShapePartial.__init__(self, component=component, interface=None)  # type: ignore
         ShapeDescriptorPartial.__init__(self, component=component, interface=None)  # type: ignore
         TextPartial.__init__(self, component, interface=None)  # type: ignore
+        CharacterPropertiesPartial.__init__(self, component=component)  # type: ignore
+        ParagraphPropertiesPartial.__init__(self, component=component)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

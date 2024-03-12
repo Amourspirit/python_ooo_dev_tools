@@ -27,6 +27,8 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.draw.draw_pages import DrawPages
 from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
+from ooodev.draw.draw_doc_view import DrawDocView
+from ooodev.draw.partial.draw_doc_prop_partial import DrawDocPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -36,6 +38,7 @@ if TYPE_CHECKING:
 
 
 class DrawDoc(
+    DrawDocPropPartial,
     DrawDocPartial["DrawDoc"],
     LoInstPropsPartial,
     DrawingDocumentComp,
@@ -76,7 +79,7 @@ class DrawDoc(
 
         if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
             raise mEx.NotSupportedDocumentError("Document is not a Draw document")
-
+        DrawDocPropPartial.__init__(self, obj=self)
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         DrawDocPartial.__init__(self, owner=self, component=doc, lo_inst=self.lo_inst)
         DrawingDocumentComp.__init__(self, doc)
@@ -218,5 +221,16 @@ class DrawDoc(
         if self._pages is None:
             self._pages = DrawPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self.lo_inst)
         return cast("DrawPages[DrawDoc]", self._pages)
+
+    @property
+    def current_controller(self) -> DrawDocView:
+        """
+        Gets controller from document.
+
+        Returns:
+            Any: controller.
+        """
+        comp = DrawDocView(owner=self, component=self.component.CurrentController)  # type: ignore
+        return comp
 
     # endregion Properties

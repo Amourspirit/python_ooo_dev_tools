@@ -737,18 +737,23 @@ class ParagraphPropertiesPartial:
             self.__component.ParaHyphenationMaxLeadingChars = value
 
     @property
-    def para_hyphenation_max_trailing_chars(self) -> int:
+    def para_hyphenation_max_trailing_chars(self) -> int | None:
         """
         Gets/Sets the minimum number of characters to remain after the hyphen character (when hyphenation is applied).
+
+        **optional**
 
         Note:
             Confusingly it is named Max but specifies a minimum.
         """
-        return self.__component.ParaHyphenationMaxTrailingChars
+        with contextlib.suppress(AttributeError):
+            return self.__component.ParaHyphenationMaxTrailingChars
+        return None
 
     @para_hyphenation_max_trailing_chars.setter
     def para_hyphenation_max_trailing_chars(self, value: int) -> None:
-        self.__component.ParaHyphenationMaxTrailingChars = value
+        with contextlib.suppress(AttributeError):
+            self.__component.ParaHyphenationMaxTrailingChars = value
 
     @property
     def para_hyphenation_min_word_length(self) -> int | None:

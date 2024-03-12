@@ -1,43 +1,31 @@
-"""
-This class is a partial class for ``com.sun.star.drawing.Shape`` service.
-It may be used in classes that implement the ``ooodev.adapter.drawing.shape_comp.ShapeComp`` class.
-These properties are optional for a shape service.
-"""
-
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-
 import uno
+
+from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.adapter.style.style_comp import StyleComp
 from ooodev.adapter.drawing.homogen_matrix3_struct_comp import HomogenMatrix3StructComp
-from ooodev.utils import info as mInfo
 from ooodev.events.events import Events
 from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
-    from com.sun.star.drawing import Shape  # service
-    from com.sun.star.beans import PropertyValue
+    from com.sun.star.drawing import Shape
     from com.sun.star.container import XNameContainer
-    from com.sun.star.style import XStyle
     from com.sun.star.drawing import HomogenMatrix3
-
+    from com.sun.star.style import XStyle
+    from com.sun.star.beans import PropertyValue
     from ooodev.events.args.key_val_args import KeyValArgs
 
 
-class ShapePartialProps:
-    """
-    Partial Class for Shape Service.
-    """
-
-    # pylint: disable=unused-argument
+class ShapePropertiesPartial:
 
     def __init__(self, component: Shape) -> None:
         """
         Constructor
 
         Args:
-            component (Shape): UNO Component that implements ``com.sun.star.drawing.Shape`` service.
+            component (Shape): UNO Component that implements ``com.sun.star.drawing.Shape`` interface.
         """
         self.__component = component
         self.__event_provider = Events(self)
@@ -51,17 +39,15 @@ class ShapePartialProps:
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
         # pylint: disable=no-member
         self.__event_provider.subscribe_event(
-            "com_sun_star_drawing_HomogenMatrixLine3_changed", self.__fn_on_comp_struct_changed
+            "com_sun_star_drawing_HomogenMatrix3_changed", self.__fn_on_comp_struct_changed
         )
-
-    # region Properties
 
     @property
     def interop_grab_bag(self) -> Tuple[PropertyValue, ...] | None:
         """
-        Gets/Sets grab bag of shape properties, used as a string-any map for interim interop purposes.
-        This property is intentionally not handled by the ODF filter. Any member that should be handled there should be
-        first moved out from this grab bag to a separate property.
+        Grab bag of shape properties, used as a string-any map for interim interop purposes.
+
+        This property is intentionally not handled by the ODF filter. Any member that should be handled there should be first moved out from this grab bag to a separate property.
 
         **optional**
         """
@@ -77,7 +63,7 @@ class ShapePartialProps:
     @property
     def hyperlink(self) -> str | None:
         """
-        Gets/Sets, this property lets you get and set a hyperlink for this shape.
+        Gets/Sets property lets you get and set a hyperlink for this shape.
 
         **optional**
         """
@@ -125,9 +111,7 @@ class ShapePartialProps:
     @property
     def move_protect(self) -> bool | None:
         """
-        Gets/Sets, With this set to ``True``, this Shape cannot be moved interactively in the user interface.
-
-        **optional**
+        Gets/Sets - With this set to ``True``, this Shape cannot be moved interactively in the user interface.
         """
         with contextlib.suppress(AttributeError):
             return self.__component.MoveProtect
@@ -142,6 +126,8 @@ class ShapePartialProps:
     def name(self) -> str | None:
         """
         Gets/Sets the name of this Shape.
+
+        **optional**
         """
         with contextlib.suppress(AttributeError):
             return self.__component.Name
@@ -155,7 +141,8 @@ class ShapePartialProps:
     @property
     def navigation_order(self) -> int | None:
         """
-        Gets/Sets, this property stores the navigation order of this shape.
+        Gets/Sets the navigation order of this shape.
+
         If this value is negative, the navigation order for this shapes page is equal to the z-order.
 
         **optional**
@@ -172,7 +159,7 @@ class ShapePartialProps:
     @property
     def printable(self) -> bool | None:
         """
-        Gets/Sets, If this is ``False``, the Shape is not visible on printer outputs.
+        Gets/Sets - If this is ``False``, the Shape is not visible on printer outputs.
 
         **optional**
         """
@@ -244,7 +231,7 @@ class ShapePartialProps:
         """
         Gets/Sets the relation of the relative width of the object.
 
-        It is only valid if RelativeWidth is greater than zero.
+        It is only valid if ``relative_width`` is greater than zero.
 
         **optional**
         """
@@ -258,27 +245,36 @@ class ShapePartialProps:
             self.__component.RelativeWidthRelation = value
 
     @property
-    def shape_user_defined_attributes(self) -> XNameContainer | None:
+    def shape_user_defined_attributes(self) -> NameContainerComp | None:
         """
-        Gets/Sets, this property stores xml attributes.
+        Gets/Sets xml attributes.
 
         They will be saved to and restored from automatic styles inside xml files.
 
+        When setting the value can be either a ``NameContainerComp`` or ``XNameContainer``.
+
         **optional**
+
+        Returns:
+            NameContainerComp | None: The name container component. Or None if the property is not available.
         """
-        with contextlib.suppress(AttributeError):
-            return self.__component.ShapeUserDefinedAttributes
-        return None
+        if not hasattr(self.__component, "ShapeUserDefinedAttributes"):
+            return None
+        return NameContainerComp(self.__component.ShapeUserDefinedAttributes)
 
     @shape_user_defined_attributes.setter
-    def shape_user_defined_attributes(self, value: XNameContainer) -> None:
-        with contextlib.suppress(AttributeError):
-            self.__component.ShapeUserDefinedAttributes = value
+    def shape_user_defined_attributes(self, value: XNameContainer | NameContainerComp) -> None:
+        if not hasattr(self.__component, "ShapeUserDefinedAttributes"):
+            return
+        if mInfo.Info.is_instance(value, NameContainerComp):
+            self.__component.ShapeUserDefinedAttributes = value.component
+        else:
+            self.__component.ShapeUserDefinedAttributes = value  # type: ignore
 
     @property
     def size_protect(self) -> bool | None:
         """
-        Gets/Sets, With this set to ``True``, this Shape may not be sized interactively in the user interface.
+        Gets/Sets With this set to ``True``, this Shape may not be sized interactively in the user interface.
 
         **optional**
         """
@@ -294,41 +290,40 @@ class ShapePartialProps:
     @property
     def style(self) -> StyleComp | None:
         """
-        Gets/Sets, this property lets you get and set a style for this shape.
-
-        When setting property can be a ``StyleComp`` or ``XStyle``.
-
-        **optional**
-        """
-        with contextlib.suppress(AttributeError):
-            return StyleComp(self.__component.Style)
-        return None
-
-    @style.setter
-    def style(self, value: XStyle | StyleComp) -> None:
-        with contextlib.suppress(AttributeError):
-            if mInfo.Info.is_instance(value, StyleComp):
-                comp = value.component
-            else:
-                comp = cast("XStyle", value)
-            self.__component.Style = comp
-
-    @property
-    def transformation(self) -> HomogenMatrix3StructComp | None:
-        """
-        Gets/Sets, this property lets you get and set the transformation matrix for this shape.
-
-        The transformation is a 3x3 homogeneous matrix and can contain translation, rotation, shearing and scaling.
-
-        When setting property can be a ``HomogenMatrix3`` or ``HomogenMatrix3StructComp``.
+        Gets/Sets - this property lets you get and set a style for this shape.
 
         **optional**
 
         Returns:
-            HomogenMatrix3StructComp | None: The transformation matrix for this shape or None if property not supported.
+            StyleComp | None: The style component. Or None if the property is not available.
+        """
+        if not hasattr(self.__component, "Style"):
+            return None
+        return StyleComp(self.__component.Style)
+
+    @style.setter
+    def style(self, value: XStyle | StyleComp) -> None:
+        if not hasattr(self.__component, "Style"):
+            return
+        if mInfo.Info.is_instance(value, StyleComp):
+            self.__component.Style = value.component
+        else:
+            self.__component.Style = value  # type: ignore
+
+    @property
+    def transformation(self) -> HomogenMatrix3StructComp | None:
+        """
+        this property lets you get and set the transformation matrix for this shape.
+
+        The transformation is a 3x3 homogeneous matrix and can contain translation, rotation, shearing and scaling.
+
+        **optional**
+
+        Returns:
+            HomogenMatrix3StructComp | None: The homogen matrix 3 struct component. Or None if the property is not available.
 
         Hint:
-            - ``HomogenMatrix3`` can be imported from ``ooo.dyn.drawing.homogen_matrix3``
+            ``HomogenMatrix3`` can be imported from ``ooo.dyn.drawing.homogen_matrix_line3``
         """
         key = "Transformation"
         if not hasattr(self.__component, key):
@@ -343,7 +338,7 @@ class ShapePartialProps:
     def transformation(self, value: HomogenMatrix3 | HomogenMatrix3StructComp) -> None:
         key = "Transformation"
         if not hasattr(self.__component, key):
-            return None
+            return
         if mInfo.Info.is_instance(value, HomogenMatrix3StructComp):
             self.__component.Transformation = value.copy()
         else:
@@ -354,7 +349,7 @@ class ShapePartialProps:
     @property
     def visible(self) -> bool | None:
         """
-        Gets/Sets, If this is ``False``, the Shape is not visible on screen outputs.
+        If this is ``False``, the Shape is not visible on screen outputs.
 
         Please note that the Shape may still be visible when printed, see Printable.
 
@@ -372,7 +367,7 @@ class ShapePartialProps:
     @property
     def z_order(self) -> int | None:
         """
-        Gets/Sets the Zorder of this Shape.
+        Gets/Sets the z-order of this Shape.
 
         **optional**
         """
@@ -384,5 +379,3 @@ class ShapePartialProps:
     def z_order(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
             self.__component.ZOrder = value
-
-    # endregion Properties

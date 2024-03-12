@@ -5,7 +5,6 @@ import uno
 from com.sun.star.drawing import XShapes3
 
 if TYPE_CHECKING:
-    from com.sun.star.drawing import XShape
     from ooodev.utils.type_var import UnoInterface
 
 

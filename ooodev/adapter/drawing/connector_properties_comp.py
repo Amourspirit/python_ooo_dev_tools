@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.drawing.connector_properties_partial import ConnectorPropertiesPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ConnectorProperties  # service
 
 
-class ConnectorPropertiesComp(ComponentBase):
+class ConnectorPropertiesComp(ComponentBase, ConnectorPropertiesPartial):
     """
     Class for managing table ConnectorProperties Component.
     """
@@ -22,6 +23,7 @@ class ConnectorPropertiesComp(ComponentBase):
             component (ConnectorProperties): UNO ConnectorProperties Component.
         """
         ComponentBase.__init__(self, component)
+        ConnectorPropertiesPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
