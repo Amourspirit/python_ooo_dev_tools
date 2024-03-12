@@ -31,10 +31,10 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, 
 
     def __next__(self) -> WriteTableRow:
         """
-        Gets the next form.
+        Gets the next row.
 
         Returns:
-            WriteForm: The next form.
+            WriteTableRow: The next row.
         """
         return WriteTableRow(owner=self, component=super().__next__())
 
