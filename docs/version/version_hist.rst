@@ -2,6 +2,28 @@
 Version History
 ***************
 
+Version 0.33.0
+==============
+
+Now there is a ``get_selected_shapes()`` method for ``DrawDoc`` and ``ImpressDoc`` that returns a list of the current selected shapes.
+
+Many updates for Draw Shapes. Now can access many more properties on various shapes.
+
+Now DrawDoc has a ``current_controller`` property that returns a ``DrawDocView`` instance.
+``DrawDocView`` is a new class that represents a Draw document view.
+
+Angles can now be added, subtracted, multiplied and divided to each other and the conversion is automatic.
+
+.. code-block:: python
+
+    from ooodev.units import Angle, Angle10
+    a1 = Angle(90)
+    a2 = Angle10(110) # 10 degrees
+    a3 = a1 + a2
+    assert isinstance(a3, Angle)
+    assert a3 == 101
+
+
 Version 0.32.2
 ==============
 

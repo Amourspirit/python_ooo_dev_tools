@@ -423,6 +423,12 @@ def test_angle_plus_angle10() -> None:
     assert isinstance(a3, Angle)
     assert a3 == 10
 
+    a1 = Angle(90)
+    a2 = Angle10(110)
+    a3 = a1 + a2
+    assert isinstance(a3, Angle)
+    assert a3 == 101
+
 
 def test_angle_plus_angle100() -> None:
     a1 = Angle(5)
