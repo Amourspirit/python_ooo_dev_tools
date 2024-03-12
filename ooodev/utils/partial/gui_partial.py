@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any
+import contextlib
 import uno
 from com.sun.star.awt import XTopWindow2
 from com.sun.star.awt import XWindow2
@@ -58,6 +59,17 @@ class GuiPartial:
         """
         controller = self.get_current_controller()
         return self.__lo_inst.qi(XSelectionSupplier, controller, True)
+
+    def get_selection(self) -> Any:
+        """
+        Gets selection.
+
+        Returns:
+            Any: Returns current selection or None.
+        """
+        with contextlib.suppress(Exception):
+            return self.get_selection_supplier().getSelection()
+        return None
 
     def get_dpi(self) -> XDispatchProviderInterception:
         """

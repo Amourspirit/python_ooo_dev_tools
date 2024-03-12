@@ -61,7 +61,7 @@ class ShapeJpg(ShapeExportJpgBase):
 
         # Although it is not documented in the Developer's Guide, as of OOo 1.1, it is possible to
         # export an image at a specified resolution. The MediaDescriptor in each graphic filter supports
-        # the “FilterData” property sequence, which sets the image size in pixels using the properties
+        # the FilterData property sequence, which sets the image size in pixels using the properties
         # PixelWidth and PixelHeight. The logical size can be set in units of 1/100 mm using the
         # properties LogicalWidth and LogicalHeight.
 
