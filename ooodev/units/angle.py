@@ -46,6 +46,8 @@ class Angle(BaseIntValue):
     def _from_int(self, value: int) -> Angle:
         return Angle(_to_positive_angle(value))
 
+    # region math and comparison
+
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
@@ -56,6 +58,99 @@ class Angle(BaseIntValue):
         if isinstance(other, int):
             return self.value == other
         return False
+
+    def __add__(self, other: object) -> Angle:
+        if hasattr(other, "get_angle"):
+            oth_val = other.get_angle()  # type: ignore
+            return self.from_angle(self.value + oth_val)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_angle(self.value + int(other))  # type: ignore
+
+        return NotImplemented
+
+    def __radd__(self, other: object) -> Angle:
+        return self if other == 0 else self.__add__(other)
+
+    def __sub__(self, other: object) -> Angle:
+        if hasattr(other, "get_angle"):
+            oth_val = other.get_angle()  # type: ignore
+            return self.from_angle(self.value - oth_val)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_angle(self.value - int(other))  # type: ignore
+        return NotImplemented
+
+    def __rsub__(self, other: object) -> Angle:
+        if isinstance(other, (int, float)):
+            self_val = self.get_angle()
+            return self.from_angle(int(other) - self_val)  # type: ignore
+        return NotImplemented
+
+    def __mul__(self, other: object) -> Angle:
+        if hasattr(other, "get_angle"):
+            oth_val = other.get_angle()  # type: ignore
+            return self.from_angle(self.value * oth_val)  # type: ignore
+
+        if isinstance(other, (int, float)):
+            return self.from_angle(self.value * int(other))  # type: ignore
+
+        return NotImplemented
+
+    def __rmul__(self, other: int) -> Angle:
+        return self if other == 0 else self.__mul__(other)
+
+    def __truediv__(self, other: object) -> Angle:
+        if hasattr(other, "get_angle"):
+            oth_val = other.get_angle()  # type: ignore
+            if oth_val == 0:
+                raise ZeroDivisionError
+            return self.from_angle(self.value // oth_val)  # type: ignore
+        if isinstance(other, (int, float)):
+            if other == 0:
+                raise ZeroDivisionError
+            return self.from_angle(self.value // other)  # type: ignore
+        return NotImplemented
+
+    def __rtruediv__(self, other: object) -> Angle:
+        if isinstance(other, (int, float)):
+            if self.value == 0:
+                raise ZeroDivisionError
+            return self.from_angle(other // self.value)  # type: ignore
+        return NotImplemented
+
+    def __abs__(self) -> int:
+        return abs(self.value)
+
+    def __lt__(self, other: object) -> bool:
+        if hasattr(other, "get_angle"):
+            return self.value < other.get_angle()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value < int(other)  # type: ignore
+        return False
+
+    def __le__(self, other: object) -> bool:
+        if hasattr(other, "get_angle"):
+            return self.value <= other.get_angle()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value <= int(other)  # type: ignore
+        return False
+
+    def __gt__(self, other: object) -> bool:
+        if hasattr(other, "get_angle"):
+            return self.value > other.get_angle()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value > int(other)  # type: ignore
+        return False
+
+    def __ge__(self, other: object) -> bool:
+        if hasattr(other, "get_angle"):
+            return self.value >= other.get_angle()  # type: ignore
+        with contextlib.suppress(Exception):
+            return self.value >= int(other)  # type: ignore
+        return False
+
+    # endregion math and comparison
 
     def get_angle(self) -> int:
         """
