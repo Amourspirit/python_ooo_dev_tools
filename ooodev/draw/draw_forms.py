@@ -4,21 +4,22 @@ import uno
 from com.sun.star.form import XForm
 
 from ooodev.adapter.form.forms_comp import FormsComp
+from ooodev.draw.draw_form import DrawForm
 from ooodev.exceptions import ex as mEx
-from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
+from ooodev.utils import gen_util as mGenUtil
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.draw.draw_form import DrawForm
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
     from ooodev.draw.draw_page import DrawPage
 
 
-class DrawForms(LoInstPropsPartial, FormsComp, QiPartial, ServicePartial):
+class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPartial, ServicePartial):
     """
     Class for managing Draw Forms.
 
@@ -63,6 +64,7 @@ class DrawForms(LoInstPropsPartial, FormsComp, QiPartial, ServicePartial):
 
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         FormsComp.__init__(self, forms)  # type: ignore
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)

@@ -9,13 +9,14 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from ooodev.draw.draw_forms import DrawForms
 
 
-class DrawForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial):
+class DrawForm(LoInstPropsPartial, OfficeDocumentPropPartial, DataFormComp, QiPartial, FormPartial, ServicePartial):
     """Draw Form class"""
 
     def __init__(self, owner: DrawForms, component: Form, lo_inst: LoInst | None = None) -> None:
@@ -23,6 +24,7 @@ class DrawForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, Service
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DataFormComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         draw_page = owner.owner.component

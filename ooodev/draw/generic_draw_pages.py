@@ -8,24 +8,27 @@ from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import generic_draw_page as mGenericDrawPage
-from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
+from ooodev.utils import gen_util as mGenUtil
+from ooodev.utils import info as mInfo
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.context.lo_context import LoContext
 
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class GenericDrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial):
+class GenericDrawPages(
+    Generic[_T], LoInstPropsPartial, OfficeDocumentPropPartial, DrawPagesComp, QiPartial, ServicePartial
+):
     """
     Class for managing Generic Draw Pages.
     """
@@ -40,14 +43,16 @@ class GenericDrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, QiPartial
             lo_inst (LoInst, optional): Lo instance. Defaults to None.
         """
         if lo_inst is None:
-            _lo_inst = mLo.Lo.current_lo
-        else:
-            _lo_inst = lo_inst
+            lo_inst = mLo.Lo.current_lo
         self.__owner = owner
-        LoInstPropsPartial.__init__(self, lo_inst=_lo_inst)
+        LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
         QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
+        ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:

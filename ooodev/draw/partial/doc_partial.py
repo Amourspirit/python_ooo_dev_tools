@@ -98,7 +98,10 @@ class DocPartial(
 
     def get_selected_shapes(self) -> List[GenericShapeComp]:
         """Get the names of the selected shapes."""
-        from ooodev.draw.shapes.draw_shape import DrawShape
+        # pylint: disable=import-outside-toplevel
+        from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
+
+        factory = ShapeFactoryPartial(self, lo_inst=self.lo_inst)
 
         selection = self.get_selection()
         if selection is None:
@@ -108,7 +111,8 @@ class DocPartial(
             selection, "com.sun.star.drawing.Shapes", "com.sun.star.drawing.ShapeCollection"
         ):
             shapes = IndexAccessComp(selection)
-            draw_shapes = [DrawShape(self, shape) for shape in shapes]  # type: ignore
-            for draw_shape in draw_shapes:
-                result.append(draw_shape.get_known_shape())
+            result = [factory.shape_factory(shape) for shape in shapes]
+            # draw_shapes = [DrawShape(self, shape) for shape in shapes]  # type: ignore
+            # for draw_shape in draw_shapes:
+            #     result.append(draw_shape.get_known_shape())
         return result

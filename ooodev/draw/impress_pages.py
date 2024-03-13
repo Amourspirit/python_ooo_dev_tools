@@ -10,10 +10,10 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import impress_page as mImpressPage
 from ooodev.exceptions import ex as mEx
-from ooodev.proto.component_proto import ComponentT
+from ooodev.loader import lo as mLo
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -21,12 +21,21 @@ from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ImpressPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
+class ImpressPages(
+    Generic[_T],
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    DrawPagesComp,
+    NameAccessPartial,
+    QiPartial,
+    ServicePartial,
+):
     """
     Class for managing Draw Pages.
     """
@@ -44,6 +53,9 @@ class ImpressPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPar
             lo_inst = mLo.Lo.current_lo
         self.__owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
         NameAccessPartial.__init__(self, component=slides, interface=None)  # type: ignore

@@ -6,19 +6,20 @@ import uno
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.drawing.master_page_comp import MasterPageComp
+from ooodev.draw.partial.draw_page_partial import DrawPagePartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import draw as mDraw
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.office import draw as mDraw
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.draw.partial.draw_page_partial import DrawPagePartial
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -27,6 +28,7 @@ class MasterDrawPage(
     DrawPagePartial[_T],
     Generic[_T],
     LoInstPropsPartial,
+    OfficeDocumentPropPartial,
     MasterPageComp,
     PropertyChangeImplement,
     VetoableChangeImplement,
@@ -44,8 +46,12 @@ class MasterDrawPage(
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.lo_inst)
         MasterPageComp.__init__(self, component)
+        # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

@@ -7,20 +7,23 @@ from ooodev.draw.shapes.draw_shape import DrawShape
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.proto.component_proto import ComponentT
+from ooodev.draw.shapes.shape_class_factory import ShapeClassFactory
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 
 _T = TypeVar("_T", bound="ComponentT")
 
+
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.draw.shapes import ShapeBase
 
 
-class ShapeFactoryPartial(Generic[_T]):
+class ShapeFactoryPartial(Generic[_T], OfficeDocumentPropPartial):
     """Partial class for ShapeFactory."""
 
-    def __init__(self, owner: _T, lo_inst: LoInst | None = None) -> None:
+    def __init__(self, owner: ComponentT, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
@@ -29,6 +32,9 @@ class ShapeFactoryPartial(Generic[_T]):
             lo_inst (LoInst | None, optional): Lo Instance. Defaults to None.
         """
         self.__owner = owner
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         self.__lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
 
     def shape_factory(self, shape: XShape) -> ShapeBase[_T]:
@@ -45,6 +51,8 @@ class ShapeFactoryPartial(Generic[_T]):
             ShapeBase[_T]: Object the inherits from ShapeBase such as ``RectangleShape`` or ``EllipseShape``.
             If ``ShapeType`` of shape is not a match then ``DrawShape[_T]`` is returned.
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
         if not hasattr(shape, "ShapeType"):
             raise ValueError("shape has no ShapeType property")
         shape_type = cast(str, getattr(shape, "ShapeType"))
@@ -97,7 +105,9 @@ class ShapeFactoryPartial(Generic[_T]):
 
             return WriteTextFrame(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)  # type: ignore
 
-        return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+        class_factory = ShapeClassFactory(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+        return class_factory.get_class()
+        # return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
     def is_know_shape(self, shape: XShape) -> bool:
         """
@@ -114,6 +124,7 @@ class ShapeFactoryPartial(Generic[_T]):
 
 
 if mock_g.FULL_IMPORT:
+    # pylint: disable=unused-import
     from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
     from ooodev.draw.shapes.connector_shape import ConnectorShape
     from ooodev.draw.shapes.ellipse_shape import EllipseShape

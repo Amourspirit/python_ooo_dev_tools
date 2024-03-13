@@ -6,14 +6,17 @@ from com.sun.star.text import XText
 from com.sun.star.drawing import XShape
 
 
-from ooodev.mock import mock_g
+from ooodev.draw.shapes.partial.export_jpg_partial import ExportJpgPartial
+from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
+from ooodev.mock import mock_g
 from ooodev.office import draw as mDraw
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.units.angle import Angle
 from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import gen_util as gUtil
-from ooodev.loader import lo as mLo
 from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
@@ -21,12 +24,7 @@ from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.draw.shapes.partial.export_jpg_partial import ExportJpgPartial
-from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
-from ooodev.proto.component_proto import ComponentT
 
-
-_T = TypeVar("_T", bound="ComponentT")
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Gradient
@@ -38,6 +36,7 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import Shape  # Service
     from com.sun.star.graphic import XGraphic
     from ooo.dyn.drawing.line_style import LineStyle
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.events.lo_events import Events
     from ooodev.proto.size_obj import SizeObj
     from ooodev.units.unit_obj import UnitT
@@ -48,9 +47,12 @@ if TYPE_CHECKING:
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
 
+_T = TypeVar("_T", bound="ComponentT")
+
 
 class ShapeBase(
     LoInstPropsPartial,
+    OfficeDocumentPropPartial,
     EventsPartial,
     ExportJpgPartial,
     ExportPngPartial,
@@ -62,6 +64,9 @@ class ShapeBase(
             lo_inst = mLo.Lo.current_lo
 
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         EventsPartial.__init__(self)
         # pylint: disable=no-member
         events = cast("Events", self._EventsPartial__events)  # type: ignore

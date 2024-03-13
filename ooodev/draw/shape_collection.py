@@ -11,6 +11,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.kind.shape_comb_kind import ShapeCombKind
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.proto.component_proto import ComponentT
 
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 # https://wiki.openoffice.org/wiki/Documentation/DevGuide/Drawings/Grouping,_Combining_and_Binding
 
 
-class ShapeCollection(LoInstPropsPartial, ShapeCollectionComp, QiPartial):
+class ShapeCollection(LoInstPropsPartial, OfficeDocumentPropPartial, ShapeCollectionComp, QiPartial):
     """Represents a shape collection."""
 
     def __init__(self, owner: DrawPage[ComponentT], collection: Any = None, lo_inst: LoInst | None = None) -> None:
@@ -35,6 +36,7 @@ class ShapeCollection(LoInstPropsPartial, ShapeCollectionComp, QiPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         if collection is None:
             collection = self.lo_inst.create_instance_mcf(
                 XShapes, "com.sun.star.drawing.ShapeCollection", raise_err=True

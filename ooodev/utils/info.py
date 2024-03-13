@@ -1212,19 +1212,26 @@ class Info(metaclass=StaticProperty):
         |lo_safe|
 
         Args:
-            obj (object): obj that implements ``XMultiServiceFactory`` interface
+            obj (object): obj that implements ``XMultiServiceFactory`` interface.
 
         Raises:
-            Exception: If unable to get services
+            Exception: If unable to get services.
 
         Returns:
-            List[str]: List of services
+            List[str]: List of services.
+
+        .. versionchanged:: 0.34.0
+            Now also supports XServiceInfo
         """
         # sourcery skip: raise-specific-error
         services: List[str] = []
         try:
-            sf = mLo.Lo.qi(XMultiServiceFactory, obj, True)
-            service_names = sf.getAvailableServiceNames()
+            sf = mLo.Lo.qi(XMultiServiceFactory, obj)
+            if sf is None:
+                sf = mLo.Lo.qi(XServiceInfo, obj, True)
+                service_names = sf.getSupportedServiceNames()
+            else:
+                service_names = sf.getAvailableServiceNames()
             services.extend(service_names)
             services.sort()
         except Exception as e:

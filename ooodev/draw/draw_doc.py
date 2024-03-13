@@ -17,6 +17,7 @@ from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
 from ooodev.draw.draw_doc_view import DrawDocView
 from ooodev.draw.partial.draw_doc_prop_partial import DrawDocPropPartial
 from ooodev.draw.partial.doc_partial import DocPartial
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
 
 class DrawDoc(
     DrawingDocumentComp,
+    OfficeDocumentPropPartial,
     DocPartial["DrawDoc"],
     DrawDocPropPartial,
     Storable2Partial,
@@ -49,12 +51,14 @@ class DrawDoc(
         Returns:
             None:
         """
+        # pylint: disable=non-parent-init-called
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
 
         if not mInfo.Info.is_doc_type(doc, LoService.DRAW):
             raise mEx.NotSupportedDocumentError("Document is not a Draw document")
         DrawingDocumentComp.__init__(self, doc)
+        OfficeDocumentPropPartial.__init__(self, office_doc=self)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocPartial.__init__(self, owner=self, component=doc, generic_args=generic_args, lo_inst=lo_inst)

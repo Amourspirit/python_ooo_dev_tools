@@ -31,3 +31,9 @@ class OfficeDocumentT(
     """Represents the common interface for all office documents."""
 
     DOC_TYPE: DocType
+    """
+    Document Type.
+    
+    .. hint::
+        - ``DocType`` can be imported form ``ooodev.loader.inst.doc_type``
+    """
