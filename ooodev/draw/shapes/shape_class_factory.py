@@ -6,6 +6,7 @@ from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
 from ooodev.adapter.drawing.shadow_properties_partial import ShadowPropertiesPartial
 from ooodev.adapter.drawing.text_properties_partial import TextPropertiesPartial
+from ooodev.adapter.document.link_target_properties_partial import LinkTargetPropertiesPartial
 from ooodev.adapter.presentation.shape_properties_partial import ShapePropertiesPartial
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.loader.inst.doc_type import DocType
@@ -43,6 +44,8 @@ class ShapeClassFactory(OfficeDocumentPropPartial):
             self._bases.append(RotationDescriptorPropertiesPartial)
         if "com.sun.star.drawing.TextProperties" in self._supported:
             self._bases.append(TextPropertiesPartial)
+        if "com.sun.star.document.LinkTarget" in self._supported:
+            self._bases.append(LinkTargetPropertiesPartial)
         if self.office_doc.DOC_TYPE == DocType.IMPRESS:
             # Even though shapes in Draw and Impress are the same, the supported services are different.
             # A shape in Draw may say it supports a presentation service but it may not.
