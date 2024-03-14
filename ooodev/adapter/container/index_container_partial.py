@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Generic, TypeVar
 import uno
 
 from com.sun.star.container import XIndexContainer
@@ -7,8 +7,10 @@ from com.sun.star.container import XIndexContainer
 from ooodev.utils.type_var import UnoInterface
 from ooodev.adapter.container.index_replace_partial import IndexReplacePartial
 
+T = TypeVar("T")
 
-class IndexContainerPartial(IndexReplacePartial):
+
+class IndexContainerPartial(IndexReplacePartial[T], Generic[T]):
     """
     Partial Class for XIndexContainer.
     """
@@ -27,7 +29,7 @@ class IndexContainerPartial(IndexReplacePartial):
         self.__component = component
 
     # region XIndexContainer
-    def insert_by_index(self, index: int, element: Any) -> None:
+    def insert_by_index(self, index: int, element: T) -> None:
         """
         Inserts the given element at the specified index.
 
@@ -35,7 +37,7 @@ class IndexContainerPartial(IndexReplacePartial):
 
         Args:
             index (int): The Zero-based index at which the element should be inserted.
-            element (Any): The element to insert.
+            element (T): The element to insert.
 
         Raises:
             IllegalArgumentException: ``com.sun.star.lang.IllegalArgumentException``

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Generic, TypeVar
 import uno
 
 from com.sun.star.container import XNameAccess
@@ -7,8 +7,10 @@ from com.sun.star.container import XNameAccess
 from ooodev.utils.type_var import UnoInterface
 from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 
+T = TypeVar("T")
 
-class NameAccessPartial(ElementAccessPartial):
+
+class NameAccessPartial(Generic[T], ElementAccessPartial):
     """
     Partial Class for XNameAccess.
     """
@@ -27,7 +29,7 @@ class NameAccessPartial(ElementAccessPartial):
         self.__component = component
 
     # region Methods
-    def get_by_name(self, name: str) -> Any:
+    def get_by_name(self, name: str) -> T:
         """
         Gets the element with the specified name.
 

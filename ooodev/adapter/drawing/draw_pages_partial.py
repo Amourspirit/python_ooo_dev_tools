@@ -7,10 +7,11 @@ from com.sun.star.drawing import XDrawPages
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
 if TYPE_CHECKING:
+    from com.sun.star.drawing import XDrawPage
     from ooodev.utils.type_var import UnoInterface
 
 
-class DrawPagesPartial(IndexAccessPartial):
+class DrawPagesPartial(IndexAccessPartial["XDrawPage"]):
     """
     Partial Class for XDrawPages.
     """
@@ -29,7 +30,7 @@ class DrawPagesPartial(IndexAccessPartial):
         self.__component = component
 
     # region XDrawPages
-    def insert_new_by_index(self, idx: int) -> Any:
+    def insert_new_by_index(self, idx: int) -> XDrawPage:
         """
         Creates and inserts a new DrawPage or MasterPage into this container.
 

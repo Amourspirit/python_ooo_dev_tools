@@ -102,6 +102,7 @@ class DrawShape(
         See Also:
             :py:meth:`~.DrawShape.is_know_shape`
         """
+        # pylint: disable=import-outside-toplevel
         # avoid circular import
         from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 

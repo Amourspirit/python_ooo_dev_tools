@@ -3,28 +3,30 @@ from typing import Any, TYPE_CHECKING, TypeVar, Generic
 import uno
 from com.sun.star.drawing import XShapes
 
-from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
+from ooodev.draw.draw_forms import DrawForms
+from ooodev.draw.generic_draw_page import GenericDrawPage
 from ooodev.events.draw_named_event import DrawNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial
-from ooodev.office import draw as mDraw
-from ooodev.units.unit_mm import UnitMM
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.mock import mock_g
+from ooodev.office import draw as mDraw
+from ooodev.units.unit_mm import UnitMM
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.type_var import PathOrStr
-from ooodev.draw.generic_draw_page import GenericDrawPage
-from ooodev.draw.draw_forms import DrawForms
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.units.unit_obj import UnitT
     from ooodev.draw.shapes.shape_base import ShapeBase
 
 _T = TypeVar("_T", bound="ComponentT")
 
+
+# ShapeFactoryPartial of GenericDrawPage implements OfficeDocumentPropPartial
 
 class DrawPage(
     GenericDrawPage["DrawPage[_T]"],

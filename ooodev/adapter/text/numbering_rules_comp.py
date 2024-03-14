@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING, Generic, TypeVar
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.index_replace_partial import IndexReplacePartial
 
@@ -8,8 +8,10 @@ if TYPE_CHECKING:
     from com.sun.star.text import NumberingRules  # service
     from com.sun.star.container import XIndexReplace
 
+T = TypeVar("T")
 
-class NumberingRulesComp(ComponentBase, IndexReplacePartial):
+
+class NumberingRulesComp(ComponentBase, IndexReplacePartial[T], Generic[T]):
     """
     Class for managing NumberingRules Component.
     """

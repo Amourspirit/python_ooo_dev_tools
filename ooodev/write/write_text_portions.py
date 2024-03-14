@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextPortions(Generic[T], LoInstPropsPartial, WriteDocPropPartial, EnumerationAccessPartial, QiPartial):
+class WriteTextPortions(LoInstPropsPartial, WriteDocPropPartial, EnumerationAccessPartial, QiPartial, Generic[T]):
     """
     Represents writer Text Portions.
 

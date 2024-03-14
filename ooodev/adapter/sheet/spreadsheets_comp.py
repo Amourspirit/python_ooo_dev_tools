@@ -7,9 +7,12 @@ from ooodev.adapter.sheet.spreadsheets_partial import SpreadsheetsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import Spreadsheets  # service
+    from com.sun.star.sheet import Spreadsheet  # service
 
 
-class SpreadsheetsComp(ComponentBase, SpreadsheetsPartial, IndexAccessPartial, EnumerationAccessPartial):
+class SpreadsheetsComp(
+    ComponentBase, SpreadsheetsPartial, IndexAccessPartial["Spreadsheet"], EnumerationAccessPartial["Spreadsheet"]
+):
     """
     Class for managing Spreadsheet Component.
     """

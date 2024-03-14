@@ -6,12 +6,14 @@ if __name__ == "__main__":
 
 from ooodev.draw import Draw, DrawDoc, ImpressDoc
 from ooodev.loader.lo import Lo
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 
 def test_current_controller(loader) -> None:
     from ooodev.draw.draw_page import DrawPage
 
     doc = DrawDoc.create_doc(loader)
+    assert isinstance(doc, OfficeDocumentPropPartial)
 
     controller = doc.current_controller
     assert controller is not None
@@ -24,6 +26,7 @@ def test_current_controller(loader) -> None:
 
 def test_master_page_draw(loader) -> None:
     doc = DrawDoc(Draw.create_draw_doc(loader))
+    assert isinstance(doc, OfficeDocumentPropPartial)
     assert isinstance(doc, DrawDoc)
     slide = doc.get_slide(idx=0)
     assert slide is not None
@@ -35,6 +38,7 @@ def test_master_page_draw(loader) -> None:
 
 def test_master_page_impress(loader) -> None:
     doc = ImpressDoc(Draw.create_impress_doc(loader))
+    assert isinstance(doc, OfficeDocumentPropPartial)
     assert isinstance(doc, ImpressDoc)
 
     slide = doc.get_slide(idx=0)
@@ -47,7 +51,8 @@ def test_master_page_impress(loader) -> None:
 
 
 def test_get_handout_master_page(loader) -> None:
-    doc = ImpressDoc(Draw.create_impress_doc(loader))
+    doc = ImpressDoc.create_doc(loader)
+    assert isinstance(doc, OfficeDocumentPropPartial)
     slide = doc.get_slide(idx=0)
     assert slide is not None
 
@@ -63,7 +68,8 @@ def test_rectangle(loader) -> None:
     y = 20
     width = 17
     height = 12
-    doc = DrawDoc(Draw.create_draw_doc(loader))
+    doc = DrawDoc.create_doc(loader)
+    assert isinstance(doc, OfficeDocumentPropPartial)
     slide = doc.get_slide(idx=0)
 
     num_shapes = slide.get_count()
@@ -102,6 +108,7 @@ def test_circle(loader) -> None:
     y = 20
     radius = 20
     doc = DrawDoc(Draw.create_draw_doc(loader))
+    assert isinstance(doc, OfficeDocumentPropPartial)
     slide = doc.get_slide(idx=0)
 
     num_shapes = slide.get_count()

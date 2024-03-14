@@ -16,6 +16,7 @@ Submodules
    ooodev.adapter.document.filter_partial
    ooodev.adapter.document.global_document_comp
    ooodev.adapter.document.link_target_comp
+   ooodev.adapter.document.link_target_properties_partial
    ooodev.adapter.document.mime_type_info_partial
    ooodev.adapter.document.office_document_comp
    ooodev.adapter.document.storage_based_document_partial

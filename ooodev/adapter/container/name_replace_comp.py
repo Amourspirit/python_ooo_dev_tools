@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.name_replace_partial import NameReplacePartial
@@ -7,8 +7,10 @@ from ooodev.adapter.container.name_replace_partial import NameReplacePartial
 if TYPE_CHECKING:
     from com.sun.star.container import XNameReplace
 
+T = TypeVar("T")
 
-class NameReplaceComp(ComponentBase, NameReplacePartial):
+
+class NameReplaceComp(ComponentBase, NameReplacePartial[T], Generic[T]):
     """
     Class for managing XNameContainer Component.
     """

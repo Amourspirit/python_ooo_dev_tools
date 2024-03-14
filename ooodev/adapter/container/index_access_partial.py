@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Generic, TypeVar
 import uno
 
 from com.sun.star.container import XIndexAccess
@@ -9,8 +9,10 @@ from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
+T = TypeVar("T")
 
-class IndexAccessPartial(ElementAccessPartial):
+
+class IndexAccessPartial(Generic[T], ElementAccessPartial):
     """
     Partial Class for XIndexAccess.
     """
@@ -46,7 +48,7 @@ class IndexAccessPartial(ElementAccessPartial):
         self.__current_index = -1
         return self
 
-    def __next__(self):
+    def __next__(self) -> T:
         self.__current_index += 1
         if self.__current_index >= self.__component.getCount():
             self.__current_index = -1
@@ -73,7 +75,7 @@ class IndexAccessPartial(ElementAccessPartial):
         """
         return self.__component.getCount()
 
-    def get_by_index(self, idx: int) -> Any:
+    def get_by_index(self, idx: int) -> T:
         """
         Gets the element at the specified index.
 

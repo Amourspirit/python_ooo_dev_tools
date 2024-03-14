@@ -16,7 +16,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteNumberingStyle(Generic[T], NumberingStyleComp, QiPartial, PropPartial):
+class WriteNumberingStyle(NumberingStyleComp, QiPartial, PropPartial, Generic[T]):
     """Represents writer Page Style."""
 
     def __init__(self, owner: T, component: XStyle, lo_inst: LoInst | None = None) -> None:

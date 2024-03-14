@@ -15,13 +15,14 @@ from ooodev.adapter.lang.component_partial import ComponentPartial
 
 
 if TYPE_CHECKING:
+    from com.sun.star.form import XForm
     from ooodev.utils.type_var import UnoInterface
 
 
 class FormsPartial(
     ContainerPartial,
-    NameContainerPartial,
-    IndexContainerPartial,
+    NameContainerPartial["XForm"],
+    IndexContainerPartial["XForm"],
     EnumerationAccessPartial,
     ChildPartial,
     CloneablePartial,

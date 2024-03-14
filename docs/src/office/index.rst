@@ -8,3 +8,4 @@ office
     :glob:
 
     *
+    partial/index

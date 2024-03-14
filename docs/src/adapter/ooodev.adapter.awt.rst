@@ -48,6 +48,7 @@ Submodules
    ooodev.adapter.awt.paint_events
    ooodev.adapter.awt.paint_listener
    ooodev.adapter.awt.point_struct_comp
+   ooodev.adapter.awt.point_struct_generic_comp
    ooodev.adapter.awt.rectangle_struct_comp
    ooodev.adapter.awt.size_struct_comp
    ooodev.adapter.awt.spin_events

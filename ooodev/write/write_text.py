@@ -28,13 +28,13 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteText(
-    Generic[T],
     LoInstPropsPartial,
     WriteDocPropPartial,
     TextComp,
     RelativeTextContentInsertPartial,
     QiPartial,
     StylePartial,
+    Generic[T],
 ):
     """
     Represents writer text content.

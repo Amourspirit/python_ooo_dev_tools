@@ -17,6 +17,7 @@ from ooodev.draw import impress_page as mImpressPage
 from ooodev.draw import master_draw_page as mMasterDrawPage
 from ooodev.draw.impress_pages import ImpressPages
 from ooodev.draw.partial.doc_partial import DocPartial
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -29,6 +30,7 @@ if TYPE_CHECKING:
 
 class ImpressDoc(
     PresentationDocumentComp,
+    OfficeDocumentPropPartial,
     DocPartial["ImpressDoc"],
     ModifyEvents,
 ):
@@ -47,11 +49,14 @@ class ImpressDoc(
         Raises:
             NotSupportedDocumentError: If not an Impress Document.
         """
+        # pylint: disable=non-parent-init-called
+        # pylint: disable=no-member
         if not mInfo.Info.is_doc_type(doc, LoService.IMPRESS):
             raise mEx.NotSupportedDocumentError("Document is not a Impress document")
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         PresentationDocumentComp.__init__(self, doc)
+        OfficeDocumentPropPartial.__init__(self, office_doc=self)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         DocPartial.__init__(self, owner=self, component=doc, generic_args=generic_args, lo_inst=lo_inst)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)

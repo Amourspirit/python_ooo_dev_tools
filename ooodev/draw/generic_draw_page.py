@@ -5,35 +5,37 @@ import uno
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
+from ooodev.draw.partial.draw_page_partial import DrawPagePartial
 from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.utils import gen_util as mGenUtil
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.draw.partial.draw_page_partial import DrawPagePartial
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from ooodev.draw.shapes.shape_base import ShapeBase
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
+
+# ShapeFactoryPartial implements OfficeDocumentPropPartial
 
 
 class GenericDrawPage(
     DrawPagePartial[_T],
     Generic[_T],
     LoInstPropsPartial,
+    ShapeFactoryPartial[_T],
     DrawPageComp,
     Shapes2Partial,
     Shapes3Partial,
     ServicePartial,
     QiPartial,
     StylePartial,
-    ShapeFactoryPartial[_T],
 ):
     """
     Represents a draw page.
@@ -53,6 +55,7 @@ class GenericDrawPage(
 
         self.__owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        ShapeFactoryPartial.__init__(self, owner=owner, lo_inst=self.lo_inst)
         DrawPagePartial.__init__(self, owner=self, component=component, lo_inst=self.lo_inst)
         DrawPageComp.__init__(self, component)
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
@@ -60,7 +63,6 @@ class GenericDrawPage(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
-        ShapeFactoryPartial.__init__(self, owner=self.__owner, lo_inst=self.lo_inst)
 
     def __len__(self) -> int:
         return self.get_count()
