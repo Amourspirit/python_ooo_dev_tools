@@ -21,7 +21,6 @@ from ooodev.utils.kind.drawing_name_space_kind import DrawingNameSpaceKind
 from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind
 from ooodev.utils.kind.glue_points_kind import GluePointsKind
 from ooodev.utils.kind.presentation_kind import PresentationKind
-from ooodev.proto.component_proto import ComponentT
 
 # more import at bottom of this module
 
@@ -30,8 +29,10 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import GluePoint2
     from com.sun.star.drawing import XShape
     from com.sun.star.text import XText
+    from com.sun.star.form import XForm
     from ooo.dyn.presentation.animation_speed import AnimationSpeed
     from ooo.dyn.presentation.fade_effect import FadeEffect
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.draw.shapes import ShapeBase
     from ooodev.proto.dispatch_shape import DispatchShape
     from ooodev.units.unit_obj import UnitT
@@ -927,7 +928,7 @@ class DrawPagePartial(Generic[_T]):
         """
         return mDraw.Draw.get_fill_color(self.__component)  # type: ignore
 
-    def get_form_container(self) -> IndexContainerComp | None:
+    def get_form_container(self) -> IndexContainerComp["XForm"] | None:
         """
         Gets form container.
         The first form in slide is returned if found.
@@ -939,9 +940,7 @@ class DrawPagePartial(Generic[_T]):
             IndexContainerComp | None: Form Container on success, None otherwise.
         """
         container = mDraw.Draw.get_form_container(self.__component)  # type: ignore
-        if container is None:
-            return None
-        return IndexContainerComp(container)
+        return None if container is None else IndexContainerComp(container)
 
     def get_glue_points(self) -> Tuple[GluePoint2, ...]:
         """
@@ -1007,7 +1006,8 @@ class DrawPagePartial(Generic[_T]):
             :py:meth:`~.draw.Draw.get_shapes`
         """
         shapes = mDraw.Draw.get_ordered_shapes(slide=self.__component)  # type: ignore
-        return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]
+        # pylint: disable=not-an-iterable
+        return [DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst) for shape in shapes]  # type: ignore
 
     def get_shape_text(self) -> str:
         """
@@ -1036,7 +1036,8 @@ class DrawPagePartial(Generic[_T]):
         from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 
         factory = ShapeFactoryPartial(owner=self.__owner, lo_inst=self.__lo_inst)
-        return [factory.shape_factory(shape) for shape in shapes]
+        # pylint: disable=not-an-iterable
+        return [factory.shape_factory(shape) for shape in shapes]  # type: ignore
 
     def get_size_mm(self) -> Size:
         """

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, List, TYPE_CHECKING, TypeVar, Generic
 import uno
-from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.util.close_events import CloseEvents
 from ooodev.adapter.view.print_job_events import PrintJobEvents
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
@@ -11,6 +11,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -18,13 +19,13 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils import info as mInfo
 
 
 if TYPE_CHECKING:
+    from com.sun.star.drawing import XShape
     from com.sun.star.lang import XComponent
     from com.sun.star.drawing import GenericDrawingDocument
-    from ooodev.adapter.drawing.generic_shape import GenericShapeComp
+    from ooodev.draw.shapes.shape_base import ShapeBase
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.events.args.generic_args import GenericArgs
     from ooodev.proto.component_proto import ComponentT
@@ -96,12 +97,12 @@ class DocPartial(
 
     # endregion Lazy Listeners
 
-    def get_selected_shapes(self) -> List[GenericShapeComp]:
+    def get_selected_shapes(self) -> List[ShapeBase[Any]]:
         """Get the names of the selected shapes."""
         # pylint: disable=import-outside-toplevel
         from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 
-        factory = ShapeFactoryPartial(self, lo_inst=self.lo_inst)
+        factory = ShapeFactoryPartial[Any](self, lo_inst=self.lo_inst)  # type: ignore
 
         selection = self.get_selection()
         if selection is None:
@@ -110,7 +111,7 @@ class DocPartial(
         if mInfo.Info.support_service(
             selection, "com.sun.star.drawing.Shapes", "com.sun.star.drawing.ShapeCollection"
         ):
-            shapes = IndexAccessComp(selection)
+            shapes = IndexAccessComp["XShape"](selection)
             result = [factory.shape_factory(shape) for shape in shapes]
             # draw_shapes = [DrawShape(self, shape) for shape in shapes]  # type: ignore
             # for draw_shape in draw_shapes:

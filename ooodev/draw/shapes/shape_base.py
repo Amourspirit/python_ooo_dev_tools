@@ -77,6 +77,9 @@ class ShapeBase(
         self.__component = component
         self._apply_shape_name()
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.shape_type})"
+
     def _clone(self) -> XShape:
         """
         Clones the shape.

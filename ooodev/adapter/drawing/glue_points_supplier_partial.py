@@ -7,8 +7,10 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.adapter.container.index_container_comp import IndexContainerComp
 
+
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
+    from com.sun.star.drawing import GluePoint2
 
 
 class GluePointsSupplierPartial:
@@ -34,7 +36,7 @@ class GluePointsSupplierPartial:
         self.__component = component
 
     # region XGluePointsSupplier
-    def get_glue_points(self) -> IndexContainerComp:
+    def get_glue_points(self) -> IndexContainerComp["GluePoint2"]:
         """
         Gets a container of GluePoint2 structs.
         """
