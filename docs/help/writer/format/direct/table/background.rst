@@ -298,7 +298,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_borders`
-        - :py:meth: `TextCursorPartial.add_table() <ooodev.write.partial.text_cursor_partial.add_table>`
+        - :py:meth:`TextCursorPartial.add_table() <ooodev.write.partial.text_cursor_partial.add_table>`
         - :py:meth:`Write.add_table() <ooodev.office.write.Write.add_table>`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.table.properties.TableProperties`

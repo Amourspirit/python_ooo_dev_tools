@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
 
-class ShapesPartial(IndexAccessPartial):
+class ShapesPartial(IndexAccessPartial["XShape"]):
     """
     Partial class for XShape interface.
     """

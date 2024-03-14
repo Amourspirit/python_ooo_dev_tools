@@ -9,9 +9,10 @@ from ooodev.adapter.text.text_partial import TextPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import Text
+    from com.sun.star.text import Paragraph
 
 
-class TextComp(ComponentBase, EnumerationAccessPartial, TextPartial):
+class TextComp(ComponentBase, EnumerationAccessPartial["Paragraph"], TextPartial):
     """
     Class for managing Text Component.
     """

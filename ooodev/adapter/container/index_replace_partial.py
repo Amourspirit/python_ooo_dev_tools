@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Generic, TypeVar
 import uno
 
 from com.sun.star.container import XIndexReplace
@@ -7,8 +7,10 @@ from com.sun.star.container import XIndexReplace
 from ooodev.utils.type_var import UnoInterface
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
+T = TypeVar("T")
 
-class IndexReplacePartial(IndexAccessPartial):
+
+class IndexReplacePartial(IndexAccessPartial[T], Generic[T]):
     """
     Partial Class for XIndexReplace.
     """
@@ -27,7 +29,7 @@ class IndexReplacePartial(IndexAccessPartial):
         self.__component = component
 
     # region XIndexReplace
-    def replace_by_index(self, index: int, element: Any) -> None:
+    def replace_by_index(self, index: int, element: T) -> None:
         """
         Replaces the element at the specified index with the given element.
 

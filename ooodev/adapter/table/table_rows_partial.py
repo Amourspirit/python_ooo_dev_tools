@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, Generic
 import uno
 
 from com.sun.star.table import XTableRows
@@ -8,8 +8,10 @@ from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
+T = TypeVar("T")
 
-class TableRowsPartial(IndexAccessPartial):
+
+class TableRowsPartial(IndexAccessPartial[T], Generic[T]):
     """
     Partial Class for XTableRows.
     """

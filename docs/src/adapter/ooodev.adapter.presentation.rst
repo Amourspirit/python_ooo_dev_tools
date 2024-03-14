@@ -9,6 +9,7 @@ Submodules
 
    ooodev.adapter.presentation.draw_page_comp
    ooodev.adapter.presentation.presentation_document_comp
+   ooodev.adapter.presentation.shape_properties_partial
 
 Module contents
 ---------------

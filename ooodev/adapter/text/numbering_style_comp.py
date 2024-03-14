@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from com.sun.star.style import XStyle
 
 
-class NumberingStyleComp(NumberingRulesComp, StyleComp, PropertiesChangeImplement):
+class NumberingStyleComp(NumberingRulesComp[str], StyleComp, PropertiesChangeImplement):
     """
     Class for managing table NumberingStyle Component.
     """

@@ -5,7 +5,7 @@ import uno
 from ooodev.adapter.drawing.text_comp import TextComp
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -15,11 +15,14 @@ from ooodev.draw import draw_text_cursor
 
 if TYPE_CHECKING:
     from com.sun.star.text import XText
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawText(Generic[_T], LoInstPropsPartial, TextComp, QiPartial, StylePartial, ServicePartial):
+class DrawText(
+    Generic[_T], LoInstPropsPartial, OfficeDocumentPropPartial, TextComp, QiPartial, StylePartial, ServicePartial
+):
     """
     Represents text content.
 
@@ -39,6 +42,9 @@ class DrawText(Generic[_T], LoInstPropsPartial, TextComp, QiPartial, StylePartia
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         TextComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)

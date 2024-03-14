@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import uno
 from ooo.dyn.awt.point import Point
 from ooodev.adapter.struct_base import StructBase
-from ooodev.utils.data_type.intensity import Intensity
 
 if TYPE_CHECKING:
     from ooodev.events.events_t import EventsT
@@ -75,10 +74,9 @@ class PointStructComp(StructBase[Point]):
 
     @y.setter
     def y(self, value: int) -> None:
-        val = Intensity(value).value
         old_value = self.component.Y
-        if old_value != val:
-            event_args = self._trigger_cancel_event("Y", old_value, val)
+        if old_value != value:
+            event_args = self._trigger_cancel_event("Y", old_value, value)
             self._trigger_done_event(event_args)
 
     # endregion Properties

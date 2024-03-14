@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
 import uno
 
 from ooodev.adapter.text.text_comp import TextComp
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -12,10 +11,19 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_paragraph as mWriteParagraph
 
+if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
+
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteParagraphs(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextComp, QiPartial):
+class WriteParagraphs(
+    LoInstPropsPartial,
+    WriteDocPropPartial,
+    TextComp,
+    QiPartial,
+    Generic[T],
+):
     """
     Represents writer paragraphs.
 

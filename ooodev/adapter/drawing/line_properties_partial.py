@@ -179,20 +179,30 @@ class LinePropertiesPartial:
             self.__component.LineEndName = value
 
     @property
-    def line_end_width(self) -> int | None:
+    def line_end_width(self) -> UnitMM100 | None:
         """
         Gets/Sets the width of the line end polygon.
 
+        When setting this property, you can use either an integer or a ``UnitT`` object.
+
         **optional**
+
+        Returns:
+            UnitMM100: The width of the line end polygon or None if not available.
+
+        Hint:
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
+        width = None
         with contextlib.suppress(AttributeError):
-            return self.__component.LineEndWidth
-        return None
+            width = self.__component.LineEndWidth
+        return None if width is None else UnitMM100(width)
 
     @line_end_width.setter
-    def line_end_width(self, value: int) -> None:
+    def line_end_width(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
         with contextlib.suppress(AttributeError):
-            self.__component.LineEndWidth = value
+            self.__component.LineEndWidth = val.value
 
     @property
     def line_joint(self) -> LineJoint:
@@ -264,20 +274,30 @@ class LinePropertiesPartial:
             self.__component.LineStartName = value
 
     @property
-    def line_start_width(self) -> int | None:
+    def line_start_width(self) -> UnitMM100 | None:
         """
         Gets/Sets the width of the line start polygon.
 
+        When setting this property, you can use either an integer or a ``UnitT`` object.
+
         **optional**
+
+        Returns:
+            UnitMM100: The width of the line start polygon or None if not available.
+
+        Hint:
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
+        width = None
         with contextlib.suppress(AttributeError):
-            return self.__component.LineStartWidth
-        return None
+            width = self.__component.LineStartWidth
+        return None if width is None else UnitMM100(width)
 
     @line_start_width.setter
-    def line_start_width(self, value: int) -> None:
+    def line_start_width(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
         with contextlib.suppress(AttributeError):
-            self.__component.LineStartWidth = value
+            self.__component.LineStartWidth = val.value
 
     @property
     def line_style(self) -> LineStyle:

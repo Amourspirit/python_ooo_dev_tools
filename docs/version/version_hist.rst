@@ -2,6 +2,20 @@
 Version History
 ***************
 
+Version 0.34.0
+==============
+
+Customs shapes are much more dynamic. when selecting shapes the list of the selected shapes have access to many more properties.
+Many properties are added to shapes based upon the services they support.
+
+Index containers in ``ooodev.adapter.container`` package are now generic. This allow for better tying support when working with elements in the container.
+
+Created ``ooodev.office.partial.office_document_prop_partial.OfficeDocumentPropPartial`` and implement this class. It has bee implemented into all Documents and many other classes.
+
+For instance Draw shapes implement ``OfficeDocumentPropPartial`` and this gives access to the document that the shape is in.
+
+``DrawDoc`` class and ``ImpressDoc`` class now have a common base class ``DocPartial``.
+
 Version 0.33.0
 ==============
 

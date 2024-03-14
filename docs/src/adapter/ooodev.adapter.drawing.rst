@@ -29,6 +29,8 @@ Submodules
    ooodev.adapter.drawing.generic_draw_page_comp
    ooodev.adapter.drawing.generic_drawing_document_comp
    ooodev.adapter.drawing.generic_shape
+   ooodev.adapter.drawing.glue_point2_struct_comp
+   ooodev.adapter.drawing.glue_points_supplier_partial
    ooodev.adapter.drawing.graphic_export_filter_comp
    ooodev.adapter.drawing.graphic_export_filter_implement
    ooodev.adapter.drawing.graphic_export_filter_partial
@@ -72,6 +74,7 @@ Submodules
    ooodev.adapter.drawing.shapes_partial
    ooodev.adapter.drawing.text_comp
    ooodev.adapter.drawing.text_properties_comp
+   ooodev.adapter.drawing.text_properties_partial
    ooodev.adapter.drawing.text_shape_comp
 
 Module contents

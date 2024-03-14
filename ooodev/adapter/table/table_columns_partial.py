@@ -7,9 +7,10 @@ from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
+    from com.sun.star.table import TableColumn
 
 
-class TableColumnsPartial(IndexAccessPartial):
+class TableColumnsPartial(IndexAccessPartial["TableColumn"]):
     """
     Partial Class for XTableColumns.
     """

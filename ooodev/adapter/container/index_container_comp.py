@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.index_container_partial import IndexContainerPartial
@@ -7,8 +7,10 @@ from ooodev.adapter.container.index_container_partial import IndexContainerParti
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
 
+T = TypeVar("T")
 
-class IndexContainerComp(ComponentBase, IndexContainerPartial):
+
+class IndexContainerComp(ComponentBase, IndexContainerPartial[T], Generic[T]):
     """
     Class for managing XIndexContainer Component.
     """

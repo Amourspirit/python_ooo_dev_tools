@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Generic, TypeVar
 import uno
 from com.sun.star.container import XEnumerationAccess
 
@@ -9,8 +9,10 @@ from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 if TYPE_CHECKING:
     from com.sun.star.container import XEnumeration
 
+T = TypeVar("T")
 
-class EnumerationAccessPartial(ElementAccessPartial):
+
+class EnumerationAccessPartial(Generic[T], ElementAccessPartial):
     """
     Partial Class for XEnumerationAccess.
 
@@ -48,11 +50,11 @@ class EnumerationAccessPartial(ElementAccessPartial):
         self.__enumeration = None
         return self
 
-    def __next__(self):
+    def __next__(self) -> T:
         if self.__enumeration is None:
             if not self.__component.hasElements():
                 raise StopIteration
-            self.__enumeration = self.create_enumeration()
+            self.__enumeration = self.__component.createEnumeration()
         if self.__enumeration.hasMoreElements():
             next_element = self.__enumeration.nextElement()
             if self._is_next_element_valid(next_element):

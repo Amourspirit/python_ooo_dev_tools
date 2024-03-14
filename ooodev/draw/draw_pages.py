@@ -10,23 +10,33 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.draw import draw_page as mDrawPage
 from ooodev.exceptions import ex as mEx
+from ooodev.loader import lo as mLo
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
     from com.sun.star.drawing import XDrawPages
+    from com.sun.star.drawing import XDrawPage
     from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class DrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartial, QiPartial, ServicePartial):
+class DrawPages(
+    Generic[_T],
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    DrawPagesComp,
+    NameAccessPartial["XDrawPage"],
+    QiPartial,
+    ServicePartial,
+):
     """
     Class for managing Draw Pages.
     """
@@ -44,6 +54,9 @@ class DrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartia
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        if not isinstance(owner, OfficeDocumentPropPartial):
+            raise ValueError("owner must be an instance of OfficeDocumentPropPartial")
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
         NameAccessPartial.__init__(self, component=slides, interface=None)  # type: ignore
@@ -201,14 +214,8 @@ class DrawPages(Generic[_T], LoInstPropsPartial, DrawPagesComp, NameAccessPartia
         Returns:
             DrawPage: The new page.
         """
-        if idx >= len(self):
-            # if index is greater than the number of slides, then insert at the end
-            idx = -1
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
-        result = super().insert_new_by_index(idx)
+        index = mGenUtil.Util.get_index(idx, len(self), True)
+        result = super().insert_new_by_index(index)
         return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XDrawPages overrides

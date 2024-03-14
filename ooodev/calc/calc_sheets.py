@@ -22,6 +22,7 @@ from ooodev.calc import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheets
+    from com.sun.star.sheet import Spreadsheet  # service
     from ooodev.calc.calc_doc import CalcDoc
 
 
@@ -29,7 +30,7 @@ class CalcSheets(
     LoInstPropsPartial,
     SpreadsheetsComp,
     CellRangeAccessPartial,
-    NameReplacePartial,
+    NameReplacePartial["Spreadsheet"],
     QiPartial,
     ServicePartial,
     ElementIndexPartial,

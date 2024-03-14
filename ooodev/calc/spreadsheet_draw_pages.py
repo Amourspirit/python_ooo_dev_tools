@@ -14,19 +14,19 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.proto.component_proto import ComponentT
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
 
 
 class SpreadsheetDrawPages(
-    Generic[_T], LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial, CalcDocPropPartial
+    LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial, CalcDocPropPartial, Generic[_T]
 ):
     """
     Class for managing Spreadsheet Draw Pages.

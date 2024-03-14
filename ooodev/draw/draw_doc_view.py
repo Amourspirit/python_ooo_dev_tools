@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING
 import uno
 
 from ooodev.adapter.drawing.drawing_document_draw_view_comp import DrawingDocumentDrawViewComp
+from ooodev.draw.draw_page import DrawPage
+from ooodev.draw.partial.draw_doc_prop_partial import DrawDocPropPartial
+from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.draw.partial.draw_doc_prop_partial import DrawDocPropPartial
-from ooodev.draw.draw_page import DrawPage
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -17,7 +18,14 @@ if TYPE_CHECKING:
     from ooodev.units.unit_mm100 import UnitMM100
 
 
-class DrawDocView(DrawDocPropPartial, LoInstPropsPartial, DrawingDocumentDrawViewComp, QiPartial, ServicePartial):
+class DrawDocView(
+    DrawDocPropPartial,
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    DrawingDocumentDrawViewComp,
+    QiPartial,
+    ServicePartial,
+):
     """Draw Doc Controller View class. This class is used to manage the view of a Draw document. It is usually accessed via ``DrawDoc.current_controller.``"""
 
     def __init__(self, owner: DrawDoc, component: XComponent) -> None:
@@ -29,6 +37,7 @@ class DrawDocView(DrawDocPropPartial, LoInstPropsPartial, DrawingDocumentDrawVie
             component (XComponent): UNO Component that supports ``com.sun.star.drawing.DrawingDocumentDrawView`` service.
         """
         self._owner = owner
+        OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DrawDocPropPartial.__init__(self, obj=owner)
         LoInstPropsPartial.__init__(self, lo_inst=owner.lo_inst)
         DrawingDocumentDrawViewComp.__init__(self, component)
@@ -68,6 +77,6 @@ class DrawDocView(DrawDocPropPartial, LoInstPropsPartial, DrawingDocumentDrawVie
     def view_offset(self, value: Point | GenericUnitPoint[UnitMM100, int]) -> None:
         super().view_offset = value
 
-    # region DrawDocPropPartial Overrides
+    # endregion DrawDocPropPartial Overrides
 
     # endregion Properties

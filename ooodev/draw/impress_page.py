@@ -1,17 +1,21 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 from typing import TypeVar, Generic
 import uno
 from com.sun.star.drawing import XDrawPage
 
+from ooodev.draw.draw_page import DrawPage
 from ooodev.exceptions import ex as mEx
-from ooodev.office import draw as mDraw
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.draw.draw_page import DrawPage
-from ooodev.proto.component_proto import ComponentT
+from ooodev.office import draw as mDraw
 
+if TYPE_CHECKING:
+    from ooodev.proto.component_proto import ComponentT
 
 _T = TypeVar("_T", bound="ComponentT")
+
+# ShapeFactoryPartial of DrawPage -> GenericDrawPage implements OfficeDocumentPropPartial
 
 
 class ImpressPage(DrawPage[_T], Generic[_T]):
@@ -23,7 +27,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         self._owner = owner
-        DrawPage.__init__(self, owner=self, component=component, lo_inst=lo_inst)
+        DrawPage.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
 
     def get_master_page(self) -> ImpressPage[_T]:
         """
