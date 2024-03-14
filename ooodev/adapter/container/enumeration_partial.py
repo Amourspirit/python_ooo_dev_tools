@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Generic, TypeVar
 import uno
 
 from com.sun.star.container import XEnumeration
@@ -10,8 +10,10 @@ from ooodev.loader import lo as mLo
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
+T = TypeVar("T")
 
-class EnumerationPartial:
+
+class EnumerationPartial(Generic[T]):
     """
     Partial class for XEnumeration.
     """
@@ -43,7 +45,7 @@ class EnumerationPartial:
         """
         return self.__component.hasMoreElements()
 
-    def next_element(self) -> Any:
+    def next_element(self) -> T:
         """
         Gets the next element of this enumeration.
 

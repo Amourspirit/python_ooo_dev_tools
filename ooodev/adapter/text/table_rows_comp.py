@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING, Generic, TypeVar
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.table.table_rows_partial import TableRowsPartial
 
@@ -7,8 +7,10 @@ if TYPE_CHECKING:
     from com.sun.star.text import TableRows  # service
     from com.sun.star.table import XTableRows
 
+T = TypeVar("T")
 
-class TableRowsComp(IndexAccessComp, TableRowsPartial):
+
+class TableRowsComp(TableRowsPartial[T], IndexAccessComp[T], Generic[T]):
     """
     Class for managing TableRows Component.
 

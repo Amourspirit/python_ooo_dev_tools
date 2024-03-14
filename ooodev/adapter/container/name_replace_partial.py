@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from com.sun.star.container import XNameReplace
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
@@ -7,8 +7,10 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
+T = TypeVar("T")
 
-class NameReplacePartial(NameAccessPartial):
+
+class NameReplacePartial(NameAccessPartial[T], Generic[T]):
     """
     Partial Class for XNameReplace.
     """
@@ -27,12 +29,12 @@ class NameReplacePartial(NameAccessPartial):
         self.__component = component
 
     # region XNameReplace
-    def replace_by_name(self, name: str, element: Any) -> None:
+    def replace_by_name(self, name: str, element: T) -> None:
         """Replaces the element with the specified name.
 
         Args:
             name (str): The name of the element to be replaced.
-            element (object): The new element.
+            element (T): The new element.
         """
         self.__component.replaceByName(name, element)
 

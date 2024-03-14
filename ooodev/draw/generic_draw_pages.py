@@ -27,7 +27,7 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class GenericDrawPages(
-    Generic[_T], LoInstPropsPartial, OfficeDocumentPropPartial, DrawPagesComp, QiPartial, ServicePartial
+    LoInstPropsPartial, OfficeDocumentPropPartial, DrawPagesComp, QiPartial, ServicePartial, Generic[_T]
 ):
     """
     Class for managing Generic Draw Pages.

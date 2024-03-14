@@ -23,6 +23,7 @@ from ooodev.adapter.sheet.view_splitable_partial import ViewSplitablePartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
+    from com.sun.star.sheet import SpreadsheetViewPane  # service
 
 
 class SpreadsheetViewComp(
@@ -30,8 +31,8 @@ class SpreadsheetViewComp(
     ActivationBroadcasterPartial,
     ActivationEventEvents,
     EnhancedMouseClickBroadcasterPartial,
-    EnumerationAccessPartial,
-    IndexAccessPartial,
+    IndexAccessPartial["SpreadsheetViewPane"],
+    EnumerationAccessPartial["SpreadsheetViewPane"],
     RangeSelectionPartial,
     SelectionSupplierPartial,
     SpreadsheetViewPartial,

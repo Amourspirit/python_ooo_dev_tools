@@ -21,6 +21,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPages
+    from com.sun.star.drawing import XDrawPage
     from ooodev.proto.component_proto import ComponentT
     from ooodev.loader.inst.lo_inst import LoInst
 
@@ -28,13 +29,13 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class ImpressPages(
-    Generic[_T],
     LoInstPropsPartial,
     OfficeDocumentPropPartial,
     DrawPagesComp,
-    NameAccessPartial,
+    NameAccessPartial["XDrawPage"],
     QiPartial,
     ServicePartial,
+    Generic[_T],
 ):
     """
     Class for managing Draw Pages.

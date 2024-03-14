@@ -26,7 +26,6 @@ _T = TypeVar("_T", bound="ComponentT")
 
 class MasterDrawPage(
     DrawPagePartial[_T],
-    Generic[_T],
     LoInstPropsPartial,
     OfficeDocumentPropPartial,
     MasterPageComp,
@@ -36,6 +35,7 @@ class MasterDrawPage(
     QiPartial,
     PropPartial,
     StylePartial,
+    Generic[_T],
 ):
     """Represents a draw page."""
 

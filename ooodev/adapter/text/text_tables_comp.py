@@ -7,9 +7,10 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTables  # service
+    from com.sun.star.text import TextTable  # service
 
 
-class TextTablesComp(IndexAccessComp, NameAccessPartial):
+class TextTablesComp(IndexAccessComp["TextTable"], NameAccessPartial["TextTable"]):
     """
     Class for managing Text Tables Component.
     """

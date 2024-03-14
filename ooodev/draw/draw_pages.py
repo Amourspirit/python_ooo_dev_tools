@@ -22,6 +22,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 if TYPE_CHECKING:
     from ooodev.proto.component_proto import ComponentT
     from com.sun.star.drawing import XDrawPages
+    from com.sun.star.drawing import XDrawPage
     from ooodev.loader.inst.lo_inst import LoInst
 
 _T = TypeVar("_T", bound="ComponentT")
@@ -32,7 +33,7 @@ class DrawPages(
     LoInstPropsPartial,
     OfficeDocumentPropPartial,
     DrawPagesComp,
-    NameAccessPartial,
+    NameAccessPartial["XDrawPage"],
     QiPartial,
     ServicePartial,
 ):
@@ -213,14 +214,8 @@ class DrawPages(
         Returns:
             DrawPage: The new page.
         """
-        if idx >= len(self):
-            # if index is greater than the number of slides, then insert at the end
-            idx = -1
-        if idx < 0:
-            idx = len(self) + idx
-            if idx < 0:
-                raise IndexError("Index out of range")
-        result = super().insert_new_by_index(idx)
+        index = mGenUtil.Util.get_index(idx, len(self), True)
+        result = super().insert_new_by_index(index)
         return mDrawPage.DrawPage(owner=self.owner, component=result, lo_inst=self.lo_inst)
 
     # endregion XDrawPages overrides

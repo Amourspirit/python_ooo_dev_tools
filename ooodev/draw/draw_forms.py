@@ -70,7 +70,7 @@ class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPart
         ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)
 
     def __next__(self) -> DrawForm:
-        return DrawForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
+        return DrawForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)  # type: ignore
 
     def __getitem__(self, index: str | int) -> DrawForm:
         if isinstance(index, int):
@@ -198,7 +198,7 @@ class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPart
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return DrawForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return DrawForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XIndexAccess overrides
 
@@ -220,7 +220,7 @@ class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPart
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return DrawForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return DrawForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XNameAccess overrides
 

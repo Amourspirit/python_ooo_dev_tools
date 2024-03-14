@@ -11,17 +11,15 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.table.write_table import WriteTable
 from ooodev.exceptions import ex as mEx
-from ooodev.utils.color import Color, CommonColor
+
 
 if TYPE_CHECKING:
     from ooodev.proto.component_proto import ComponentT
-    from ooodev.utils.type_var import Table
-    from ooodev.proto.style_obj import StyleT
 
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTables(Generic[T], LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPartial):
+class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPartial, Generic[T]):
     """
     Represents writer text tables.
 

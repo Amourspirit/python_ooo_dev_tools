@@ -11,10 +11,11 @@ from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPa
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableRows
+    from com.sun.star.text import TextTableRow  # service
     from ooodev.write.table.write_table import WriteTable
 
 
-class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp, LoInstPropsPartial):
+class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["TextTableRow"], LoInstPropsPartial):
     """Represents writer table rows."""
 
     def __init__(self, owner: WriteTable[Any], component: XTableRows) -> None:
