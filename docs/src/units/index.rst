@@ -13,3 +13,5 @@ Contents
    :undoc-members:
    :inherited-members:
 
+.. automodule:: ooodev.units.ooodev.units.unit_factory
+   :members:

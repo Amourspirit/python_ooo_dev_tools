@@ -6,11 +6,13 @@ from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.angle10 import Angle10
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from ooodev.events.events_t import EventsT
     from ooodev.utils.color import Color
     from ooodev.units.angle_t import AngleT
+    from ooodev.units.unit_obj import UnitT
 
 
 class HatchStructComp(StructBase[Hatch]):
@@ -118,17 +120,27 @@ class HatchStructComp(StructBase[Hatch]):
             _ = self._trigger_done_event(event_args)
 
     @property
-    def distance(self) -> int:
+    def distance(self) -> UnitMM100:
         """
         This is the distance between the lines in the hatch.
+
+        When setting the value can be set with an ``int`` in ``1/100mm`` or an ``UnitT`` instance.
+
+        Returns:
+            UnitMM100: Distance in ``1/100mm``.
+
+        Hint:
+            - ``UnitMM100`` can be imported from ``ooodev.units``.
         """
-        return self.component.Distance
+        return UnitMM100(self.component.Distance)
 
     @distance.setter
-    def distance(self, value: int) -> None:
+    def distance(self, value: int | UnitT) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_value = val.value
         old_value = self.component.Distance
-        if old_value != value:
-            event_args = self._trigger_cancel_event("Distance", old_value, value)
+        if old_value != new_value:
+            event_args = self._trigger_cancel_event("Distance", old_value, new_value)
             _ = self._trigger_done_event(event_args)
 
     # endregion Properties
