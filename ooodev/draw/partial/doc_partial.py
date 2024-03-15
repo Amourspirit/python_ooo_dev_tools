@@ -98,7 +98,15 @@ class DocPartial(
     # endregion Lazy Listeners
 
     def get_selected_shapes(self) -> List[ShapeBase[Any]]:
-        """Get the names of the selected shapes."""
+        """
+        Get selected shapes.
+
+        Returns:
+            List[ShapeBase]: List of selected shapes.
+
+        Note:
+            See: `Rotate Shape Macro <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/macro/rotate_shape>`__ for an example.
+        """
         # pylint: disable=import-outside-toplevel
         from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
 

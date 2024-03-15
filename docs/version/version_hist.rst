@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.34.1
+==============
+
+Add a unit factory for converting units to other units. The module is ``ooodev.units.unit_factory``.
+
+Draw shapes now have better support when selecting Group Shapes.
+
+Shapes can now set size and position directly by setting the ``x``, ``y``, ``width`` and ``height`` properties of ``size`` and ``position`` properties.
+
+New Generic ``ooodev.adapter.awt.size_struct_generic_comp.SizeStructGenericComp`` for working with sizes and generic Unit Sizes.
+New Generic ``ooodev.adapter.awt.point_struct_generic_comp.PointStructGenericComp`` for working with positions and generic Unit Sizes.
+
 Version 0.34.0
 ==============
 

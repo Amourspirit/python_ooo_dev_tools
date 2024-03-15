@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Generic, TypeVar, Union, TYPE_CHECKING
+from typing import Generic, TypeVar, Union
 from ooodev.utils.data_type.generic_size_pos import GenericSizePos
 
 from ooodev.units.unit_obj import UnitT

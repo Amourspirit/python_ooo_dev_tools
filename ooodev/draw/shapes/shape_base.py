@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
+from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
 import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
@@ -11,20 +11,20 @@ from ooodev.draw.shapes.partial.export_png_partial import ExportPngPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.utils import info as mInfo
 from ooodev.mock import mock_g
 from ooodev.office import draw as mDraw
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 from ooodev.units.angle import Angle
 from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
-from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind
 from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-
+from ooodev.adapter.awt.size_struct_generic_comp import SizeStructGenericComp
+from ooodev.adapter.awt.point_struct_generic_comp import PointStructGenericComp
 
 if TYPE_CHECKING:
     from com.sun.star.awt import Gradient
@@ -35,9 +35,11 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import HomogenMatrix3
     from com.sun.star.drawing import Shape  # Service
     from com.sun.star.graphic import XGraphic
+    from com.sun.star.awt import Size as UnoSize
     from ooo.dyn.drawing.line_style import LineStyle
     from ooodev.proto.component_proto import ComponentT
     from ooodev.events.lo_events import Events
+    from ooodev.events.args.key_val_args import KeyValArgs
     from ooodev.proto.size_obj import SizeObj
     from ooodev.units.unit_obj import UnitT
     from ooodev.utils import color as mColor
@@ -75,7 +77,17 @@ class ShapeBase(
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         self.__owner = owner
         self.__component = component
+        self.__props = {}
         self._apply_shape_name()
+
+        def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
+            prop_name = str(event_args.event_data["prop_name"])
+            setattr(self, prop_name, src.component)
+
+        self.__fn_on_comp_struct_changed = on_comp_struct_changed
+        # pylint: disable=no-member
+        self.subscribe_event("generic_com_sun_star_awt_Size_changed", self.__fn_on_comp_struct_changed)
+        self.subscribe_event("generic_com_sun_star_awt_Point_changed", self.__fn_on_comp_struct_changed)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.shape_type})"
@@ -735,17 +747,122 @@ class ShapeBase(
         """Component Owner"""
         return self.__owner
 
-    @property
-    def size(self) -> GenericUnitSize[UnitMM, float]:
-        """Gets the size of the shape in ``UnitMM`` Values."""
-        sz = self.__component.getSize()
-        return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
+    # @property
+    # def size(self) -> GenericUnitSize[UnitMM, float]:
+    #     """Gets the size of the shape in ``UnitMM`` Values."""
+    #     sz = self.__component.getSize()
+    #     return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
 
     @property
-    def position(self) -> GenericUnitPoint[UnitMM, float]:
-        """Gets the Position of the shape in ``UnitMM`` Values."""
-        ps = self.__component.getPosition()
-        return GenericUnitPoint(UnitMM.from_mm100(ps.X), UnitMM.from_mm100(ps.Y))
+    def size(self) -> SizeStructGenericComp[UnitMM]:
+        """
+        Gets/Sets the size of the shape in ``UnitMM`` Values.
+
+        When setting this value, it can be set with a ``com.sun.star.awt.Size`` instance or a ``SizeStructGenericComp`` instance.
+
+        The Size can be set by just setting a Size property.
+
+        Returns:
+            SizeStructGenericComp[UnitMM]: Size in ``UnitMM`` Values.
+
+        Example:
+
+            Can be set by just setting a Size property using int or ``UnitMM``.
+
+            .. code-block:: python
+
+                shape.size.width = 1000 # 10 mm
+                shape.size.height = UnitMM(20) # 20 mm
+
+            Can also be set using any ``UnitT`` object.
+
+            .. code-block:: python
+
+                shape.size.width = UnitCM(1.2)
+                shape.size.height = UnitMM(40)
+
+            Can also be set using a ``com.sun.star.awt.Size`` struct.
+
+            .. code-block:: python
+
+                shape.size = Size(1000, 2000) # in 1/100mm
+        """
+        key = "size"
+        sz = self.__component.getSize()
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = SizeStructGenericComp(sz, UnitMM, key, self)
+            self.__props[key] = prop
+        return cast(SizeStructGenericComp[UnitMM], prop)
+
+    @size.setter
+    def size(self, value: UnoSize | SizeStructGenericComp) -> None:
+        key = "size"
+        if mInfo.Info.is_instance(value, SizeStructGenericComp):
+            self.__component.setSize(value.copy())
+        else:
+            self.__component.setSize(cast("UnoSize", value))
+        if key in self.__props:
+            del self.__props[key]
+
+    @property
+    def position(self) -> PointStructGenericComp[UnitMM]:
+        """
+        Gets/Sets the position of the shape in ``UnitMM`` Values.
+
+        When setting this value, it can be set with a ``com.sun.star.awt.Position`` instance or a ``PointStructGenericComp`` instance.
+
+        The Position can be set by just setting a Position property.
+
+        Returns:
+            PointStructGenericComp[UnitMM]: Position in ``UnitMM`` Values.
+
+        Note:
+            This is the position as reported by the shape. This is not the same as the position of the shape on the page.
+            The position of the shape on the page includes is from the page margins.
+
+            For instance if the page has a margin of 10mm and the shape is at position (15, 15) then the position of the shape
+            in the Draw Dialog box is (5, 5) where as this position property will report (15, 15).
+
+        Example:
+
+            Can be set by just setting a Position property using int or ``UnitMM``.
+
+            .. code-block:: python
+
+                shape.position.x = 1000 # 10 mm
+                shape.position.y = UnitMM(20) # 20 mm
+
+            Can also be set using any ``UnitT`` object.
+
+            .. code-block:: python
+
+                shape.position.x = UnitCM(1.2)
+                shape.position.y = UnitMM(40)
+
+            Can also be set using a ``com.sun.star.awt.Position`` struct.
+
+            .. code-block:: python
+
+                shape.position = Position(1000, 2000) # in 1/100mm
+        """
+        key = "position"
+        pos = self.__component.getPosition()
+        prop = self.__props.get(key, None)
+        if prop is None:
+            prop = PointStructGenericComp(pos, UnitMM, key, self)
+            self.__props[key] = prop
+        return cast(PointStructGenericComp[UnitMM], prop)
+
+    @position.setter
+    def position(self, value: Point | PointStructGenericComp) -> None:
+        key = "position"
+        if mInfo.Info.is_instance(value, PointStructGenericComp):
+            self.__component.setPosition(value.copy())
+        else:
+            self.__component.setPosition(cast("Point", value))
+        if key in self.__props:
+            del self.__props[key]
 
     @property
     def shape_type(self) -> str:
