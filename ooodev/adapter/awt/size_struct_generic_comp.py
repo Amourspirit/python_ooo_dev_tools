@@ -32,12 +32,17 @@ class SizeStructGenericComp(StructBase[Size], Generic[_T]):
 
         Args:
             component (Size): Size.
+            unit (Type[UnitT]): Unit Type.
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT, optional): Event Provider.
         """
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
+        self._unit = unit
         self._unit_length = unit.get_unit_length()
         self._require_convert = self._unit_length != UnitMM100.get_unit_length()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}[{self._unit.__name__}] {repr(self.component)}"
 
     # region Overrides
     def _get_on_changing_event_name(self) -> str:
@@ -62,6 +67,11 @@ class SizeStructGenericComp(StructBase[Size], Generic[_T]):
     def width(self) -> _T:
         """
         Gets/Sets the Width.
+
+        When setting the value can be a ``int`` in ``1/100th mm`` units or a ``UnitT`` measurement unit.
+
+        Returns:
+            _T: ``UnitT`` measurement unit.
         """
         unit100 = UnitMM100(self.component.Width)
         if not self._require_convert:
@@ -70,17 +80,23 @@ class SizeStructGenericComp(StructBase[Size], Generic[_T]):
         return cast(_T, get_unit(self._unit_length, val))
 
     @width.setter
-    def width(self, value: _T) -> None:
-        val = value.get_value_mm100()
+    def width(self, value: _T | float) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_value = val.value
         old_value = self.component.Width
-        if old_value != val:
-            event_args = self._trigger_cancel_event("Width", old_value, val)
+        if old_value != new_value:
+            event_args = self._trigger_cancel_event("Width", old_value, new_value)
             self._trigger_done_event(event_args)
 
     @property
     def height(self) -> _T:
         """
         Gets/Sets the the Height.
+
+        When setting the value can be a ``int`` in ``1/100th mm`` units or a ``UnitT`` measurement unit.
+
+        Returns:
+            _T: ``UnitT`` measurement unit.
         """
         unit100 = UnitMM100(self.component.Height)
         if not self._require_convert:
@@ -89,11 +105,12 @@ class SizeStructGenericComp(StructBase[Size], Generic[_T]):
         return cast(_T, get_unit(self._unit_length, val))
 
     @height.setter
-    def height(self, value: _T) -> None:
-        val = value.get_value_mm100()
+    def height(self, value: _T | float) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_value = val.value
         old_value = self.component.Height
-        if old_value != val:
-            event_args = self._trigger_cancel_event("Height", old_value, val)
+        if old_value != new_value:
+            event_args = self._trigger_cancel_event("Height", old_value, new_value)
             self._trigger_done_event(event_args)
 
     # endregion Properties

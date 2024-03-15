@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import uno
+import contextlib
 
 from ooodev.units.angle100 import Angle100
 
@@ -65,7 +66,7 @@ class RotationDescriptorPropertiesPartial:
         self.__component.RotateAngle = val.value
 
     @property
-    def shear_angle(self) -> Angle100:
+    def shear_angle(self) -> Angle100 | None:
         """
         This is the amount of shearing for this Shape.
 
@@ -73,8 +74,10 @@ class RotationDescriptorPropertiesPartial:
 
         When is setting this property, the value can be an int (in ``1/100th of a degree``) or an ``AngleT``.
 
+        **optional**
+
         Returns:
-            Angle100: The angle for rotation of this Shape.
+            Angle100 | None: The angle for rotation of this Shape Or ``None`` if not supported.
 
         Hint:
             ``Angle100`` can be imported from ``ooodev.units``
@@ -82,11 +85,17 @@ class RotationDescriptorPropertiesPartial:
         See Also:
             `Drawings and Presentations - Rotating and Shearing <https://wiki.documentfoundation.org/Documentation/DevGuide/Drawing_Documents_and_Presentation_Documents#Rotating_and_Shearing>`__
         """
-        return Angle100(self.__component.ShearAngle)
+        val: int | None = None
+        with contextlib.suppress(AttributeError):
+            val = self.__component.ShearAngle
+        return None if val is None else Angle100(val)
 
     @shear_angle.setter
     def shear_angle(self, value: int | AngleT) -> None:
+        if value is None:
+            return
         val = Angle100.from_unit_val(value)
-        self.__component.ShearAngle = val.value
+        with contextlib.suppress(AttributeError):
+            self.__component.ShearAngle = val.value
 
     # endregion RotationDescriptor
