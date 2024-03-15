@@ -37,12 +37,17 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
 
         Args:
             component (Point): Point.
+            unit (Type[UnitT]): Unit Type.
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT, optional): Event Provider.
         """
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
+        self._unit = unit
         self._unit_length = unit.get_unit_length()
         self._require_convert = self._unit_length != UnitMM100.get_unit_length()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}[{self._unit.__name__}] {repr(self.component)}"
 
     # region Overrides
     def _get_on_changing_event_name(self) -> str:
@@ -67,6 +72,11 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
     def x(self) -> _T:
         """
         Gets/Sets the x-coordinate.
+
+        When setting the value can be a ``int`` in ``1/100th mm`` units or a ``UnitT`` measurement unit.
+
+        Returns:
+            _T: ``UnitT`` measurement unit.
         """
         unit100 = UnitMM100(self.component.X)
         if not self._require_convert:
@@ -75,17 +85,23 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
         return cast(_T, get_unit(self._unit_length, val))
 
     @x.setter
-    def x(self, value: _T) -> None:
-        val = value.get_value_mm100()
+    def x(self, value: _T | float) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_value = val.value
         old_value = self.component.X
-        if old_value != val:
-            event_args = self._trigger_cancel_event("X", old_value, val)
+        if old_value != new_value:
+            event_args = self._trigger_cancel_event("X", old_value, new_value)
             self._trigger_done_event(event_args)
 
     @property
     def y(self) -> _T:
         """
         Gets/Sets the the y-coordinate.
+
+        When setting the value can be a ``int`` in ``1/100th mm`` units or a ``UnitT`` measurement unit.
+
+        Returns:
+            _T: ``UnitT`` measurement unit.
         """
         unit100 = UnitMM100(self.component.Y)
         if not self._require_convert:
@@ -94,11 +110,12 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
         return cast(_T, get_unit(self._unit_length, val))
 
     @y.setter
-    def y(self, value: _T) -> None:
-        val = value.get_value_mm100()
+    def y(self, value: _T | float) -> None:
+        val = UnitMM100.from_unit_val(value)
+        new_value = val.value
         old_value = self.component.Y
-        if old_value != val:
-            event_args = self._trigger_cancel_event("Y", old_value, val)
+        if old_value != new_value:
+            event_args = self._trigger_cancel_event("Y", old_value, new_value)
             self._trigger_done_event(event_args)
 
     # endregion Properties

@@ -433,6 +433,7 @@ class Draw:
             :py:class:`~.cfg.config.Config`
         """
         # Config meta class allows it to be called without args.
+        # pylint: disable=no-value-for-parameter
         p = Path(mInfo.Info.get_office_dir(), Config().slide_template_path)  # type: ignore
         return str(p)
 
@@ -2242,13 +2243,13 @@ class Draw:
         Returns:
             XShape: Shape
         """
+        # pylint: disable=not-an-iterable
         try:
             shapes = cls.get_shapes(slide)
             if not shapes:
                 raise mEx.ShapeMissingError("No shapes were found in the draw page")
 
             st = str(shape_type)
-
             for shape in shapes:
                 if st == shape.getShapeType():
                     return shape
@@ -2276,6 +2277,8 @@ class Draw:
         Returns:
             XShape: Shape.
         """
+        # pylint: disable=not-an-iterable
+
         try:
             shapes = cls.get_shapes(slide)
             sn = shape_name.casefold()
@@ -2458,6 +2461,7 @@ class Draw:
         Returns:
             XShape: Top most shape.
         """
+        # pylint: disable=not-an-iterable
         try:
             shapes = cls.get_shapes(slide)
             if not shapes:
@@ -2495,6 +2499,7 @@ class Draw:
         Returns:
             None:
         """
+        # pylint: disable=not-an-iterable
         try:
             shapes = cls.get_shapes(slide)
             if not shapes:

@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.34.3
+==============
+
+Update for Draw Shapes. Now can access many more properties on various shapes.
+
+Added ``ooodev.draw.shapes.shape_factory.ShapeFactory`` class that can be used to Convert ``XShape`` into ``OooDev`` Shapes.   
+
+``ooodev.adapter.text.graphic_crop_struct_comp.GraphicCropStructComp`` Now is a Generic for Unit measurements.
+
+``ooodev.adapter.drawing.rotation_descriptor_properties_partial.RotationDescriptorPropertiesPartial.shear_angle`` property is not optional.
+
+
 Version 0.34.1
 ==============
 

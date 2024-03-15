@@ -8,6 +8,7 @@ from ooodev.adapter.drawing.hatch_struct_comp import HatchStructComp
 from ooodev.adapter.text.graphic_crop_struct_comp import GraphicCropStructComp
 from ooodev.events.events import Events
 from ooodev.utils import info as mInfo
+from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import FillProperties
@@ -515,7 +516,7 @@ class FillPropertiesPartial:
             self.__component.FillUseSlideBackground = value
 
     @property
-    def graphic_crop(self) -> GraphicCropStructComp | None:
+    def graphic_crop(self) -> GraphicCropStructComp[UnitMM100] | None:
         """
         Gets/Sets the cropping of the object.
 
@@ -537,12 +538,12 @@ class FillPropertiesPartial:
             return None
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = GraphicCropStructComp(self.__component.GraphicCrop, key, self.__event_provider)
+            prop = GraphicCropStructComp(self.__component.GraphicCrop, UnitMM100, key, self.__event_provider)
             self.__props[key] = prop
         return cast(GraphicCropStructComp, prop)
 
     @graphic_crop.setter
-    def graphic_crop(self, value: GraphicCrop | GraphicCropStructComp) -> None:
+    def graphic_crop(self, value: GraphicCrop | GraphicCropStructComp[UnitMM100]) -> None:
         key = "GraphicCrop"
         if not hasattr(self.__component, key):
             return None

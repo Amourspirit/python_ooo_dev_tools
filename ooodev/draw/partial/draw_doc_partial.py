@@ -4,10 +4,10 @@ import uno
 
 from com.sun.star.frame import XModel
 
+from ooodev.mock import mock_g
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
-from ooodev.proto.component_proto import ComponentT
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import gui as mGUI
 from ooodev.loader import lo as mLo
@@ -22,6 +22,7 @@ from ooodev.draw import draw_page as mDrawPage
 from ooodev.draw import master_draw_page as mMasterDrawPage
 from ooodev.draw.shapes import draw_shape as mDrawShape
 
+
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
     from com.sun.star.drawing import XDrawPages
@@ -31,6 +32,9 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import XShapes
     from com.sun.star.frame import XController
     from com.sun.star.lang import XComponent
+    from ooodev.draw.shapes.shape_base import ShapeBase
+    from ooodev.draw.shapes.shape_factory import ShapeFactory
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.utils.data_type.size import Size
     from ooodev.draw.draw_doc import DrawDoc
 
@@ -42,10 +46,7 @@ class DrawDocPartial(Generic[_T]):
     def __init__(self, owner: _T, component: XComponent, lo_inst: LoInst | None = None) -> None:
         self.__owner = owner
         self.__component = component
-        if lo_inst is None:
-            self.__lo_inst = mLo.Lo.current_lo
-        else:
-            self.__lo_inst = lo_inst
+        self.__lo_inst = mLo.Lo.current_lo if lo_inst is None else lo_inst
 
     def add_slide(self) -> mDrawPage.DrawPage[_T]:
         """
@@ -118,7 +119,7 @@ class DrawDocPartial(Generic[_T]):
         Attention:
             :py:meth:`Lo.close <.utils.lo.Lo.close>` method is called along with any of its events.
         """
-        return self.__lo_inst.close(closeable=self.__component, deliver_ownership=deliver_ownership) # type: ignore
+        return self.__lo_inst.close(closeable=self.__component, deliver_ownership=deliver_ownership)  # type: ignore
 
     def combine_shape(self, shapes: XShapes, combine_op: ShapeCombKind) -> mDrawShape.DrawShape[_T]:
         """
@@ -310,18 +311,39 @@ class DrawDocPartial(Generic[_T]):
         page = mDraw.Draw.get_notes_page_by_index(self.__component, idx)
         return mDrawPage.DrawPage(self.__owner, page)
 
-    def get_ordered_shapes(self) -> List[mDrawShape.DrawShape[_T]]:
+    def get_shape_factory(self) -> ShapeFactory:
+        """
+        Gets a shape factory that can be used to convert ``XShape`` to ``ShapeBase`` objects.
+
+        Returns:
+            ShapeFactory: Shape Factory
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        from ooodev.draw.shapes.shape_factory import ShapeFactory
+
+        return ShapeFactory(self.__owner, lo_inst=self.__lo_inst)
+
+    def get_ordered_shapes(self) -> List[ShapeBase[_T]]:
         """
         Gets ordered shapes
 
         Returns:
-            List[DrawShape[_T]]: List of Ordered Shapes.
+            List[ShapeBase[_T]]: List of Ordered Shapes.
 
         See Also:
             :py:meth:`~.draw.Draw.get_shapes`
+
+        Note:
+            The Shapes returned from this method will have various properties and
+            methods injected into them based on the UNO services they support.
         """
+        # pylint: disable=not-an-iterable
         shapes = mDraw.Draw.get_ordered_shapes(doc=self.__component)
-        return [mDrawShape.DrawShape(self.__owner, shape) for shape in shapes]
+        if not shapes:
+            return []
+        sf = self.get_shape_factory()
+        return [sf.shape_factory(shape) for shape in shapes]
 
     def get_play_list(self) -> NameContainerComp:
         """
@@ -336,7 +358,7 @@ class DrawDocPartial(Generic[_T]):
         result = mDraw.Draw.get_play_list(self.__component)
         return NameContainerComp(result)
 
-    def get_shapes(self) -> List[mDrawShape.DrawShape[_T]]:
+    def get_shapes(self) -> List[ShapeBase[_T]]:
         """
         Gets shapes
 
@@ -347,10 +369,18 @@ class DrawDocPartial(Generic[_T]):
             DrawError: If error occurs.
 
         Returns:
-            List[DrawShape]: List of Shapes.
+            List[ShapeBase[_T]]: List of Shapes.
+
+        Note:
+            The Shapes returned from this method will have various properties and
+            methods injected into them based on the UNO services they support.
         """
         shapes = mDraw.Draw.get_shapes(doc=self.__component)
-        return [mDrawShape.DrawShape(self.__owner, shape) for shape in shapes]
+        if not shapes:
+            return []
+        sf = self.get_shape_factory()
+        # pylint: disable=not-an-iterable
+        return [sf.shape_factory(shape) for shape in shapes]
 
     def get_shapes_text(self) -> str:
         """
@@ -618,3 +648,7 @@ class DrawDocPartial(Generic[_T]):
         """
         with LoContext(self.__lo_inst):
             mGUI.GUI.zoom_value(value=value)
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.draw.shapes.shape_factory import ShapeFactory
