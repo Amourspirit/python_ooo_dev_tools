@@ -55,57 +55,63 @@ class ShapeFactoryPartial(Generic[_T], OfficeDocumentPropPartial):
         # pylint: disable=redefined-outer-name
         if not hasattr(shape, "ShapeType"):
             raise ValueError("shape has no ShapeType property")
+        base_class = None
         shape_type = cast(str, getattr(shape, "ShapeType"))
         if shape_type == "com.sun.star.drawing.ClosedBezierShape":
             from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
 
-            return ClosedBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.ConnectorShape":
+            base_class = ClosedBezierShape
+        elif shape_type == "com.sun.star.drawing.ConnectorShape":
             from ooodev.draw.shapes.connector_shape import ConnectorShape
 
-            return ConnectorShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.EllipseShape":
+            base_class = ConnectorShape
+        elif shape_type == "com.sun.star.drawing.EllipseShape":
             from ooodev.draw.shapes.ellipse_shape import EllipseShape
 
-            return EllipseShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.GraphicObjectShape":
+            base_class = EllipseShape
+        elif shape_type == "com.sun.star.drawing.GraphicObjectShape":
             from ooodev.draw.shapes.graphic_object_shape import GraphicObjectShape
 
-            return GraphicObjectShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.LineShape":
+            base_class = GraphicObjectShape
+        elif shape_type == "com.sun.star.drawing.LineShape":
             from ooodev.draw.shapes.line_shape import LineShape
 
-            return LineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.OLE2Shape":
+            base_class = LineShape
+        elif shape_type == "com.sun.star.drawing.OLE2Shape":
             from ooodev.draw.shapes.ole2_shape import OLE2Shape
 
-            return OLE2Shape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.OpenBezierShape":
+            base_class = OLE2Shape
+        elif shape_type == "com.sun.star.drawing.OpenBezierShape":
             from ooodev.draw.shapes.open_bezier_shape import OpenBezierShape
 
-            return OpenBezierShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.PolyLineShape":
+            base_class = OpenBezierShape
+        elif shape_type == "com.sun.star.drawing.PolyLineShape":
             from ooodev.draw.shapes.poly_line_shape import PolyLineShape
 
-            return PolyLineShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.PolyPolygonShape":
+            base_class = PolyLineShape
+        elif shape_type == "com.sun.star.drawing.PolyPolygonShape":
             from ooodev.draw.shapes.poly_polygon_shape import PolyPolygonShape
 
-            return PolyPolygonShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.RectangleShape":
+            base_class = PolyPolygonShape
+        elif shape_type == "com.sun.star.drawing.RectangleShape":
             from ooodev.draw.shapes.rectangle_shape import RectangleShape
 
-            return RectangleShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "com.sun.star.drawing.TextShape":
+            base_class = RectangleShape
+        elif shape_type == "com.sun.star.drawing.TextShape":
             from ooodev.draw.shapes.text_shape import TextShape
 
-            return TextShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
-        if shape_type == "FrameShape":
+            base_class = TextShape
+        elif shape_type == "FrameShape":
             from ooodev.write.write_text_frame import WriteTextFrame
 
-            return WriteTextFrame(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)  # type: ignore
+            base_class = WriteTextFrame
 
-        class_factory = ShapeClassFactory(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+        if base_class is None:
+            class_factory = ShapeClassFactory(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
+        else:
+            class_factory = ShapeClassFactory(
+                owner=self.__owner, component=shape, lo_inst=self.__lo_inst, base_class=base_class
+            )
         return class_factory.get_class()
         # return DrawShape(owner=self.__owner, component=shape, lo_inst=self.__lo_inst)
 
