@@ -196,6 +196,28 @@ class UnitMM(BaseFloatValue):
 
     # endregion math and comparison
 
+    @staticmethod
+    def get_unit_length() -> UnitLength:
+        """
+        Gets instance unit length.
+
+        Returns:
+            UnitLength: Instance unit length ``UnitLength.MM``.
+        """
+        return UnitLength.MM
+
+    def convert_to(self, unit: UnitLength) -> float:
+        """
+        Converts instance value to specified unit.
+
+        Args:
+            unit (UnitLength): Unit to convert to.
+
+        Returns:
+            float: Value in specified unit.
+        """
+        return UnitConvert.convert(num=self.value, frm=UnitLength.MM, to=unit)
+
     def get_value_cm(self) -> float:
         """
         Gets instance value converted to ``cm`` units.
@@ -428,12 +450,12 @@ class UnitMM(BaseFloatValue):
         return inst
 
     @classmethod
-    def from_unit_val(cls: Type[_TUnitMM], value: UnitT | float) -> _TUnitMM:
+    def from_unit_val(cls: Type[_TUnitMM], value: UnitT | float | int) -> _TUnitMM:
         """
         Get instance from ``UnitT`` or float value.
 
         Args:
-            value (UnitT, float): ``UnitT`` or float value. If float then it is assumed to be in ``mm`` units.
+            value (UnitT, float, int): ``UnitT`` or float value. If float then it is assumed to be in ``mm`` units.
 
         Returns:
             UnitMM:

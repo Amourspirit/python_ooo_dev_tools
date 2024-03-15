@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import cast, Generic, Type, TypeVar, TYPE_CHECKING
 import uno
-from ooo.dyn.awt.point import Point
+from ooo.dyn.awt.size import Size
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.units.unit_factory import get_unit
-
 
 if TYPE_CHECKING:
     from ooodev.events.events_t import EventsT
@@ -13,30 +12,26 @@ if TYPE_CHECKING:
 
 _T = TypeVar("_T", bound="UnitT")
 
-# see ooodev.adapter.drawing.glue_point2_struct_comp.GluePoint2StructComp for example usage.
 
-
-class PointStructGenericComp(StructBase[Point], Generic[_T]):
+class SizeStructGenericComp(StructBase[Size], Generic[_T]):
     """
-    Generic Point Struct.
+    Generic Size Struct.
 
     This class raises an event before and after a property is changed if it has been passed an event provider.
 
-    The event raised before the property is changed is called ``generic_com_sun_star_awt_Point_changing``.
-    The event raised after the property is changed is called ``generic_com_sun_star_awt_Point_changed``.
+    The event raised before the property is changed is called ``generic_com_sun_star_awt_Size_changing``.
+    The event raised after the property is changed is called ``generic_com_sun_star_awt_Size_changed``.
 
     The event args for before the property is changed is of type ``KeyValCancelArgs``.
     The event args for after the property is changed is of type ``KeyValArgs``.
     """
 
-    def __init__(
-        self, component: Point, unit: Type[_T], prop_name: str, event_provider: EventsT | None = None
-    ) -> None:
+    def __init__(self, component: Size, unit: Type[_T], prop_name: str, event_provider: EventsT | None = None) -> None:
         """
         Constructor
 
         Args:
-            component (Point): Point.
+            component (Size): Size.
             prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
             event_provider (EventsT, optional): Event Provider.
         """
@@ -46,17 +41,17 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
 
     # region Overrides
     def _get_on_changing_event_name(self) -> str:
-        return "generic_com_sun_star_awt_Point_changing"
+        return "generic_com_sun_star_awt_Size_changing"
 
     def _get_on_changed_event_name(self) -> str:
-        return "generic_com_sun_star_awt_Point_changed"
+        return "generic_com_sun_star_awt_Size_changed"
 
-    def _copy(self, src: Point | None = None) -> Point:
+    def _copy(self, src: Size | None = None) -> Size:
         if src is None:
             src = self.component
-        return Point(
-            X=src.X,
-            Y=src.Y,
+        return Size(
+            Width=src.Width,
+            Height=src.Height,
         )
 
     # endregion Overrides
@@ -64,41 +59,41 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
     # region Properties
 
     @property
-    def x(self) -> _T:
+    def width(self) -> _T:
         """
-        Gets/Sets the x-coordinate.
+        Gets/Sets the Width.
         """
-        unit100 = UnitMM100(self.component.X)
+        unit100 = UnitMM100(self.component.Width)
         if not self._require_convert:
             return cast(_T, unit100)
         val = unit100.convert_to(self._unit_length)
         return cast(_T, get_unit(self._unit_length, val))
 
-    @x.setter
-    def x(self, value: _T) -> None:
+    @width.setter
+    def width(self, value: _T) -> None:
         val = value.get_value_mm100()
-        old_value = self.component.X
+        old_value = self.component.Width
         if old_value != val:
-            event_args = self._trigger_cancel_event("X", old_value, val)
+            event_args = self._trigger_cancel_event("Width", old_value, val)
             self._trigger_done_event(event_args)
 
     @property
-    def y(self) -> _T:
+    def height(self) -> _T:
         """
-        Gets/Sets the the y-coordinate.
+        Gets/Sets the the Height.
         """
-        unit100 = UnitMM100(self.component.Y)
+        unit100 = UnitMM100(self.component.Height)
         if not self._require_convert:
             return cast(_T, unit100)
         val = unit100.convert_to(self._unit_length)
         return cast(_T, get_unit(self._unit_length, val))
 
-    @y.setter
-    def y(self, value: _T) -> None:
+    @height.setter
+    def height(self, value: _T) -> None:
         val = value.get_value_mm100()
-        old_value = self.component.Y
+        old_value = self.component.Height
         if old_value != val:
-            event_args = self._trigger_cancel_event("Y", old_value, val)
+            event_args = self._trigger_cancel_event("Height", old_value, val)
             self._trigger_done_event(event_args)
 
     # endregion Properties

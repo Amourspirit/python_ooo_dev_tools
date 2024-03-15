@@ -93,10 +93,7 @@ class GluePoint2StructComp(StructBase[GluePoint2]):
         key = "position"
         prop = self._props.get(key, None)
         if prop is None:
-            x = UnitMM100(self.component.Position.X)
-            y = UnitMM100(self.component.Position.Y)
-            pos = GenericUnitPoint(x, y)
-            prop = PointStructGenericComp(pos, key, self._event_provider)
+            prop = PointStructGenericComp(self.component.Position, UnitMM100, key, self._event_provider)
             self._props[key] = prop
         return cast(PointStructGenericComp[UnitMM100], prop)
 
@@ -104,7 +101,7 @@ class GluePoint2StructComp(StructBase[GluePoint2]):
     def position(self, value: Point | PointStructGenericComp[UnitMM100]) -> None:
         key = "position"
         if mInfo.Info.is_instance(value, PointStructGenericComp):
-            self.component.Position = value.get_uno_point()
+            self.component.Position = value.copy()
         else:
             self.component.Position = cast("Point", value)
         if key in self._props:
