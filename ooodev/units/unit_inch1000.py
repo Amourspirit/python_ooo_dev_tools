@@ -273,9 +273,23 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.IN1000)))
         return inst
+
+    def get_value_app_font(self) -> float:
+        """
+        Gets instance value in ``AppFont`` units.
+
+        Returns:
+            float: Value in ``AppFont`` units.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont.from_inch1000(self.value)
+        return af.value
 
     @classmethod
     def from_pt(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
@@ -288,6 +302,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.IN1000)))
         return inst
@@ -303,6 +318,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.IN1000)))
         return inst
@@ -318,6 +334,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.IN1000)))
         return inst
@@ -333,6 +350,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.IN1000)))
         return inst
@@ -348,6 +366,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.IN1000)))
         return inst
@@ -363,6 +382,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
@@ -378,6 +398,7 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.IN1000)))
         return inst
@@ -393,9 +414,27 @@ class UnitInch1000:
         Returns:
             UnitInch1000:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitInch1000, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.IN1000)))
         return inst
+
+    @classmethod
+    def from_app_font(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
+        """
+        Get instance from ``AppFont`` value.
+
+        Args:
+            value (int): ``AppFont`` value.
+
+        Returns:
+            UnitInch1000:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont(value)
+        return cls.from_inch1000(af.get_value_inch1000())
 
     @classmethod
     def from_unit_val(cls: Type[_TUnitInch1000], value: UnitT | float | int) -> _TUnitInch1000:

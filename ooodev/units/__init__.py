@@ -18,6 +18,7 @@ from .unit_obj import UnitT as UnitObj
 from .unit_obj import UnitT as UnitT
 from .unit_pt import UnitPT as UnitPT
 from .unit_px import UnitPX as UnitPX
+from .unit_app_font import UnitAppFont as UnitAppFont
 
 __all__ = [
     "Angle",
@@ -26,6 +27,7 @@ __all__ = [
     "AngleUnitT",
     "SizeMM100",
     "SizePX",
+    "UnitAppFont",
     "UnitCM",
     "UnitConvert",
     "UnitInch",

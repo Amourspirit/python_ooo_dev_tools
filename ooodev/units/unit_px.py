@@ -27,6 +27,12 @@ class UnitPX(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
+    # region Overrides
+    def _from_float(self, value: float) -> UnitPX:
+        return self.from_px(value)
+
+    # endregion Overrides
+
     # region math and comparison
     def __int__(self) -> int:
         return round(self.value)
@@ -146,21 +152,15 @@ class UnitPX(BaseFloatValue):
 
     def __le__(self, other: object) -> bool:
         if isinstance(other, UnitPX):
-            if self.almost_equal(other.value):
-                return True
-            return self.value < other.value
+            return True if self.almost_equal(other.value) else self.value < other.value
         if hasattr(other, "get_value_px"):
             oth_val = other.get_value_px()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         return False
 
     def __gt__(self, other: object) -> bool:
@@ -177,21 +177,15 @@ class UnitPX(BaseFloatValue):
 
     def __ge__(self, other: object) -> bool:
         if isinstance(other, UnitPX):
-            if self.almost_equal(other.value):
-                return True
-            return self.value > other.value
+            return True if self.almost_equal(other.value) else self.value > other.value
         if hasattr(other, "get_value_px"):
             oth_val = other.get_value_px()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         return False
 
     # endregion math and comparison
@@ -299,6 +293,19 @@ class UnitPX(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=UnitLength.PX, to=UnitLength.IN1000))
 
+    def get_value_app_font(self) -> float:
+        """
+        Gets instance value in ``AppFont`` units.
+
+        Returns:
+            float: Value in ``AppFont`` units.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont.from_px(self.value)
+        return af.value
+
     @classmethod
     def from_pt(cls: Type[_TUnitPX], value: float) -> _TUnitPX:
         """
@@ -310,6 +317,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.PX))
         return inst
@@ -325,6 +333,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
@@ -340,6 +349,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.PX))
         return inst
@@ -355,6 +365,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.PX))
         return inst
@@ -370,6 +381,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.PX))
         return inst
@@ -385,6 +397,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.PX))
         return inst
@@ -400,6 +413,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.PX))
         return inst
@@ -415,6 +429,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.PX))
         return inst
@@ -430,6 +445,7 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.PX))
         return inst
@@ -445,9 +461,27 @@ class UnitPX(BaseFloatValue):
         Returns:
             UnitPX:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPX, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.PX))
         return inst
+
+    @classmethod
+    def from_app_font(cls: Type[_TUnitPX], value: float) -> _TUnitPX:
+        """
+        Get instance from ``AppFont`` value.
+
+        Args:
+            value (int): ``AppFont`` value.
+
+        Returns:
+            UnitPX:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont(value)
+        return cls.from_px(af.get_value_px())
 
     @classmethod
     def from_unit_val(cls: Type[_TUnitPX], value: UnitT | float | int) -> _TUnitPX:
