@@ -61,6 +61,7 @@ Submodules
    ooodev.adapter.awt.top_window_events
    ooodev.adapter.awt.top_window_listener
    ooodev.adapter.awt.top_window_partial
+   ooodev.adapter.awt.unit_conversion_comp
    ooodev.adapter.awt.unit_conversion_partial
    ooodev.adapter.awt.uno_control_button_model_partial
    ooodev.adapter.awt.uno_control_check_box_model_partial

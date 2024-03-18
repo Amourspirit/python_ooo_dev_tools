@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.36.0
+==============
+
+Added ``ooodev.units.UnitAppFont`` class that can be used where App Font Measurements are used.
+``UnitAppFont`` units may change value on different systems. This class is used for measurements that are based on the current system.
+
+``ooodev.dialog.dl_control.CtlGrid`` now uses ``UnitAppFont`` for ``column_header_height``, ``row_header_width``,  and ``row_height`` properties.
+
 Version 0.35.0
 ==============
 
