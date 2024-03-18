@@ -33,6 +33,12 @@ class ErrorBarComp(
         Args:
             lo_inst (LoInst): Lo Instance. This instance is used to create ``component`` is it is not provided.
             component (ErrorBar, optional): UNO Chart2 ErrorBar Component.
+
+        Returns:
+            None:
+
+        Note:
+            ``component`` is automatically created from ``lo_inst`` if it is not provided.
         """
         if component is None:
             component = lo_inst.create_instance_mcf(XPropertySet, "com.sun.star.chart2.ErrorBar", raise_err=True)

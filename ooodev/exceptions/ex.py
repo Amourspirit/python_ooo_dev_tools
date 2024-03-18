@@ -491,6 +491,16 @@ class DispatchError(Exception):
     pass
 
 
+class ConvertError(Exception):
+    """
+    Generic error when an error occurs while converting.
+
+    .. versionadded:: 0.35.0
+    """
+
+    pass
+
+
 class ConvertPathError(OSError):
     """Path Conversion Error"""
 

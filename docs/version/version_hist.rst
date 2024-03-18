@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.35.0
+==============
+
+Added all the same conversions found in `CONVERT function <https://help.libreoffice.org/latest/en-US/text/scalc/01/func_convert.html?&DbPAR=CALC&System=UNIX>`__
+to :ref:`ns_units_convert`. There are enum for all the conversions.
+
 Version 0.34.3
 ==============
 

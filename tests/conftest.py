@@ -220,7 +220,7 @@ def _get_loader_socket_no_start(
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
     # for testing with a snap the cache_obj must be omitted.
     # This because the snap is not allowed to write to the real tmp directory.
