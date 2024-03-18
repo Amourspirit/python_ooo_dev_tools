@@ -14,6 +14,8 @@ Submodules
    ooodev.adapter.sheet.cell_range_data_partial
    ooodev.adapter.sheet.cell_range_referrer_partial
    ooodev.adapter.sheet.enhanced_mouse_click_broadcaster_partial
+   ooodev.adapter.sheet.function_access_comp
+   ooodev.adapter.sheet.function_access_partial
    ooodev.adapter.sheet.range_selection_change_events
    ooodev.adapter.sheet.range_selection_change_listener
    ooodev.adapter.sheet.range_selection_events

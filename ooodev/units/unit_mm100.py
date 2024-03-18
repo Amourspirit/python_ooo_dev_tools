@@ -211,6 +211,19 @@ class UnitMM100:
         """
         return UnitConvert.convert(num=self.value, frm=UnitLength.MM100, to=UnitLength.PX)
 
+    def get_value_app_font(self) -> float:
+        """
+        Gets instance value in ``AppFont`` units.
+
+        Returns:
+            float: Value in ``AppFont`` units.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont.from_mm100(self.value)
+        return af.value
+
     @classmethod
     def from_mm(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
         """
@@ -222,6 +235,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert_mm_mm100(value))
         return inst
@@ -237,6 +251,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.MM100)))
         return inst
@@ -253,6 +268,7 @@ class UnitMM100:
             UnitMM100:
         """
         # sourcery skip: remove-unnecessary-cast
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(int(value))
         return inst
@@ -268,6 +284,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.MM100)))
         return inst
@@ -283,6 +300,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.MM100)))
         return inst
@@ -298,6 +316,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.MM100)))
         return inst
@@ -313,6 +332,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.MM100)))
         return inst
@@ -328,6 +348,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.MM100)))
         return inst
@@ -343,6 +364,7 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.MM100)))
         return inst
@@ -358,9 +380,27 @@ class UnitMM100:
         Returns:
             UnitMM100:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitMM100, cls).__new__(cls)  # type: ignore
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.MM100)))
         return inst
+
+    @classmethod
+    def from_app_font(cls: Type[_TUnitMM100], value: float) -> _TUnitMM100:
+        """
+        Get instance from ``AppFont`` value.
+
+        Args:
+            value (int): ``AppFont`` value.
+
+        Returns:
+            UnitMM100:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont(value)
+        return cls.from_mm100(af.get_value_mm100())
 
     @classmethod
     def from_unit_val(cls: Type[_TUnitMM100], value: UnitT | float | int) -> _TUnitMM100:

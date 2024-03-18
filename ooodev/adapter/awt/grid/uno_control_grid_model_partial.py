@@ -11,12 +11,14 @@ from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
+from ooodev.units.unit_app_font import UnitAppFont
 
 if TYPE_CHECKING:
     from com.sun.star.awt.grid import UnoControlGridModel  # Service
     from com.sun.star.awt import FontDescriptor  # struct
     from com.sun.star.awt.grid import XGridColumnModel
     from ooodev.events.args.key_val_args import KeyValArgs
+    from ooodev.units.unit_obj import UnitT
 
 
 class UnoControlGridModelPartial(UnoControlModelPartial):
@@ -152,25 +154,29 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         self.model.ActiveSelectionTextColor = value  # type: ignore
 
     @property
-    def column_header_height(self) -> int | None:
+    def column_header_height(self) -> UnitAppFont | None:
         """
         Gets/Sets the height of the column header row, if applicable.
 
-        The height is specified in application font units - see ``MeasureUnit`` below.
+        The height is specified in application font units.
 
-        The value given here is ignored if ShowColumnHeader is FALSE.
+        The value given here is ignored if ShowColumnHeader is ``False``.
 
         If the property is ``None``, the grid control shall automatically determine a height which conveniently allows,
         according to the used font, to display one line of text.
 
-        See Also:
-            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+        When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
-        return self.model.ColumnHeaderHeight
+        val = getattr(self.model, "ColumnHeaderHeight", None)
+        return None if val is None else UnitAppFont(val)
 
     @column_header_height.setter
-    def column_header_height(self, value: int) -> None:
-        self.model.ColumnHeaderHeight = value
+    def column_header_height(self, value: float | UnitT | None) -> None:
+        if value is None:
+            self.model.ColumnHeaderHeight = None  # type: ignore
+            return
+        val = UnitAppFont.from_unit_val(value)
+        self.model.ColumnHeaderHeight = round(val.value)
 
     @property
     def column_model(self) -> XGridColumnModel:
@@ -349,38 +355,38 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         self.model.InactiveSelectionTextColor = value  # type: ignore
 
     @property
-    def row_header_width(self) -> int:
+    def row_header_width(self) -> UnitAppFont:
         """
         Gets/Sets the width of the row header column, if applicable.
 
-        The width is specified in application font units - see ``MeasureUnit`` below.
+        The width is specified in application font units.
 
         The value given here is ignored if ``show_row_header`` is ``False``.
 
-        See Also:
-            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+        When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
-        return self.model.RowHeaderWidth
+        return UnitAppFont(self.model.RowHeaderWidth)
 
     @row_header_width.setter
-    def row_header_width(self, value: int) -> None:
-        self.model.RowHeaderWidth = value
+    def row_header_width(self, value: int | UnitT) -> None:
+        val = UnitAppFont.from_unit_val(value)
+        self.model.RowHeaderWidth = round(val.value)
 
     @property
-    def row_height(self) -> int:
+    def row_height(self) -> UnitAppFont:
         """
         Gets/Sets the height of rows in the grid control.
 
-        The height is specified in application font units - see ``MeasureUnit`` below.
+        The height is specified in application font units.
 
-        See Also:
-            - `com.sun.star.util.MeasureUnit <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1util_1_1MeasureUnit.html>`__
+        When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
-        return self.model.RowHeight
+        return UnitAppFont(self.model.RowHeight)
 
     @row_height.setter
-    def row_height(self, value: int) -> None:
-        self.model.RowHeight = value
+    def row_height(self, value: int | UnitT) -> None:
+        val = UnitAppFont.from_unit_val(value)
+        self.model.RowHeight = round(val.value)
 
     @property
     def selection_model(self) -> SelectionType:

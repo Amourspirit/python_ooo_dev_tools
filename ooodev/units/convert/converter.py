@@ -45,7 +45,6 @@ class Converter(FunctionAccessComp):
 
         Args:
             lo_inst (LoInst): Lo Instance. This instance is used to create ``component`` is it is not provided.
-            component (XFunctionAccess, optional): Function Access Component.
 
         Returns:
             None:
