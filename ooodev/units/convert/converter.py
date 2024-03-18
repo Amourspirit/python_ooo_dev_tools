@@ -33,7 +33,7 @@ class Converter(FunctionAccessComp):
 
     Note that ``CONVERT`` is the same function as in Calc.
 
-    ..seealso::
+    .. seealso::
         `Calc CONVERT function <https://help.libreoffice.org/latest/en-US/text/scalc/01/func_convert.html?&DbPAR=CALC&System=UNIX>`__
 
     .. versionadded:: 0.35.0
