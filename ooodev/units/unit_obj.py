@@ -1,8 +1,9 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from ooodev.format.inner.kind.format_kind import FormatKind as FormatKind
+from ooodev.mock.mock_g import DOCS_BUILDING
 
-if TYPE_CHECKING:
+if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from typing_extensions import Self
     from ooodev.units.unit_convert import UnitLength
@@ -93,6 +94,15 @@ if TYPE_CHECKING:
             """
             ...
 
+        def get_value_app_font(self) -> float:
+            """
+            Gets instance value in ``AppFont`` units.
+
+            Returns:
+                float: Value in ``AppFont`` units.
+            """
+            ...
+
         @classmethod
         def from_unit_val(cls, value: UnitT | float | int) -> Self:
             """
@@ -105,6 +115,19 @@ if TYPE_CHECKING:
                 Self: Instance.
 
             .. versionadded:: 0.34.1
+            """
+            ...
+
+        @classmethod
+        def from_app_font(cls, value: float) -> Self:
+            """
+            Get instance from ``AppFont`` value.
+
+            Args:
+                value (int): ``AppFont`` value.
+
+            Returns:
+                Self: Instance.
             """
             ...
 

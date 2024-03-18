@@ -2290,6 +2290,36 @@ class Lo(metaclass=StaticProperty):
             cls.load_office()
         return cls._lo_inst.global_event_broadcaster
 
+    @classproperty
+    def app_font_pixel_ratio(cls) -> float:
+        """
+        Gets the ratio between App Font and Pixels.
+
+        |lo_safe|
+
+        This is used to convert font sizes to pixels.
+        This value will vary on different systems.
+
+        Returns:
+            float: Ratio of how many pixels are in an app font. this is usually less then ``1.0``.
+        """
+        return cls._lo_inst.app_font_pixel_ratio
+
+    @classproperty
+    def sys_font_pixel_ratio(cls) -> float:
+        """
+        Gets the ratio between System Font and Pixels.
+
+        |lo_safe|
+
+        This is used to convert font sizes to pixels.
+        This value will vary on different systems.
+
+        Returns:
+            float: Ratio of how many pixels are in an system font. this is usually less then ``1.0``.
+        """
+        return cls._lo_inst.sys_font_pixel_ratio
+
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
     setattr(Lo, "_lo_inst", None)

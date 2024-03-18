@@ -31,6 +31,7 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 
+from ooo.dyn.awt.point import Point
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
@@ -95,6 +96,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
+    from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
 else:
     PathOrStr = Any
     UnoInterface = Any
@@ -138,6 +140,8 @@ class LoInst(EventsPartial):
         self._loader = None
         self._disposed = True
         self._lo_loader: LoLoader | None = None
+        self._app_font_pixel_ratio = None
+        self._sys_font_pixel_ratio = None
 
         self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
@@ -328,6 +332,15 @@ class LoInst(EventsPartial):
         self._current_doc = None
 
     # endregion cache
+
+    def _get_font_ratio(self, target_unit: int) -> float:
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
+
+        comp = UnitConversionComp(self)
+        p = comp.convert_point_to_logic(Point(100_000, 100_000), target_unit)
+        return p.X / 100_000
 
     def get_context(self) -> XComponentContext:
         """
@@ -1944,5 +1957,46 @@ class LoInst(EventsPartial):
             raise mEx.LoadingError("Could not access the Global Event Broadcaster")
         return self._glb_event_broadcaster
 
+    @property
+    def app_font_pixel_ratio(self) -> float:
+        """
+        Gets the ratio between App Font and Pixels.
+
+        This is used to convert font sizes to pixels.
+        This value will vary on different systems.
+
+        Returns:
+            float: Ratio of how many pixels are in an app font. this is usually less then ``1.0``.
+        """
+        if self._app_font_pixel_ratio is None:
+            # 17 is AppFont
+            try:
+                self._app_font_pixel_ratio = self._get_font_ratio(17)
+            except Exception:
+                self._app_font_pixel_ratio = 0.4167  # best guess from ubuntu
+        return self._app_font_pixel_ratio
+
+    @property
+    def sys_font_pixel_ratio(self) -> float:
+        """
+        Gets the ratio between System Font and Pixels.
+
+        This is used to convert font sizes to pixels.
+        This value will vary on different systems.
+
+        Returns:
+            float: Ratio of how many pixels are in an system font. this is usually less then ``1.0``.
+        """
+        if self._sys_font_pixel_ratio is None:
+            # 18 is SysFont
+            try:
+                self._sys_font_pixel_ratio = self._get_font_ratio(18)
+            except Exception:
+                self._sys_font_pixel_ratio = 0.4167  # best guess from ubuntu
+        return self._sys_font_pixel_ratio
+
 
 __all__ = ("LoInst",)
+
+if mock_g.FULL_IMPORT:
+    from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp

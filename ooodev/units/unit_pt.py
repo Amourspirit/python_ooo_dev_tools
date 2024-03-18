@@ -27,6 +27,12 @@ class UnitPT(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
+    # region Overrides
+    def _from_float(self, value: float) -> UnitPT:
+        return self.from_pt(value)
+
+    # endregion Overrides
+
     # region math and comparison
     def __int__(self) -> int:
         return round(self.value)
@@ -146,21 +152,15 @@ class UnitPT(BaseFloatValue):
 
     def __le__(self, other: object) -> bool:
         if isinstance(other, UnitPT):
-            if self.almost_equal(other.value):
-                return True
-            return self.value < other.value
+            return True if self.almost_equal(other.value) else self.value < other.value
         if hasattr(other, "get_value_pt"):
             oth_val = other.get_value_pt()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         return False
 
     def __gt__(self, other: object) -> bool:
@@ -177,21 +177,15 @@ class UnitPT(BaseFloatValue):
 
     def __ge__(self, other: object) -> bool:
         if isinstance(other, UnitPT):
-            if self.almost_equal(other.value):
-                return True
-            return self.value > other.value
+            return True if self.almost_equal(other.value) else self.value > other.value
         if hasattr(other, "get_value_pt"):
             oth_val = other.get_value_pt()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         return False
 
     # endregion math and comparison
@@ -299,6 +293,19 @@ class UnitPT(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN1000))
 
+    def get_value_app_font(self) -> float:
+        """
+        Gets instance value in ``AppFont`` units.
+
+        Returns:
+            float: Value in ``AppFont`` units.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont.from_pt(self.value)
+        return af.value
+
     @classmethod
     def from_pt(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
         """
@@ -310,6 +317,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
@@ -325,6 +333,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.PT))
         return inst
@@ -340,6 +349,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.PT))
         return inst
@@ -355,6 +365,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.PT))
         return inst
@@ -370,6 +381,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.PT))
         return inst
@@ -385,6 +397,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.PT))
         return inst
@@ -400,6 +413,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.PT))
         return inst
@@ -415,6 +429,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.PT))
         return inst
@@ -430,6 +445,7 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.PT))
         return inst
@@ -445,9 +461,27 @@ class UnitPT(BaseFloatValue):
         Returns:
             UnitPT:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitPT, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.PT))
         return inst
+
+    @classmethod
+    def from_app_font(cls: Type[_TUnitPT], value: float) -> _TUnitPT:
+        """
+        Get instance from ``AppFont`` value.
+
+        Args:
+            value (int): ``AppFont`` value.
+
+        Returns:
+            UnitPT:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont(value)
+        return cls.from_pt(af.get_value_pt())
 
     @classmethod
     def from_unit_val(cls: Type[_TUnitPT], value: UnitT | float | int) -> _TUnitPT:

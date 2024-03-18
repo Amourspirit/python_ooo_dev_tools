@@ -28,6 +28,12 @@ class UnitCM(BaseFloatValue):
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
 
+    # region Overrides
+    def _from_float(self, value: float) -> UnitCM:
+        return self.from_cm(value)
+
+    # endregion Overrides
+
     # region math and comparison
     def __int__(self) -> int:
         return round(self.value)
@@ -147,21 +153,15 @@ class UnitCM(BaseFloatValue):
 
     def __le__(self, other: object) -> bool:
         if isinstance(other, UnitCM):
-            if self.almost_equal(other.value):
-                return True
-            return self.value < other.value
+            return True if self.almost_equal(other.value) else self.value < other.value
         if hasattr(other, "get_value_cm"):
             oth_val = other.get_value_cm()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value < oth_val
+            return True if self.almost_equal(oth_val) else self.value < oth_val
         return False
 
     def __gt__(self, other: object) -> bool:
@@ -178,21 +178,15 @@ class UnitCM(BaseFloatValue):
 
     def __ge__(self, other: object) -> bool:
         if isinstance(other, UnitCM):
-            if self.almost_equal(other.value):
-                return True
-            return self.value > other.value
+            return True if self.almost_equal(other.value) else self.value > other.value
         if hasattr(other, "get_value_cm"):
             oth_val = other.get_value_cm()  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
             oth_val = float(other)  # type: ignore
-            if self.almost_equal(oth_val):
-                return True
-            return self.value > oth_val
+            return True if self.almost_equal(oth_val) else self.value > oth_val
         return False
 
     # endregion math and comparison
@@ -299,6 +293,19 @@ class UnitCM(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=UnitLength.CM, to=UnitLength.IN1000))
 
+    def get_value_app_font(self) -> float:
+        """
+        Gets instance value in ``AppFont`` units.
+
+        Returns:
+            float: Value in ``AppFont`` units.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont.from_cm(self.value)
+        return af.value
+
     @classmethod
     def from_pt(cls: Type[_TUnitCM], value: float) -> _TUnitCM:
         """
@@ -310,6 +317,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(float(UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.CM)))
         return inst
@@ -325,6 +333,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.PX, to=UnitLength.CM))
         return inst
@@ -340,6 +349,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.CM))
         return inst
@@ -355,6 +365,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.CM))
         return inst
@@ -370,6 +381,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.CM))
         return inst
@@ -385,6 +397,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.CM))
         return inst
@@ -400,6 +413,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.CM))
         return inst
@@ -415,6 +429,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.CM))
         return inst
@@ -430,6 +445,7 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.CM))
         return inst
@@ -445,9 +461,27 @@ class UnitCM(BaseFloatValue):
         Returns:
             UnitCM:
         """
+        # pylint: disable=unnecessary-dunder-call
         inst = super(UnitCM, cls).__new__(cls)  # type: ignore
         inst.__init__(value)
         return inst
+
+    @classmethod
+    def from_app_font(cls: Type[_TUnitCM], value: float) -> _TUnitCM:
+        """
+        Get instance from ``AppFont`` value.
+
+        Args:
+            value (int): ``AppFont`` value.
+
+        Returns:
+            UnitCM:
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.units.unit_app_font import UnitAppFont
+
+        af = UnitAppFont(value)
+        return cls.from_cm(af.get_value_cm())
 
     @classmethod
     def from_unit_val(cls: Type[_TUnitCM], value: UnitT | float | int) -> _TUnitCM:

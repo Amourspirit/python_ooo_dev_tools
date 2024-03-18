@@ -6,9 +6,10 @@ units
 .. versionadded:: 0.9.0
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Convert Package:
+   :titlesonly:
+   :glob:
 
+   *
    convert/index
 
 Contents
