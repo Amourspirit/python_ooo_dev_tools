@@ -438,3 +438,31 @@ def para_text() -> str:
 @pytest.fixture(scope="session")
 def formula_text() -> str:
     return "{{{sqrt{4x}} over 5} + {8 over 2}={4 over 3}}"
+
+
+@pytest.fixture(scope="session")
+def fix_almost_equal():
+
+    def almost_equal(val1: float, val2: float, epsilon: float = 1e-9) -> bool:
+        """
+        Comparing float values directly using equality (``==``) can sometimes lead to
+        unexpected results due to the way floating-point numbers are represented in computers.
+        A small rounding error can make two floats that should be equal appear unequal.
+
+        A common way to compare floats is to check if the absolute difference between them
+        is less than a small number, often called the machine epsilon.
+
+        In this function, ``epsilon`` is the maximum difference for which ``a`` and ``b``
+        are considered equal. You can adjust ``epsilon`` based on the precision you need.
+
+        Args:
+            val1 (float): The value to compare.
+            val2 (float): The value to compare with.
+            epsilon (float): The maximum difference for which ``a`` and ``b`` are considered equal.
+
+        Returns:
+            bool: True if current value and ``val`` are considered equal, False otherwise.
+        """
+        return abs(val1 - val2) < epsilon
+
+    return almost_equal

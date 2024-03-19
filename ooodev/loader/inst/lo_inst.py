@@ -142,6 +142,7 @@ class LoInst(EventsPartial):
         self._lo_loader: LoLoader | None = None
         self._app_font_pixel_ratio = None
         self._sys_font_pixel_ratio = None
+        self._cache = {}
 
         self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
@@ -330,17 +331,27 @@ class LoInst(EventsPartial):
     # region    cache
     def _clear_cache(self) -> None:
         self._current_doc = None
+        self._cache.clear()
 
     # endregion cache
 
-    def _get_font_ratio(self, target_unit: int) -> float:
+    def _get_font_ratio(self):
         # pylint: disable=import-outside-toplevel
         # pylint: disable=redefined-outer-name
+        key = "_get_font_ratio"
+        if key in self._cache:
+            return self._cache[key]
         from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
 
         comp = UnitConversionComp(self)
-        p = comp.convert_point_to_logic(Point(100_000, 100_000), target_unit)
-        return p.X / 100_000
+
+        def get_ratio(target_unit: int) -> Tuple[float, float]:
+            nonlocal comp
+            p = comp.convert_point_to_logic(Point(100_000, 100_000), target_unit)
+            return (p.X / 100_000, p.Y / 100_000)
+
+        self._cache[key] = get_ratio
+        return self._cache[key]
 
     def get_context(self) -> XComponentContext:
         """
@@ -1958,7 +1969,7 @@ class LoInst(EventsPartial):
         return self._glb_event_broadcaster
 
     @property
-    def app_font_pixel_ratio(self) -> float:
+    def app_font_pixel_ratio(self) -> Tuple[float, float]:
         """
         Gets the ratio between App Font and Pixels.
 
@@ -1971,13 +1982,13 @@ class LoInst(EventsPartial):
         if self._app_font_pixel_ratio is None:
             # 17 is AppFont
             try:
-                self._app_font_pixel_ratio = self._get_font_ratio(17)
+                self._app_font_pixel_ratio = self._get_font_ratio()(17)
             except Exception:
-                self._app_font_pixel_ratio = 0.4167  # best guess from ubuntu
+                self._app_font_pixel_ratio = (0.51948, 0.61538)  # best guess from ubuntu
         return self._app_font_pixel_ratio
 
     @property
-    def sys_font_pixel_ratio(self) -> float:
+    def sys_font_pixel_ratio(self) -> Tuple[float, float]:
         """
         Gets the ratio between System Font and Pixels.
 
@@ -1990,9 +2001,9 @@ class LoInst(EventsPartial):
         if self._sys_font_pixel_ratio is None:
             # 18 is SysFont
             try:
-                self._sys_font_pixel_ratio = self._get_font_ratio(18)
+                self._sys_font_pixel_ratio = self._get_font_ratio()(18)
             except Exception:
-                self._sys_font_pixel_ratio = 0.4167  # best guess from ubuntu
+                self._sys_font_pixel_ratio = (0.51948, 0.61538)  # best guess from ubuntu
         return self._sys_font_pixel_ratio
 
 

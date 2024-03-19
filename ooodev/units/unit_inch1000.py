@@ -278,17 +278,28 @@ class UnitInch1000:
         inst.__init__(round(UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.IN1000)))
         return inst
 
-    def get_value_app_font(self) -> float:
+    def get_value_app_font(self, x: bool = True) -> float:
         """
         Gets instance value in ``AppFont`` units.
 
         Returns:
             float: Value in ``AppFont`` units.
+            x (bool, optional): If ``True`` then ``AppFontX`` is used else ``AppFontY`` is used. Defaults to ``True``.
+
+        Note:
+            ``AppFontX`` and ``AppFontY`` have different values when converted.
+            This is true even if they have the same value in ``AppFont`` units.
+            ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.units.unit_app_font import UnitAppFont
+        if x:
+            from ooodev.units.unit_app_font_x import UnitAppFontX
 
-        af = UnitAppFont.from_inch1000(self.value)
+            af = UnitAppFontX.from_inch1000(self.value)
+        else:
+            from ooodev.units.unit_app_font_y import UnitAppFontY
+
+            af = UnitAppFontY.from_inch1000(self.value)
         return af.value
 
     @classmethod
@@ -420,20 +431,32 @@ class UnitInch1000:
         return inst
 
     @classmethod
-    def from_app_font(cls: Type[_TUnitInch1000], value: float) -> _TUnitInch1000:
+    def from_app_font(cls: Type[_TUnitInch1000], value: float, x: bool = True) -> _TUnitInch1000:
         """
         Get instance from ``AppFont`` value.
 
         Args:
             value (int): ``AppFont`` value.
+            x (bool, optional): If ``True`` then ``AppFontX`` is used else ``AppFontY`` is used. Defaults to ``True``.
 
         Returns:
-            UnitInch1000:
+            UnitInch100:
+
+        Note:
+            ``AppFontX`` and ``AppFontY`` have different values when converted.
+            This is true even if they have the same value in ``AppFont`` units.
+            ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.units.unit_app_font import UnitAppFont
 
-        af = UnitAppFont(value)
+        if x:
+            from ooodev.units.unit_app_font_x import UnitAppFontX
+
+            af = UnitAppFontX(value)
+        else:
+            from ooodev.units.unit_app_font_y import UnitAppFontY
+
+            af = UnitAppFontY(value)
         return cls.from_inch1000(af.get_value_inch1000())
 
     @classmethod

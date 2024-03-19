@@ -2291,7 +2291,7 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.global_event_broadcaster
 
     @classproperty
-    def app_font_pixel_ratio(cls) -> float:
+    def app_font_pixel_ratio(cls) -> Tuple[float, float]:
         """
         Gets the ratio between App Font and Pixels.
 
@@ -2306,7 +2306,7 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.app_font_pixel_ratio
 
     @classproperty
-    def sys_font_pixel_ratio(cls) -> float:
+    def sys_font_pixel_ratio(cls) -> Tuple[float, float]:
         """
         Gets the ratio between System Font and Pixels.
 
