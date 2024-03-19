@@ -40,5 +40,4 @@ __all__ = [
     "UnitMM100",
     "UnitPT",
     "UnitPX",
-    "UnitT",
 ]
