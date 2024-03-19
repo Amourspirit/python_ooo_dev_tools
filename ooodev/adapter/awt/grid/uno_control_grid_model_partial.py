@@ -11,7 +11,8 @@ from ooodev.utils.color import Color
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
-from ooodev.units.unit_app_font import UnitAppFont
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
 
 if TYPE_CHECKING:
     from com.sun.star.awt.grid import UnoControlGridModel  # Service
@@ -154,7 +155,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         self.model.ActiveSelectionTextColor = value  # type: ignore
 
     @property
-    def column_header_height(self) -> UnitAppFont | None:
+    def column_header_height(self) -> UnitAppFontX | None:
         """
         Gets/Sets the height of the column header row, if applicable.
 
@@ -168,12 +169,12 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
         val = getattr(self.model, "ColumnHeaderHeight", None)
-        return None if val is None else UnitAppFont(val)
+        return None if val is None else UnitAppFontX(val)
 
     @column_header_height.setter
     def column_header_height(self, value: float | UnitT) -> None:
         # ColumnHeaderHeight does not accept None
-        val = UnitAppFont.from_unit_val(value)
+        val = UnitAppFontX.from_unit_val(value)
         self.model.ColumnHeaderHeight = round(val.value)
 
     @property
@@ -353,7 +354,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         self.model.InactiveSelectionTextColor = value  # type: ignore
 
     @property
-    def row_header_width(self) -> UnitAppFont | None:
+    def row_header_width(self) -> UnitAppFontX | None:
         """
         Gets/Sets the width of the row header column, if applicable.
 
@@ -364,16 +365,16 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
         val = getattr(self.model, "RowHeaderWidth", None)
-        return None if val is None else UnitAppFont(val)
+        return None if val is None else UnitAppFontX(val)
 
     @row_header_width.setter
     def row_header_width(self, value: float | UnitT) -> None:
         # RowHeaderWidth does not accept None
-        val = UnitAppFont.from_unit_val(value)
+        val = UnitAppFontX.from_unit_val(value)
         self.model.RowHeaderWidth = round(val.value)
 
     @property
-    def row_height(self) -> UnitAppFont | None:
+    def row_height(self) -> UnitAppFontY | None:
         """
         Gets/Sets the height of rows in the grid control.
 
@@ -382,12 +383,12 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
         val = getattr(self.model, "RowHeight", None)
-        return None if val is None else UnitAppFont(val)
+        return None if val is None else UnitAppFontY(val)
 
     @row_height.setter
     def row_height(self, value: float | UnitT) -> None:
         # RowHeight does not accept None
-        val = UnitAppFont.from_unit_val(value)
+        val = UnitAppFontY.from_unit_val(value)
         self.model.RowHeight = round(val.value)
 
     @property

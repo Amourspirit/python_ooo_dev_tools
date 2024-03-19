@@ -1,15 +1,17 @@
 from __future__ import annotations
+from abc import abstractmethod
 import contextlib
-from typing import TypeVar, Type, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass, field
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_convert import UnitLength
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
     from ooodev.units.unit_obj import UnitT
-
-_TUnitAppFont = TypeVar(name="_TUnitAppFont", bound="UnitAppFont")
+else:
+    Self = Any
 
 
 @dataclass(unsafe_hash=True)
@@ -30,29 +32,28 @@ class UnitAppFont(BaseFloatValue):
         Which means office must be loaded before this unit can be used.
 
     See Also:
+
         :ref:`proto_unit_obj`
     """
 
     _ratio: float = field(init=False, repr=False, hash=False)
 
     def __post_init__(self):
-        # Because most all other unit module do not need to access Lo, it is imported here.
-        # This should allow other modules to be imported without needing Lo,
-        # that is, if they don't call get_app_font() method.
 
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
         self._set_ratio()
 
+    @abstractmethod
     def _set_ratio(self) -> None:
-        # pylint: disable=import-outside-toplevel
-        from ooodev.loader.lo import Lo
-
-        object.__setattr__(self, "_ratio", Lo.app_font_pixel_ratio)
+        raise NotImplementedError
 
     # region Overrides
-    def _from_float(self, value: float) -> UnitAppFont:
+    def _from_float(self, value: float) -> Self:
         return self.from_app_font(value)
+
+    def _is_x(self) -> bool:
+        return True
 
     # endregion Overrides
 
@@ -62,9 +63,12 @@ class UnitAppFont(BaseFloatValue):
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, UnitAppFont):
-            return self.almost_equal(other.value)
+            # AppFontX and AppFontY are not equal
+            if other.__class__.__name__ == self.__class__.__name__:
+                return self.almost_equal(other.value)
+            return self.get_value_mm100() == other.get_value_mm100()
         if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
+            oth_val = other.get_value_app_font(x=self._is_x())  # type: ignore
             return self.almost_equal(oth_val)
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() == other.get_value_mm100()  # type: ignore
@@ -72,12 +76,12 @@ class UnitAppFont(BaseFloatValue):
             return self.almost_equal(float(other))  # type: ignore
         return False
 
-    def __add__(self, other: object) -> UnitAppFont:
-        if isinstance(other, UnitAppFont):
+    def __add__(self, other: object) -> Self:
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value + other.value)
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return self.from_app_font(self.value + oth_val)
+        if hasattr(other, "get_value_px"):
+            oth_val = other.get_value_px()  # type: ignore
+            return self.from_px(self.get_value_px() + oth_val)
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
             oth_val_px = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.PX)
@@ -87,15 +91,15 @@ class UnitAppFont(BaseFloatValue):
             return self.from_app_font(self.value + other)  # type: ignore
         return NotImplemented
 
-    def __radd__(self, other: object) -> UnitAppFont:
+    def __radd__(self, other: object) -> Self:
         return self if other == 0 else self.__add__(other)
 
-    def __sub__(self, other: object) -> UnitAppFont:
-        if isinstance(other, UnitAppFont):
+    def __sub__(self, other: object) -> Self:
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value - other.value)
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return self.from_app_font(self.value - oth_val)
+        if hasattr(other, "get_value_px"):
+            oth_val = other.get_value_px()  # type: ignore
+            return self.from_px(self.get_value_px() - oth_val)
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
             oth_val_px = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.PX)
@@ -105,17 +109,18 @@ class UnitAppFont(BaseFloatValue):
             return self.from_app_font(self.value - other)  # type: ignore
         return NotImplemented
 
-    def __rsub__(self, other: object) -> UnitAppFont:
+    def __rsub__(self, other: object) -> Self:
         if isinstance(other, (int, float)):
             return self.from_app_font(other - self.value)  # type: ignore
         return NotImplemented
 
-    def __mul__(self, other: object) -> UnitAppFont:
-        if isinstance(other, UnitAppFont):
+    def __mul__(self, other: object) -> Self:
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value * other.value)
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return self.from_app_font(self.value * oth_val)
+        if hasattr(other, "get_value_px"):
+            oth_val = other.get_value_px()  # type: ignore
+            # app_units = oth_val * self._ratio
+            return self.from_px(self.get_value_px() * oth_val)
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
             oth_val_px = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.PX)
@@ -126,32 +131,31 @@ class UnitAppFont(BaseFloatValue):
 
         return NotImplemented
 
-    def __rmul__(self, other: int) -> UnitAppFont:
+    def __rmul__(self, other: int) -> Self:
         return self if other == 0 else self.__mul__(other)
 
-    def __truediv__(self, other: object) -> UnitAppFont:
-        if isinstance(other, UnitAppFont):
+    def __truediv__(self, other: object) -> Self:
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             if other.value == 0:
                 raise ZeroDivisionError
             return self.from_app_font(self.value / other.value)
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
+        if hasattr(other, "get_value_px"):
+            oth_val = other.get_value_px()  # type: ignore
             if oth_val == 0:
                 raise ZeroDivisionError
-            return self.from_app_font(self.value / oth_val)
+            return self.from_app_font(self.get_value_px() / oth_val)
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
-            oth_val_px = UnitConvert.convert(num=oth_val, frm=UnitLength.MM100, to=UnitLength.PX)
-            if oth_val_px == 0:
+            if oth_val == 0:
                 raise ZeroDivisionError
-            return self.from_mm(self.value / oth_val_px)  # type: ignore
+            return self.from_mm100(self.get_value_mm100() / oth_val)  # type: ignore
         if isinstance(other, (int, float)):
             if other == 0:
                 raise ZeroDivisionError
             return self.from_app_font(self.value / other)  # type: ignore
         return NotImplemented
 
-    def __rtruediv__(self, other: object) -> UnitAppFont:
+    def __rtruediv__(self, other: object) -> Self:
         if isinstance(other, (int, float)):
             if self.value == 0:
                 raise ZeroDivisionError
@@ -162,11 +166,11 @@ class UnitAppFont(BaseFloatValue):
         return abs(self.value)
 
     def __lt__(self, other: object) -> bool:
-        if isinstance(other, UnitAppFont):
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return self.value < other.value
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return self.value < oth_val
+        if hasattr(other, "get_value_px"):
+            oth_val = other.get_value_px()  # type: ignore
+            return self.get_value_px() < oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() < other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
@@ -174,11 +178,8 @@ class UnitAppFont(BaseFloatValue):
         return False
 
     def __le__(self, other: object) -> bool:
-        if isinstance(other, UnitAppFont):
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return True if self.almost_equal(other.value) else self.value < other.value
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return True if self.almost_equal(oth_val) else self.value < oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() <= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
@@ -187,11 +188,8 @@ class UnitAppFont(BaseFloatValue):
         return False
 
     def __gt__(self, other: object) -> bool:
-        if isinstance(other, UnitAppFont):
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return self.value > other.value
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return self.value > oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() > other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
@@ -199,11 +197,8 @@ class UnitAppFont(BaseFloatValue):
         return False
 
     def __ge__(self, other: object) -> bool:
-        if isinstance(other, UnitAppFont):
+        if isinstance(other, UnitAppFont) and other.__class__.__name__ == self.__class__.__name__:
             return True if self.almost_equal(other.value) else self.value > other.value
-        if hasattr(other, "get_value_app_font"):
-            oth_val = other.get_value_app_font()  # type: ignore
-            return True if self.almost_equal(oth_val) else self.value > oth_val
         if hasattr(other, "get_value_mm100"):
             return self.get_value_mm100() >= other.get_value_mm100()  # type: ignore
         with contextlib.suppress(Exception):
@@ -237,6 +232,14 @@ class UnitAppFont(BaseFloatValue):
             - ``UnitLength`` can be imported from ``ooodev.units``.
         """
         return UnitConvert.convert(num=self.get_value_px(), frm=UnitLength.PX, to=unit)
+
+    @abstractmethod
+    def get_value_oth_unit(self) -> float:
+        """
+        Return the other value of the unit. If X then Y is returned.
+        If Y then X is returned.
+        """
+        raise NotImplementedError
 
     def get_value_cm(self) -> float:
         """
@@ -281,7 +284,9 @@ class UnitAppFont(BaseFloatValue):
         Returns:
             float: Value in ``px`` units.
         """
-        return self.value * self._ratio
+        # ratio is usually less th 1.0
+        # The num of pixels should be greater then then number of AppFont.
+        return 0 if self.value == 0 else self.value / self._ratio
 
     def get_value_inch(self) -> float:
         """
@@ -319,17 +324,18 @@ class UnitAppFont(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.get_value_px(), frm=UnitLength.PX, to=UnitLength.IN1000))
 
-    def get_value_app_font(self) -> float:
+    def get_value_app_font(self, x: bool = False) -> float:
         """
         Gets instance value in ``AppFont`` units.
 
         Returns:
             float: Value in ``AppFont`` units.
+            x (bool): Ignored in the context of ``AppFont`` units. It is used in other units.
         """
         return self.value
 
     @classmethod
-    def from_mm(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_mm(cls, value: float) -> Self:
         """
         Get instance from ``mm`` value.
 
@@ -344,12 +350,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.MM, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_mm10(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_mm10(cls, value: float) -> Self:
         """
         Get instance from ``1/10th mm`` value.
 
@@ -364,12 +370,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.MM10, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_mm100(cls: Type[_TUnitAppFont], value: int) -> _TUnitAppFont:
+    def from_mm100(cls, value: int) -> Self:
         """
         Get instance from ``1/100th mm`` value.
 
@@ -384,12 +390,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.MM100, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_pt(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_pt(cls, value: float) -> Self:
         """
         Get instance from ``pt`` (points) value.
 
@@ -404,12 +410,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.PT, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_px(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_px(cls, value: float) -> Self:
         """
         Get instance from ``px`` (pixel) value.
 
@@ -421,14 +427,18 @@ class UnitAppFont(BaseFloatValue):
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
+        # When converting pixels to app font the ratio is applied.
+        # The ratio usually less then 1.0
+        # The num of pixels should be greater then then number of pixels in the app font.
+        # 10 pixels usually equals 5 or 6 app font.
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = value / inst._ratio
+        app_font_val = value * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_inch(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_inch(cls, value: float) -> Self:
         """
         Get instance from ``in`` (inch) value.
 
@@ -443,12 +453,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.IN, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_inch10(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_inch10(cls, value: float) -> Self:
         """
         Get instance from ``1/10th in`` (inch) value.
 
@@ -463,12 +473,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.IN10, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_inch100(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_inch100(cls, value: float) -> Self:
         """
         Get instance from ``1/100th in`` (inch) value.
 
@@ -483,12 +493,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.IN100, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_inch1000(cls: Type[_TUnitAppFont], value: int) -> _TUnitAppFont:
+    def from_inch1000(cls, value: int) -> Self:
         """
         Get instance from ``1/1,000th in`` (inch) value.
 
@@ -503,12 +513,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.IN1000, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_cm(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_cm(cls, value: float) -> Self:
         """
         Get instance from ``cm`` value.
 
@@ -523,12 +533,12 @@ class UnitAppFont(BaseFloatValue):
         px = UnitConvert.convert(num=value, frm=UnitLength.CM, to=UnitLength.PX)
         inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
         inst._set_ratio()
-        app_font_val = px / inst._ratio
+        app_font_val = px * inst._ratio
         inst.__init__(app_font_val)
         return inst
 
     @classmethod
-    def from_app_font(cls: Type[_TUnitAppFont], value: float) -> _TUnitAppFont:
+    def from_app_font(cls, value: float) -> Self:
         """
         Get instance from ``AppFont`` value.
 
@@ -539,12 +549,10 @@ class UnitAppFont(BaseFloatValue):
             UnitAppFont:
         """
         # pylint: disable=unnecessary-dunder-call
-        inst = super(UnitAppFont, cls).__new__(cls)  # type: ignore
-        inst.__init__(value)
-        return inst
+        return cls(value)
 
     @classmethod
-    def from_unit_val(cls: Type[_TUnitAppFont], value: UnitT | float | int) -> _TUnitAppFont:
+    def from_unit_val(cls, value: UnitT | float | int) -> Self:
         """
         Get instance from ``UnitT`` or float value.
 
