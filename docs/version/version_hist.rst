@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.36.2
+==============
+
+Fix for ``ooodev.units.UnitAppFont`` Now ``UnitAppFont`` is ``UnitAppFontX``. Added a new ``UnitAppFontY`` class.
+
+LibreOffice Office uses different ``AppFont`` values for X and Y.
+
 Version 0.36.1
 ==============
 
