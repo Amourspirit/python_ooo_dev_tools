@@ -171,10 +171,8 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         return None if val is None else UnitAppFont(val)
 
     @column_header_height.setter
-    def column_header_height(self, value: float | UnitT | None) -> None:
-        if value is None:
-            self.model.ColumnHeaderHeight = None  # type: ignore
-            return
+    def column_header_height(self, value: float | UnitT) -> None:
+        # ColumnHeaderHeight does not accept None
         val = UnitAppFont.from_unit_val(value)
         self.model.ColumnHeaderHeight = round(val.value)
 
@@ -355,7 +353,7 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
         self.model.InactiveSelectionTextColor = value  # type: ignore
 
     @property
-    def row_header_width(self) -> UnitAppFont:
+    def row_header_width(self) -> UnitAppFont | None:
         """
         Gets/Sets the width of the row header column, if applicable.
 
@@ -365,15 +363,17 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
 
         When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
-        return UnitAppFont(self.model.RowHeaderWidth)
+        val = getattr(self.model, "RowHeaderWidth", None)
+        return None if val is None else UnitAppFont(val)
 
     @row_header_width.setter
-    def row_header_width(self, value: int | UnitT) -> None:
+    def row_header_width(self, value: float | UnitT) -> None:
+        # RowHeaderWidth does not accept None
         val = UnitAppFont.from_unit_val(value)
         self.model.RowHeaderWidth = round(val.value)
 
     @property
-    def row_height(self) -> UnitAppFont:
+    def row_height(self) -> UnitAppFont | None:
         """
         Gets/Sets the height of rows in the grid control.
 
@@ -381,10 +381,12 @@ class UnoControlGridModelPartial(UnoControlModelPartial):
 
         When setting the property the value can be set with ``UnitT`` or ``float`` in ``AppFont`` units.
         """
-        return UnitAppFont(self.model.RowHeight)
+        val = getattr(self.model, "RowHeight", None)
+        return None if val is None else UnitAppFont(val)
 
     @row_height.setter
-    def row_height(self, value: int | UnitT) -> None:
+    def row_height(self, value: float | UnitT) -> None:
+        # RowHeight does not accept None
         val = UnitAppFont.from_unit_val(value)
         self.model.RowHeight = round(val.value)
 

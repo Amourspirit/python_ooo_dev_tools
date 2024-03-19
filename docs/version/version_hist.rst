@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.36.1
+==============
+
+Minor adjustment for ``ooodev.dialog.dl_control.CtlGrid`` properties ``row_header_width``,  and ``row_height``.
+
 Version 0.36.0
 ==============
 
