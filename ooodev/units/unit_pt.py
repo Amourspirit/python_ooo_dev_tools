@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_convert import UnitLength
+from ooodev.utils.kind.point_size_kind import PointSizeKind
 
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
@@ -293,28 +294,34 @@ class UnitPT(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.value, frm=UnitLength.PT, to=UnitLength.IN1000))
 
-    def get_value_app_font(self, x: bool = True) -> float:
+    def get_value_app_font(self, kind: PointSizeKind | int) -> float:
         """
         Gets instance value in ``AppFont`` units.
 
         Returns:
             float: Value in ``AppFont`` units.
-            x (bool, optional): If ``True`` then ``AppFontX`` is used else ``AppFontY`` is used. Defaults to ``True``.
+            kind (PointSizeKind, optional): The kind of ``AppFont`` to use.
 
         Note:
-            ``AppFontX`` and ``AppFontY`` have different values when converted.
+            AppFont units have different values when converted.
             This is true even if they have the same value in ``AppFont`` units.
             ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
+
+            ``Kind`` when ``int`` is used, the value must be one of the following:
+
+            - ``0`` is ``PointSizeKind.X``,
+            - ``1`` is ``PointSizeKind.Y``,
+            - ``2`` is ``PointSizeKind.WIDTH``,
+            - ``3`` is ``PointSizeKind.HEIGHT``.
+
+        Hint:
+            - ``PointSizeKind`` can be imported from ``ooodev.utils.kind.point_size_kind``.
         """
         # pylint: disable=import-outside-toplevel
-        if x:
-            from ooodev.units.unit_app_font_x import UnitAppFontX
+        from ooodev.units._app_font.app_font_factory import AppFontFactory
 
-            af = UnitAppFontX.from_pt(self.value)
-        else:
-            from ooodev.units.unit_app_font_y import UnitAppFontY
-
-            af = UnitAppFontY.from_pt(self.value)
+        af_type = AppFontFactory.get_app_font_type(kind=kind)
+        af = af_type.from_pt(self.value)
         return af.value
 
     @classmethod
@@ -478,32 +485,36 @@ class UnitPT(BaseFloatValue):
         return inst
 
     @classmethod
-    def from_app_font(cls: Type[_TUnitPT], value: float, x: bool = True) -> _TUnitPT:
+    def from_app_font(cls: Type[_TUnitPT], value: float, kind: PointSizeKind | int) -> _TUnitPT:
         """
         Get instance from ``AppFont`` value.
 
         Args:
             value (int): ``AppFont`` value.
-            x (bool, optional): If ``True`` then ``AppFontX`` is used else ``AppFontY`` is used. Defaults to ``True``.
+            kind (PointSizeKind, optional): The kind of ``AppFont`` to use.
 
         Returns:
             UnitPT:
 
         Note:
-            ``AppFontX`` and ``AppFontY`` have different values when converted.
+            AppFont units have different values when converted.
             This is true even if they have the same value in ``AppFont`` units.
             ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
+
+            ``Kind`` when ``int`` is used, the value must be one of the following:
+
+            - ``0`` is ``PointSizeKind.X``,
+            - ``1`` is ``PointSizeKind.Y``,
+            - ``2`` is ``PointSizeKind.WIDTH``,
+            - ``3`` is ``PointSizeKind.HEIGHT``.
+
+        Hint:
+            - ``PointSizeKind`` can be imported from ``ooodev.utils.kind.point_size_kind``.
         """
         # pylint: disable=import-outside-toplevel
+        from ooodev.units._app_font.app_font_factory import AppFontFactory
 
-        if x:
-            from ooodev.units.unit_app_font_x import UnitAppFontX
-
-            af = UnitAppFontX(value)
-        else:
-            from ooodev.units.unit_app_font_y import UnitAppFontY
-
-            af = UnitAppFontY(value)
+        af = AppFontFactory.get_app_font(kind=kind, val=value)
         return cls.from_pt(af.get_value_pt())
 
     @classmethod

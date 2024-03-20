@@ -27,10 +27,10 @@ class GenericSizePos(Generic[T]):
             width (T): Width value.
             height (T): Height Value.
         """
-        self._width = width
-        self._height = height
         self._x = x
         self._y = y
+        self._width = width
+        self._height = height
 
     def __eq__(self, oth: object) -> bool:
         if isinstance(oth, GenericSizePos):

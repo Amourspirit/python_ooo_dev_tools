@@ -2,6 +2,16 @@
 Version History
 ***************
 
+Version 0.36.3
+==============
+
+Added new App Font Classes:
+
+- ``ooodev.units.AppFontSize``
+- ``ooodev.units.AppFontPos``
+- ``ooodev.units.UnitAppFontWidth``
+- ``ooodev.units.UnitAppFontHeight``.
+
 Version 0.36.2
 ==============
 
