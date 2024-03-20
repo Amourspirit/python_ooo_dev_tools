@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass
-from ooodev.units.base.unit_app_font import UnitAppFont
+from ooodev.units._app_font.unit_app_font_base import UnitAppFontBase
+from ooodev.utils.kind.point_size_kind import PointSizeKind
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -12,7 +13,7 @@ else:
 
 
 @dataclass(unsafe_hash=True)
-class UnitAppFontX(UnitAppFont):
+class UnitAppFontX(UnitAppFontBase):
     """
     Unit in ``AppFont`` units.
 
@@ -41,7 +42,7 @@ class UnitAppFontX(UnitAppFont):
         # pylint: disable=unsubscriptable-object
         from ooodev.loader.lo import Lo
 
-        object.__setattr__(self, "_ratio", Lo.app_font_pixel_ratio[0])
+        object.__setattr__(self, "_ratio", Lo.app_font_pixel_ratio.x)
 
     def get_value_oth_unit(self) -> float:
         """
@@ -55,9 +56,18 @@ class UnitAppFontX(UnitAppFont):
         # convert to pixels and the apply the Y ratio
         from ooodev.loader.lo import Lo
 
-        ratio = Lo.app_font_pixel_ratio[1]
+        ratio = Lo.app_font_pixel_ratio.y
         px = self.get_value_px()
         return px * ratio
+
+    def get_app_font_kind(self) -> PointSizeKind:
+        """
+        Gets the kind of the unit.
+
+        Returns:
+            PointSizeKind: Returns ``PointSizeKind.X``
+        """
+        return PointSizeKind.X
 
     # region math and comparison Overrides
 

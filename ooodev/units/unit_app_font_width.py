@@ -13,7 +13,7 @@ else:
 
 
 @dataclass(unsafe_hash=True)
-class UnitAppFontY(UnitAppFontBase):
+class UnitAppFontWidth(UnitAppFontBase):
     """
     Unit in ``AppFont`` units.
 
@@ -42,21 +42,21 @@ class UnitAppFontY(UnitAppFontBase):
         # pylint: disable=unsubscriptable-object
         from ooodev.loader.lo import Lo
 
-        object.__setattr__(self, "_ratio", Lo.app_font_pixel_ratio.y)
+        object.__setattr__(self, "_ratio", Lo.app_font_pixel_ratio.width)
 
     def get_value_oth_unit(self) -> float:
         """
-        Return the X value of the unit.
+        Return the Y value of the unit.
 
         Returns:
-            float: The X value of the unit. This is the value of a ``UnitAppFontX`` unit.
+            float: The Y value of the unit. This is the value of a ``UnitAppFontY`` unit.
         """
         # pylint: disable=import-outside-toplevel
         # pylint: disable=unsubscriptable-object
         # convert to pixels and the apply the Y ratio
         from ooodev.loader.lo import Lo
 
-        ratio = Lo.app_font_pixel_ratio.x
+        ratio = Lo.app_font_pixel_ratio.height
         px = self.get_value_px()
         return px * ratio
 
@@ -65,9 +65,9 @@ class UnitAppFontY(UnitAppFontBase):
         Gets the kind of the unit.
 
         Returns:
-            PointSizeKind: Returns ``PointSizeKind.Y``
+            PointSizeKind: Returns ``PointSizeKind.WIDTH``
         """
-        return PointSizeKind.Y
+        return PointSizeKind.WIDTH
 
     # region math and comparison Overrides
 

@@ -65,6 +65,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
+    from ooodev.utils.data_type.generic_size_pos import GenericSizePos
 else:
     PathOrStr = Any
     UnoInterface = Any
@@ -2291,7 +2292,7 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.global_event_broadcaster
 
     @classproperty
-    def app_font_pixel_ratio(cls) -> Tuple[float, float]:
+    def app_font_pixel_ratio(cls) -> GenericSizePos[float]:
         """
         Gets the ratio between App Font and Pixels.
 
@@ -2301,12 +2302,12 @@ class Lo(metaclass=StaticProperty):
         This value will vary on different systems.
 
         Returns:
-            float: Ratio of how many pixels are in an app font. this is usually less then ``1.0``.
+            GenericSizePos[float]: Ratios of how many pixels are in an app font.
         """
         return cls._lo_inst.app_font_pixel_ratio
 
     @classproperty
-    def sys_font_pixel_ratio(cls) -> Tuple[float, float]:
+    def sys_font_pixel_ratio(cls) -> GenericSizePos[float]:
         """
         Gets the ratio between System Font and Pixels.
 
@@ -2316,7 +2317,7 @@ class Lo(metaclass=StaticProperty):
         This value will vary on different systems.
 
         Returns:
-            float: Ratio of how many pixels are in an system font. this is usually less then ``1.0``.
+            GenericSizePos[float]: Ratios of how many pixels are in an system font.
         """
         return cls._lo_inst.sys_font_pixel_ratio
 

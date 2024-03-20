@@ -31,7 +31,6 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.util import XCloseable
 from com.sun.star.util import XNumberFormatsSupplier
 
-from ooo.dyn.awt.point import Point
 from ooo.dyn.document.macro_exec_mode import MacroExecMode  # const
 from ooo.dyn.lang.disposed_exception import DisposedException
 from ooo.dyn.util.close_veto_exception import CloseVetoException
@@ -50,6 +49,7 @@ from ooodev.adapter.lang.event_listener import EventListener
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
 from ooodev.conn.connect import ConnectBase, LoDirectStart
+from ooodev.utils.data_type.generic_size_pos import GenericSizePos
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.dispatch_args import DispatchArgs
 from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
@@ -342,13 +342,20 @@ class LoInst(EventsPartial):
         if key in self._cache:
             return self._cache[key]
         from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
+        from ooo.dyn.awt.point import Point as UnoPoint
+        from ooo.dyn.awt.size import Size as UnitSize
 
         comp = UnitConversionComp(self)
 
-        def get_ratio(target_unit: int) -> Tuple[float, float]:
+        def get_ratio(target_unit: int) -> GenericSizePos[float]:
             nonlocal comp
-            p = comp.convert_point_to_logic(Point(100_000, 100_000), target_unit)
-            return (p.X / 100_000, p.Y / 100_000)
+            uno_p = comp.convert_point_to_logic(UnoPoint(100_000, 100_000), target_unit)
+            uno_sz = comp.convert_size_to_logic(UnitSize(100_000, 100_000), target_unit)
+            r_x = uno_p.X / 100_000
+            r_y = uno_p.Y / 100_000
+            r_w = uno_sz.Width / 100_000
+            r_h = uno_sz.Height / 100_000
+            return GenericSizePos(r_x, r_y, r_w, r_h)
 
         self._cache[key] = get_ratio
         return self._cache[key]
@@ -1969,7 +1976,7 @@ class LoInst(EventsPartial):
         return self._glb_event_broadcaster
 
     @property
-    def app_font_pixel_ratio(self) -> Tuple[float, float]:
+    def app_font_pixel_ratio(self) -> GenericSizePos[float]:
         """
         Gets the ratio between App Font and Pixels.
 
@@ -1977,18 +1984,18 @@ class LoInst(EventsPartial):
         This value will vary on different systems.
 
         Returns:
-            float: Ratio of how many pixels are in an app font. this is usually less then ``1.0``.
+            GenericSizePos[float]: Ratios of how many pixels are in an app font.
         """
         if self._app_font_pixel_ratio is None:
             # 17 is AppFont
             try:
                 self._app_font_pixel_ratio = self._get_font_ratio()(17)
             except Exception:
-                self._app_font_pixel_ratio = (0.51948, 0.61538)  # best guess from ubuntu
+                self._app_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from window
         return self._app_font_pixel_ratio
 
     @property
-    def sys_font_pixel_ratio(self) -> Tuple[float, float]:
+    def sys_font_pixel_ratio(self) -> GenericSizePos[float]:
         """
         Gets the ratio between System Font and Pixels.
 
@@ -1996,14 +2003,14 @@ class LoInst(EventsPartial):
         This value will vary on different systems.
 
         Returns:
-            float: Ratio of how many pixels are in an system font. this is usually less then ``1.0``.
+            GenericSizePos[float]: Ratios of how many pixels are in an system font.
         """
         if self._sys_font_pixel_ratio is None:
             # 18 is SysFont
             try:
                 self._sys_font_pixel_ratio = self._get_font_ratio()(18)
             except Exception:
-                self._sys_font_pixel_ratio = (0.51948, 0.61538)  # best guess from ubuntu
+                self._sys_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from windows
         return self._sys_font_pixel_ratio
 
 
