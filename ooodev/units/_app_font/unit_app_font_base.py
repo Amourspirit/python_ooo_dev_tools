@@ -268,7 +268,7 @@ class UnitAppFontBase(BaseFloatValue):
         Returns:
             float: Value in ``mm`` units.
         """
-        return self.value
+        return UnitConvert.convert(num=self.get_value_px(), frm=UnitLength.PX, to=UnitLength.MM)
 
     def get_value_pt(self) -> float:
         """
@@ -326,13 +326,13 @@ class UnitAppFontBase(BaseFloatValue):
         """
         return round(UnitConvert.convert(num=self.get_value_px(), frm=UnitLength.PX, to=UnitLength.IN1000))
 
-    def get_value_app_font(self, kind: PointSizeKind | int) -> float:
+    def get_value_app_font(self, kind: Any = None) -> float:
         """
         Gets instance value in ``AppFont`` units.
 
         Returns:
             float: Value in ``AppFont`` units.
-            x (bool): Ignored in the context of ``AppFont`` units. It is used in other units.
+            kind (Any): Ignored in the context of ``AppFont`` units. It is used in other units.
         """
         return self.value
 
@@ -345,7 +345,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``mm`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -365,7 +365,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``1/10th mm`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -385,7 +385,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``1/100th mm`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -405,7 +405,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (float): ``pt`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -425,7 +425,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (float): ``px`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -448,7 +448,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``in`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -468,7 +468,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``1/10th in`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -488,7 +488,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``1/100th in`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -508,7 +508,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``1/1,000th in`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -528,7 +528,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (int): ``cm`` value.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=protected-access
         # pylint: disable=unnecessary-dunder-call
@@ -550,7 +550,7 @@ class UnitAppFontBase(BaseFloatValue):
                 This is not used in the context of ``AppFont`` units.
 
         Returns:
-            UnitAppFont:
+            Self:
         """
         # pylint: disable=unnecessary-dunder-call
         return cls(value)
@@ -564,7 +564,7 @@ class UnitAppFontBase(BaseFloatValue):
             value (UnitT, float, int): ``UnitT`` or float value. If float then it is assumed to be in ``mm`` units.
 
         Returns:
-            UnitMM:
+            Self:
         """
         if isinstance(value, UnitAppFontBase) and value.__class__.__name__ == cls.__name__:
             return cls(value.value)
