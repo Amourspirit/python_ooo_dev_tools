@@ -7,6 +7,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
     from typing_extensions import Protocol
     from typing_extensions import Self
     from ooodev.units.unit_convert import UnitLength
+    from ooodev.utils.kind.point_size_kind import PointSizeKind
 
     class UnitT(Protocol):
         """
@@ -94,12 +95,28 @@ if TYPE_CHECKING or DOCS_BUILDING:
             """
             ...
 
-        def get_value_app_font(self) -> float:
+        def get_value_app_font(self, kind: PointSizeKind | int) -> float:
             """
             Gets instance value in ``AppFont`` units.
 
             Returns:
                 float: Value in ``AppFont`` units.
+                kind (PointSizeKind, optional): The kind of ``AppFont`` to use.
+
+            Note:
+                AppFont units have different values when converted.
+                This is true even if they have the same value in ``AppFont`` units.
+                ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
+
+                ``Kind`` when ``int`` is used, the value must be one of the following:
+
+                - ``0`` is ``PointSizeKind.X``,
+                - ``1`` is ``PointSizeKind.Y``,
+                - ``2`` is ``PointSizeKind.WIDTH``,
+                - ``3`` is ``PointSizeKind.HEIGHT``.
+
+            Hint:
+                - ``PointSizeKind`` can be imported from ``ooodev.utils.kind.point_size_kind``.
             """
             ...
 
@@ -119,15 +136,31 @@ if TYPE_CHECKING or DOCS_BUILDING:
             ...
 
         @classmethod
-        def from_app_font(cls, value: float) -> Self:
+        def from_app_font(cls, value: float, kind: PointSizeKind | int) -> Self:
             """
             Get instance from ``AppFont`` value.
 
             Args:
                 value (int): ``AppFont`` value.
+                kind (PointSizeKind): The kind of ``AppFont`` to use.
 
             Returns:
-                Self: Instance.
+                UnitPX:
+
+            Note:
+                AppFont units have different values when converted.
+                This is true even if they have the same value in ``AppFont`` units.
+                ``AppFontX(10)`` is not equal to ``AppFontY(10)`` when they are converted to different units.
+
+                ``Kind`` when ``int`` is used, the value must be one of the following:
+
+                - ``0`` is ``PointSizeKind.X``,
+                - ``1`` is ``PointSizeKind.Y``,
+                - ``2`` is ``PointSizeKind.WIDTH``,
+                - ``3`` is ``PointSizeKind.HEIGHT``.
+
+            Hint:
+                - ``PointSizeKind`` can be imported from ``ooodev.utils.kind.point_size_kind``.
             """
             ...
 

@@ -20,14 +20,22 @@ from .unit_pt import UnitPT as UnitPT
 from .unit_px import UnitPX as UnitPX
 from .unit_app_font_x import UnitAppFontX as UnitAppFontX
 from .unit_app_font_y import UnitAppFontY as UnitAppFontY
+from .unit_app_font_width import UnitAppFontWidth as UnitAppFontWidth
+from .unit_app_font_height import UnitAppFontHeight as UnitAppFontHeight
+from .app_font_pos import AppFontPos as AppFontPos
+from .app_font_size import AppFontSize as AppFontSize
 
 __all__ = [
     "Angle",
     "Angle10",
     "Angle100",
     "AngleUnitT",
+    "AppFontPos",
+    "AppFontSize",
     "SizeMM100",
     "SizePX",
+    "UnitAppFontWidth",
+    "UnitAppFontHeight",
     "UnitAppFontX",
     "UnitAppFontY",
     "UnitCM",

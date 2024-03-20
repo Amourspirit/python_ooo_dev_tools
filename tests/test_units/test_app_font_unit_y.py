@@ -13,21 +13,29 @@ from ooodev.units import UnitMM
 from ooodev.units import UnitAppFontX
 from ooodev.units import UnitAppFontY
 from ooodev.units import UnitLength
+from ooodev.utils.data_type.generic_size_pos import GenericSizePos
+
 
 # there is a relationship between pixels and app font size.
 # The app font size ratio is app_font_pixel_ratio * pixel_size
 
 
 def test_from_px(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY.from_px(4)
         assert unit.value == 2.0
 
-        assert unit.get_value_px() == 4.0
+        px_val = unit.get_value_px()
+        assert px_val == 4.0
+
+        px = UnitPX.from_app_font(unit.value, unit.get_app_font_kind())
+        assert px.value == px_val
 
 
 def test_from_unit_val(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         px = UnitPX(10)
         unit = UnitAppFontY.from_unit_val(px)
         assert unit.value == 5.0
@@ -41,7 +49,8 @@ def test_from_unit_val(loader) -> None:
 
 
 def test_convert_to(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)
         val = unit.convert_to(UnitLength.PX)
         assert val == 8.0
@@ -50,7 +59,8 @@ def test_convert_to(loader) -> None:
 
 
 def test_eq(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)
         unit_px = UnitPX(8)
         assert unit == unit_px
@@ -62,9 +72,16 @@ def test_eq(loader) -> None:
         unit_mm = UnitMM.from_px(unit_px.value)
         assert unit == unit_mm
 
+        u2 = UnitAppFontY.from_unit_val(unit)
+        assert unit == u2
+
+        u3 = UnitAppFontY.from_unit_val(unit.value)
+        assert unit == u3
+
 
 def test_lt(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)
         unit_px = UnitPX(8.1)
         assert unit < unit_px
@@ -76,7 +93,8 @@ def test_lt(loader) -> None:
 
 
 def test_gt(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)
         unit_px = UnitPX(7.9)
         assert unit > unit_px
@@ -88,7 +106,8 @@ def test_gt(loader) -> None:
 
 
 def test_lt_eq(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)  # 8 px
         unit_px = UnitPX(8.05)
         assert unit <= unit_px
@@ -104,7 +123,8 @@ def test_lt_eq(loader) -> None:
 
 
 def test_gt_eq(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         unit = UnitAppFontY(4.0)
         unit_px = UnitPX(1.9)
         assert unit >= unit_px
@@ -128,7 +148,8 @@ def test_add(loader) -> None:
 
 
 def test_add_px(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         u1 = UnitAppFontY(2)  # 4 px
         u2 = UnitPX(2)
         u3 = u1 + u2  # add 2 px, that is 1 app font units
@@ -167,7 +188,8 @@ def test_sub_float(loader) -> None:
 
 
 def test_sub_px(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         u1 = UnitAppFontY(10)
         u2 = UnitPX(4)  # 2 app font units
         u3 = u1 - u2
@@ -192,7 +214,8 @@ def test_mul_float(loader) -> None:
 
 
 def test_mul_px(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         u1 = UnitAppFontY(4)  # 8 px, 4AF
         u2 = UnitPX(2)  # 2px,  4 AF
         unit_px = u2 * u1  # 8px * 2px = 16px
@@ -235,7 +258,8 @@ def test_div(loader) -> None:
 
 
 def test_div_px(loader) -> None:
-    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", (0.6, 0.5)):
+    sp = GenericSizePos(x=0.6, y=0.5, width=0.6, height=0.5)
+    with patch("ooodev.loader.lo.Lo._lo_inst._app_font_pixel_ratio", sp):
         u1 = UnitAppFontY.from_px(4)
         u2 = UnitPX(2)
         u3 = u1 / u2
