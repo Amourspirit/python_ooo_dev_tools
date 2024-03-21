@@ -38,6 +38,7 @@ class UnoControlDialogComp(ComponentBase, UnoControlDialogPartial):
     @property
     def component(self) -> UnoControlDialog:
         """UnoControlDialog Component"""
+        # pylint: disable=no-member
         return cast("UnoControlDialog", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

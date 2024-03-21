@@ -38,6 +38,7 @@ from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_px import UnitPX
 from ooodev.utils import info as mInfo
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.utils.kind.align_kind import AlignKind as AlignKind
@@ -135,6 +136,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
     from ooodev.utils.type_var import PathOrStr
+    from ooodev.units.unit_obj import UnitT
 # endregion Imports
 
 if TYPE_CHECKING:
@@ -629,10 +631,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         btn_type: PushButtonType | None = None,
         name: str = "",
         **props: Any,
@@ -645,10 +647,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): control.
             label (str): Button Label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             btn_type (PushButtonType | None, optional): Type of Button.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -710,10 +712,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 8,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 8,
         tri_state: bool = True,
         state: TriStateKind = TriStateKind.CHECKED,
         border: BorderKind = BorderKind.BORDER_3D,
@@ -728,10 +730,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             label (str): Checkbox label text.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``8``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int,, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``8``. If ``-1``, the dialog Size is not set.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -792,10 +794,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         max_text_len: int = 0,
         drop_down: bool = True,
         read_only: bool = False,
@@ -811,10 +813,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             entries (Iterable[str]): Combo box entries.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
@@ -879,10 +881,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float = 0.0,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -900,10 +902,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -2702,7 +2704,9 @@ class Dialogs:
     # endregion    add components to a dialog
 
     @staticmethod
-    def _set_size_pos(ctl: XWindow, x: int = -1, y: int = -1, width: int = -1, height: int = -1) -> None:
+    def _set_size_pos(
+        ctl: XWindow, x: int | UnitT = -1, y: int | UnitT = -1, width: int | UnitT = -1, height: int | UnitT = -1
+    ) -> None:
         """
         Set Position and size for a control.
 
@@ -2710,23 +2714,27 @@ class Dialogs:
 
         Args:
             ctl (XWindow): Control that implements XWindow
-            x (int, optional): X Position. Defaults to -1.
-            y (int, optional): Y Position. Defaults to -1.
-            width (int, optional): Width. Defaults to -1.
-            height (int, optional): Height. Defaults to -1.
+            x (int, UnitT, optional): X Position. Defaults to -1.
+            y (int, UnitT, optional): Y Position. Defaults to -1.
+            width (int, UnitT, optional): Width. Defaults to -1.
+            height (int, UnitT, optional): Height. Defaults to -1.
         """
-        if x < 0 and y < 0 and width < 0 and height < 0:
+        px_x = int(UnitPX.from_unit_val(x))
+        px_y = int(UnitPX.from_unit_val(y))
+        px_width = int(UnitPX.from_unit_val(width))
+        px_height = int(UnitPX.from_unit_val(height))
+        if px_x < 0 and px_y < 0 and px_width < 0 and px_height < 0:
             return
 
         pos_size = None
-        if x > -1 and y > -1 and width > -1 and height > -1:
+        if px_x > -1 and px_y > -1 and px_width > -1 and px_height > -1:
             pos_size = PosSize.POSSIZE
-        elif x > -1 and y > -1:
+        elif px_x > -1 and px_y > -1:
             pos_size = PosSize.POS
-        elif width > -1 and height > -1:
+        elif px_width > -1 and px_height > -1:
             pos_size = PosSize.SIZE
         if pos_size is not None:
-            ctl.setPosSize(x, y, width, height, pos_size)
+            ctl.setPosSize(px_x, px_y, px_width, px_height, pos_size)
 
     @classmethod
     def get_radio_group_value(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:

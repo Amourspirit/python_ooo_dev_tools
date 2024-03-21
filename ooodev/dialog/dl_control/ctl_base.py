@@ -29,6 +29,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.partial.view_prop_partial import ViewPropPartial
 from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDialogElementPartial
+from ooodev.units.unit_px import UnitPX
 
 
 if TYPE_CHECKING:
@@ -37,9 +38,12 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialogElement  # service
     from com.sun.star.beans import XMultiPropertySet
     from ooodev.proto.style_obj import StyleT
+    from ooodev.units.unit_obj import UnitT
 # endregion imports
 
 # pylint: disable=unused-argument
+
+# Model Position and Size are in AppFont units. View Size and Position are in Pixel units.
 
 
 class CtlBase(unohelper.Base, LoInstPropsPartial, ViewPropPartial, ModelPropPartial, EventsPartial):
@@ -120,28 +124,30 @@ class CtlBase(unohelper.Base, LoInstPropsPartial, ViewPropPartial, ModelPropPart
             model.EnableVisible = value
 
     @property
-    def x(self) -> int:
+    def x(self) -> UnitPX:
         """Gets/Sets the x position for the control"""
         view = mLo.Lo.qi(XWindow, self.get_view(), True)
-        return view.getPosSize().X
+        return UnitPX(view.getPosSize().X)
 
     @x.setter
-    def x(self, value: int) -> None:
+    def x(self, value: int | UnitT) -> None:
+        val = UnitPX.from_unit_val(value)
         win = mLo.Lo.qi(XWindow, self.get_view(), True)
         size_pos = win.getPosSize()
-        win.setPosSize(value, size_pos.Y, size_pos.Width, size_pos.Height, PosSize.X)
+        win.setPosSize(int(val), size_pos.Y, size_pos.Width, size_pos.Height, PosSize.X)
 
     @property
-    def y(self) -> int:
+    def y(self) -> UnitPX:
         """Gets/Sets the y position for the control"""
         view = mLo.Lo.qi(XWindow, self.get_view(), True)
-        return view.getPosSize().Y
+        return UnitPX(view.getPosSize().Y)
 
     @y.setter
-    def y(self, value: int) -> None:
+    def y(self, value: int | UnitT) -> None:
+        val = UnitPX.from_unit_val(value)
         view = mLo.Lo.qi(XWindow, self.get_view(), True)
         size = view.getPosSize()
-        view.setPosSize(size.X, value, size.Width, size.Height, PosSize.Y)
+        view.setPosSize(size.X, int(val), size.Width, size.Height, PosSize.Y)
 
     # endregion Properties
 
@@ -244,29 +250,31 @@ class CtlListenerBase(
 
     # region UnoControlDialogElementPartial Overrides
     @property
-    def width(self) -> int:
+    def width(self) -> UnitPX:
         """Gets the width of the control"""
         view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Width
+        return UnitPX(view.getSize().Width)
 
     @width.setter
-    def width(self, value: int) -> None:
+    def width(self, value: int | UnitT) -> None:
+        val = UnitPX.from_unit_val(value)
         win = mLo.Lo.qi(XWindow, self.get_view(), True)
         pos_size = win.getPosSize()
-        pos_size.Width = value
+        pos_size.Width = int(val)
         win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
 
     @property
-    def height(self) -> int:
+    def height(self) -> UnitPX:
         """Gets/Sets the height of the control"""
         view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Height
+        return UnitPX(view.getSize().Height)
 
     @height.setter
-    def height(self, value: int) -> None:
+    def height(self, value: int | UnitT) -> None:
+        val = UnitPX.from_unit_val(value)
         win = mLo.Lo.qi(XWindow, self.get_view(), True)
         pos_size = win.getPosSize()
-        pos_size.Height = value
+        pos_size.Height = int(val)
         win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
 
     # endregion UnoControlDialogElementPartial Overrides

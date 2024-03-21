@@ -702,7 +702,7 @@ class Runner:
         # print("Scroll:", control_src.name)
         a_event = cast("WindowEvent", event.event_data)
         print("Window Height:", a_event.Height)
-        print("Window Height:", a_event.Width)
+        print("Window Width:", a_event.Width)
         print("Window X:", a_event.X)
         print("Window Y:", a_event.Y)
 

@@ -10,10 +10,11 @@ from ooodev.adapter.awt.top_window_events import TopWindowEvents
 from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.loader import lo as mLo
-from ooodev.adapter.awt.index_container_comp import UnoControlDialogComp
+from ooodev.adapter.awt.uno_control_dialog_comp import UnoControlDialogComp
 from ooodev.adapter.awt.unit_conversion_partial import UnitConversionPartial
 
 from ooodev.dialog.dl_control.ctl_base import CtlListenerBase
+from ooodev.dialog.dl_control.dialog_model import DialogModel
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl
@@ -43,6 +44,7 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         # EventArgs.event_data will contain the ActionEvent
         TopWindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_top_window_events_listener_add_remove)
         WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_events_listener_add_remove)
+        self._model = None
 
     # endregion init
 
@@ -188,9 +190,11 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         return self.get_view()
 
     @property
-    def model(self) -> UnoControlDialogModel:
+    def model(self) -> DialogModel:
         """Gets the Model for the control"""
-        return self.get_model()
+        if self._model is None:
+            self._model = DialogModel(self.get_model())
+        return self._model
 
     @property
     def title(self) -> str:
