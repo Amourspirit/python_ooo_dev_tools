@@ -26,7 +26,7 @@ class UnoControlModelComp(ComponentBase, ModelPropPartial, UnoControlModelPartia
 
         ComponentBase.__init__(self, component)
         ModelPropPartial.__init__(self, obj=component)  # must precede UnoControlModelPartial
-        UnoControlModelPartial.__init__(self)
+        UnoControlModelPartial.__init__(self, component=component)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

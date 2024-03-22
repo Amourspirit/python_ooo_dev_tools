@@ -5,7 +5,6 @@ import uno  # pylint: disable=unused-import
 from ooodev.utils.color import Color
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.kind.orientation_kind import OrientationKind
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
 class UnoControlScrollBarModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlScrollBarModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlScrollBarModel):
         """
         Constructor
 
@@ -23,11 +22,8 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlScrollBarModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlScrollBarModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
 
     # region Properties
     @property
@@ -41,24 +37,24 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BackgroundColor)
+            return Color(self.__component.BackgroundColor)
         return None
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BackgroundColor = value  # type: ignore
+            self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def block_increment(self) -> int:
         """
         Gets/Sets the increment for a block move.
         """
-        return self.model.BlockIncrement
+        return self.__component.BlockIncrement
 
     @block_increment.setter
     def block_increment(self, value: int) -> None:
-        self.model.BlockIncrement = value
+        self.__component.BlockIncrement = value
 
     @property
     def border(self) -> BorderKind:
@@ -71,12 +67,12 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.model.Border)
+        return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.model.Border = kind.value
+        self.__component.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -92,57 +88,57 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BorderColor)
+            return Color(self.__component.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BorderColor = value
+            self.__component.BorderColor = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def line_increment(self) -> int:
         """
         Gets/Sets the increment for a single line move.
         """
-        return self.model.LineIncrement
+        return self.__component.LineIncrement
 
     @line_increment.setter
     def line_increment(self, value: int) -> None:
-        self.model.LineIncrement = value
+        self.__component.LineIncrement = value
 
     @property
     def live_scroll(self) -> bool | None:
@@ -154,13 +150,13 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.LiveScroll
+            return self.__component.LiveScroll
         return None
 
     @live_scroll.setter
     def live_scroll(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.LiveScroll = value
+            self.__component.LiveScroll = value
 
     @property
     def orientation(self) -> OrientationKind:
@@ -173,22 +169,22 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         Hint:
             - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
-        return OrientationKind(self.model.Orientation)
+        return OrientationKind(self.__component.Orientation)
 
     @orientation.setter
     def orientation(self, value: int | OrientationKind) -> None:
-        self.model.Orientation = int(value)
+        self.__component.Orientation = int(value)
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def repeat_delay(self) -> int | None:
@@ -201,35 +197,35 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.RepeatDelay
+            return self.__component.RepeatDelay
         return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.RepeatDelay = value
+            self.__component.RepeatDelay = value
 
     @property
     def scroll_value(self) -> int:
         """
         Gets/Sets the scroll value of the control.
         """
-        return self.model.ScrollValue
+        return self.__component.ScrollValue
 
     @scroll_value.setter
     def scroll_value(self, value: int) -> None:
-        self.model.ScrollValue = value
+        self.__component.ScrollValue = value
 
     @property
     def scroll_value_max(self) -> int:
         """
         Gets/Sets the maximum scroll value of the control.
         """
-        return self.model.ScrollValueMax
+        return self.__component.ScrollValueMax
 
     @scroll_value_max.setter
     def scroll_value_max(self, value: int) -> None:
-        self.model.ScrollValueMax = value
+        self.__component.ScrollValueMax = value
 
     @property
     def scroll_value_min(self) -> int | None:
@@ -241,13 +237,13 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.ScrollValueMin
+            return self.__component.ScrollValueMin
         return None
 
     @scroll_value_min.setter
     def scroll_value_min(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.ScrollValueMin = value
+            self.__component.ScrollValueMin = value
 
     @property
     def tabstop(self) -> bool | None:
@@ -257,13 +253,13 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.Tabstop
+            return self.__component.Tabstop
         return None
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.Tabstop = value
+            self.__component.Tabstop = value
 
     @property
     def visible_size(self) -> int | None:
@@ -273,12 +269,12 @@ class UnoControlScrollBarModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.VisibleSize
+            return self.__component.VisibleSize
         return None
 
     @visible_size.setter
     def visible_size(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.VisibleSize = value
+            self.__component.VisibleSize = value
 
     # endregion Properties

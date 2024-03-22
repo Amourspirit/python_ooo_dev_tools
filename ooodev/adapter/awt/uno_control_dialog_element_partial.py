@@ -2,9 +2,14 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
+from ooodev.units.unit_app_font_height import UnitAppFontHeight
+from ooodev.units.unit_app_font_width import UnitAppFontWidth
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialogElement  # Service
+    from ooodev.units.unit_obj import UnitT
 else:
     UnoControlDialogElement = Any
 
@@ -12,104 +17,125 @@ else:
 class UnoControlDialogElementPartial:
     """Partial class for UnoControlDialogElement. Must be used as a mixin that provides the ``ModelPropPartial``."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlDialogElement):
         """
         Constructor
         """
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlDialogElement
+        self.__component = component
 
     # region Properties
     @property
-    def height(self) -> int:
+    def height(self) -> UnitAppFontHeight:
         """
         Gets/Sets the height of the control.
+
+        When setting can be an integer in ``AppFont`` Units or a ``UnitT``.
+
+        Returns:
+            UnitAppFontHeight: Height of the control.
         """
-        return self.model.Height
+        return UnitAppFontHeight(self.__component.Height)
 
     @height.setter
-    def height(self, value: int) -> None:
-        self.model.Height = value
+    def height(self, value: int | UnitT) -> None:
+        val = UnitAppFontHeight.from_unit_val(value)
+        self.__component.Height = int(val)
 
     @property
     def name(self) -> str:
         """
         Gets/Sets the name of the control.
         """
-        return self.model.Name
+        return self.__component.Name
 
     @name.setter
     def name(self, value: str) -> None:
-        self.model.Name = value
+        self.__component.Name = value
 
     @property
-    def position_x(self) -> int:
+    def x(self) -> UnitAppFontX:
         """
         Gets/Sets the horizontal position of the control.
+
+        When setting can be an integer in ``AppFont`` Units or a ``UnitT``.
+
+        Returns:
+            UnitAppFontX: Horizontal position of the control.
         """
         # the api is wrong, it should be int
-        return self.model.PositionX  # type: ignore
+        return UnitAppFontX(self.__component.PositionX)  # type: ignore
 
-    @position_x.setter
-    def position_x(self, value: int) -> None:
-        self.model.PositionX = value  # type: ignore
+    @x.setter
+    def x(self, value: int | UnitT) -> None:
+        val = UnitAppFontX.from_unit_val(value)
+        self.__component.PositionX = int(val)  # type: ignore
 
     @property
-    def position_y(self) -> int:
+    def y(self) -> UnitAppFontY:
         """
         Gets/Sets the vertical position of the control.
+
+        When setting can be an integer in ``AppFont`` Units or a ``UnitT``.
+
+        Returns:
+            UnitAppFontY: Vertical position of the control.
         """
         # the api is wrong, it should be int
-        return self.model.PositionY  # type: ignore
+        return UnitAppFontY(self.__component.PositionY)  # type: ignore
 
-    @position_y.setter
-    def position_y(self, value: int) -> None:
-        self.model.PositionY = value  # type: ignore
+    @y.setter
+    def y(self, value: int | UnitT) -> None:
+        val = UnitAppFontY.from_unit_val(value)
+        self.__component.PositionY = int(val)  # type: ignore
 
     @property
     def step(self) -> int:
         """
         Gets/Sets the step of the control.
         """
-        return self.model.Step
+        return self.__component.Step
 
     @step.setter
     def step(self, value: int) -> None:
-        self.model.Step = value
+        self.__component.Step = value
 
     @property
     def tab_index(self) -> int:
         """
         Gets/Sets the tab index of the control.
         """
-        return self.model.TabIndex
+        return self.__component.TabIndex
 
     @tab_index.setter
     def tab_index(self, value: int) -> None:
-        self.model.TabIndex = value
+        self.__component.TabIndex = value
 
     @property
     def tag(self) -> str:
         """
         Gets/Sets the tag of the control.
         """
-        return self.model.Tag
+        return self.__component.Tag
 
     @tag.setter
     def tag(self, value: str) -> None:
-        self.model.Tag = value
+        self.__component.Tag = value
 
     @property
-    def width(self) -> int:
+    def width(self) -> UnitAppFontWidth:
         """
-        specifies the width of the control.
+        Gets/Sets the width of the control.
+
+        When setting can be an integer in ``AppFont`` Units or a ``UnitT``.
+
+        Returns:
+            UnitAppFontWidth: Width of the control.
         """
-        return self.model.Width
+        return UnitAppFontWidth(self.__component.Width)
 
     @width.setter
-    def width(self, value: int) -> None:
-        self.model.Width = value
+    def width(self, value: int | UnitT) -> None:
+        val = UnitAppFontWidth.from_unit_val(value)
+        self.__component.Width = int(val)
 
     # endregion Properties

@@ -21,7 +21,7 @@ class UnoControlContainerModelPartial(UnoControlModelPartial):
         """
         # pylint: disable=unused-argument
         self.__component = component
-        UnoControlModelPartial.__init__(self)
+        UnoControlModelPartial.__init__(self, component=component)
 
     # region Properties
 

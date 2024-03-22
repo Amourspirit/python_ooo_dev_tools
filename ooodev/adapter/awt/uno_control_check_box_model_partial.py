@@ -35,7 +35,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
         # pylint: disable=unused-argument
         self.__component = component
         self.__event_provider = Events(self)
-        UnoControlModelPartial.__init__(self)
+        UnoControlModelPartial.__init__(self, component=component)
 
         self.__props = {}
 

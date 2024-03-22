@@ -9,6 +9,7 @@ from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as Horizontal
 from ooo.dyn.view.selection_type import SelectionType
 from com.sun.star.awt.grid import XMutableGridDataModel
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.grid.grid_selection_events import GridSelectionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.loader import lo as mLo
@@ -23,6 +24,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt.grid import UnoControlGrid  # service
     from com.sun.star.awt.grid import UnoControlGridModel  # service
+    from ooodev.dialog.dl_control.model.model_grid import ModelGrid
 # endregion imports
 
 
@@ -41,10 +43,11 @@ class CtlGrid(DialogControlBase, UnoControlGridModelPartial, GridSelectionEvents
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlGridModelPartial.__init__(self)
+        UnoControlGridModelPartial.__init__(self, self.get_model())  # type: ignore
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         GridSelectionEvents.__init__(self, trigger_args=generic_args, cb=self._on_grid_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -303,6 +306,23 @@ class CtlGrid(DialogControlBase, UnoControlGridModelPartial, GridSelectionEvents
         return cast("UnoControlGridModel", super().model)
 
     @property
+    def model_ex(self) -> ModelGrid:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_grid import ModelGrid
+
+            self._model_ex = ModelGrid(self.model)
+        return self._model_ex
+
+    @property
     def view(self) -> UnoControlGrid:
         # pylint: disable=no-member
         return cast("UnoControlGrid", super().view)
@@ -357,3 +377,7 @@ class CtlGrid(DialogControlBase, UnoControlGridModelPartial, GridSelectionEvents
         return -1
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_grid import ModelGrid

@@ -7,7 +7,6 @@ from ooo.dyn.text.font_relief import FontReliefEnum
 from ooodev.utils import info as mInfo
 from ooodev.events.events import Events
 from ooodev.utils.color import Color
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
 class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlGroupBoxModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlGroupBoxModel):
         """
         Constructor
 
@@ -28,18 +27,15 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlGroupBoxModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlGroupBoxModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
         self.__event_provider = Events(self)
         self.__props = {}
 
         def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
             prop_name = str(event_args.event_data["prop_name"])
-            if hasattr(self.model, prop_name):
-                setattr(self.model, prop_name, event_args.source.component)
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
 
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
@@ -80,7 +76,7 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         key = "FontDescriptor"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            prop = FontDescriptorStructComp(self.__component.FontDescriptor, key, self.__event_provider)
             self.__props[key] = prop
         return cast(FontDescriptorStructComp, prop)
 
@@ -88,9 +84,9 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
     def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
         key = "FontDescriptor"
         if mInfo.Info.is_instance(value, FontDescriptorStructComp):
-            self.model.FontDescriptor = value.copy()
+            self.__component.FontDescriptor = value.copy()
         else:
-            self.model.FontDescriptor = cast("FontDescriptor", value)
+            self.__component.FontDescriptor = cast("FontDescriptor", value)
         if key in self.__props:
             del self.__props[key]
 
@@ -99,11 +95,11 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -116,11 +112,11 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.model.FontEmphasisMark)
+        return FontEmphasisEnum(self.__component.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.model.FontEmphasisMark = int(value)
+        self.__component.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -133,55 +129,55 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.model.FontRelief)
+        return FontReliefEnum(self.__component.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.model.FontRelief = int(value)
+        self.__component.FontRelief = int(value)
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def label(self) -> str:
         """
         Gets/Sets the label of the control.
         """
-        return self.model.Label
+        return self.__component.Label
 
     @label.setter
     def label(self, value: str) -> None:
-        self.model.Label = value
+        self.__component.Label = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def text_color(self) -> Color:
@@ -191,11 +187,11 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextColor)
+        return Color(self.__component.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.model.TextColor = value  # type: ignore
+        self.__component.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
@@ -205,11 +201,11 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextLineColor)
+        return Color(self.__component.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.model.TextLineColor = value  # type: ignore
+        self.__component.TextLineColor = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -221,12 +217,12 @@ class UnoControlGroupBoxModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.WritingMode
+            return self.__component.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.WritingMode = value
+            self.__component.WritingMode = value
 
     # endregion Properties

@@ -44,7 +44,7 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         # EventArgs.event_data will contain the ActionEvent
         TopWindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_top_window_events_listener_add_remove)
         WindowEvents.__init__(self, trigger_args=generic_args, cb=self._on_window_events_listener_add_remove)
-        self._model = None
+        self._model_ex = None
 
     # endregion init
 
@@ -190,11 +190,16 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         return self.get_view()
 
     @property
-    def model_dialog(self) -> ModelDialog:
-        """Gets the Model for the control"""
-        if self._model is None:
-            self._model = ModelDialog(self.get_model())
-        return self._model
+    def model_ex(self) -> ModelDialog:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        if self._model_ex is None:
+            self._model_ex = ModelDialog(self.get_model())
+        return self._model_ex
 
     @property
     def title(self) -> str:

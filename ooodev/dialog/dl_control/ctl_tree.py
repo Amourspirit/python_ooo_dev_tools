@@ -8,6 +8,7 @@ import uno  # pylint: disable=unused-import
 from com.sun.star.awt.tree import XMutableTreeDataModel
 from ooo.dyn.view.selection_type import SelectionType  # enum
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.tree.tree_edit_events import TreeEditEvents
 from ooodev.adapter.awt.tree.tree_expansion_events import TreeExpansionEvents
 from ooodev.adapter.tree.tree_data_model_comp import TreeDataModelComp
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControlModel  # service
     from com.sun.star.awt.tree import XMutableTreeNode
     from com.sun.star.awt.tree import XTreeNode
+    from ooodev.dialog.dl_control.model.model_tree import ModelTree
 # endregion imports
 
 
@@ -53,7 +55,7 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        TreeControlModelPartial.__init__(self)
+        TreeControlModelPartial.__init__(self, self.get_model())  # type: ignore
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SelectionChangeEvents.__init__(
@@ -63,6 +65,7 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         TreeExpansionEvents.__init__(
             self, trigger_args=generic_args, cb=self._on_tree_expansion_events_listener_add_remove
         )
+        self._model_ex = None
 
     # endregion init
 
@@ -422,6 +425,23 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         return cast("TreeControlModel", super().model)
 
     @property
+    def model_ex(self) -> ModelTree:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_tree import ModelTree
+
+            self._model_ex = ModelTree(self.model)
+        return self._model_ex
+
+    @property
     def root_node(self) -> MutableTreeNode | None:
         """Gets the root node of the tree"""
         with contextlib.suppress(Exception):
@@ -437,3 +457,7 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         return cast("TreeControl", super().view)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_tree import ModelTree

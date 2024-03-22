@@ -11,7 +11,6 @@ from ooodev.events.events import Events
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
 from ooodev.utils.kind.align_kind import AlignKind
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlFormattedFieldModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlFormattedFieldModel):
         """
         Constructor
 
@@ -33,18 +32,15 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlFormattedFieldModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlFormattedFieldModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
         self.__event_provider = Events(self)
         self.__props = {}
 
         def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
             prop_name = str(event_args.event_data["prop_name"])
-            if hasattr(self.model, prop_name):
-                setattr(self.model, prop_name, event_args.source.component)
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
 
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
@@ -85,7 +81,7 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         key = "FontDescriptor"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            prop = FontDescriptorStructComp(self.__component.FontDescriptor, key, self.__event_provider)
             self.__props[key] = prop
         return cast(FontDescriptorStructComp, prop)
 
@@ -93,9 +89,9 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
     def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
         key = "FontDescriptor"
         if mInfo.Info.is_instance(value, FontDescriptorStructComp):
-            self.model.FontDescriptor = value.copy()
+            self.__component.FontDescriptor = value.copy()
         else:
-            self.model.FontDescriptor = cast("FontDescriptor", value)
+            self.__component.FontDescriptor = cast("FontDescriptor", value)
         if key in self.__props:
             del self.__props[key]
 
@@ -107,12 +103,12 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
-        return AlignKind(self.model.Align)
+        return AlignKind(self.__component.Align)
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
-        self.model.Align = kind.value
+        self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -122,11 +118,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.BackgroundColor)
+        return Color(self.__component.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.model.BackgroundColor = value  # type: ignore
+        self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -139,12 +135,12 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.model.Border)
+        return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.model.Border = kind.value
+        self.__component.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -160,13 +156,13 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not set.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BorderColor)
+            return Color(self.__component.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BorderColor = value
+            self.__component.BorderColor = value
 
     @property
     def effective_default(self) -> Any:
@@ -175,11 +171,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         This may be a numeric value (double) or a string, depending on the formatting of the field.
         """
-        return self.model.EffectiveDefault
+        return self.__component.EffectiveDefault
 
     @effective_default.setter
     def effective_default(self, value: Any) -> None:
-        self.model.EffectiveDefault = value
+        self.__component.EffectiveDefault = value
 
     @property
     def effective_max(self) -> float:
@@ -188,11 +184,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         This property is ignored if the format of the field is no numeric format.
         """
-        return self.model.EffectiveMax
+        return self.__component.EffectiveMax
 
     @effective_max.setter
     def effective_max(self, value: float) -> None:
-        self.model.EffectiveMax = value
+        self.__component.EffectiveMax = value
 
     @property
     def effective_min(self) -> float:
@@ -201,11 +197,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         This property is ignored if the format of the field is no numeric format.
         """
-        return self.model.EffectiveMin
+        return self.__component.EffectiveMin
 
     @effective_min.setter
     def effective_min(self, value: float) -> None:
-        self.model.EffectiveMin = value
+        self.__component.EffectiveMin = value
 
     @property
     def effective_value(self) -> Any:
@@ -216,22 +212,22 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         """
         # not sure why but UnoControlFormattedFieldModel does not have EffectiveValue property.
         # however, it is documented in the API.
-        return self.model.EffectiveValue  # type: ignore
+        return self.__component.EffectiveValue  # type: ignore
 
     @effective_value.setter
     def effective_value(self, value: Any) -> None:
-        self.model.EffectiveValue = value  # type: ignore
+        self.__component.EffectiveValue = value  # type: ignore
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -244,11 +240,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.model.FontEmphasisMark)
+        return FontEmphasisEnum(self.__component.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.model.FontEmphasisMark = int(value)
+        self.__component.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -261,7 +257,7 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.model.FontRelief)
+        return FontReliefEnum(self.__component.FontRelief)
 
     @property
     def format_key(self) -> int:
@@ -270,48 +266,48 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         This value is meaningful relative to the ``formats_supplier`` property only.
         """
-        return self.model.FormatKey
+        return self.__component.FormatKey
 
     @format_key.setter
     def format_key(self, value: int) -> None:
-        self.model.FormatKey = value
+        self.__component.FormatKey = value
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.model.FontRelief = int(value)
+        self.__component.FontRelief = int(value)
 
     @property
     def formats_supplier(self) -> XNumberFormatsSupplier:
         """
         Gets/Sets - supplies the formats the field should work with.
         """
-        return self.model.FormatsSupplier
+        return self.__component.FormatsSupplier
 
     @formats_supplier.setter
     def formats_supplier(self, value: XNumberFormatsSupplier) -> None:
-        self.model.FormatsSupplier = value
+        self.__component.FormatsSupplier = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def hide_inactive_selection(self) -> bool | None:
@@ -321,13 +317,13 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.HideInactiveSelection
+            return self.__component.HideInactiveSelection
         return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.HideInactiveSelection = value
+            self.__component.HideInactiveSelection = value
 
     @property
     def max_text_len(self) -> int:
@@ -336,11 +332,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
 
         There's no limitation, if set to 0.
         """
-        return self.model.MaxTextLen
+        return self.__component.MaxTextLen
 
     @max_text_len.setter
     def max_text_len(self, value: int) -> None:
-        self.model.MaxTextLen = value
+        self.__component.MaxTextLen = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
@@ -359,35 +355,35 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
         with contextlib.suppress(AttributeError):
-            return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
+            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
         return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.MouseWheelBehavior = int(value)
+            self.__component.MouseWheelBehavior = int(value)
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def read_only(self) -> bool:
         """
         Gets/Sets if the content of the control cannot be modified by the user.
         """
-        return self.model.ReadOnly
+        return self.__component.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
-        self.model.ReadOnly = value
+        self.__component.ReadOnly = value
 
     @property
     def repeat(self) -> bool | None:
@@ -398,13 +394,13 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.Repeat
+            return self.__component.Repeat
         return None
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.Repeat = value
+            self.__component.Repeat = value
 
     @property
     def repeat_delay(self) -> int | None:
@@ -417,57 +413,57 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.RepeatDelay
+            return self.__component.RepeatDelay
         return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.RepeatDelay = value
+            self.__component.RepeatDelay = value
 
     @property
     def spin(self) -> bool:
         """
         Gets/Sets if the control has a spin button.
         """
-        return self.model.Spin
+        return self.__component.Spin
 
     @spin.setter
     def spin(self, value: bool) -> None:
-        self.model.Spin = value
+        self.__component.Spin = value
 
     @property
     def strict_format(self) -> bool:
         """
         Gets/Sets if the value is checked during the user input.
         """
-        return self.model.StrictFormat
+        return self.__component.StrictFormat
 
     @strict_format.setter
     def strict_format(self, value: bool) -> None:
-        self.model.StrictFormat = value
+        self.__component.StrictFormat = value
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets that the control can be reached with the TAB key.
         """
-        return self.model.Tabstop
+        return self.__component.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.model.Tabstop = value
+        self.__component.Tabstop = value
 
     @property
     def text(self) -> str:
         """
         Gets/Sets the text displayed in the control.
         """
-        return self.model.Text
+        return self.__component.Text
 
     @text.setter
     def text(self, value: str) -> None:
-        self.model.Text = value
+        self.__component.Text = value
 
     @property
     def text_color(self) -> Color:
@@ -477,11 +473,11 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextColor)
+        return Color(self.__component.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.model.TextColor = value  # type: ignore
+        self.__component.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
@@ -491,22 +487,22 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextLineColor)
+        return Color(self.__component.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.model.TextLineColor = value  # type: ignore
+        self.__component.TextLineColor = value  # type: ignore
 
     @property
     def treat_as_number(self) -> bool:
         """
         Gets/Sets if the text is treated as a number.
         """
-        return self.model.TreatAsNumber
+        return self.__component.TreatAsNumber
 
     @treat_as_number.setter
     def treat_as_number(self, value: bool) -> None:
-        self.model.TreatAsNumber = value
+        self.__component.TreatAsNumber = value
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
@@ -519,13 +515,13 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
         with contextlib.suppress(AttributeError):
-            return self.model.VerticalAlign  # type: ignore
+            return self.__component.VerticalAlign  # type: ignore
         return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.VerticalAlign = value  # type: ignore
+            self.__component.VerticalAlign = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -537,12 +533,12 @@ class UnoControlFormattedFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.WritingMode
+            return self.__component.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.WritingMode = value
+            self.__component.WritingMode = value
 
     # endregion Properties

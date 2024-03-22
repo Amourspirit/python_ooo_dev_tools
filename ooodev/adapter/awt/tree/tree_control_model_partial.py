@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 from ooo.dyn.view.selection_type import SelectionType
 from ooodev.units.unit_px import UnitPX
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
 class TreeControlModelPartial(UnoControlModelPartial):
     """Partial class for TreeControlModel."""
 
-    def __init__(self) -> None:
+    def __init__(self, component: TreeControlModel) -> None:
         """
         Constructor
 
@@ -23,11 +22,8 @@ class TreeControlModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.TreeControlModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: TreeControlModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
 
     # region Properties
 
@@ -38,11 +34,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         You can implement your own instance of ``XTreeDataModel`` or use the ``MutableTreeDataModel``.
         """
-        return self.model.DataModel
+        return self.__component.DataModel
 
     @data_model.setter
     def data_model(self, value: XTreeDataModel) -> None:
-        self.model.DataModel = value
+        self.__component.DataModel = value
 
     @property
     def editable(self) -> bool:
@@ -51,11 +47,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         The default value is ``False``.
         """
-        return self.model.Editable
+        return self.__component.Editable
 
     @editable.setter
     def editable(self, value: bool) -> None:
-        self.model.Editable = value
+        self.__component.Editable = value
 
     @property
     def invokes_stop_node_editing(self) -> bool:
@@ -68,11 +64,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         The default value is ``False``.
         """
-        return self.model.InvokesStopNodeEditing
+        return self.__component.InvokesStopNodeEditing
 
     @invokes_stop_node_editing.setter
     def invokes_stop_node_editing(self, value: bool) -> None:
-        self.model.InvokesStopNodeEditing = value
+        self.__component.InvokesStopNodeEditing = value
 
     @property
     def root_displayed(self) -> bool:
@@ -84,11 +80,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         The default value is ``True``.
         """
-        return self.model.RootDisplayed
+        return self.__component.RootDisplayed
 
     @root_displayed.setter
     def root_displayed(self, value: bool) -> None:
-        self.model.RootDisplayed = value
+        self.__component.RootDisplayed = value
 
     @property
     def row_height(self) -> UnitPX:
@@ -105,12 +101,12 @@ class TreeControlModelPartial(UnoControlModelPartial):
         Note:
             Value can be set as an integer or a ``UnitPX`` instance.
         """
-        return UnitPX(self.model.RowHeight)
+        return UnitPX(self.__component.RowHeight)
 
     @row_height.setter
     def row_height(self, value: int | UnitT) -> None:
         px = UnitPX.from_unit_val(value)
-        self.model.RowHeight = int(px.value)
+        self.__component.RowHeight = int(px.value)
 
     @property
     def selection_type(self) -> SelectionType:
@@ -122,11 +118,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
         Hint:
             - ``SelectionType`` can be imported from ``ooo.dyn.view.selection_type``
         """
-        return self.model.SelectionType  # type: ignore
+        return self.__component.SelectionType  # type: ignore
 
     @selection_type.setter
     def selection_type(self, value: SelectionType) -> None:
-        self.model.SelectionType = value  # type: ignore
+        self.__component.SelectionType = value  # type: ignore
 
     @property
     def shows_handles(self) -> bool:
@@ -136,11 +132,11 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         The default value is ``True``.
         """
-        return self.model.ShowsHandles
+        return self.__component.ShowsHandles
 
     @shows_handles.setter
     def shows_handles(self, value: bool) -> None:
-        self.model.ShowsHandles = value
+        self.__component.ShowsHandles = value
 
     @property
     def shows_root_handles(self) -> bool:
@@ -149,10 +145,10 @@ class TreeControlModelPartial(UnoControlModelPartial):
 
         The default value is ``True``.
         """
-        return self.model.ShowsRootHandles
+        return self.__component.ShowsRootHandles
 
     @shows_root_handles.setter
     def shows_root_handles(self, value: bool) -> None:
-        self.model.ShowsRootHandles = value
+        self.__component.ShowsRootHandles = value
 
     # endregion Properties

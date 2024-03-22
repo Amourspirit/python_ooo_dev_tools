@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_formatted_field_model_partial import UnoControlFormattedFieldModelPartial
 from ooodev.adapter.awt.spin_events import SpinEvents
 from ooodev.adapter.awt.text_events import TextEvents
@@ -15,6 +16,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFormattedField  # service
     from com.sun.star.awt import UnoControlFormattedFieldModel  # service
+    from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
 # endregion imports
 
 
@@ -33,11 +35,12 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlFormattedFieldModelPartial.__init__(self)
+        UnoControlFormattedFieldModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -85,6 +88,23 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         return cast("UnoControlFormattedFieldModel", super().model)
 
     @property
+    def model_ex(self) -> ModelFormattedField:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
+
+            self._model_ex = ModelFormattedField(self.model)
+        return self._model_ex
+
+    @property
     def value(self) -> Any:
         """
         Gets/Sets the value.
@@ -107,4 +127,5 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
     # endregion Properties
 
 
-# ctl = CtlButton(None)
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
