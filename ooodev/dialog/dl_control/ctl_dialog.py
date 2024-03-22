@@ -14,7 +14,7 @@ from ooodev.adapter.awt.uno_control_dialog_comp import UnoControlDialogComp
 from ooodev.adapter.awt.unit_conversion_partial import UnitConversionPartial
 
 from ooodev.dialog.dl_control.ctl_base import CtlListenerBase
-from ooodev.dialog.dl_control.dialog_model import DialogModel
+from ooodev.dialog.dl_control.model.model_dialog import ModelDialog
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XControl
@@ -190,10 +190,10 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         return self.get_view()
 
     @property
-    def model(self) -> DialogModel:
+    def model_dialog(self) -> ModelDialog:
         """Gets the Model for the control"""
         if self._model is None:
-            self._model = DialogModel(self.get_model())
+            self._model = ModelDialog(self.get_model())
         return self._model
 
     @property

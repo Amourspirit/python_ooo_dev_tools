@@ -12,6 +12,7 @@ from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 from ooodev.adapter.awt.uno_control_check_box_model_partial import UnoControlCheckBoxModelPartial
 from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.model.model_checkbox import ModelCheckbox
 
 
 if TYPE_CHECKING:
@@ -35,10 +36,11 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlCheckBoxModelPartial.__init__(self)
+        UnoControlCheckBoxModelPartial.__init__(self, self.model)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)
+        self.__model_checkbox = None
 
     # endregion init
 
@@ -77,6 +79,12 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
     def model(self) -> UnoControlCheckBoxModel:
         # pylint: disable=no-member
         return cast("UnoControlCheckBoxModel", super().model)
+
+    @property
+    def model_checkbox(self) -> ModelCheckbox:
+        if self.__model_checkbox is None:
+            self.__model_checkbox = ModelCheckbox(self.model)
+        return self.__model_checkbox
 
     @property
     def triple_state(self) -> bool:

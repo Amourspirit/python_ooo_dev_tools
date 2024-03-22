@@ -39,6 +39,10 @@ from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.units.unit_px import UnitPX
+from ooodev.units.unit_app_font_height import UnitAppFontHeight
+from ooodev.units.unit_app_font_width import UnitAppFontWidth
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
 from ooodev.utils.kind.point_size_kind import PointSizeKind
 from ooodev.utils import info as mInfo
 from ooodev.utils.date_time_util import DateUtil
@@ -689,6 +693,7 @@ class Dialogs:
             uno_any = uno.Any("short", btn_type)  # type: ignore
             uno.invoke(ctl_props, "setPropertyValue", ("PushButtonType", uno_any))  # type: ignore
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -702,7 +707,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlButton", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlButton(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create button control: {e}") from e
@@ -772,6 +777,8 @@ class Dialogs:
             ctl_props.setPropertyValue("TriState", tri_state)
             ctl_props.setPropertyValue("State", int(state))
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -784,7 +791,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlCheckBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlCheckBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create check box control: {e}") from e
@@ -855,6 +862,7 @@ class Dialogs:
             ctl_props.setPropertyValue("MaxTextLen", max_text_len)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ReadOnly", read_only)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             if entries:
                 uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
                 uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
@@ -872,7 +880,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlComboBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlComboBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create combo box control: {e}") from e
@@ -948,6 +956,7 @@ class Dialogs:
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -961,7 +970,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlCurrencyField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlCurrencyField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create currency field control: {e}") from e
@@ -1030,6 +1039,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("DateMin", DateUtil.date_to_uno_date(min_date))
             ctl_props.setPropertyValue("DateMax", DateUtil.date_to_uno_date(max_date))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             if date_value is not None:
                 ctl_props.setPropertyValue("Date", DateUtil.date_to_uno_date(date_value))
 
@@ -1045,7 +1055,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlDateField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlDateField(result)
             ctl.date_format = date_format
             return ctl
@@ -1104,6 +1114,7 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1117,7 +1128,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFileControl", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFile(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create file control: {e}") from e
@@ -1172,6 +1183,7 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Orientation", int(orientation))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1185,7 +1197,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFixedLine", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFixedLine(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create fixed line control: {e}") from e
@@ -1255,6 +1267,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Border", int(border))
             if value is not None:
                 ctl_props.setPropertyValue("EffectiveValue", value)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1268,7 +1281,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFormattedField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFormattedField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create formatted field control: {e}") from e
@@ -1323,6 +1336,8 @@ class Dialogs:
             if label:
                 ctl_props.setPropertyValue("Label", label)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1335,7 +1350,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlGroupBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlGroupBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Group box control: {e}") from e
@@ -1414,6 +1429,8 @@ class Dialogs:
             if url:
                 ctl_props.setPropertyValue("URL", url)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1426,7 +1443,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFixedHyperlink", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlHyperlinkFixed(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Hyperlink control: {e}") from e
@@ -1502,6 +1519,8 @@ class Dialogs:
             else:
                 ctl_props.setPropertyValue("ScaleImage", False)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1514,7 +1533,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlImageControl", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl_image = CtlImage(result)
             if image_url:
                 ctl_image.picture = image_url
@@ -1573,6 +1592,8 @@ class Dialogs:
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("Name", name)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1583,7 +1604,7 @@ class Dialogs:
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast("UnoControlFixedText", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFixedText(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Fixed Text control: {e}") from e
@@ -1652,6 +1673,7 @@ class Dialogs:
             ctl_props.setPropertyValue("MultiSelection", multi_select)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ReadOnly", read_only)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             # if entries:
             #     uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
             #     uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
@@ -1668,7 +1690,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlListBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlListBox(result)
             ctl.set_list_data(entries)
             return ctl
@@ -1788,6 +1810,7 @@ class Dialogs:
             ctl_props.setPropertyValue("EditMask", edit_mask)
             ctl_props.setPropertyValue("LiteralMask", literal_mask)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1801,7 +1824,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlPatternField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlPatternField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create pattern field control: {e}") from e
@@ -1879,6 +1902,8 @@ class Dialogs:
             if value is not None:
                 ctl_props.setPropertyValue("Value", value)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1891,7 +1916,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlNumericField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlNumericField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create numeric field control: {e}") from e
@@ -1956,6 +1981,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ProgressValueMax", max_value)
             ctl_props.setPropertyValue("ProgressValue", value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1969,7 +1995,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlProgressBar", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlProgressBar(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Progress Bar control: {e}") from e
@@ -2026,6 +2052,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("MultiLine", multiline)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2037,7 +2064,7 @@ class Dialogs:
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast("UnoControlRadioButton", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlRadioButton(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create radio button control: {e}") from e
@@ -2099,6 +2126,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ScrollValueMin", min_value)
             ctl_props.setPropertyValue("ScrollValueMax", max_value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2112,7 +2140,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlScrollBar", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlScrollBar(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create scroll bar control: {e}") from e
@@ -2176,6 +2204,7 @@ class Dialogs:
             ctl_props.setPropertyValue("SpinValueMax", max_value)
             ctl_props.setPropertyValue("SpinValueMin", min_value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2192,16 +2221,16 @@ class Dialogs:
             btn = CtlSpinButton(result)
             # not sure why but this control seems buggy with setting size and position.
             # Setting Width and height seems to have the best results when setting the model width and height.
-            px_width = UnitPX.from_unit_val(width)
-            px_height = UnitPX.from_unit_val(height)
+            # px_width = UnitPX.from_unit_val(width)
+            # px_height = UnitPX.from_unit_val(height)
 
-            if px_width > -1 and px_height > -1:
-                # model values are in AppFont units.
-                btn.model.Width = round(px_width.get_value_app_font(PointSizeKind.WIDTH))
-                btn.model.Height = round(px_height.get_value_app_font(PointSizeKind.HEIGHT))
+            # if px_width > -1 and px_height > -1:
+            #     # model values are in AppFont units.
+            #     btn.model.Width = round(px_width.get_value_app_font(PointSizeKind.WIDTH))
+            #     btn.model.Height = round(px_height.get_value_app_font(PointSizeKind.HEIGHT))
 
             # only set position here. Width and height set above.
-            cls._set_size_pos(result, x, y, -1, -1)
+            # cls._set_size_pos(result, x, y, -1, -1)
             # cls._set_size_pos(result, x, y, width, height)
             return btn
 
@@ -2264,6 +2293,9 @@ class Dialogs:
                 model.Name = cls.create_name(name_con, "TabControl")
             if border != BorderKind.NONE and hasattr(model, "Border"):
                 setattr(model, "Border", int(border))
+
+            ctl_props = cls.get_control_props(model)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             # Add the model to the dialog
             dialog_model.insertByName(model.Name, model)
 
@@ -2272,7 +2304,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlTabPageContainer", ctrl_con.getControl(model.Name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlTabPageContainer(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Tab control: {e}") from e
@@ -2438,6 +2470,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ShowColumnHeader", col_header)
             ctl_props.setPropertyValue("ShowRowHeader", row_header)
             ctl_props.setPropertyValue("UseGridLines", grid_lines)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2456,7 +2489,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlGrid", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlGrid(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Table control: {e}") from e
@@ -2520,6 +2553,7 @@ class Dialogs:
                 ctl_props.setPropertyValue("Text", text)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2536,7 +2570,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlEdit", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlTextEdit(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create text field control: {e}") from e
@@ -2596,6 +2630,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Editable", False)
             ctl_props.setPropertyValue("ShowsHandles", True)
             ctl_props.setPropertyValue("ShowsRootHandles", True)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2615,7 +2650,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast("TreeControl", ctrl_con.getControl(name))
             # TreeControl does implement XWindows event thought it is documented
-            cls._set_size_pos(result, x, y, width, height)  # type: ignore
+            # cls._set_size_pos(result, x, y, width, height)  # type: ignore
             return CtlTree(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Tree control: {e}") from e
@@ -2687,6 +2722,8 @@ class Dialogs:
             if time_value is not None:
                 ctl_props.setPropertyValue("Time", DateUtil.time_to_uno_time(time_value))
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -2699,7 +2736,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlTimeField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlTimeField(result)
             ctl.time_format = time_format
             return ctl
@@ -2740,6 +2777,60 @@ class Dialogs:
             pos_size = PosSize.SIZE
         if pos_size is not None:
             ctl.setPosSize(px_x, px_y, px_width, px_height, pos_size)
+
+    @staticmethod
+    def _set_model_size_pos(
+        props: XPropertySet,
+        x: int | UnitT = -1,
+        y: int | UnitT = -1,
+        width: int | UnitT = -1,
+        height: int | UnitT = -1,
+    ) -> None:
+        """
+        Set Position and size for a control Model.
+
+        |lo_safe|
+
+        Args:
+            props (XPropertySet): Control Model properties.
+            x (int, UnitT, optional): X Position. Defaults to -1.
+            y (int, UnitT, optional): Y Position. Defaults to -1.
+            width (int, UnitT, optional): Width. Defaults to -1.
+            height (int, UnitT, optional): Height. Defaults to -1.
+        """
+
+        px_x = UnitPX.from_unit_val(x)
+        px_y = UnitPX.from_unit_val(y)
+        px_width = UnitPX.from_unit_val(width)
+        px_height = UnitPX.from_unit_val(height)
+        info = props.getPropertySetInfo()
+
+        # note PositionX and PositionY are marked as str in the API but are actually int
+
+        # don't convert AppFont units to Pixel units
+        if info.getPropertyByName("PositionX") and px_x > -1:
+            if isinstance(x, UnitAppFontX):
+                props.setPropertyValue("PositionX", int(x))
+            else:
+                props.setPropertyValue("PositionX", int(UnitAppFontX.from_unit_val(px_x)))
+
+        if info.getPropertyByName("PositionY") and px_y > -1:
+            if isinstance(y, UnitAppFontY):
+                props.setPropertyValue("PositionY", int(y))
+            else:
+                props.setPropertyValue("PositionY", int(UnitAppFontY.from_unit_val(px_y)))
+
+        if info.getPropertyByName("Width") and px_width > -1:
+            if isinstance(width, UnitAppFontWidth):
+                props.setPropertyValue("Width", int(width))
+            else:
+                props.setPropertyValue("Width", int(UnitAppFontWidth.from_unit_val(px_width)))
+
+        if info.getPropertyByName("Height") and px_height > -1:
+            if isinstance(height, UnitAppFontHeight):
+                props.setPropertyValue("Height", int(height))
+            else:
+                props.setPropertyValue("Height", int(UnitAppFontHeight.from_unit_val(px_height)))
 
     @classmethod
     def get_radio_group_value(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:

@@ -23,6 +23,7 @@ from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.info import Info
+from ooodev.units import UnitAppFontHeight, UnitAppFontWidth, UnitAppFontX, UnitAppFontY
 
 if TYPE_CHECKING:
     from com.sun.star.awt import ItemEvent
@@ -88,6 +89,8 @@ class Runner:
             height=self._height,
             title=self._title,
         )
+        # self._dialog.create_peer()
+        # self._dialog.set_visible(False)
 
         self._ctl_lbl = self._dialog.insert_label(
             label=msg,
@@ -166,13 +169,17 @@ class Runner:
             x=sz.X,
             y=sz.Height + sz.Y + self._padding,
             width=200,
-            height=20,
+            height=UnitAppFontHeight(11),
             tri_state=False,
             state=TriStateKind.CHECKED,
             border=border_kind,
         )
         if fd is not None:
             self._ctl_chk1.set_font_descriptor(fd)
+        # self._ctl_chk1.model_checkbox.x = self._ctl_chk1.x.get_value_app_font(0)
+        # self._ctl_chk1.model_checkbox.y = self._ctl_chk1.y.get_value_app_font(1)
+        # self._ctl_chk1.model_checkbox.width = self._ctl_chk1.width.get_value_app_font(2)
+        # self._ctl_chk1.model_checkbox.height = self._ctl_chk1.height.get_value_app_font(3)
         self._ctl_chk1.text_color = StandardColor.RED
         self._set_tab_index(self._ctl_chk1)
 
@@ -294,7 +301,17 @@ class Runner:
             height=self._box_height,
             entries=["Item 1", "Item 2", "Item 3"],
             border=border_kind,
+            drop_down=True,
         )
+        # self._ctl_combo1 = self._dialog.insert_list_box(
+        #     x=self._margin,
+        #     y=sz_numeric.Height + sz_numeric.Y + self._padding,
+        #     width=200,
+        #     height=self._box_height,
+        #     entries=["Item 1", "Item 2", "Item 3"],
+        #     border=border_kind,
+        #     drop_down=True,
+        # )
         if fd is not None:
             self._ctl_combo1.set_font_descriptor(fd)
         self._set_tab_index(self._ctl_combo1)

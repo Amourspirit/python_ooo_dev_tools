@@ -218,6 +218,14 @@ class Tabs:
             height=20,
             dialog_ctrl=self._tab_oth.view,
         )
+        self._ctl_combo1 = self._dialog.insert_combo_box(
+            x=tab_sz.X + self._padding,
+            y=100,
+            width=200,
+            height=self._box_height,
+            entries=["Item 1", "Item 2", "Item 3"],
+            dialog_ctrl=self._tab_oth.view,
+        )
 
     def show(self) -> int:
         self._ctl_tab.active_tab_page_id = self._active_page_page_id

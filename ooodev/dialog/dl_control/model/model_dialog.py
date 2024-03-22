@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 # Model Position and Size are in AppFont units. View Size and Position are in Pixel units.
 
 
-class DialogModel(UnoControlModelComp):
+class ModelDialog(UnoControlModelComp):
 
     def __init__(self, component: UnoControlModel) -> None:
         """
@@ -144,22 +144,22 @@ class DialogModel(UnoControlModelComp):
         self.model.Name = value
 
     @property
-    def position_x(self) -> UnitAppFontX:
+    def x(self) -> UnitAppFontX:
         """Get or set the position_x property."""
         return UnitAppFontX(self.model.PositionX)
 
-    @position_x.setter
-    def position_x(self, value: int | UnitT) -> None:
+    @x.setter
+    def x(self, value: int | UnitT) -> None:
         val = UnitAppFontX.from_unit_val(value)
         self.model.PositionX = int(val)
 
     @property
-    def position_y(self) -> UnitAppFontY:
+    def y(self) -> UnitAppFontY:
         """Get or set the position_y property."""
         return UnitAppFontY(self.model.PositionY)
 
-    @position_y.setter
-    def position_y(self, value: int | UnitT) -> None:
+    @y.setter
+    def y(self, value: int | UnitT) -> None:
         val = UnitAppFontY.from_unit_val(value)
         self.model.PositionY = int(val)
 
