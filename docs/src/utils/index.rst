@@ -13,4 +13,5 @@ utils
     inst/index
     partial/index
     kind/index
+    reflection/index
     *

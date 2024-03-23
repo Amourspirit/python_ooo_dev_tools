@@ -2,6 +2,24 @@
 Version History
 ***************
 
+Version 0.37.0
+==============
+
+Added new reflect class ``ooodev.utils.reflection.reflect.Reflect`` that can be used to reflect UNO objects.
+
+Added new ``ooodev.utils.kind.enum_helper.EnumHelper`` class that can be used to get the enum values of a UNO object and can create dynamic enums.
+
+Breaking Changes
+----------------
+
+Dialog controls now use ``UnitPX`` and ``AppFont*`` classes for measurements.
+Int values can still be used to set measurements as before and still default to Pixels.
+Now the default is ``UnitPX`` for measurements.
+Dialog UNO controls by default use pixels for View measurements and App Font measurements for Model measurements.
+
+This change should not affect most users as the default is still pixels. But now reading pixels will return a ``UnitPX`` object which.
+Hint: ``int(my_unit_px)`` will return the pixel value as in int.
+
 Version 0.36.3
 ==============
 
