@@ -544,12 +544,13 @@ class Dialogs:
             ctl_props.setPropertyValue("Step", 0)
             ctl_props.setPropertyValue("Moveable", True)
             ctl_props.setPropertyValue("TabIndex", 0)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
-            cls._set_size_pos(dialog_ctrl, x, y, width, height)
+            # cls._set_size_pos(dialog_ctrl, x, y, width, height)
             return CtlDialog(dialog_ctrl)
         except Exception as e:
             raise mEx.DialogError(f"Could not create dialog control: {e}") from e

@@ -5,7 +5,13 @@ import uno  # pylint: disable=unused-import
 from com.sun.star.awt import XToolkit2
 from com.sun.star.awt import XControlContainer
 from com.sun.star.awt import XWindowPeer
+from ooo.dyn.awt.pos_size import PosSize
 
+from ooodev.units.unit_px import UnitPX
+from ooodev.units.unit_app_font_height import UnitAppFontHeight
+from ooodev.units.unit_app_font_width import UnitAppFontWidth
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
 from ooodev.adapter.awt.top_window_events import TopWindowEvents
 from ooodev.adapter.awt.window_events import WindowEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -21,6 +27,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
     from com.sun.star.awt import UnoControlDialogModel  # service
     from com.sun.star.awt import XToolkit
+    from ooodev.units.unit_obj import UnitT
 # endregion imports
 
 
@@ -136,6 +143,60 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         UnoControlDialogComp.create_peer(self, toolkit, parent)  # type: ignore
 
     # endregion create_peer()
+
+    def set_pos_size(
+        self, x: int | UnitT, y: int | UnitT, width: int | UnitT, height: int | UnitT, flags: int = PosSize.POSSIZE
+    ) -> None:
+        """
+        Sets the outer bounds of the window.
+
+        Args:
+            x (int, UnitT): The x-coordinate of the window. In ``Pixels`` or ``UnitT``.
+            y (int, UnitT): The y-coordinate of the window. In ``Pixels`` or ``UnitT``.
+            width (int, UnitT): The width of the window. In ``Pixels`` or ``UnitT``.
+            height (int, UnitT): The height of the window. In ``Pixels`` or ``UnitT``.
+            flags (int, UnitT): A combination of ``com.sun.star.awt.PosSize`` flags. Default set to ``PosSize.POSSIZE``.
+
+        Returns:
+            None:
+
+        Note:
+            The Model is in AppFont units where as the View is in Pixels.
+            The values are converted from Pixels to AppFont units and assigned to the model.
+            If the values are passed in as ``UnitAppFontX``, ``UnitAppFontY``, ``UnitAppFontWidth``, or ``UnitAppFontHeight``
+            then they are assigned directly to the model without conversion.
+        """
+
+        def is_flag_set(value: int, flag: int) -> bool:
+            return (value & flag) != 0
+
+        if is_flag_set(flags, PosSize.X):
+            if isinstance(x, UnitAppFontX):
+                self.model.PositionX = int(x)  # type: ignore
+            else:
+                px_x = UnitPX.from_unit_val(x)
+                self.model.PositionX = int(UnitAppFontX.from_unit_val(px_x))  # type: ignore
+
+        if is_flag_set(flags, PosSize.Y):
+            if isinstance(y, UnitAppFontY):
+                self.model.PositionY = int(y)  # type: ignore
+            else:
+                px_y = UnitPX.from_unit_val(y)
+                self.model.PositionY = int(UnitAppFontY.from_unit_val(px_y))  # type: ignore
+
+        if is_flag_set(flags, PosSize.WIDTH):
+            if isinstance(width, UnitAppFontWidth):
+                self.model.Width = int(width)
+            else:
+                px_width = UnitPX.from_unit_val(width)
+                self.model.Width = int(UnitAppFontWidth.from_unit_val(px_width))
+
+        if is_flag_set(flags, PosSize.HEIGHT):
+            if isinstance(height, UnitAppFontHeight):
+                self.model.Height = int(height)
+            else:
+                px_height = UnitPX.from_unit_val(height)
+                self.model.Height = int(UnitAppFontHeight.from_unit_val(px_height))
 
     # endregion Overrides
 

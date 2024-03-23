@@ -83,13 +83,45 @@ class EnumTypeDescriptionComp(ComponentBase, EnumTypeDescriptionPartial):
                 <enum 'com.sun.star.awt.FontSlant'>
                 >>> for e in my_enum:
                 ...    print(e.name, e.value)
+                NONE NONE
+                OBLIQUE OBLIQUE
+                ITALIC ITALIC
+                DONTKNOW DONTKNOW
+                REVERSE_OBLIQUE REVERSE_OBLIQUE
+                REVERSE_ITALIC REVERSE_ITALIC
+
+        """
+        names = self.get_enum_names()
+
+        return Enum(name, dict(zip(names, names)))
+
+    def create_dynamic_name_value_enum(self, name: str) -> Enum:
+        """
+        Returns a dynamic python enum from the current enum names and values.
+
+        Args:
+            name (str): The name of the dynamic enum.
+
+        Returns:
+            Enum: The dynamic python enum.
+
+        Example:
+            This example is when the enum is info is for ``com.sun.star.awt.FontSlant``.
+            Any valid code name can be used for the dynamic enum.
+
+            .. code-block:: python
+
+                >>> my_enum = info.create_dynamic_enum("com.sun.star.awt.FontSlant")
+                >>> print(my_enum)
+                <enum 'com.sun.star.awt.FontSlant'>
+                >>> for e in my_enum:
+                ...    print(e.name, e.value)
                 NONE 0
                 OBLIQUE 1
                 ITALIC 2
                 DONTKNOW 3
                 REVERSE_OBLIQUE 4
                 REVERSE_ITALIC 5
-
         """
         return Enum(name, self.get_name_value_dict())
 

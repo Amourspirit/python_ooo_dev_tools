@@ -1,0 +1,8 @@
+model
+=====
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

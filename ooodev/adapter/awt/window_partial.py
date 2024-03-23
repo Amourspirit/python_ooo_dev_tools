@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import uno
 
 from com.sun.star.awt import XWindow
@@ -7,6 +7,7 @@ from ooo.dyn.awt.pos_size import PosSize
 
 from ooodev.utils.type_var import UnoInterface
 from ooodev.adapter.awt.control_partial import ControlPartial
+from ooodev.units.unit_px import UnitPX
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XFocusListener
@@ -135,10 +136,10 @@ class WindowPartial(ControlPartial):
         Sets the outer bounds of the window.
 
         Args:
-            x (int, UnitT): The x-coordinate of the window. In ``1/100 mm`` or ``UnitT``.
-            y (int, UnitT): The y-coordinate of the window. In ``1/100 mm`` or ``UnitT``.
-            width (int, UnitT): The width of the window. In ``1/100 mm`` or ``UnitT``.
-            height (int, UnitT): The height of the window. In ``1/100 mm`` or ``UnitT``.
+            x (int, UnitT): The x-coordinate of the window. In ``Pixels`` or ``UnitT``.
+            y (int, UnitT): The y-coordinate of the window. In ``Pixels`` or ``UnitT``.
+            width (int, UnitT): The width of the window. In ``Pixels`` or ``UnitT``.
+            height (int, UnitT): The height of the window. In ``Pixels`` or ``UnitT``.
             flags (int, UnitT): A combination of ``com.sun.star.awt.PosSize`` flags. Default set to ``PosSize.POSSIZE``.
 
         Returns:
@@ -147,22 +148,10 @@ class WindowPartial(ControlPartial):
         See Also:
             `com.sun.star.awt.PosSize <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt_1_1PosSize.html>`__
         """
-        try:
-            x_arg = cast(int, x.get_value_mm100())  # type: ignore
-        except AttributeError:
-            x_arg = cast(int, x)
-        try:
-            y_arg = cast(int, y.get_value_mm100())  # type: ignore
-        except AttributeError:
-            y_arg = cast(int, y)
-        try:
-            width_arg = cast(int, width.get_value_mm100())  # type: ignore
-        except AttributeError:
-            width_arg = cast(int, width)
-        try:
-            height_arg = cast(int, height.get_value_mm100())  # type: ignore
-        except AttributeError:
-            height_arg = cast(int, height)
+        x_arg = int(UnitPX.from_unit_val(x))
+        y_arg = int(UnitPX.from_unit_val(y))
+        width_arg = int(UnitPX.from_unit_val(width))
+        height_arg = int(UnitPX.from_unit_val(height))
 
         self.__component.setPosSize(x_arg, y_arg, width_arg, height_arg, int(flags))
 

@@ -27,12 +27,32 @@ class EnumHelper:
             return None
 
     @classmethod
-    def get_enum_name_from_value(cls, full_name: str, value: int) -> str:
+    def get_enum_value_from_name(cls, type_name: str, name: str) -> int:
+        """
+        Returns the enumeration member value from the name.
+
+        Args:
+            type_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
+            name (str): The enumeration member name such as ``ITALIC``.
+
+        Raises:
+            ValueError: If the enumeration is not found.
+
+        Returns:
+            int: The enumeration member value.
+        """
+        int_val = cast(XEnumTypeDescription, Reflect.get_const_info(f"{type_name}.{name}"))
+        if int_val is None or not isinstance(int_val, int):
+            raise ValueError(f"Enumeration {type_name} not found.")
+        return int_val
+
+    @classmethod
+    def get_enum_name_from_value(cls, type_name: str, value: int) -> str:
         """
         Returns the enumeration member name from the value.
 
         Args:
-            full_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
+            type_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
             value (int): The enumeration member value.
 
         Raises:
@@ -41,18 +61,18 @@ class EnumHelper:
         Returns:
             str: The enumeration member name such as ``ITALIC``.
         """
-        if info := cls.get_enum_info(full_name):
+        if info := cls.get_enum_info(type_name):
             return info.get_name_from_value(value)
         else:
-            raise ValueError(f"Enumeration {full_name} not found.")
+            raise ValueError(f"Enumeration {type_name} not found.")
 
     @classmethod
-    def get_uno_enum_from_value(cls, full_name: str, value: int) -> uno.Enum:
+    def get_uno_enum_from_value(cls, type_name: str, value: int) -> uno.Enum:
         """
         Returns the UNO enumeration from the value.
 
         Args:
-            full_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
+            type_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
             value (int): The enumeration member value.
 
         Raises:
@@ -61,19 +81,19 @@ class EnumHelper:
         Returns:
             uno.Enum: The UNO enumeration.
         """
-        if info := cls.get_enum_info(full_name):
+        if info := cls.get_enum_info(type_name):
             name = info.get_name_from_value(value)
-            return uno.Enum(full_name, name)
+            return uno.Enum(type_name, name)
         else:
-            raise ValueError(f"Enumeration {full_name} not found.")
+            raise ValueError(f"Enumeration {type_name} not found.")
 
     @classmethod
-    def get_uno_enum_from_name(cls, full_name: str, name: str) -> uno.Enum:
+    def get_uno_enum_from_name(cls, type_name: str, name: str) -> uno.Enum:
         """
         Returns the UNO enumeration from the value.
 
         Args:
-            full_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
+            type_name (str): The full name of the enumeration such as ``com.sun.star.awt.FontSlant``.
             name (str): The enumeration member name such as ``ITALIC``.
 
         Raises:
@@ -83,6 +103,6 @@ class EnumHelper:
             uno.Enum: The UNO enumeration.
         """
         try:
-            return uno.Enum(full_name, name)
+            return uno.Enum(type_name, name)
         except Exception as e:
-            raise ValueError(f"Enumeration {full_name} not found.") from e
+            raise ValueError(f"Enumeration {type_name} not found.") from e
