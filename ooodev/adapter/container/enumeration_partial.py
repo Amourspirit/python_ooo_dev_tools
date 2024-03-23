@@ -38,6 +38,17 @@ class EnumerationPartial(Generic[T]):
         validate(component, interface)
         self.__component = component
 
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> T:
+        if not self.__component.hasMoreElements():
+            raise StopIteration
+
+        while self.__component.hasMoreElements():
+            return self.__component.nextElement()
+        raise StopIteration
+
     # region XEnumeration
     def has_more_elements(self) -> bool:
         """

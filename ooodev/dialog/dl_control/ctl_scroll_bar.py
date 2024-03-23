@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_scroll_bar_model_partial import UnoControlScrollBarModelPartial
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -14,6 +15,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlScrollBar  # service
     from com.sun.star.awt import UnoControlScrollBarModel  # service
+    from ooodev.dialog.dl_control.model.model_scroll_bar import ModelScrollBar
 # endregion imports
 
 
@@ -32,10 +34,11 @@ class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, Adjustmen
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlScrollBarModelPartial.__init__(self)
+        UnoControlScrollBarModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         AdjustmentEvents.__init__(self, trigger_args=generic_args, cb=self._on_adjustment_events_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -96,6 +99,23 @@ class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, Adjustmen
         return cast("UnoControlScrollBarModel", super().model)
 
     @property
+    def model_ex(self) -> ModelScrollBar:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_scroll_bar import ModelScrollBar
+
+            self._model_ex = ModelScrollBar(self.model)
+        return self._model_ex
+
+    @property
     def value(self) -> int:
         """Gets or sets the current value of the scroll bar"""
         return self.view.getValue()
@@ -110,3 +130,7 @@ class CtlScrollBar(DialogControlBase, UnoControlScrollBarModelPartial, Adjustmen
         return cast("UnoControlScrollBar", super().view)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_scroll_bar import ModelScrollBar

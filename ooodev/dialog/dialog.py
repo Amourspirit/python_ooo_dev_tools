@@ -74,10 +74,10 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
 
         Args:
             title (str): Dialog title.
-            x (int, UnitT): The x-coordinate of the window. In ``1/100 mm`` or ``UnitT``. If ``-1``, the dialog Position is not set.
-            y (int, UnitT): The y-coordinate of the window. In ``1/100 mm`` or ``UnitT``. If ``-1``, the dialog Position is not set.
-            width (int, UnitT): The width of the window. In ``1/100 mm`` or ``UnitT``. If ``-1``, the dialog Size is not set.
-            height (int, UnitT): The height of the window. In ``1/100 mm`` or ``UnitT``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): The x-coordinate of the window. In ``Pixels`` or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): The y-coordinate of the window. In ``Pixels`` or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): The width of the window. In ``Pixels`` or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): The height of the window. In ``Pixels`` or ``UnitT``. If ``-1``, the dialog Size is not set.
 
         Raises:
             DialogError: If unable to create dialog.
@@ -91,22 +91,6 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
         # sourcery skip: raise-specific-error
         # pylint: disable=protected-access
         try:
-            try:
-                x_arg = cast(int, x.get_value_mm100())  # type: ignore
-            except AttributeError:
-                x_arg = cast(int, x)
-            try:
-                y_arg = cast(int, y.get_value_mm100())  # type: ignore
-            except AttributeError:
-                y_arg = cast(int, y)
-            try:
-                width_arg = cast(int, width.get_value_mm100())  # type: ignore
-            except AttributeError:
-                width_arg = cast(int, width)
-            try:
-                height_arg = cast(int, height.get_value_mm100())  # type: ignore
-            except AttributeError:
-                height_arg = cast(int, height)
             dialog_ctrl = cast(
                 "UnoControlDialog",
                 lo_inst.create_instance_mcf(XControl, "com.sun.star.awt.UnoControlDialog", raise_err=True),
@@ -124,7 +108,7 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
             ctl_props.setPropertyValue("Step", 0)
             ctl_props.setPropertyValue("Moveable", True)
             ctl_props.setPropertyValue("TabIndex", 0)
-            self._DialogControlsPartial_dialogs_class._set_size_pos(dialog_ctrl, x_arg, y_arg, width_arg, height_arg)
+            self._DialogControlsPartial_dialogs_class._set_model_size_pos(ctl_props, x, y, width, height)
             return dialog_ctrl
         except Exception as e:
             raise mEx.DialogError(f"Could not create dialog control: {e}") from e

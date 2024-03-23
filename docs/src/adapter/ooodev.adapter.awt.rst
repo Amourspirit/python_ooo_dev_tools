@@ -21,6 +21,7 @@ Submodules
    ooodev.adapter.awt.action_listener
    ooodev.adapter.awt.adjustment_events
    ooodev.adapter.awt.adjustment_listener
+   ooodev.adapter.awt.control_model_partial
    ooodev.adapter.awt.control_partial
    ooodev.adapter.awt.dialog2_partial
    ooodev.adapter.awt.dialog_partial
@@ -30,7 +31,6 @@ Submodules
    ooodev.adapter.awt.focus_listener
    ooodev.adapter.awt.font_descriptor_struct_comp
    ooodev.adapter.awt.gradient_struct_comp
-   ooodev.adapter.awt.index_container_comp
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_list_events
    ooodev.adapter.awt.item_list_listener
@@ -69,6 +69,7 @@ Submodules
    ooodev.adapter.awt.uno_control_container_model_partial
    ooodev.adapter.awt.uno_control_currency_field_model_partial
    ooodev.adapter.awt.uno_control_date_field_model_partial
+   ooodev.adapter.awt.uno_control_dialog_comp
    ooodev.adapter.awt.uno_control_dialog_element_partial
    ooodev.adapter.awt.uno_control_dialog_partial
    ooodev.adapter.awt.uno_control_edit_model_partial
@@ -80,6 +81,7 @@ Submodules
    ooodev.adapter.awt.uno_control_group_box_model_partial
    ooodev.adapter.awt.uno_control_image_control_model_partial
    ooodev.adapter.awt.uno_control_list_box_model_partial
+   ooodev.adapter.awt.uno_control_model_comp
    ooodev.adapter.awt.uno_control_model_partial
    ooodev.adapter.awt.uno_control_numeric_field_model_partial
    ooodev.adapter.awt.uno_control_pattern_field_model_partial

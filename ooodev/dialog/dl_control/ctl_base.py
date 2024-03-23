@@ -29,6 +29,12 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.partial.view_prop_partial import ViewPropPartial
 from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDialogElementPartial
+from ooodev.units.unit_px import UnitPX
+from ooodev.units.unit_app_font_height import UnitAppFontHeight
+from ooodev.units.unit_app_font_width import UnitAppFontWidth
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
+from ooodev.utils.kind.point_size_kind import PointSizeKind
 
 
 if TYPE_CHECKING:
@@ -36,10 +42,14 @@ if TYPE_CHECKING:
     from com.sun.star.awt import XControl
     from com.sun.star.awt import UnoControlDialogElement  # service
     from com.sun.star.beans import XMultiPropertySet
+    from com.sun.star.awt import UnoControlDialogElement  # Service
     from ooodev.proto.style_obj import StyleT
+    from ooodev.units.unit_obj import UnitT
 # endregion imports
 
 # pylint: disable=unused-argument
+
+# Model Position and Size are in AppFont units. View Size and Position are in Pixel units.
 
 
 class CtlBase(unohelper.Base, LoInstPropsPartial, ViewPropPartial, ModelPropPartial, EventsPartial):
@@ -120,28 +130,75 @@ class CtlBase(unohelper.Base, LoInstPropsPartial, ViewPropPartial, ModelPropPart
             model.EnableVisible = value
 
     @property
-    def x(self) -> int:
-        """Gets/Sets the x position for the control"""
-        view = mLo.Lo.qi(XWindow, self.get_view(), True)
-        return view.getPosSize().X
+    def x(self) -> UnitPX:
+        """
+        Gets/Sets the ``X`` position for the control in pixel units.
+
+        When setting can be an integer in ``Pixels`` Units or a ``UnitT``.
+
+        Returns:
+            UnitPX: X position of the control.
+
+        Note:
+            The ``X`` is in Pixel units; however, the model is in AppFont units.
+            This property will convert the AppFont units to Pixel units.
+            When set using ``UnitAppFontX`` no conversion is done.
+        """
+        # model.PositionX is actually an int but reports as a string
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        return UnitPX.from_app_font(model.PositionX, PointSizeKind.X)  # type: ignore
+        # view = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # return UnitPX(view.getPosSize().X)
 
     @x.setter
-    def x(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view(), True)
-        size_pos = win.getPosSize()
-        win.setPosSize(value, size_pos.Y, size_pos.Width, size_pos.Height, PosSize.X)
+    def x(self, value: int | UnitT) -> None:
+
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        if isinstance(value, UnitAppFontX):
+            model.PositionX = int(value)  # type: ignore
+            return
+        val = UnitPX.from_unit_val(value)
+        model.PositionX = round(val.get_value_app_font(PointSizeKind.X))  # type: ignore
+        # val = UnitPX.from_unit_val(value)
+        # win = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # size_pos = win.getPosSize()
+        # win.setPosSize(int(val), size_pos.Y, size_pos.Width, size_pos.Height, PosSize.X)
 
     @property
-    def y(self) -> int:
-        """Gets/Sets the y position for the control"""
-        view = mLo.Lo.qi(XWindow, self.get_view(), True)
-        return view.getPosSize().Y
+    def y(self) -> UnitPX:
+        """
+        Gets/Sets the ``Y`` position for the control in pixel units.
+
+        When setting can be an integer in ``Pixels`` Units or a ``UnitT``.
+
+        Returns:
+            UnitPX: Y position of the control.
+
+        Note:
+            The ``Y`` is in Pixel units; however, the model is in AppFont units.
+            This property will convert the AppFont units to Pixel units.
+            When set using ``UnitAppFontY`` no conversion is done.
+        """
+        # model.PositionY is actually an int but reports as a string
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+
+        return UnitPX.from_app_font(model.PositionY, PointSizeKind.Y)  # type: ignore
+        # view = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # return UnitPX(view.getPosSize().Y)
 
     @y.setter
-    def y(self, value: int) -> None:
-        view = mLo.Lo.qi(XWindow, self.get_view(), True)
-        size = view.getPosSize()
-        view.setPosSize(size.X, value, size.Width, size.Height, PosSize.Y)
+    def y(self, value: int | UnitT) -> None:
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        if isinstance(value, UnitAppFontY):
+            model.PositionY = int(value)  # type: ignore
+            return
+        val = UnitPX.from_unit_val(value)
+        model.PositionY = round(val.get_value_app_font(PointSizeKind.Y))  # type: ignore
+
+        # val = UnitPX.from_unit_val(value)
+        # view = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # size = view.getPosSize()
+        # view.setPosSize(size.X, int(val), size.Width, size.Height, PosSize.Y)
 
     # endregion Properties
 
@@ -164,7 +221,7 @@ class CtlListenerBase(
     # region Dunder Methods
     def __init__(self, ctl: Any) -> None:
         CtlBase.__init__(self, ctl)
-        UnoControlDialogElementPartial.__init__(self)
+        UnoControlDialogElementPartial.__init__(self, self.get_model()) # type: ignore
         generic_args = self._get_generic_args()
         # The Events callback methods are invoked when any event is added or removed.
         FocusEvents.__init__(self, trigger_args=generic_args, cb=self._on_focus_listener_add_remove)
@@ -244,30 +301,73 @@ class CtlListenerBase(
 
     # region UnoControlDialogElementPartial Overrides
     @property
-    def width(self) -> int:
+    def width(self) -> UnitPX:
         """Gets the width of the control"""
-        view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Width
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        return UnitPX.from_app_font(model.Width, PointSizeKind.WIDTH)
+        # view = mLo.Lo.qi(XView, self.get_view(), True)
+        # return UnitPX(view.getSize().Width)
 
     @width.setter
-    def width(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view(), True)
-        pos_size = win.getPosSize()
-        pos_size.Width = value
-        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
+    def width(self, value: int | UnitT) -> None:
+        """
+        Gets/Sets the width of the control in Pixel units.
+
+        When setting can be an integer in ``Pixels`` Units or a ``UnitT``.
+
+        Returns:
+            UnitPX: Width of the control.
+
+        Note:
+            The Width is in Pixel units; however, the model is in AppFont units.
+            This property will convert the AppFont units to Pixel units.
+            When set using ``UnitAppFontWidth`` no conversion is done.
+        """
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        if isinstance(value, UnitAppFontWidth):
+            model.Width = int(value)
+            return
+        val = UnitPX.from_unit_val(value)
+        model.Width = round(val.get_value_app_font(PointSizeKind.WIDTH))
+        # win = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # pos_size = win.getPosSize()
+        # pos_size.Width = int(val)
+        # win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.WIDTH)
 
     @property
-    def height(self) -> int:
-        """Gets/Sets the height of the control"""
-        view = mLo.Lo.qi(XView, self.get_view(), True)
-        return view.getSize().Height
+    def height(self) -> UnitPX:
+        """
+        Gets/Sets the height of the control in Pixel units.
+
+        When setting can be an integer in ``Pixels`` Units or a ``UnitT``.
+
+        Returns:
+            UnitPX: Height of the control.
+
+        Note:
+            The Height is in Pixel units; however, the model is in AppFont units.
+            This property will convert the AppFont units to Pixel units.
+            When set using ``UnitAppFontHeight`` no conversion is done.
+        """
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        return UnitPX.from_app_font(model.Height, PointSizeKind.HEIGHT)
+        # """Gets/Sets the height of the control"""
+        # view = mLo.Lo.qi(XView, self.get_view(), True)
+        # return UnitPX(view.getSize().Height)
 
     @height.setter
-    def height(self, value: int) -> None:
-        win = mLo.Lo.qi(XWindow, self.get_view(), True)
-        pos_size = win.getPosSize()
-        pos_size.Height = value
-        win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
+    def height(self, value: int | UnitT) -> None:
+        model = cast("UnoControlDialogElement", self.get_view().getModel())
+        if isinstance(value, UnitAppFontHeight):
+            model.Height = int(value)
+            return
+        val = UnitPX.from_unit_val(value)
+        model.Height = round(val.get_value_app_font(PointSizeKind.HEIGHT))
+        # val = UnitPX.from_unit_val(value)
+        # win = mLo.Lo.qi(XWindow, self.get_view(), True)
+        # pos_size = win.getPosSize()
+        # pos_size.Height = int(val)
+        # win.setPosSize(pos_size.X, pos_size.Y, pos_size.Width, pos_size.Height, PosSize.HEIGHT)
 
     # endregion UnoControlDialogElementPartial Overrides
 

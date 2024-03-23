@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_spin_button_model_partial import UnoControlSpinButtonModelPartial
 from ooodev.adapter.awt.spin_value_partial import SpinValuePartial
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
@@ -14,6 +15,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlSpinButton  # service
     from com.sun.star.awt import UnoControlSpinButtonModel  # service
+    from ooodev.dialog.dl_control.model.model_spin_button import ModelSpinButton
 # endregion imports
 
 
@@ -30,10 +32,11 @@ class CtlSpinButton(DialogControlBase, UnoControlSpinButtonModelPartial, SpinVal
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlSpinButtonModelPartial.__init__(self)
+        UnoControlSpinButtonModelPartial.__init__(self, component=self.get_model())
         SpinValuePartial.__init__(self, component=self.get_view())  # type: ignore
         generic_args = self._get_generic_args()
         AdjustmentEvents.__init__(self, trigger_args=generic_args, cb=self._on_adjustment_events_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -75,8 +78,29 @@ class CtlSpinButton(DialogControlBase, UnoControlSpinButtonModelPartial, SpinVal
         return cast("UnoControlSpinButtonModel", super().model)
 
     @property
+    def model_ex(self) -> ModelSpinButton:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_spin_button import ModelSpinButton
+
+            self._model_ex = ModelSpinButton(self.model)
+        return self._model_ex
+
+    @property
     def view(self) -> UnoControlSpinButton:
         # pylint: disable=no-member
         return cast("UnoControlSpinButton", super().view)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_spin_button import ModelSpinButton

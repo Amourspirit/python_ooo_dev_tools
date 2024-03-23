@@ -4,6 +4,7 @@ from typing import Any, Iterable, Tuple, cast, TYPE_CHECKING
 import contextlib
 
 import uno
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.adapter.awt.text_events import TextEvents
@@ -17,6 +18,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlComboBox  # service
     from com.sun.star.awt import UnoControlComboBoxModel  # service
+    from ooodev.dialog.dl_control.model.model_combo_box import ModelComboBox
 # endregion imports
 
 
@@ -35,12 +37,13 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlComboBoxModelPartial.__init__(self)
+        UnoControlComboBoxModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -110,6 +113,22 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
         return cast("UnoControlComboBoxModel", super().model)
 
     @property
+    def model_ex(self) -> ModelComboBox:
+        """
+        Gets the Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_combo_box import ModelComboBox
+
+            self._model_ex = ModelComboBox(self.model)
+        return self._model_ex
+
+    @property
     def view(self) -> UnoControlComboBox:
         # pylint: disable=no-member
         return cast("UnoControlComboBox", super().view)
@@ -160,3 +179,6 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
 
 
 # ctl = CtlButton(None)
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_combo_box import ModelComboBox

@@ -6,7 +6,6 @@ from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
 from ooodev.utils.color import Color
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.kind.orientation_kind import OrientationKind
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 
 if TYPE_CHECKING:
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
 class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlSpinButtonModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlSpinButtonModel):
         """
         Constructor
 
@@ -24,11 +23,8 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlSpinButtonModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlSpinButtonModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
 
     # region Properties
     @property
@@ -39,11 +35,11 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.BackgroundColor)
+        return Color(self.__component.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.model.BackgroundColor = value  # type: ignore
+        self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -56,12 +52,12 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.model.Border)
+        return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.model.Border = kind.value
+        self.__component.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -77,46 +73,46 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not present.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BorderColor)
+            return Color(self.__component.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BorderColor = value
+            self.__component.BorderColor = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
@@ -135,13 +131,13 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
         with contextlib.suppress(AttributeError):
-            return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
+            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
         return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.MouseWheelBehavior = int(value)
+            self.__component.MouseWheelBehavior = int(value)
 
     @property
     def orientation(self) -> OrientationKind:
@@ -154,22 +150,22 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
-        return OrientationKind(self.model.Orientation)
+        return OrientationKind(self.__component.Orientation)
 
     @orientation.setter
     def orientation(self, value: int | OrientationKind) -> None:
-        self.model.Orientation = int(value)
+        self.__component.Orientation = int(value)
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def repeat(self) -> bool:
@@ -177,11 +173,11 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         Gets/Sets whether the mouse should show repeating behavior, i.e.
         repeatedly trigger an action when keeping pressed.
         """
-        return self.model.Repeat
+        return self.__component.Repeat
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
-        self.model.Repeat = value
+        self.__component.Repeat = value
 
     @property
     def repeat_delay(self) -> int:
@@ -191,55 +187,55 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         When the user presses a mouse in a control area where this triggers an action (such as spinning the value), then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
         The delay between two such triggers is specified with this property.
         """
-        return self.model.RepeatDelay
+        return self.__component.RepeatDelay
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
-        self.model.RepeatDelay = value
+        self.__component.RepeatDelay = value
 
     @property
     def spin_increment(self) -> int:
         """
         Gets/Sets the increment by which the value is changed when using operating the spin button.
         """
-        return self.model.SpinIncrement
+        return self.__component.SpinIncrement
 
     @spin_increment.setter
     def spin_increment(self, value: int) -> None:
-        self.model.SpinIncrement = value
+        self.__component.SpinIncrement = value
 
     @property
     def spin_value(self) -> int:
         """
         Gets/Sets the current value of the control.
         """
-        return self.model.SpinValue
+        return self.__component.SpinValue
 
     @spin_value.setter
     def spin_value(self, value: int) -> None:
-        self.model.SpinValue = value
+        self.__component.SpinValue = value
 
     @property
     def spin_value_max(self) -> int:
         """
         Gets/Sets the maximum value of the control.
         """
-        return self.model.SpinValueMax
+        return self.__component.SpinValueMax
 
     @spin_value_max.setter
     def spin_value_max(self, value: int) -> None:
-        self.model.SpinValueMax = value
+        self.__component.SpinValueMax = value
 
     @property
     def spin_value_min(self) -> int:
         """
         Gets/Sets the minimum value of the control.
         """
-        return self.model.SpinValueMin
+        return self.__component.SpinValueMin
 
     @spin_value_min.setter
     def spin_value_min(self, value: int) -> None:
-        self.model.SpinValueMin = value
+        self.__component.SpinValueMin = value
 
     @property
     def symbol_color(self) -> Color:
@@ -249,10 +245,10 @@ class UnoControlSpinButtonModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.SymbolColor)
+        return Color(self.__component.SymbolColor)
 
     @symbol_color.setter
     def symbol_color(self, value: Color) -> None:
-        self.model.SymbolColor = value  # type: ignore
+        self.__component.SymbolColor = value  # type: ignore
 
     # endregion Properties

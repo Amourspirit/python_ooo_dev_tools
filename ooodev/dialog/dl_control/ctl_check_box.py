@@ -4,6 +4,7 @@ from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
@@ -17,6 +18,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCheckBox  # service
     from com.sun.star.awt import UnoControlCheckBoxModel  # service
+    from ooodev.dialog.dl_control.model.model_checkbox import ModelCheckbox
 # endregion imports
 
 
@@ -35,10 +37,11 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlCheckBoxModelPartial.__init__(self)
+        UnoControlCheckBoxModelPartial.__init__(self, self.model)
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_event_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -79,6 +82,22 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
         return cast("UnoControlCheckBoxModel", super().model)
 
     @property
+    def model_ex(self) -> ModelCheckbox:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_checkbox import ModelCheckbox
+
+            self._model_ex = ModelCheckbox(self.model)
+        return self._model_ex
+
+    @property
     def triple_state(self) -> bool:
         """
         Gets/Sets the triple state Same as ``tri_state`` property.
@@ -97,3 +116,7 @@ class CtlCheckBox(DialogControlBase, UnoControlCheckBoxModelPartial, ItemEvents)
         return cast("UnoControlCheckBox", super().view)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_checkbox import ModelCheckbox

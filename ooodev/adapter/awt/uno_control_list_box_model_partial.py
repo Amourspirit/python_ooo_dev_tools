@@ -9,7 +9,6 @@ from ooodev.events.events import Events
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
@@ -22,7 +21,7 @@ if TYPE_CHECKING:
 class UnoControlListBoxModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlListBoxModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlListBoxModel):
         """
         Constructor
 
@@ -30,18 +29,15 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlListBoxModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlListBoxModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
         self.__event_provider = Events(self)
         self.__props = {}
 
         def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
             prop_name = str(event_args.event_data["prop_name"])
-            if hasattr(self.model, prop_name):
-                setattr(self.model, prop_name, event_args.source.component)
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
 
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
@@ -82,7 +78,7 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         key = "FontDescriptor"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            prop = FontDescriptorStructComp(self.__component.FontDescriptor, key, self.__event_provider)
             self.__props[key] = prop
         return cast(FontDescriptorStructComp, prop)
 
@@ -90,9 +86,9 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
     def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
         key = "FontDescriptor"
         if mInfo.Info.is_instance(value, FontDescriptorStructComp):
-            self.model.FontDescriptor = value.copy()
+            self.__component.FontDescriptor = value.copy()
         else:
-            self.model.FontDescriptor = cast("FontDescriptor", value)
+            self.__component.FontDescriptor = cast("FontDescriptor", value)
         if key in self.__props:
             del self.__props[key]
 
@@ -101,22 +97,22 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         """Gets specifies the sequence of selected items, identified by the position."""
         # SelectedItems is a miss reported type in current typings.
         # It reports as ``uno.ByteSequence`` but it is actually a ``Tuple[int, ...]``.
-        return cast(Tuple[int, ...], self.model.SelectedItems)
+        return cast(Tuple[int, ...], self.__component.SelectedItems)
 
     @selected_items.setter
     def selected_items(self, value: Tuple[int, ...]) -> None:
-        self.model.SelectedItems = value  # type: ignore
+        self.__component.SelectedItems = value  # type: ignore
 
     @property
     def string_item_list(self) -> Tuple[str, ...]:
         """
         specifies the list of items.
         """
-        return self.model.StringItemList
+        return self.__component.StringItemList
 
     @string_item_list.setter
     def string_item_list(self, value: Tuple[str, ...]) -> None:
-        self.model.StringItemList = value
+        self.__component.StringItemList = value
 
     @property
     def typed_item_list(self) -> Tuple[Any, ...]:
@@ -126,11 +122,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         This list corresponds with the StringItemList and if given has to be of the same length,
         the elements' positions matching those of their string representation in ``string_item_list``.
         """
-        return self.model.TypedItemList
+        return self.__component.TypedItemList
 
     @typed_item_list.setter
     def typed_item_list(self, value: Tuple[Any, ...]) -> None:
-        self.model.TypedItemList = value
+        self.__component.TypedItemList = value
 
     @property
     def align(self) -> AlignKind | None:
@@ -143,14 +139,14 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
         with contextlib.suppress(AttributeError):
-            return AlignKind(self.model.Align)
+            return AlignKind(self.__component.Align)
         return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
         with contextlib.suppress(AttributeError):
-            self.model.Align = kind.value
+            self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -160,11 +156,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.BackgroundColor)
+        return Color(self.__component.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.model.BackgroundColor = value  # type: ignore
+        self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -177,11 +173,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``
         """
-        return BorderKind(self.model.Border)
+        return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
-        self.model.Border = int(value)
+        self.__component.Border = int(value)
 
     @property
     def border_color(self) -> Color | None:
@@ -197,35 +193,35 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not set.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BorderColor)
+            return Color(self.__component.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BorderColor = value  # type: ignore
+            self.__component.BorderColor = value  # type: ignore
 
     @property
     def drop_down(self) -> bool:
         """
         Gets/Sets if the control has a drop down button.
         """
-        return self.model.Dropdown
+        return self.__component.Dropdown
 
     @drop_down.setter
     def drop_down(self, value: bool) -> None:
-        self.model.Dropdown = value
+        self.__component.Dropdown = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -238,11 +234,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.model.FontEmphasisMark)
+        return FontEmphasisEnum(self.__component.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.model.FontEmphasisMark = int(value)
+        self.__component.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -255,33 +251,33 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.model.FontRelief)
+        return FontReliefEnum(self.__component.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.model.FontRelief = int(value)
+        self.__component.FontRelief = int(value)
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def item_separator_pos(self) -> int | None:
@@ -294,22 +290,22 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
 
         **Maybe None**
         """
-        return self.model.ItemSeparatorPos
+        return self.__component.ItemSeparatorPos
 
     @item_separator_pos.setter
     def item_separator_pos(self, value: int) -> None:
-        self.model.ItemSeparatorPos = value
+        self.__component.ItemSeparatorPos = value
 
     @property
     def line_count(self) -> int:
         """
         Gets/Sets the maximum line count displayed in the drop down box.
         """
-        return self.model.LineCount
+        return self.__component.LineCount
 
     @line_count.setter
     def line_count(self, value: int) -> None:
-        self.model.LineCount = value
+        self.__component.LineCount = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum:
@@ -325,55 +321,55 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Hint:
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
-        return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
+        return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
-        self.model.MouseWheelBehavior = int(value)
+        self.__component.MouseWheelBehavior = int(value)
 
     @property
     def multi_selection(self) -> bool:
         """
         Gets/Sets if more than one entry can be selected.
         """
-        return self.model.MultiSelection
+        return self.__component.MultiSelection
 
     @multi_selection.setter
     def multi_selection(self, value: bool) -> None:
-        self.model.MultiSelection = value
+        self.__component.MultiSelection = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def read_only(self) -> bool:
         """
         Gets/Sets that the content of the control cannot be modified by the user.
         """
-        return self.model.ReadOnly
+        return self.__component.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
-        self.model.ReadOnly = value
+        self.__component.ReadOnly = value
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets that the control can be reached with the TAB key.
         """
-        return self.model.Tabstop
+        return self.__component.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.model.Tabstop = value
+        self.__component.Tabstop = value
 
     @property
     def text_color(self) -> Color:
@@ -383,11 +379,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextColor)
+        return Color(self.__component.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.model.TextColor = value  # type: ignore
+        self.__component.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
@@ -397,11 +393,11 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextLineColor)
+        return Color(self.__component.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.model.TextLineColor = value  # type: ignore
+        self.__component.TextLineColor = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -413,12 +409,12 @@ class UnoControlListBoxModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.WritingMode
+            return self.__component.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.WritingMode = value
+            self.__component.WritingMode = value
 
     # endregion Properties

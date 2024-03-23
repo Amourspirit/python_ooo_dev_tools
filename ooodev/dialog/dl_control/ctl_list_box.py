@@ -4,10 +4,10 @@ from typing import Any, cast, Iterable, TYPE_CHECKING, Tuple
 import contextlib
 import uno
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_list_box_model_partial import UnoControlListBoxModelPartial
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.adapter.awt.item_events import ItemEvents
-
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
@@ -17,6 +17,7 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlListBox  # service
     from com.sun.star.awt import UnoControlListBoxModel  # service
+    from ooodev.dialog.dl_control.model.model_list_box import ModelListBox
 # endregion imports
 
 
@@ -35,11 +36,12 @@ class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents,
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlListBoxModelPartial.__init__(self)
+        UnoControlListBoxModelPartial.__init__(self, component=self.get_model())
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_events_listener_add_remove)
+        self._model_ex = None
 
     # endregion init
 
@@ -126,6 +128,23 @@ class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents,
         return cast("UnoControlListBoxModel", super().model)
 
     @property
+    def model_ex(self) -> ModelListBox:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_list_box import ModelListBox
+
+            self._model_ex = ModelListBox(self.model)
+        return self._model_ex
+
+    @property
     def row_source(self) -> Tuple[str, ...]:
         """
         Gets/Sets the row source.
@@ -153,4 +172,5 @@ class CtlListBox(DialogControlBase, UnoControlListBoxModelPartial, ActionEvents,
     # endregion Properties
 
 
-# ctl = CtlButton(None)
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_list_box import ModelListBox
