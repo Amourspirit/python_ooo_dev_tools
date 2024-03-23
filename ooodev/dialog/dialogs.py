@@ -38,6 +38,12 @@ from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.units.unit_px import UnitPX
+from ooodev.units.unit_app_font_height import UnitAppFontHeight
+from ooodev.units.unit_app_font_width import UnitAppFontWidth
+from ooodev.units.unit_app_font_x import UnitAppFontX
+from ooodev.units.unit_app_font_y import UnitAppFontY
+from ooodev.utils.kind.point_size_kind import PointSizeKind
 from ooodev.utils import info as mInfo
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.utils.kind.align_kind import AlignKind as AlignKind
@@ -135,6 +141,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
     from com.sun.star.lang import EventObject
     from ooodev.utils.type_var import PathOrStr
+    from ooodev.units.unit_obj import UnitT
 # endregion Imports
 
 if TYPE_CHECKING:
@@ -299,7 +306,7 @@ class Dialogs:
         if named == DialogControlNamedKind.SCROLL_BAR:
             return CtlScrollBar(dialog_ctrl)  # type: ignore
         if named == DialogControlNamedKind.SPIN_BUTTON:
-            return CtlSpinButton(dialog_ctrl)
+            return CtlSpinButton(dialog_ctrl)  # type: ignore
         if named == DialogControlNamedKind.TAB_PAGE_CONTAINER:
             return CtlTabPageContainer(dialog_ctrl)  # type: ignore
         if named == DialogControlNamedKind.TAB_PAGE:
@@ -537,12 +544,13 @@ class Dialogs:
             ctl_props.setPropertyValue("Step", 0)
             ctl_props.setPropertyValue("Moveable", True)
             ctl_props.setPropertyValue("TabIndex", 0)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
 
-            cls._set_size_pos(dialog_ctrl, x, y, width, height)
+            # cls._set_size_pos(dialog_ctrl, x, y, width, height)
             return CtlDialog(dialog_ctrl)
         except Exception as e:
             raise mEx.DialogError(f"Could not create dialog control: {e}") from e
@@ -629,10 +637,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         btn_type: PushButtonType | None = None,
         name: str = "",
         **props: Any,
@@ -645,10 +653,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): control.
             label (str): Button Label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             btn_type (PushButtonType | None, optional): Type of Button.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -686,6 +694,7 @@ class Dialogs:
             uno_any = uno.Any("short", btn_type)  # type: ignore
             uno.invoke(ctl_props, "setPropertyValue", ("PushButtonType", uno_any))  # type: ignore
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -699,7 +708,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlButton", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlButton(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create button control: {e}") from e
@@ -710,10 +719,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 8,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 8,
         tri_state: bool = True,
         state: TriStateKind = TriStateKind.CHECKED,
         border: BorderKind = BorderKind.BORDER_3D,
@@ -728,10 +737,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             label (str): Checkbox label text.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``8``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int,, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``8``. If ``-1``, the dialog Size is not set.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -769,6 +778,8 @@ class Dialogs:
             ctl_props.setPropertyValue("TriState", tri_state)
             ctl_props.setPropertyValue("State", int(state))
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -781,7 +792,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlCheckBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlCheckBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create check box control: {e}") from e
@@ -792,10 +803,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         max_text_len: int = 0,
         drop_down: bool = True,
         read_only: bool = False,
@@ -811,10 +822,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             entries (Iterable[str]): Combo box entries.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
@@ -852,6 +863,7 @@ class Dialogs:
             ctl_props.setPropertyValue("MaxTextLen", max_text_len)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ReadOnly", read_only)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             if entries:
                 uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
                 uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
@@ -869,7 +881,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlComboBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlComboBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create combo box control: {e}") from e
@@ -879,10 +891,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float = 0.0,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -900,10 +912,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -945,6 +957,7 @@ class Dialogs:
             ctl_props.setPropertyValue("DecimalAccuracy", accuracy)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -958,7 +971,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlCurrencyField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlCurrencyField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create currency field control: {e}") from e
@@ -968,10 +981,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         date_value: datetime.datetime | None = None,
         min_date: datetime.datetime = datetime.datetime(1900, 1, 1, 0, 0, 0, 0),
         max_date: datetime.datetime = datetime.datetime(2200, 12, 31, 0, 0, 0, 0),
@@ -988,10 +1001,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
             min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
             max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
@@ -1027,6 +1040,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Name", name)
             ctl_props.setPropertyValue("DateMin", DateUtil.date_to_uno_date(min_date))
             ctl_props.setPropertyValue("DateMax", DateUtil.date_to_uno_date(max_date))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             if date_value is not None:
                 ctl_props.setPropertyValue("Date", DateUtil.date_to_uno_date(date_value))
 
@@ -1042,7 +1056,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlDateField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlDateField(result)
             ctl.date_format = date_format
             return ctl
@@ -1054,10 +1068,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
@@ -1069,10 +1083,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1101,6 +1115,7 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Border", int(border))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1114,7 +1129,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFileControl", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFile(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create file control: {e}") from e
@@ -1124,10 +1139,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 1,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 1,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
         name: str = "",
         **props: Any,
@@ -1139,10 +1154,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1169,6 +1184,7 @@ class Dialogs:
             # inherited from UnoControlDialogElement and UnoControlButtonModel
             ctl_props = cls.get_control_props(model)
             ctl_props.setPropertyValue("Orientation", int(orientation))
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1182,7 +1198,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFixedLine", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFixedLine(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create fixed line control: {e}") from e
@@ -1192,10 +1208,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float | None = None,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -1211,10 +1227,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -1252,6 +1268,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Border", int(border))
             if value is not None:
                 ctl_props.setPropertyValue("EffectiveValue", value)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1265,7 +1282,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFormattedField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFormattedField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create formatted field control: {e}") from e
@@ -1275,10 +1292,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         label: str = "",
         name: str = "",
         **props: Any,
@@ -1290,10 +1307,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             label (str, optional): Group box label.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1320,6 +1337,8 @@ class Dialogs:
             if label:
                 ctl_props.setPropertyValue("Label", label)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1332,7 +1351,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlGroupBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlGroupBox(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Group box control: {e}") from e
@@ -1344,10 +1363,10 @@ class Dialogs:
         *,
         label: str,
         url: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         align: AlignKind = AlignKind.LEFT,
         vert_align: VerticalAlignment = VerticalAlignment.TOP,
         multiline: bool = False,
@@ -1364,10 +1383,10 @@ class Dialogs:
             dialog_ctrl (XControl): control.
             label (str): Hyperlink label.
             url (str): Hyperlink URL.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             align (AlignKind, optional): Horizontal alignment. Defaults to ``AlignKind.LEFT``.
             vert_align (VerticalAlignment, optional): Vertical alignment. Defaults to ``VerticalAlignment.TOP``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
@@ -1411,6 +1430,8 @@ class Dialogs:
             if url:
                 ctl_props.setPropertyValue("URL", url)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1423,7 +1444,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlFixedHyperlink", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlHyperlinkFixed(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Hyperlink control: {e}") from e
@@ -1433,10 +1454,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.BORDER_3D,
         scale: int | ImageScaleModeEnum = ImageScaleModeEnum.NONE,
         image_url: PathOrStr = "",
@@ -1450,10 +1471,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, , UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
                 If a string is passed it can be a URL or a path to a file.
@@ -1499,6 +1520,8 @@ class Dialogs:
             else:
                 ctl_props.setPropertyValue("ScaleImage", False)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1511,7 +1534,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlImageControl", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl_image = CtlImage(result)
             if image_url:
                 ctl_image.picture = image_url
@@ -1526,10 +1549,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         name: str = "",
         **props: Any,
     ) -> CtlFixedText:
@@ -1541,10 +1564,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             label (str): Contents of label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
@@ -1570,6 +1593,8 @@ class Dialogs:
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("Name", name)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1580,7 +1605,7 @@ class Dialogs:
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast("UnoControlFixedText", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlFixedText(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Fixed Text control: {e}") from e
@@ -1591,10 +1616,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int = 100,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 100,
         drop_down: bool = False,
         read_only: bool = False,
         line_count: int = 5,
@@ -1611,10 +1636,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             entries (Iterable[str]): List box entries.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``100``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``100``. If ``-1``, the dialog Size is not set.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``False``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
@@ -1649,6 +1674,7 @@ class Dialogs:
             ctl_props.setPropertyValue("MultiSelection", multi_select)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("ReadOnly", read_only)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             # if entries:
             #     uno_strings = uno.Any("[]string", tuple(entries))  # type: ignore
             #     uno.invoke(ctl_props, "setPropertyValue", ("StringItemList", uno_strings))  # type: ignore
@@ -1665,7 +1691,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlListBox", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlListBox(result)
             ctl.set_list_data(entries)
             return ctl
@@ -1678,10 +1704,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         text: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         **props: Any,
@@ -1694,10 +1720,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             text (str): Text value.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -1732,10 +1758,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         edit_mask: str = "",
         literal_mask: str = "",
         border: BorderKind = BorderKind.BORDER_3D,
@@ -1749,10 +1775,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default``20``. If ``-1``, the dialog Size is not set.
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1785,6 +1811,7 @@ class Dialogs:
             ctl_props.setPropertyValue("EditMask", edit_mask)
             ctl_props.setPropertyValue("LiteralMask", literal_mask)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1798,7 +1825,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlPatternField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlPatternField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create pattern field control: {e}") from e
@@ -1808,10 +1835,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float | None = None,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -1829,10 +1856,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -1876,6 +1903,8 @@ class Dialogs:
             if value is not None:
                 ctl_props.setPropertyValue("Value", value)
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -1888,7 +1917,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlNumericField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlNumericField(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create numeric field control: {e}") from e
@@ -1898,10 +1927,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         value: int = 0,
@@ -1916,10 +1945,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             value (int, optional): The value initial value of the progress bar. Defaults to ``0``.
@@ -1953,6 +1982,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ProgressValueMax", max_value)
             ctl_props.setPropertyValue("ProgressValue", value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -1966,7 +1996,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlProgressBar", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlProgressBar(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Progress Bar control: {e}") from e
@@ -1977,10 +2007,10 @@ class Dialogs:
         dialog_ctrl: XControl,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         multiline: bool = False,
         name: str = "",
         **props: Any,
@@ -1993,10 +2023,10 @@ class Dialogs:
         Args:
             dialog_ctrl (XControl): Control.
             label (str): Contents of label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -2023,6 +2053,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Label", label)
             ctl_props.setPropertyValue("MultiLine", multiline)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2034,7 +2065,7 @@ class Dialogs:
             # reference the control by name
             ctrl_con = mLo.Lo.qi(XControlContainer, dialog_ctrl, True)
             result = cast("UnoControlRadioButton", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlRadioButton(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create radio button control: {e}") from e
@@ -2044,10 +2075,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
@@ -2062,10 +2093,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -2096,6 +2127,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ScrollValueMin", min_value)
             ctl_props.setPropertyValue("ScrollValueMax", max_value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2109,7 +2141,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlScrollBar", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlScrollBar(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create scroll bar control: {e}") from e
@@ -2119,10 +2151,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
@@ -2137,10 +2169,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -2173,6 +2205,7 @@ class Dialogs:
             ctl_props.setPropertyValue("SpinValueMax", max_value)
             ctl_props.setPropertyValue("SpinValueMin", min_value)
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2189,13 +2222,16 @@ class Dialogs:
             btn = CtlSpinButton(result)
             # not sure why but this control seems buggy with setting size and position.
             # Setting Width and height seems to have the best results when setting the model width and height.
+            # px_width = UnitPX.from_unit_val(width)
+            # px_height = UnitPX.from_unit_val(height)
 
-            if width > -1 and height > -1:
-                btn.model.Width = width
-                btn.model.Height = height
+            # if px_width > -1 and px_height > -1:
+            #     # model values are in AppFont units.
+            #     btn.model.Width = round(px_width.get_value_app_font(PointSizeKind.WIDTH))
+            #     btn.model.Height = round(px_height.get_value_app_font(PointSizeKind.HEIGHT))
 
             # only set position here. Width and height set above.
-            cls._set_size_pos(result, x, y, -1, -1)
+            # cls._set_size_pos(result, x, y, -1, -1)
             # cls._set_size_pos(result, x, y, width, height)
             return btn
 
@@ -2207,10 +2243,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 1,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 1,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
     ) -> CtlTabPageContainer:
@@ -2221,10 +2257,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
 
@@ -2258,6 +2294,9 @@ class Dialogs:
                 model.Name = cls.create_name(name_con, "TabControl")
             if border != BorderKind.NONE and hasattr(model, "Border"):
                 setattr(model, "Border", int(border))
+
+            ctl_props = cls.get_control_props(model)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
             # Add the model to the dialog
             dialog_model.insertByName(model.Name, model)
 
@@ -2266,7 +2305,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlTabPageContainer", ctrl_con.getControl(model.Name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlTabPageContainer(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Tab control: {e}") from e
@@ -2291,6 +2330,7 @@ class Dialogs:
             dialog_ctrl (XControl): control.
             tab_ctrl (CtlTabPageContainer): Tab Container.
             title (str): Tab title.
+            tab_position (int): Tab position.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
 
@@ -2366,10 +2406,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         row_header: bool = True,
         col_header: bool = True,
         grid_lines: bool = False,
@@ -2387,10 +2427,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             row_header (bool, optional): Specifies if the control has a row header. Defaults to ``True``.
             col_header (bool, optional): Specifies if the control has a column header. Defaults to ``True``.
             grid_lines (bool, optional): Specifies if the control has grid lines. when True horizontal and vertical lines are painted between the grid cells. Defaults to ``False``.
@@ -2431,6 +2471,7 @@ class Dialogs:
             ctl_props.setPropertyValue("ShowColumnHeader", col_header)
             ctl_props.setPropertyValue("ShowRowHeader", row_header)
             ctl_props.setPropertyValue("UseGridLines", grid_lines)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2449,7 +2490,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlGrid", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlGrid(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Table control: {e}") from e
@@ -2459,10 +2500,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         text: str = "",
         echo_char: str = "",
         border: BorderKind = BorderKind.NONE,
@@ -2476,10 +2517,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             text (str, optional): Text value.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
@@ -2513,6 +2554,7 @@ class Dialogs:
                 ctl_props.setPropertyValue("Text", text)
             ctl_props.setPropertyValue("Border", int(border))
             ctl_props.setPropertyValue("Name", name)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2529,7 +2571,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlEdit", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             return CtlTextEdit(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create text field control: {e}") from e
@@ -2539,10 +2581,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         **props: Any,
@@ -2554,10 +2596,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int , UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int , UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int , UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int , UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             props (dict, optional): Extra properties to set for control.
@@ -2589,6 +2631,7 @@ class Dialogs:
             ctl_props.setPropertyValue("Editable", False)
             ctl_props.setPropertyValue("ShowsHandles", True)
             ctl_props.setPropertyValue("ShowsRootHandles", True)
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
 
             # set any extra user properties
             for k, v in props.items():
@@ -2608,7 +2651,7 @@ class Dialogs:
             # use the model's name to get its view inside the dialog
             result = cast("TreeControl", ctrl_con.getControl(name))
             # TreeControl does implement XWindows event thought it is documented
-            cls._set_size_pos(result, x, y, width, height)  # type: ignore
+            # cls._set_size_pos(result, x, y, width, height)  # type: ignore
             return CtlTree(result)
         except Exception as e:
             raise mEx.DialogError(f"Could not create Tree control: {e}") from e
@@ -2618,10 +2661,10 @@ class Dialogs:
         cls,
         dialog_ctrl: XControl,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         time_value: datetime.time | None = None,
         min_time: datetime.time = datetime.time(0, 0, 0, 0),
         max_time: datetime.time = datetime.time(23, 59, 59, 999_999),
@@ -2638,10 +2681,10 @@ class Dialogs:
 
         Args:
             dialog_ctrl (XControl): Control.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
             min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
             max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
@@ -2680,6 +2723,8 @@ class Dialogs:
             if time_value is not None:
                 ctl_props.setPropertyValue("Time", DateUtil.time_to_uno_time(time_value))
 
+            cls._set_model_size_pos(props=ctl_props, x=x, y=y, width=width, height=height)
+
             # set any extra user properties
             for k, v in props.items():
                 ctl_props.setPropertyValue(k, v)
@@ -2692,7 +2737,7 @@ class Dialogs:
 
             # use the model's name to get its view inside the dialog
             result = cast("UnoControlTimeField", ctrl_con.getControl(name))
-            cls._set_size_pos(result, x, y, width, height)
+            # cls._set_size_pos(result, x, y, width, height)
             ctl = CtlTimeField(result)
             ctl.time_format = time_format
             return ctl
@@ -2702,7 +2747,9 @@ class Dialogs:
     # endregion    add components to a dialog
 
     @staticmethod
-    def _set_size_pos(ctl: XWindow, x: int = -1, y: int = -1, width: int = -1, height: int = -1) -> None:
+    def _set_size_pos(
+        ctl: XWindow, x: int | UnitT = -1, y: int | UnitT = -1, width: int | UnitT = -1, height: int | UnitT = -1
+    ) -> None:
         """
         Set Position and size for a control.
 
@@ -2710,23 +2757,81 @@ class Dialogs:
 
         Args:
             ctl (XWindow): Control that implements XWindow
-            x (int, optional): X Position. Defaults to -1.
-            y (int, optional): Y Position. Defaults to -1.
-            width (int, optional): Width. Defaults to -1.
-            height (int, optional): Height. Defaults to -1.
+            x (int, UnitT, optional): X Position. Defaults to -1.
+            y (int, UnitT, optional): Y Position. Defaults to -1.
+            width (int, UnitT, optional): Width. Defaults to -1.
+            height (int, UnitT, optional): Height. Defaults to -1.
         """
-        if x < 0 and y < 0 and width < 0 and height < 0:
+        px_x = int(UnitPX.from_unit_val(x))
+        px_y = int(UnitPX.from_unit_val(y))
+        px_width = int(UnitPX.from_unit_val(width))
+        px_height = int(UnitPX.from_unit_val(height))
+        if px_x < 0 and px_y < 0 and px_width < 0 and px_height < 0:
             return
 
         pos_size = None
-        if x > -1 and y > -1 and width > -1 and height > -1:
+        if px_x > -1 and px_y > -1 and px_width > -1 and px_height > -1:
             pos_size = PosSize.POSSIZE
-        elif x > -1 and y > -1:
+        elif px_x > -1 and px_y > -1:
             pos_size = PosSize.POS
-        elif width > -1 and height > -1:
+        elif px_width > -1 and px_height > -1:
             pos_size = PosSize.SIZE
         if pos_size is not None:
-            ctl.setPosSize(x, y, width, height, pos_size)
+            ctl.setPosSize(px_x, px_y, px_width, px_height, pos_size)
+
+    @staticmethod
+    def _set_model_size_pos(
+        props: XPropertySet,
+        x: int | UnitT = -1,
+        y: int | UnitT = -1,
+        width: int | UnitT = -1,
+        height: int | UnitT = -1,
+    ) -> None:
+        """
+        Set Position and size for a control Model.
+
+        |lo_safe|
+
+        Args:
+            props (XPropertySet): Control Model properties.
+            x (int, UnitT, optional): X Position. Defaults to -1.
+            y (int, UnitT, optional): Y Position. Defaults to -1.
+            width (int, UnitT, optional): Width. Defaults to -1.
+            height (int, UnitT, optional): Height. Defaults to -1.
+        """
+
+        px_x = UnitPX.from_unit_val(x)
+        px_y = UnitPX.from_unit_val(y)
+        px_width = UnitPX.from_unit_val(width)
+        px_height = UnitPX.from_unit_val(height)
+        info = props.getPropertySetInfo()
+
+        # note PositionX and PositionY are marked as str in the API but are actually int
+
+        # don't convert AppFont units to Pixel units
+        if info.getPropertyByName("PositionX") and px_x > -1:
+            if isinstance(x, UnitAppFontX):
+                props.setPropertyValue("PositionX", int(x))
+            else:
+                props.setPropertyValue("PositionX", int(UnitAppFontX.from_unit_val(px_x)))
+
+        if info.getPropertyByName("PositionY") and px_y > -1:
+            if isinstance(y, UnitAppFontY):
+                props.setPropertyValue("PositionY", int(y))
+            else:
+                props.setPropertyValue("PositionY", int(UnitAppFontY.from_unit_val(px_y)))
+
+        if info.getPropertyByName("Width") and px_width > -1:
+            if isinstance(width, UnitAppFontWidth):
+                props.setPropertyValue("Width", int(width))
+            else:
+                props.setPropertyValue("Width", int(UnitAppFontWidth.from_unit_val(px_width)))
+
+        if info.getPropertyByName("Height") and px_height > -1:
+            if isinstance(height, UnitAppFontHeight):
+                props.setPropertyValue("Height", int(height))
+            else:
+                props.setPropertyValue("Height", int(UnitAppFontHeight.from_unit_val(px_height)))
 
     @classmethod
     def get_radio_group_value(cls, dialog_ctrl: XControl, radio_button: str) -> List[CtlRadioButton]:

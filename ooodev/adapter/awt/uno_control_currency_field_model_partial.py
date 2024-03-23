@@ -10,7 +10,6 @@ from ooodev.utils import info as mInfo
 from ooodev.events.events import Events
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
 
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlCurrencyFieldModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlCurrencyFieldModel):
         """
         Constructor
 
@@ -31,18 +30,15 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlCurrencyFieldModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-
-        self.model: UnoControlCurrencyFieldModel
-        UnoControlModelPartial.__init__(self)
+        self.__component = component
+        UnoControlModelPartial.__init__(self, component=component)
         self.__event_provider = Events(self)
         self.__props = {}
 
         def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
             prop_name = str(event_args.event_data["prop_name"])
-            if hasattr(self.model, prop_name):
-                setattr(self.model, prop_name, event_args.source.component)
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
 
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
@@ -83,7 +79,7 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         key = "FontDescriptor"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            prop = FontDescriptorStructComp(self.__component.FontDescriptor, key, self.__event_provider)
             self.__props[key] = prop
         return cast(FontDescriptorStructComp, prop)
 
@@ -91,9 +87,9 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
     def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
         key = "FontDescriptor"
         if mInfo.Info.is_instance(value, FontDescriptorStructComp):
-            self.model.FontDescriptor = value.copy()
+            self.__component.FontDescriptor = value.copy()
         else:
-            self.model.FontDescriptor = cast("FontDescriptor", value)
+            self.__component.FontDescriptor = cast("FontDescriptor", value)
         if key in self.__props:
             del self.__props[key]
 
@@ -105,11 +101,11 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.BackgroundColor)
+        return Color(self.__component.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.model.BackgroundColor = value  # type: ignore
+        self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def border(self) -> BorderKind:
@@ -122,12 +118,12 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
-        return BorderKind(self.model.Border)
+        return BorderKind(self.__component.Border)
 
     @border.setter
     def border(self, value: int | BorderKind) -> None:
         kind = BorderKind(int(value))
-        self.model.Border = kind.value
+        self.__component.Border = kind.value
 
     @property
     def border_color(self) -> Color | None:
@@ -143,46 +139,46 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
             ~ooodev.utils.color.Color | None: Color or None if not set.
         """
         with contextlib.suppress(AttributeError):
-            return Color(self.model.BorderColor)
+            return Color(self.__component.BorderColor)
         return None
 
     @border_color.setter
     def border_color(self, value: Color) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.BorderColor = value
+            self.__component.BorderColor = value
 
     @property
     def currency_symbol(self) -> str:
         """
         Gets/Sets the currency symbol.
         """
-        return self.model.CurrencySymbol
+        return self.__component.CurrencySymbol
 
     @currency_symbol.setter
     def currency_symbol(self, value: str) -> None:
-        self.model.CurrencySymbol = value
+        self.__component.CurrencySymbol = value
 
     @property
     def decimal_accuracy(self) -> int:
         """
         Gets/Sets the decimal accuracy.
         """
-        return self.model.DecimalAccuracy
+        return self.__component.DecimalAccuracy
 
     @decimal_accuracy.setter
     def decimal_accuracy(self, value: int) -> None:
-        self.model.DecimalAccuracy = value
+        self.__component.DecimalAccuracy = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -195,11 +191,11 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.model.FontEmphasisMark)
+        return FontEmphasisEnum(self.__component.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.model.FontEmphasisMark = int(value)
+        self.__component.FontEmphasisMark = int(value)
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -212,33 +208,33 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.model.FontRelief)
+        return FontReliefEnum(self.__component.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.model.FontRelief = int(value)
+        self.__component.FontRelief = int(value)
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def hide_inactive_selection(self) -> bool | None:
@@ -248,13 +244,13 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.HideInactiveSelection
+            return self.__component.HideInactiveSelection
         return None
 
     @hide_inactive_selection.setter
     def hide_inactive_selection(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.HideInactiveSelection = value
+            self.__component.HideInactiveSelection = value
 
     @property
     def mouse_wheel_behavior(self) -> MouseWheelBehaviorEnum | None:
@@ -273,46 +269,46 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
             - ``MouseWheelBehaviorEnum`` can be imported from ``ooo.dyn.awt.mouse_wheel_behavior``
         """
         with contextlib.suppress(AttributeError):
-            return MouseWheelBehaviorEnum(self.model.MouseWheelBehavior)
+            return MouseWheelBehaviorEnum(self.__component.MouseWheelBehavior)
         return None
 
     @mouse_wheel_behavior.setter
     def mouse_wheel_behavior(self, value: int | MouseWheelBehaviorEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.MouseWheelBehavior = int(value)
+            self.__component.MouseWheelBehavior = int(value)
 
     @property
     def prepend_currency_symbol(self) -> bool:
         """
         Gets/Sets whether the currency symbol is to be prepended.
         """
-        return self.model.PrependCurrencySymbol
+        return self.__component.PrependCurrencySymbol
 
     @prepend_currency_symbol.setter
     def prepend_currency_symbol(self, value: bool) -> None:
-        self.model.PrependCurrencySymbol = value
+        self.__component.PrependCurrencySymbol = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def read_only(self) -> bool:
         """
         Gets/Sets if the content of the control cannot be modified by the user.
         """
-        return self.model.ReadOnly
+        return self.__component.ReadOnly
 
     @read_only.setter
     def read_only(self, value: bool) -> None:
-        self.model.ReadOnly = value
+        self.__component.ReadOnly = value
 
     @property
     def repeat(self) -> bool:
@@ -321,11 +317,11 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
 
         repeatedly trigger an action when keeping pressed.
         """
-        return self.model.Repeat
+        return self.__component.Repeat
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
-        self.model.Repeat = value
+        self.__component.Repeat = value
 
     @property
     def repeat_delay(self) -> int:
@@ -335,55 +331,55 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         When the user presses a mouse in a control area where this triggers an action (such as spinning the value), then usual control implementations allow to repeatedly trigger this action, without the need to release the mouse button and to press it again.
         The delay between two such triggers is specified with this property.
         """
-        return self.model.RepeatDelay
+        return self.__component.RepeatDelay
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
-        self.model.RepeatDelay = value
+        self.__component.RepeatDelay = value
 
     @property
     def show_thousands_separator(self) -> bool:
         """
         Gets/Sets whether the thousands separator is to be displayed.
         """
-        return self.model.ShowThousandsSeparator
+        return self.__component.ShowThousandsSeparator
 
     @show_thousands_separator.setter
     def show_thousands_separator(self, value: bool) -> None:
-        self.model.ShowThousandsSeparator = value
+        self.__component.ShowThousandsSeparator = value
 
     @property
     def spin(self) -> bool:
         """
         Gets/Sets if the control has a spin button.
         """
-        return self.model.Spin
+        return self.__component.Spin
 
     @spin.setter
     def spin(self, value: bool) -> None:
-        self.model.Spin = value
+        self.__component.Spin = value
 
     @property
     def strict_format(self) -> bool:
         """
         Gets/Sets if the value is checked during the user input.
         """
-        return self.model.StrictFormat
+        return self.__component.StrictFormat
 
     @strict_format.setter
     def strict_format(self, value: bool) -> None:
-        self.model.StrictFormat = value
+        self.__component.StrictFormat = value
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets that the control can be reached with the TAB key.
         """
-        return self.model.Tabstop
+        return self.__component.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.model.Tabstop = value
+        self.__component.Tabstop = value
 
     @property
     def text_color(self) -> Color:
@@ -393,11 +389,11 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextColor)
+        return Color(self.__component.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.model.TextColor = value  # type: ignore
+        self.__component.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
@@ -407,55 +403,55 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextLineColor)
+        return Color(self.__component.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.model.TextLineColor = value  # type: ignore
+        self.__component.TextLineColor = value  # type: ignore
 
     @property
     def value(self) -> float:
         """
         Gets/Sets the value displayed in the control.
         """
-        return self.model.Value
+        return self.__component.Value
 
     @value.setter
     def value(self, value: float) -> None:
-        self.model.Value = value
+        self.__component.Value = value
 
     @property
     def value_max(self) -> float:
         """
         Gets/Sets the maximum value that can be entered.
         """
-        return self.model.ValueMax
+        return self.__component.ValueMax
 
     @value_max.setter
     def value_max(self, value: float) -> None:
-        self.model.ValueMax = value
+        self.__component.ValueMax = value
 
     @property
     def value_min(self) -> float:
         """
         Gets/Sets the minimum value that can be entered.
         """
-        return self.model.ValueMin
+        return self.__component.ValueMin
 
     @value_min.setter
     def value_min(self, value: float) -> None:
-        self.model.ValueMin = value
+        self.__component.ValueMin = value
 
     @property
     def value_step(self) -> float:
         """
         Gets/Sets the value step when using the spin button.
         """
-        return self.model.ValueStep
+        return self.__component.ValueStep
 
     @value_step.setter
     def value_step(self, value: float) -> None:
-        self.model.ValueStep = value
+        self.__component.ValueStep = value
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
@@ -468,13 +464,13 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
         with contextlib.suppress(AttributeError):
-            return self.model.VerticalAlign  # type: ignore
+            return self.__component.VerticalAlign  # type: ignore
         return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.VerticalAlign = value  # type: ignore
+            self.__component.VerticalAlign = value  # type: ignore
 
     @property
     def writing_mode(self) -> int | None:
@@ -486,12 +482,12 @@ class UnoControlCurrencyFieldModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.WritingMode
+            return self.__component.WritingMode
         return None
 
     @writing_mode.setter
     def writing_mode(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.WritingMode = value
+            self.__component.WritingMode = value
 
     # endregion Properties

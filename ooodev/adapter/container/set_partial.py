@@ -28,7 +28,9 @@ class SetPartial(EnumerationAccessPartial):
 
     # region XSet
     def has(self, element: Any) -> bool:
-        """ """
+        """
+        Gets if element is in this container.
+        """
         return self.__component.has(element)
 
     def insert(self, element: Any) -> None:

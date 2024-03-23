@@ -57,6 +57,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDialog  # service
     from ooodev.utils.type_var import PathOrStr
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.units.unit_obj import UnitT
 
     # Avoid circular import by creating a property in class instance for Dialogs
     from ooodev.dialog.dialogs import Dialogs
@@ -85,10 +86,10 @@ class DialogControlsPartial:
         self,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         btn_type: PushButtonType | None = None,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -99,10 +100,10 @@ class DialogControlsPartial:
 
         Args:
             label (str): Button Label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             btn_type (PushButtonType | None, optional): Type of Button.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -143,10 +144,10 @@ class DialogControlsPartial:
         self,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 8,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 8,
         tri_state: bool = True,
         state: TriStateKind = TriStateKind.CHECKED,
         border: BorderKind = BorderKind.BORDER_3D,
@@ -159,10 +160,10 @@ class DialogControlsPartial:
 
         Args:
             label (str): Checkbox label text.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``8``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int,, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``8``. If ``-1``, the dialog Size is not set.
             tri_state (TriStateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
             state (TriStateKind, optional): Specifies the state of the control.Defaults to ``TriStateKind.CHECKED``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -209,10 +210,10 @@ class DialogControlsPartial:
         self,
         *,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         max_text_len: int = 0,
         drop_down: bool = True,
         read_only: bool = False,
@@ -226,10 +227,10 @@ class DialogControlsPartial:
 
         Args:
             entries (Iterable[str]): Combo box entries.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             max_text_len (int, optional): Specifies the maximum character count, There's no limitation, if set to 0. Defaults to ``0``.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``True``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
@@ -276,10 +277,10 @@ class DialogControlsPartial:
     def insert_currency_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float = 0.0,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -295,10 +296,10 @@ class DialogControlsPartial:
         Inserts a currency control.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -347,10 +348,10 @@ class DialogControlsPartial:
     def insert_date_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         date_value: datetime.datetime | None = None,
         min_date: datetime.datetime = datetime.datetime(1900, 1, 1, 0, 0, 0, 0),
         max_date: datetime.datetime = datetime.datetime(2200, 12, 31, 0, 0, 0, 0),
@@ -365,10 +366,10 @@ class DialogControlsPartial:
         Create a new control of type DateField in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             date_value (datetime.datetime | None, optional): Specifics control datetime. Defaults to ``None``.
             min_date (datetime.datetime, optional): Specifics control min datetime. Defaults to ``datetime(1900, 1, 1, 0, 0, 0, 0)``.
             max_date (datetime.datetime, optional): Specifics control Min datetime. Defaults to ``datetime(2200, 12, 31, 0, 0, 0, 0)``.
@@ -416,10 +417,10 @@ class DialogControlsPartial:
     def insert_file_control(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -429,10 +430,10 @@ class DialogControlsPartial:
         Create a new control of type FileControl in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -469,10 +470,10 @@ class DialogControlsPartial:
     def insert_fixed_line(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 1,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 1,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -482,10 +483,10 @@ class DialogControlsPartial:
         Create a new control of type Fixed Line in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -522,10 +523,10 @@ class DialogControlsPartial:
     def insert_formatted_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float | None = None,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -539,10 +540,10 @@ class DialogControlsPartial:
         Create a new control of type FormattedField in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -587,10 +588,10 @@ class DialogControlsPartial:
     def insert_group_box(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         label: str = "",
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -600,10 +601,10 @@ class DialogControlsPartial:
         Create a new control of type GroupBox in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             label (str, optional): Group box label.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -639,10 +640,10 @@ class DialogControlsPartial:
         *,
         label: str,
         url: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         align: AlignKind = AlignKind.LEFT,
         vert_align: VerticalAlignment = VerticalAlignment.TOP,
         multiline: bool = False,
@@ -657,10 +658,10 @@ class DialogControlsPartial:
         Args:
             label (str): Hyperlink label.
             url (str): Hyperlink URL.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             align (AlignKind, optional): Horizontal alignment. Defaults to ``AlignKind.LEFT``.
             vert_align (VerticalAlignment, optional): Vertical alignment. Defaults to ``VerticalAlignment.TOP``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
@@ -707,10 +708,10 @@ class DialogControlsPartial:
     def insert_image_control(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.BORDER_3D,
         scale: int | ImageScaleModeEnum = ImageScaleModeEnum.NONE,
         image_url: PathOrStr = "",
@@ -722,10 +723,10 @@ class DialogControlsPartial:
         Create a new control of type ImageControl in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, , UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             image_url (PathOrStr, optional): Image URL. When setting the value it can be a string or a Path object.
                 If a string is passed it can be a URL or a path to a file.
@@ -772,10 +773,10 @@ class DialogControlsPartial:
         self,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         name: str = "",
         dialog_ctrl: XControl | None = None,
         **props: Any,
@@ -785,10 +786,10 @@ class DialogControlsPartial:
 
         Args:
             label (str): Contents of label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
             props (dict, optional): Extra properties to set for control.
@@ -824,10 +825,10 @@ class DialogControlsPartial:
         self,
         *,
         entries: Iterable[str],
-        x: int,
-        y: int,
-        width: int,
-        height: int = 100,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 100,
         drop_down: bool = False,
         read_only: bool = False,
         line_count: int = 5,
@@ -842,10 +843,10 @@ class DialogControlsPartial:
 
         Args:
             entries (Iterable[str]): List box entries.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``100``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``100``. If ``-1``, the dialog Size is not set.
             drop_down (bool, optional): Specifies if the control has a drop down button. Defaults to ``False``.
             read_only (bool, optional): Specifies that the content of the control cannot be modified by the user. Defaults to ``False``.
             line_count (int, optional): Specifies the number of lines to display. Defaults to ``5``.
@@ -890,10 +891,10 @@ class DialogControlsPartial:
     def insert_numeric_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         value: float | None = None,
         min_value: float = -1000000.0,
         max_value: float = 1000000.0,
@@ -909,10 +910,10 @@ class DialogControlsPartial:
         Create a new control of type NumericField in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             value (float, optional): Control Value. Defaults to ``0.0``.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``-1000000.0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``1000000.0``.
@@ -961,10 +962,10 @@ class DialogControlsPartial:
         self,
         *,
         text: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -975,10 +976,10 @@ class DialogControlsPartial:
 
         Args:
             text (str): Text value.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -1018,10 +1019,10 @@ class DialogControlsPartial:
     def insert_pattern_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         edit_mask: str = "",
         literal_mask: str = "",
         border: BorderKind = BorderKind.BORDER_3D,
@@ -1033,10 +1034,10 @@ class DialogControlsPartial:
         Create a new control of type PatternField in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default``20``. If ``-1``, the dialog Size is not set.
             edit_mask (str, optional): Specifies a character code that determines what the user may enter. Defaults to ``""``.
             literal_mask (str, optional): Specifies the initial values that are displayed in the pattern field. Defaults to ``""``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
@@ -1076,10 +1077,10 @@ class DialogControlsPartial:
     def insert_progress_bar(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         value: int = 0,
@@ -1093,9 +1094,10 @@ class DialogControlsPartial:
 
         Args:
             x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             value (int, optional): The value initial value of the progress bar. Defaults to ``0``.
@@ -1138,10 +1140,10 @@ class DialogControlsPartial:
         self,
         *,
         label: str,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         multiline: bool = False,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -1152,10 +1154,10 @@ class DialogControlsPartial:
 
         Args:
             label (str): Contents of label.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Default ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Default ``20``. If ``-1``, the dialog Size is not set.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -1189,10 +1191,10 @@ class DialogControlsPartial:
     def insert_scroll_bar(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
@@ -1205,10 +1207,10 @@ class DialogControlsPartial:
         Create a new control of type ScrollBar in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -1251,10 +1253,10 @@ class DialogControlsPartial:
     def insert_spin_button(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         min_value: int = 0,
         max_value: int = 100,
         orientation: OrientationKind = OrientationKind.HORIZONTAL,
@@ -1267,10 +1269,10 @@ class DialogControlsPartial:
         Create a new control of type SpinButton in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -1314,10 +1316,10 @@ class DialogControlsPartial:
     def insert_tab_control(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 1,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 1,
         border: BorderKind = BorderKind.NONE,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -1326,11 +1328,10 @@ class DialogControlsPartial:
         Create a new control of type tab in the actual dialog.
 
         Args:
-            dialog_ctrl (XControl, optional): control. Defaults to class instance.
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``1``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``1``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
@@ -1379,9 +1380,9 @@ class DialogControlsPartial:
         Create a new control of type Tab Page in the actual tab control.
 
         Args:
-            dialog_ctrl (XControl, optional): control. Defaults to class instance.
             tab_ctrl (CtlTabPageContainer): Tab Container.
             title (str): Tab title.
+            tab_position (int): Tab position.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.
             props (dict, optional): Extra properties to set for control.
@@ -1414,10 +1415,10 @@ class DialogControlsPartial:
     def insert_table_control(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         row_header: bool = True,
         col_header: bool = True,
         grid_lines: bool = False,
@@ -1433,10 +1434,10 @@ class DialogControlsPartial:
         To add data to the table use :py:meth:`~.dialogs.self._DialogControlsPartial_dialogs_class.set_table_data`.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             row_header (bool, optional): Specifies if the control has a row header. Defaults to ``True``.
             col_header (bool, optional): Specifies if the control has a column header. Defaults to ``True``.
             grid_lines (bool, optional): Specifies if the control has grid lines. when True horizontal and vertical lines are painted between the grid cells. Defaults to ``False``.
@@ -1484,10 +1485,10 @@ class DialogControlsPartial:
     def insert_text_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         text: str = "",
         echo_char: str = "",
         border: BorderKind = BorderKind.NONE,
@@ -1499,10 +1500,10 @@ class DialogControlsPartial:
         Inserts a text Field.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             text (str, optional): Text value.
             echo_char (str, optional): Character used for masking. Must be a single character.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
@@ -1545,10 +1546,10 @@ class DialogControlsPartial:
     def insert_time_field(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int = 20,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT = 20,
         time_value: datetime.time | None = None,
         min_time: datetime.time = datetime.time(0, 0, 0, 0),
         max_time: datetime.time = datetime.time(23, 59, 59, 999_999),
@@ -1563,10 +1564,10 @@ class DialogControlsPartial:
         Create a new control of type TimeField in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int, optional): Height. Defaults to ``20``. If ``-1``, the dialog Size is not set.
+            x (int, UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int, UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int, UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int, UnitT, optional): Height in Pixels or ``UnitT``. Defaults to ``20``. If ``-1``, the dialog Size is not set.
             time_value (datetime.time | None, optional): Specifics the control time. Defaults to ``None``.
             min_time (datetime.time, optional): Specifics control min time. Defaults to ``time(0, 0, 0, 0)``.
             max_time (datetime.time, optional): Specifics control min time. Defaults to a ``time(23, 59, 59, 999_999)``.
@@ -1613,10 +1614,10 @@ class DialogControlsPartial:
     def insert_tree_control(
         self,
         *,
-        x: int,
-        y: int,
-        width: int,
-        height: int,
+        x: int | UnitT,
+        y: int | UnitT,
+        width: int | UnitT,
+        height: int | UnitT,
         border: BorderKind = BorderKind.BORDER_3D,
         name: str = "",
         dialog_ctrl: XControl | None = None,
@@ -1626,10 +1627,10 @@ class DialogControlsPartial:
         Create a new control of type Tree in the actual dialog.
 
         Args:
-            x (int): X coordinate. If ``-1``, the dialog Position is not set.
-            y (int): Y coordinate. If ``-1``, the dialog Position is not set.
-            width (int): Width. If ``-1``, the dialog Size is not set.
-            height (int): Height. If ``-1``, the dialog Size is not set.
+            x (int , UnitT): X coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            y (int , UnitT): Y coordinate in Pixels or ``UnitT``. If ``-1``, the dialog Position is not set.
+            width (int , UnitT): Width in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
+            height (int , UnitT): Height in Pixels or ``UnitT``. If ``-1``, the dialog Size is not set.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.BORDER_3D``.
             name (str, optional): Name of button. Must be a unique name. If empty, a unique name is generated.
             dialog_ctrl (XControl, optional): control. Defaults to class instance.

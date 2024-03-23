@@ -1,21 +1,19 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import contextlib
-from pathlib import Path
 import uno  # pylint: disable=unused-import
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-from ooodev.utils.file_io import FileIO
 from ooodev.utils.type_var import PathOrStr
 from ooodev.adapter.awt.uno_control_button_model_partial import UnoControlButtonModelPartial
 
-
+from ooodev.mock import mock_g
 from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service
     from com.sun.star.awt import UnoControlButtonModel  # service
+    from ooodev.dialog.dl_control.model.model_button import ModelButton
 # endregion imports
 
 
@@ -33,8 +31,10 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
             ctl (UnoControlButton): Button Control
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
+        self._model_ex = None
+        self.model: UnoControlButtonModel
         DialogControlBase.__init__(self, ctl)
-        UnoControlButtonModelPartial.__init__(self)
+        UnoControlButtonModelPartial.__init__(self, self.model)
         self._generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=self._generic_args, cb=self._on_action_events_listener_add_remove)
@@ -65,9 +65,21 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
 
     # region Properties
     @property
-    def model(self) -> UnoControlButtonModel:
+    def model_ex(self) -> ModelButton:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
         # pylint: disable=no-member
-        return cast("UnoControlButtonModel", super().model)
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_button import ModelButton
+
+            self._model_ex = ModelButton(cast("UnoControlButtonModel", self.model))
+        return self._model_ex
 
     @property
     def view(self) -> UnoControlButton:
@@ -102,23 +114,14 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
         Returns:
             str: The picture URL in the format of ``file:///path/to/image.png`` or empty string if no picture is set.
         """
-        with contextlib.suppress(Exception):
-            return self.model.ImageURL
-        return ""
+        return self.model_ex.picture
 
     @picture.setter
     def picture(self, value: PathOrStr) -> None:
-        pth_str = str(value)
-        if not pth_str:
-            self.model.ImageURL = ""
-            return
-        if isinstance(value, str):
-            if value.startswith("file://"):
-                self.model.ImageURL = value
-                return
-            value = Path(value)
-        if not FileIO.is_valid_path_or_str(value):
-            raise ValueError(f"Invalid path or str: {value}")
-        self.model.ImageURL = FileIO.fnm_to_url(value)
+        self.model_ex.picture = value
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_button import ModelButton

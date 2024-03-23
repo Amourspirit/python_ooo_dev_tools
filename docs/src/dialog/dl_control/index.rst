@@ -8,3 +8,4 @@ dl_dialog
     :glob:
 
     *
+    model/index

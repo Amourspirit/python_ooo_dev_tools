@@ -8,6 +8,7 @@ import uno  # pylint: disable=unused-import
 # pylint: disable=useless-import-alias
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_image_control_model_partial import UnoControlImageControlModelPartial
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlImageControl  # service
     from com.sun.star.awt import UnoControlImageControlModel  # service
     from ooodev.utils.type_var import PathOrStr
+    from ooodev.dialog.dl_control.model.model_image import ModelImage
 # endregion imports
 
 
@@ -34,7 +36,8 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         DialogControlBase.__init__(self, ctl)
-        UnoControlImageControlModelPartial.__init__(self)
+        UnoControlImageControlModelPartial.__init__(self, component=self.get_model())
+        self._model_ex = None
 
     # endregion init
 
@@ -110,6 +113,23 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
         return cast("UnoControlImageControlModel", super().model)
 
     @property
+    def model_ex(self) -> ModelImage:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_image import ModelImage
+
+            self._model_ex = ModelImage(self.model)
+        return self._model_ex
+
+    @property
     def picture(self) -> str:
         """
         Gets/Sets the picture for the control
@@ -158,3 +178,7 @@ class CtlImage(DialogControlBase, UnoControlImageControlModelPartial):
         return cast("UnoControlImageControl", super().view)
 
     # endregion Properties
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_image import ModelImage

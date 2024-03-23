@@ -13,9 +13,9 @@ from ooodev.events.events import Events
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.kind.button_state_kind import ButtonStateKind
 from ooodev.utils.color import Color
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial
 from ooodev.adapter.awt.font_descriptor_struct_comp import FontDescriptorStructComp
+from ooodev.utils.kind.enum_helper import EnumHelper
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButtonModel  # Service
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 class UnoControlButtonModelPartial(UnoControlModelPartial):
     """Partial class for UnoControlButtonModel."""
 
-    def __init__(self):
+    def __init__(self, component: UnoControlButtonModel) -> None:
         """
         Constructor
 
@@ -35,18 +35,16 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
             component (Any): Component that implements ``com.sun.star.awt.UnoControlButtonModel`` service.
         """
         # pylint: disable=unused-argument
-        if not isinstance(self, ModelPropPartial):
-            raise TypeError("This class must be used as a mixin that implements ModelPropPartial.")
-        self.model: UnoControlButtonModel
+        self.__component = component
 
-        UnoControlModelPartial.__init__(self)
+        UnoControlModelPartial.__init__(self, component=component)
         self.__event_provider = Events(self)
         self.__props = {}
 
         def on_comp_struct_changed(src: Any, event_args: KeyValArgs) -> None:
             prop_name = str(event_args.event_data["prop_name"])
-            if hasattr(self.model, prop_name):
-                setattr(self.model, prop_name, event_args.source.component)
+            if hasattr(self.__component, prop_name):
+                setattr(self.__component, prop_name, event_args.source.component)
 
         self.__fn_on_comp_struct_changed = on_comp_struct_changed
 
@@ -87,7 +85,7 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         key = "FontDescriptor"
         prop = self.__props.get(key, None)
         if prop is None:
-            prop = FontDescriptorStructComp(self.model.FontDescriptor, key, self.__event_provider)
+            prop = FontDescriptorStructComp(self.__component.FontDescriptor, key, self.__event_provider)
             self.__props[key] = prop
         return cast(FontDescriptorStructComp, prop)
 
@@ -95,9 +93,9 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
     def font_descriptor(self, value: FontDescriptor | FontDescriptorStructComp) -> None:
         key = "FontDescriptor"
         if mInfo.Info.is_instance(value, FontDescriptorStructComp):
-            self.model.FontDescriptor = value.copy()
+            self.__component.FontDescriptor = value.copy()
         else:
-            self.model.FontDescriptor = cast("FontDescriptor", value)
+            self.__component.FontDescriptor = cast("FontDescriptor", value)
         if key in self.__props:
             del self.__props[key]
 
@@ -112,14 +110,14 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
             - ``AlignKind`` can be imported from ``ooodev.utils.kind.align_kind``.
         """
         with contextlib.suppress(AttributeError):
-            return AlignKind(self.model.Align)
+            return AlignKind(self.__component.Align)
         return None
 
     @align.setter
     def align(self, value: AlignKind | int) -> None:
         kind = AlignKind(int(value))
         with contextlib.suppress(AttributeError):
-            self.model.Align = kind.value
+            self.__component.Align = kind.value
 
     @property
     def background_color(self) -> Color:
@@ -129,33 +127,33 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.BackgroundColor)
+        return Color(self.__component.BackgroundColor)
 
     @background_color.setter
     def background_color(self, value: Color) -> None:
-        self.model.BackgroundColor = value  # type: ignore
+        self.__component.BackgroundColor = value  # type: ignore
 
     @property
     def default_button(self) -> bool:
         """
         Gets/Sets that the button is the default button on the document.
         """
-        return self.model.DefaultButton
+        return self.__component.DefaultButton
 
     @default_button.setter
     def default_button(self, value: bool) -> None:
-        self.model.DefaultButton = value
+        self.__component.DefaultButton = value
 
     @property
     def enabled(self) -> bool:
         """
         Gets/Sets whether the control is enabled or disabled.
         """
-        return self.model.Enabled
+        return self.__component.Enabled
 
     @enabled.setter
     def enabled(self, value: bool) -> None:
-        self.model.Enabled = value
+        self.__component.Enabled = value
 
     @property
     def font_emphasis_mark(self) -> FontEmphasisEnum:
@@ -168,11 +166,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontEmphasisEnum`` can be imported from ``ooo.dyn.text.font_emphasis``.
         """
-        return FontEmphasisEnum(self.model.FontEmphasisMark)
+        return FontEmphasisEnum(self.__component.FontEmphasisMark)
 
     @font_emphasis_mark.setter
     def font_emphasis_mark(self, value: int | FontEmphasisEnum) -> None:
-        self.model.FontEmphasisMark = int(value)
+        self.__component.FontEmphasisMark = int(value)
 
     @property
     def focus_on_click(self) -> bool:
@@ -182,11 +180,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         If set to ``True`` (which is the default), the button control automatically grabs the focus when the user clicks onto it with the mouse.
         If set to ``False``, the focus is preserved when the user operates the button control with the mouse.
         """
-        return self.model.FocusOnClick
+        return self.__component.FocusOnClick
 
     @focus_on_click.setter
     def focus_on_click(self, value: bool) -> None:
-        self.model.FocusOnClick = value
+        self.__component.FocusOnClick = value
 
     @property
     def font_relief(self) -> FontReliefEnum:
@@ -199,11 +197,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``FontReliefEnum`` can be imported from ``ooo.dyn.text.font_relief``.
         """
-        return FontReliefEnum(self.model.FontRelief)
+        return FontReliefEnum(self.__component.FontRelief)
 
     @font_relief.setter
     def font_relief(self, value: int | FontReliefEnum) -> None:
-        self.model.FontRelief = int(value)
+        self.__component.FontRelief = int(value)
 
     @property
     def graphic(self) -> XGraphic:
@@ -215,33 +213,33 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         - If ``image_url`` is set, ``graphic`` will be reset to an object as loaded from the given image URL, or None if ``image_url`` does not point to a valid image file.
         - If ``graphic`` is set, ``image_url`` will be reset to an empty string.
         """
-        return self.model.Graphic
+        return self.__component.Graphic
 
     @graphic.setter
     def graphic(self, value: XGraphic) -> None:
-        self.model.Graphic = value
+        self.__component.Graphic = value
 
     @property
     def help_text(self) -> str:
         """
         Get/Sets the help text of the control.
         """
-        return self.model.HelpText
+        return self.__component.HelpText
 
     @help_text.setter
     def help_text(self, value: str) -> None:
-        self.model.HelpText = value
+        self.__component.HelpText = value
 
     @property
     def help_url(self) -> str:
         """
         Gets/Sets the help URL of the control.
         """
-        return self.model.HelpURL
+        return self.__component.HelpURL
 
     @help_url.setter
     def help_url(self, value: str) -> None:
-        self.model.HelpURL = value
+        self.__component.HelpURL = value
 
     @property
     def image_align(self) -> ImageAlignEnum:
@@ -254,11 +252,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``ImageAlignEnum`` can be imported from ``ooo.dyn.awt.image_align``
         """
-        return ImageAlignEnum(self.model.ImageAlign)
+        return ImageAlignEnum(self.__component.ImageAlign)
 
     @image_align.setter
     def image_align(self, value: int | ImageAlignEnum) -> None:
-        self.model.ImageAlign = int(value)
+        self.__component.ImageAlign = int(value)
 
     @property
     def image_position(self) -> ImagePositionEnum | None:
@@ -278,35 +276,35 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
             - ``ImagePositionEnum`` can be imported from ``ooo.dyn.awt.image_position``
         """
         with contextlib.suppress(AttributeError):
-            return ImagePositionEnum(self.model.ImagePosition)
+            return ImagePositionEnum(self.__component.ImagePosition)
         return None
 
     @image_position.setter
     def image_position(self, value: int | ImagePositionEnum) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.ImagePosition = int(value)
+            self.__component.ImagePosition = int(value)
 
     @property
     def image_url(self) -> str:
         """
         Gets/Sets a URL to an image to use for the button.
         """
-        return self.model.ImageURL
+        return self.__component.ImageURL
 
     @image_url.setter
     def image_url(self, value: str) -> None:
-        self.model.ImageURL = value
+        self.__component.ImageURL = value
 
     @property
     def label(self) -> str:
         """
         Gets/Sets the label of the control.
         """
-        return self.model.Label
+        return self.__component.Label
 
     @label.setter
     def label(self, value: str) -> None:
-        self.model.Label = value
+        self.__component.Label = value
 
     @property
     def multi_line(self) -> bool | None:
@@ -316,24 +314,24 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.MultiLine
+            return self.__component.MultiLine
         return None
 
     @multi_line.setter
     def multi_line(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.MultiLine = value
+            self.__component.MultiLine = value
 
     @property
     def printable(self) -> bool:
         """
         Gets/Sets that the control will be printed with the document.
         """
-        return self.model.Printable
+        return self.__component.Printable
 
     @printable.setter
     def printable(self, value: bool) -> None:
-        self.model.Printable = value
+        self.__component.Printable = value
 
     @property
     def push_button_type(self) -> PushButtonType:
@@ -346,12 +344,19 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``PushButtonType`` can be imported from ``ooo.dyn.awt.push_button_type``
         """
-        return PushButtonType(self.model.PushButtonType)
+        # self.__component.PushButtonType is an int
+        return cast(
+            "PushButtonType",
+            EnumHelper.get_uno_enum_from_value("com.sun.star.awt.PushButtonType", self.__component.PushButtonType),
+        )
+
+        # values = {0: "STANDARD", 1: "OK", 2: "CANCEL", 3: "HELP"}
+        # return uno.Enum("com.sun.star.awt.PushButtonType", values[self.__component.PushButtonType])  # type: ignore
 
     @push_button_type.setter
     def push_button_type(self, value: int | PushButtonType) -> None:
         val = PushButtonType(value)
-        self.model.PushButtonType = val.value  # type: ignore
+        self.__component.PushButtonType = val.value  # type: ignore
 
     @property
     def repeat(self) -> bool | None:
@@ -362,13 +367,13 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.Repeat
+            return self.__component.Repeat
         return None
 
     @repeat.setter
     def repeat(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.Repeat = value
+            self.__component.Repeat = value
 
     @property
     def repeat_delay(self) -> int | None:
@@ -381,13 +386,13 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.RepeatDelay
+            return self.__component.RepeatDelay
         return None
 
     @repeat_delay.setter
     def repeat_delay(self, value: int) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.RepeatDelay = value
+            self.__component.RepeatDelay = value
 
     @property
     def state(self) -> ButtonStateKind:
@@ -402,22 +407,22 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Hint:
             - ``ButtonStateKind`` can be imported from ``ooodev.utils.kind.button_state_kind``.
         """
-        return ButtonStateKind(self.model.State)
+        return ButtonStateKind(self.__component.State)
 
     @state.setter
     def state(self, value: int | ButtonStateKind) -> None:
-        self.model.State = int(value)
+        self.__component.State = int(value)
 
     @property
     def tabstop(self) -> bool:
         """
         Gets/Sets that the control can be reached with the TAB key.
         """
-        return self.model.Tabstop
+        return self.__component.Tabstop
 
     @tabstop.setter
     def tabstop(self, value: bool) -> None:
-        self.model.Tabstop = value
+        self.__component.Tabstop = value
 
     @property
     def text_color(self) -> Color:
@@ -427,11 +432,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextColor)
+        return Color(self.__component.TextColor)
 
     @text_color.setter
     def text_color(self, value: Color) -> None:
-        self.model.TextColor = value  # type: ignore
+        self.__component.TextColor = value  # type: ignore
 
     @property
     def text_line_color(self) -> Color:
@@ -441,11 +446,11 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         Returns:
             ~ooodev.utils.color.Color: Color
         """
-        return Color(self.model.TextLineColor)
+        return Color(self.__component.TextLineColor)
 
     @text_line_color.setter
     def text_line_color(self, value: Color) -> None:
-        self.model.TextLineColor = value  # type: ignore
+        self.__component.TextLineColor = value  # type: ignore
 
     @property
     def toggle(self) -> bool | None:
@@ -460,13 +465,13 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
         **optional**
         """
         with contextlib.suppress(AttributeError):
-            return self.model.Toggle
+            return self.__component.Toggle
         return None
 
     @toggle.setter
     def toggle(self, value: bool) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.Toggle = value
+            self.__component.Toggle = value
 
     @property
     def vertical_align(self) -> VerticalAlignment | None:
@@ -479,12 +484,12 @@ class UnoControlButtonModelPartial(UnoControlModelPartial):
             - ``VerticalAlignment`` can be imported from ``ooo.dyn.style.vertical_alignment``
         """
         with contextlib.suppress(AttributeError):
-            return self.model.VerticalAlign  # type: ignore
+            return self.__component.VerticalAlign  # type: ignore
         return None
 
     @vertical_align.setter
     def vertical_align(self, value: VerticalAlignment) -> None:
         with contextlib.suppress(AttributeError):
-            self.model.VerticalAlign = value  # type: ignore
+            self.__component.VerticalAlign = value  # type: ignore
 
     # endregion Properties
