@@ -16,11 +16,14 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.calc_forms import CalcForms
-from ooodev.proto.component_proto import ComponentT
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
+    from com.sun.star.awt import XControlModel
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.draw.shapes.shape_base import ShapeBase
+    from ooodev.calc.calc_cell import CalcCell
+    from ooodev.form.controls.form_ctl_base import FormCtlBase
 
 _T = TypeVar("_T", bound="ComponentT")
 
@@ -94,7 +97,32 @@ class SpreadsheetDrawPage(
         shape = super().__next__()
         return self.shape_factory(shape)
 
+    def find_cell_with_control(self, ctl: FormCtlBase | XControlModel) -> CalcCell | None:
+        """
+        Find the cell that contains the control.
+
+        Args:
+            ctl (FormCtlBase | XControlModel): Control to find cell for.
+
+        Returns:
+            CalcCell | None: Cell that contains the control or ``None`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.form.forms import Forms
+
+        cell = Forms.find_cell_with_control(self.component, ctl)
+        if cell is None:
+            return None
+        from ooodev.calc.calc_cell import CalcCell
+
+        co = self.calc_doc.range_converter.get_cell_obj(cell=cell)
+        sheet = self.calc_doc.sheets[co.sheet_idx]
+        return CalcCell(owner=sheet, cell=co, lo_inst=self.lo_inst)
+
     # region Properties
+
     @property
     def owner(self) -> _T:
         """Component Owner"""

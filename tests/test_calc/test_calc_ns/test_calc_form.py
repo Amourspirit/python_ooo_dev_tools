@@ -40,6 +40,17 @@ def test_form_get_index_by_name(loader) -> None:
         index = form.get_index_by_name(btn1.name)
         assert index == 0
 
+        btn_index = form.get_control_index(btn1)
+        assert btn_index == 0
+        btn_index = form.get_control_index(btn2)
+        assert btn_index == 1
+
+        ctl_shape = form.find_shape_for_control(btn1)
+        assert ctl_shape == btn1.control_shape
+
+        ctl_shape = form.find_shape_for_control(btn2)
+        assert ctl_shape == btn2.control_shape
+
         assert len(form) == 2
 
         for itm in form:

@@ -17,17 +17,15 @@ from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 from ooodev.exceptions import ex as mEx
 from ooodev.form import forms as mForms
 from ooodev.proto.component_proto import ComponentT
-from ooodev.proto.style_obj import StyleT
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.kind.border_kind import BorderKind as BorderKind
-from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
-from ooodev.utils.kind.language_kind import LanguageKind as LanguageKind
-from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKind
-from ooodev.utils.kind.state_kind import StateKind as StateKind
-from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
-from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.utils.kind.border_kind import BorderKind
+from ooodev.utils.kind.date_format_kind import DateFormatKind
+from ooodev.utils.kind.orientation_kind import OrientationKind
+from ooodev.utils.kind.state_kind import StateKind
+from ooodev.utils.kind.time_format_kind import TimeFormatKind
+from ooodev.utils.kind.tri_state_kind import TriStateKind
 from ooodev.form.controls.form_ctl_button import FormCtlButton
 from ooodev.form.controls.form_ctl_check_box import FormCtlCheckBox
 from ooodev.form.controls.form_ctl_combo_box import FormCtlComboBox
@@ -66,8 +64,11 @@ from ooodev.form.controls.database.form_ctl_db_time_field import FormCtlDbTimeFi
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
     from com.sun.star.lang import XComponent
-    from ooodev.units.unit_obj import UnitT
+    from com.sun.star.drawing import XShape
+    from ooodev.form.controls.form_ctl_base import FormCtlBase
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.units.unit_obj import UnitT
+    from ooodev.proto.style_obj import StyleT
     from ooodev.utils.type_var import PathOrStr
 
 
@@ -188,6 +189,10 @@ class FormPartial:
 
         Returns:
             FormCtlCheckBox: Checkbox Control
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -246,6 +251,9 @@ class FormPartial:
 
         Returns:
             FormCtlComboBox: ComboBox Control
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -305,6 +313,9 @@ class FormPartial:
 
         Returns:
             FormCtlCurrencyField: Currency Field Control
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -364,6 +375,10 @@ class FormPartial:
 
         Returns:
             FormCtlDateField: Date Field Control
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -460,7 +475,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlFormattedField: Currency Field Control
+            FormCtlFormattedField: Currency Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -594,7 +612,7 @@ class FormPartial:
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
 
         Returns:
-            FormCtlHidden: Hidden Control
+            FormCtlHidden: Hidden Control.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -642,7 +660,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlImageButton: Image Button Control
+            FormCtlImageButton: Image Button Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -688,7 +709,7 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlFixedText: Label Control
+            FormCtlFixedText: Label Control.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -743,7 +764,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlListBox: ListBox Control
+            FormCtlListBox: ListBox Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -845,7 +869,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlNumericField: Numeric Field Control
+            FormCtlNumericField: Numeric Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -899,7 +926,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlPatternField: Pattern Field Control
+            FormCtlPatternField: Pattern Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -945,8 +975,7 @@ class FormPartial:
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) of control.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
-            tri_state (StateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
-            state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
+            state (StateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
@@ -955,6 +984,10 @@ class FormPartial:
 
         Returns:
             FormCtlRadioButton: Radio Button Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``StateKind`` can be imported from ``ooodev.utils.kind.state_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1003,6 +1036,9 @@ class FormPartial:
 
         Returns:
             FormCtlRichText: Rich Text Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1044,7 +1080,6 @@ class FormPartial:
             y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            height (int): Height. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -1055,6 +1090,10 @@ class FormPartial:
 
         Returns:
             FormCtlScrollBar: Scrollbar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1110,7 +1149,10 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlSpinButton: Spin Button Control,
+            FormCtlSpinButton: Spin Button Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1157,7 +1199,7 @@ class FormPartial:
             styles (Iterable[StyleT], optional): One or more styles to apply to the control shape.
 
         Returns:
-            FormCtlSubmitButton: Submit Button Control
+            FormCtlSubmitButton: Submit Button Control.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1206,6 +1248,9 @@ class FormPartial:
 
         Returns:
             FormCtlTextField: Text Field Control.
+        
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1264,6 +1309,10 @@ class FormPartial:
 
         Returns:
             FormCtlTimeField: Time Field Control.
+        
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.
         """
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
@@ -1975,5 +2024,33 @@ class FormPartial:
             return result
         else:
             raise mEx.MissingNameError(f"Control '{ctl_name}' not found")
+
+    def get_control_index(self, ctl: FormCtlBase | XControlModel) -> int:
+        """
+        Get the index of the control within the form.
+
+        Args:
+            ctl (FormCtlBase, XControlModel): Control object.
+
+        Returns:
+            int: Control Index within the form or ``-1`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+        return mForms.Forms.get_control_index(self.__component, ctl)
+
+    def find_shape_for_control(self, ctl: FormCtlBase | XControlModel) -> XShape | None:
+        """
+        Find the shape for a control.
+
+        Args:
+            control (FormCtlBase | XControlModel): control to find shape for.
+
+        Returns:
+            XShape | None: Shape for the control or ``None`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+        return mForms.Forms.find_shape_for_control(self.__draw_page, ctl)
 
     # endregion Other Form Methods

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
+from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
 import uno
 
 
@@ -1210,6 +1210,77 @@ class DrawPagePartial(Generic[_T]):
         mDraw.Draw.set_transition(
             slide=self.__component, fade_effect=fade_effect, speed=speed, change=change, duration=duration  # type: ignore
         )
+
+    def find_shape_at_position(self, x: int, y: int) -> ShapeBase[Any] | None:
+        """
+        Finds a shape at a given position.
+
+        Args:
+            x (int): X position.
+            y (int): Y position.
+
+        Raises:
+            ShapeMissingError: If no shape is found.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            ShapeBase[Any] | None: Shape if Found; Otherwise, ``None``.
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        from ooodev.draw.shapes.shape_factory import ShapeFactory
+        from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+
+        ia = cast(IndexAccessPartial["XShape"], IndexAccessPartial(self.__component))  # type: ignore
+        found_shape = None
+        for shape in ia:
+            if shape is None:
+                continue
+            pos = shape.getPosition()
+            if pos.X == x and pos.Y == y:
+                found_shape = shape
+                break
+        if found_shape is None:
+            return None
+        factory = ShapeFactory(owner=self.__owner, lo_inst=self.__lo_inst)
+        return factory.shape_factory(found_shape)
+
+    def find_shape_at_position_size(self, x: int, y: int, width: int, height: int) -> ShapeBase[Any] | None:
+        """
+        Finds a shape at a given position with a given size.
+
+        Args:
+            x (int): X position.
+            y (int): Y position.
+            width (int): width of the shape.
+            height (int): height of the shape.
+
+        Raises:
+            ShapeMissingError: If no shape is found.
+            ShapeError: If any other error occurs.
+
+        Returns:
+            ShapeBase[Any] | None: Shape if Found; Otherwise, ``None``.
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        from ooodev.draw.shapes.shape_factory import ShapeFactory
+        from ooodev.adapter.container.index_access_partial import IndexAccessPartial
+
+        ia = cast(IndexAccessPartial["XShape"], IndexAccessPartial(self.__component))  # type: ignore
+        found_shape = None
+        for shape in ia:
+            if shape is None:
+                continue
+            pos = shape.getPosition()
+            sz = shape.getSize()
+            if pos.X == x and pos.Y == y and sz.Width == width and sz.Height == height:
+                found_shape = shape
+                break
+        if found_shape is None:
+            return None
+        factory = ShapeFactory(owner=self.__owner, lo_inst=self.__lo_inst)
+        return factory.shape_factory(found_shape)
 
 
 # These import have to be here to avoid circular imports.

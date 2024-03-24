@@ -2,6 +2,64 @@
 Version History
 ***************
 
+Version 0.38.0
+==============
+
+Cell and Range Controls
+-----------------------
+
+Add a new property to ``CalcCell`` and ``CalcCellRange`` called ``controls``.
+This property returns a ``CalcCellControls`` and ``CalcCellRangeControls`` class respectively.
+These classes can be used to access and manipulate the form controls in a cell or range.
+In other words this makes it super simple to add controls to a cell or a range.
+
+.. code-block:: python
+
+    from ooodev.calc import CalcDoc
+    doc = CalcDoc.create_doc(visible=True)
+    sheet = doc.sheets[0]
+
+    cell = sheet["A1"]
+    chk = cell.control.insert_control_check_box("My CheckBox", tri_state=False)
+    assert chk is not None
+
+    cell = sheet["A1"]
+    chk = cell.control.current_control
+    assert chk is not None
+
+    cell = sheet["B3"]
+    btn = cell.control.insert_control_button("My Button")
+    assert btn is not None
+
+    cell = sheet["B3"]
+    btn = cell.control.current_control
+
+    rng = sheet.get_range(range_name="b10:c12")
+    list_box = rng.control.insert_control_list_box(entries=["D", "E", "F"], drop_down=False)
+
+
+Basic Script Access
+-------------------
+
+Add a new Basic script manager that can be used to access basic scripts.
+
+.. code-block:: python
+
+    ooodev.macro.script.basic import Basic
+    def r_trim(input: str, remove: str = " ") -> str:
+        script = Basic.get_basic_script(macro="RTrimStr", module="Strings", library="Tools", embedded=False)
+        res = script.invoke((input, remove), (), ())
+        return res[0]
+    result = r_trim("hello ")
+    assert result == "hello"
+
+Forms
+-----
+
+Now it is possible to Find a shape in a Draw Page with the ``Form.find_shape_for_control()`` method.
+
+Also a new ``Form.find_cell_with_control()`` method has been added that can be used to find a cell that contains a form control.
+
 Version 0.37.0
 ==============
 

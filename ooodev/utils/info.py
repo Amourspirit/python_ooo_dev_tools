@@ -12,6 +12,7 @@ from typing import Type, TypeVar, Union
 
 import uno
 
+from com.sun.star.uno import XInterface
 from com.sun.star.awt import XToolkit
 from com.sun.star.beans import XHierarchicalPropertySet
 from com.sun.star.beans import XPropertySet
@@ -1345,9 +1346,7 @@ class Info(metaclass=StaticProperty):
             if mLo.Lo.is_uno_interfaces(kargs[1], XTypeProvider):
                 type_provider = cast(XTypeProvider, kargs[1])
             else:
-                type_provider = mLo.Lo.qi(XTypeProvider, kargs[1])
-                if type_provider is None:
-                    raise mEx.MissingInterfaceError(XTypeProvider)
+                type_provider = mLo.Lo.qi(XTypeProvider, kargs[1], True)
 
             types = cast(Tuple[uno.Type, ...], type_provider.getTypes())
             # use a set to exclude duplicate names
@@ -1374,13 +1373,14 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: ``True`` if obj contains interface; Otherwise, ``False``.
         """
-        result = False
         if obj is None:
-            return result
-        with contextlib.suppress(mEx.MissingInterfaceError):
-            interfaces = cls.get_interfaces(obj)
-            result = len(interfaces) > 0
-        return result
+            return False
+        x = mLo.Lo.qi(XInterface, obj)
+        return x is not None
+        # with contextlib.suppress(mEx.MissingInterfaceError):
+        #     interfaces = cls.get_interfaces(obj)
+        #     result = len(interfaces) > 0
+        # return result
 
     @staticmethod
     def is_struct(obj: Any) -> bool:
@@ -1429,10 +1429,12 @@ class Info(metaclass=StaticProperty):
             obj1_attrs = [s for s in dir(obj1.value) if not s.startswith("_")]
             return all(getattr(obj1, atr) == getattr(obj2, atr) for atr in obj1_attrs)
         elif cls.is_interface_obj(obj1) and cls.is_interface_obj(obj2):
-            # must be same object in memory
+            # https://ask.libreoffice.org/t/equalunoobjects-for-python/103855
+            # check if the same objects in memory
             id1 = id(obj1)
             id2 = id(obj2)
-            return id1 == id2
+            if id1 == id2:
+                return True
         return obj1 == obj2
 
     @staticmethod

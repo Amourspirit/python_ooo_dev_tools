@@ -5,6 +5,14 @@ macro
 
 .. versionadded:: 0.11.11
 
+basic sub-package
+-----------------
+
+.. toctree::
+   :titlesonly:
+
+   basic/index
+
 Contents
 --------
 

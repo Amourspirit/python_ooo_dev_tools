@@ -12,3 +12,4 @@ calc
     export/index
     filter/index
     partial/index
+    controls/index

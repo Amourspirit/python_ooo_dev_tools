@@ -45,6 +45,7 @@ from ooodev.calc import calc_sheets as mCalcSheets
 from ooodev.calc import calc_sheet_view as mCalcSheetView
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
+from ooodev.utils.data_type.rng.range_converter import RangeConverter
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -112,6 +113,7 @@ class CalcDoc(
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None
+        self._range_converter = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -976,6 +978,14 @@ class CalcDoc(
         with LoContext(self.lo_inst):
             mCalc.Calc.zoom(doc=self.component, type=type)
 
+    def toggle_design_mode(self) -> None:
+        """
+        Toggle Control Design Mode using a dispatch command.
+
+        .. versionadded:: 0.38.0
+        """
+        self.dispatch_cmd("SwitchControlDesignMode")
+
     # region create_doc()
 
     @classmethod
@@ -1112,5 +1122,17 @@ class CalcDoc(
         if self._current_controller is None:
             self._current_controller = mCalcSheetView.CalcSheetView(owner=self, view=self.component.getCurrentController(), lo_inst=self.lo_inst)  # type: ignore
         return self._current_controller
+
+    @property
+    def range_converter(self) -> RangeConverter:
+        """
+        Range Converter
+
+        Returns:
+            RangeConverter: Range Converter
+        """
+        if self._range_converter is None:
+            self._range_converter = RangeConverter(lo_inst=self.lo_inst)
+        return self._range_converter
 
     # endregion Properties

@@ -50,6 +50,7 @@ if TYPE_CHECKING:
     from ooodev.calc import calc_cell_cursor as mCalcCellCursor
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
     from ooodev.units.unit_obj import UnitT
+    from ooodev.calc.controls.cell_control import CellControl
 else:
     XSheetAnnotation = Any
     UnitT = Any
@@ -115,6 +116,7 @@ class CalcCell(
             self, factory_name="ooodev.number.numbers", component=sheet_cell, lo_inst=lo_inst
         )
         StylePropertyPartial.__init__(self, component=sheet_cell, property_name="CellStyle")
+        self._control = None
         self._init_events()
 
     def _init_events(self) -> None:
@@ -206,6 +208,19 @@ class CalcCell(
         super().style_by_name(name=str(name))
 
     # endregion StylePropertyPartial overrides
+
+    # region dunder methods
+    def __eq__(self, other: Any) -> bool:
+        """Compares two instances of CalcCell."""
+        if isinstance(other, CalcCell):
+            return self.cell_obj == other.cell_obj
+        return False
+
+    def __ne__(self, other: Any) -> bool:
+        """Compares two instances of CalcCell."""
+        return not self.__eq__(other)
+
+    # endregion dunder methods
 
     # region Cell Properties
 
@@ -644,8 +659,26 @@ class CalcCell(
         """Sets value of cell."""
         self.set_val(value=value)
 
+    @property
+    def control(self) -> CellControl:
+        """
+        Gets access to class for managing cell control.
+
+        Returns:
+            CellControl: Cell control instance.
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        if self._control is None:
+            from ooodev.calc.controls.cell_control import CellControl
+
+            self._control = CellControl(self, self.lo_inst)
+            self._control.add_event_observers(self.event_observer)
+        return self._control
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
-    from .calc_cell_text_cursor import CalcCellTextCursor
+    from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
+    from ooodev.calc.controls.cell_control import CellControl
