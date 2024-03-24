@@ -869,6 +869,11 @@ class ShapeBase(
         """Gets the shape type."""
         return self.__component.ShapeType  # type: ignore
 
+    @property
+    def component(self) -> XShape:
+        """Gets the component."""
+        return self.__component
+
     # endregion Properties
 
 

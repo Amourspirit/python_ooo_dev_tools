@@ -8,3 +8,4 @@ Class CalcCell
     :undoc-members:
     :show-inheritance:
     :inherited-members:
+    :special-members: __eq__, __ne__

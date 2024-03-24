@@ -140,6 +140,11 @@ class FormCtlBase(
 
     # endregion Lazy Listeners
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, FormCtlBase):
+            return NotImplemented
+        return self.get_control().getModel() == other.get_control().getModel()
+
     # region other methods
 
     def assign_script(
@@ -366,6 +371,7 @@ class FormCtlBase(
         try:
             return self._forms_class_instance
         except AttributeError:
+            # pylint: disable=import-outside-toplevel
             from ooodev.form.forms import Forms as OooDevForms
 
             self._forms_class_instance = OooDevForms

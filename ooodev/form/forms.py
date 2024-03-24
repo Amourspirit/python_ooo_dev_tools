@@ -41,6 +41,8 @@ from ooodev.utils import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
+from ooodev.units.unit_mm import UnitMM
+from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.utils.kind.border_kind import BorderKind as BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind as DateFormatKind
 from ooodev.utils.kind.form_component_kind import FormComponentKind
@@ -49,6 +51,7 @@ from ooodev.utils.kind.orientation_kind import OrientationKind as OrientationKin
 from ooodev.utils.kind.state_kind import StateKind as StateKind
 from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
+from ooodev.form.controls.form_ctl_base import FormCtlBase
 from ooodev.form.controls.form_ctl_button import FormCtlButton
 from ooodev.form.controls.form_ctl_check_box import FormCtlCheckBox
 from ooodev.form.controls.form_ctl_combo_box import FormCtlComboBox
@@ -88,9 +91,10 @@ if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
     from com.sun.star.lang import EventObject
     from com.sun.star.uno import XInterface
+    from com.sun.star.drawing import XShape
+    from com.sun.star.table import XCell
     from ooodev.units.unit_obj import UnitT
     from ooodev.utils.type_var import PathOrStr
-    from ooodev.form.controls.form_ctl_base import FormCtlBase
 # endregion Imports
 
 
@@ -854,6 +858,7 @@ class Forms:
             XControl: Control.
         """
         # sourcery skip: raise-specific-error
+        # pylint: disable=broad-exception-caught
         try:
             control_access = mGui.GUI.get_control_access(doc)
             if control_access is None:
@@ -861,6 +866,33 @@ class Forms:
             return control_access.getControl(ctl_model)
         except Exception as e:
             raise Exception(f"Could not access control: {e}") from e
+
+    @staticmethod
+    def get_control_index(form: XForm, ctl: FormCtlBase | XControlModel) -> int:
+        """
+        Gets control index within the form.
+
+        |lo_safe|
+
+        Args:
+            form (XForm): Form.
+            ctl (FormCtlBase, XControlModel): Control object.
+
+        Returns:
+            int: Control Index within the form or ``-1`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+        # pylint: disable=broad-exception-caught
+        if ctl is None:
+            return -1
+        x_ctl = ctl.get_control().getModel() if mInfo.Info.is_instance(ctl, FormCtlBase) else ctl
+        ic = mLo.Lo.qi(XIndexContainer, form, True)
+        for i in range(ic.getCount()):
+            obj = ic.getByIndex(i)
+            if x_ctl == obj:
+                return i
+        return -1
 
     @classmethod
     def get_named_control(cls, doc: XComponent, ctl_name: str) -> XControl | None:
@@ -942,17 +974,11 @@ class Forms:
 
     @staticmethod
     def _get_unit100_value(value: int | UnitT) -> int:
-        try:
-            return value.get_value_mm100()  # type: ignore
-        except AttributeError:
-            return int(value) * 100  # type: ignore
+        return int(UnitMM100.from_unit_val(value))
 
     @staticmethod
     def _get_unit_value(value: int | UnitT) -> int:
-        try:
-            return value.get_value_mm()  # type: ignore
-        except AttributeError:
-            return cast(int, value)
+        return int(UnitMM.from_unit_val(value))
 
     # region    add_control
     @classmethod
@@ -1007,6 +1033,8 @@ class Forms:
 
             # create the control's model, this is a service
             # see: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1form_1_1FormControlModel.html
+            # Warning this will fail for hidden controls.
+            # hidden control has no model and therefore no shape.
             model = mLo.Lo.create_instance_mcf(
                 XControlModel, f"com.sun.star.form.component.{comp_kind}", raise_err=True
             )
@@ -1832,6 +1860,10 @@ class Forms:
         Returns:
             FormCtlCheckBox: Checkbox Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``.
+
         .. versionadded:: 0.14.0
         """
         if "comp_kind" in kwargs:
@@ -1923,6 +1955,9 @@ class Forms:
 
         Returns:
             FormCtlComboBox: ComboBox Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -2018,6 +2053,9 @@ class Forms:
         Returns:
             FormCtlCurrencyField: Currency Field Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         .. versionadded:: 0.14.0
         """
         if "comp_kind" in kwargs:
@@ -2052,7 +2090,6 @@ class Forms:
             else:
                 currency = FormCtlDbCurrencyField(ctl)
             currency.control_shape = cast("ControlShape", ctl_shape)
-            currency = FormCtlCurrencyField(ctl)
             currency.max_value = max_value
             currency.min_value = min_value
             currency.spin_button = spin_button
@@ -2110,6 +2147,10 @@ class Forms:
 
         Returns:
             FormCtlDateField: Date Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``DateFormatKind`` can be imported from ``ooodev.utils.kind.date_format_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -2262,7 +2303,10 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlFormattedField: Currency Field Control
+            FormCtlFormattedField: Currency Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -2479,7 +2523,7 @@ class Forms:
 
         .. versionadded:: 0.14.0
         """
-
+        # TODO: Hidden control has not model. insert_control_hidden needs to be re-worked.
         if not name:
             name = cls.create_name(parent_form, "Hidden")
         try:
@@ -2549,6 +2593,9 @@ class Forms:
         Returns:
             FormCtlImageButton: Image Button Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         .. versionadded:: 0.14.0
         """
         if styles is None:
@@ -2556,7 +2603,7 @@ class Forms:
             styles = ()
 
         if not name:
-            name = cls.create_name(parent_form, "FormattedField")
+            name = cls.create_name(parent_form, "ImageButton")
         try:
             props, ctl_shape = cls._add_control(
                 doc=doc if draw_page is None else draw_page,
@@ -2697,6 +2744,9 @@ class Forms:
 
         Returns:
             FormCtlListBox: ListBox Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -2857,7 +2907,10 @@ class Forms:
                 If None, then the Draw Page is obtained from the document.
 
         Returns:
-            FormCtlNumericField: Numeric Field Control
+            FormCtlNumericField: Numeric Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -2946,6 +2999,9 @@ class Forms:
         Returns:
             FormCtlPatternField: Pattern Field Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         .. versionadded:: 0.14.0
         """
         if "comp_kind" in kwargs:
@@ -3020,8 +3076,7 @@ class Forms:
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
             label (str, optional): Label (text) of control.
             anchor_type (TextContentAnchorType | None, optional): _description_. Defaults to None.
-            tri_state (StateKind, optional): Specifies that the control may have the state "don't know". Defaults to ``True``.
-            state (TriStateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
+            state (StateKind, optional): Specifies the state of the control.Defaults to ``StateKind.NOT_CHECKED``.
             multiline (bool, optional): Specifies if the control can display multiple lines of text. Defaults to ``False``.
             border (BorderKind, optional): Border option. Defaults to ``BorderKind.NONE``.
             anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
@@ -3033,6 +3088,10 @@ class Forms:
 
         Returns:
             FormCtlRadioButton: Radio Button Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``StateKind`` can be imported from ``ooodev.utils.kind.state_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -3115,6 +3174,9 @@ class Forms:
         Returns:
             FormCtlRichText: Rich Text Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         .. versionadded:: 0.14.0
         """
         if not name:
@@ -3175,7 +3237,6 @@ class Forms:
             y (int | UnitT): Y Coordinate.
             width (int, UnitT, optional): Width.
             height (int, UnitT, optional): Height. Defaults to ``6`` mm.
-            height (int): Height. If ``-1``, the dialog Size is not set.
             min_value (float, optional): Specifies the smallest value that can be entered in the control. Defaults to ``0``.
             max_value (float, optional): Specifies the largest value that can be entered in the control. Defaults to ``100``.
             orientation (OrientationKind, optional): Orientation. Defaults to ``OrientationKind.HORIZONTAL``.
@@ -3189,6 +3250,10 @@ class Forms:
 
         Returns:
             FormCtlScrollBar: Scrollbar Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``OrientationKind`` can be imported from ``ooodev.utils.kind.orientation_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -3269,6 +3334,9 @@ class Forms:
         Returns:
             FormCtlSpinButton: Spin Button Control.
 
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+
         .. versionadded:: 0.14.0
         """
         if styles is None:
@@ -3342,6 +3410,7 @@ class Forms:
 
         .. versionadded:: 0.14.0
         """
+        # TODO: This seems to not be working. Can't create instance. com.sun.star.form.component.SubmitButton at least not with calc.
         if not name:
             name = cls.create_name(parent_form, "SubmitButton")
         if styles is None:
@@ -3411,6 +3480,9 @@ class Forms:
 
         Returns:
             FormCtlTextField: Text Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -3503,6 +3575,10 @@ class Forms:
 
         Returns:
             FormCtlTimeField: Time Field Control.
+
+        Hint:
+            - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
+            - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.
 
         .. versionadded:: 0.14.0
         """
@@ -4330,3 +4406,57 @@ class Forms:
         return cast(FormCtlDbTimeField, result)
 
     # endregion insert Database Controls
+
+    # region find
+    @staticmethod
+    def find_shape_for_control(draw_page: XDrawPage, ctl: FormCtlBase | XControlModel) -> XShape | None:
+        """
+        Find the shape for a control.
+
+        Args:
+            draw_page (XDrawPage): draw page.
+            ctl (FormCtlBase | XControlModel): control to find shape for.
+
+        Returns:
+            XShape | None: Shape for the control or ``None`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.adapter.container.index_access_comp import IndexAccessComp
+
+        x_ctl = ctl.get_control().getModel() if mInfo.Info.is_instance(ctl, FormCtlBase) else ctl
+
+        ia = cast(IndexAccessComp["XShape"], IndexAccessComp(draw_page))  # type: ignore
+        for shape in ia:
+            if shape.supportsService("com.sun.star.drawing.ControlShape"):  # type: ignore
+                cs = cast("ControlShape", shape)
+
+                if x_ctl == cs.getControl():
+                    return cs
+        return None
+
+    @classmethod
+    def find_cell_with_control(cls, draw_page: XDrawPage, ctl: FormCtlBase | XControlModel) -> XCell | None:
+        """
+        Find the cell that contains the control.
+
+        Args:
+            draw_page (XDrawPage): Draw Page.
+            ctl (FormCtlBase | XControlModel): Control to find cell for.
+
+        Returns:
+            XCell | None: Cell that contains the control or ``None`` if not found.
+
+        .. versionadded:: 0.38.0
+        """
+
+        shape = cast(Any, cls.find_shape_for_control(draw_page, ctl))
+        if shape is None:
+            return None
+        anchor = shape.getAnchor()
+        if anchor.supportsService("com.sun.star.sheet.SheetCell"):
+            return anchor
+        return None
+
+    # endregion find

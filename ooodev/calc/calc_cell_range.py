@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from ooodev.calc import calc_cell_cursor as mCalcCellCursor
     from ooodev.calc.calc_sheet import CalcSheet
     from ooodev.calc.chart2.table_chart import TableChart
+    from ooodev.calc.controls.cell_range_control import CellRangeControl
 else:
     CellRangeAddress = Any
     ImgExportT = Any
@@ -140,6 +141,7 @@ class CalcCellRange(
             self, factory_name="ooodev.number.numbers", component=cell_range, lo_inst=lo_inst
         )
         StylePropertyPartial.__init__(self, component=cell_range, property_name="CellStyle")
+        self._control = None
         self._init_events()
 
     def _init_events(self) -> None:
@@ -158,6 +160,19 @@ class CalcCellRange(
         # when property is setting default value this is triggered.
         # In this case we want the style to be set to the default property value.
         event.default = True
+
+    # region dunder methods
+    def __eq__(self, other: Any) -> bool:
+        """Compares two instances of CalcCellRange."""
+        if isinstance(other, CalcCellRange):
+            return self.range_obj == other.range_obj
+        return False
+
+    def __ne__(self, other: Any) -> bool:
+        """Compares two instances of CalcCellRange."""
+        return not self.__eq__(other)
+
+    # endregion dunder methods
 
     # region StylePropertyPartial overrides
 
@@ -932,6 +947,23 @@ class CalcCellRange(
         comp = cast("SheetCellRange", self.component)
         sz = comp.Size
         return GenericUnitSize(UnitMM.from_mm100(sz.Width), UnitMM.from_mm100(sz.Height))
+
+    @property
+    def control(self) -> CellRangeControl:
+        """
+        Gets access to class for managing cell control.
+
+        Returns:
+            CellRangeControl: Cell Range Control instance.
+        """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        if self._control is None:
+            from ooodev.calc.controls.cell_range_control import CellRangeControl
+
+            self._control = CellRangeControl(self, self.lo_inst)
+            self._control.add_event_observers(self.event_observer)
+        return self._control
 
     # endregion Properties
 

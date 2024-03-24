@@ -3881,7 +3881,7 @@ class CalcSheet(
         """
         # pylint: disable=import-outside-toplevel
         if self._draw_page is None:
-            from .spreadsheet_draw_page import SpreadsheetDrawPage
+            from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
             supp = self.qi(XDrawPageSupplier, True)
             draw_page = supp.getDrawPage()
@@ -3898,7 +3898,7 @@ class CalcSheet(
         """
         # pylint: disable=import-outside-toplevel
         if self._charts is None:
-            from .calc_charts import CalcCharts
+            from ooodev.calc.calc_charts import CalcCharts
 
             self._charts = CalcCharts(owner=self, charts=self.component.getCharts(), lo_inst=self.lo_inst)
         return self._charts
