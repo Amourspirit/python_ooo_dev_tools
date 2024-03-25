@@ -366,6 +366,20 @@ class RangeConverter(LoInstPropsPartial):
         idx = self.get_sheet_index(parts.sheet) if parts.sheet else -2
         return self._create_cell_obj(col=parts.col, row=parts.row, sheet_idx=idx)
 
+    def get_cell_obj_from_str_idx(self, name: str, sheet_idx: int) -> CellObj:
+        """
+        Gets the cell as CellObj from a cell name.
+
+        Args:
+            name (str): Cell name such as as ``A23`` or ``Sheet1.A23``
+            sheet_idx (int): Sheet index (zero based).
+
+        Returns:
+            CellObj: Cell Object.
+        """
+        parts = TableHelper.get_cell_parts(name)
+        return self._create_cell_obj(col=parts.col, row=parts.row, sheet_idx=sheet_idx)
+
     # region get_cell_obj() method
     @overload
     def get_cell_obj(self, values: Tuple[int, int] | Tuple[int, int, int]) -> CellObj:
@@ -456,6 +470,20 @@ class RangeConverter(LoInstPropsPartial):
         ...
 
     @overload
+    def get_cell_obj(self, name: str, sheet_idx: int) -> CellObj:
+        """
+        Gets the cell as CellObj from a cell name.
+
+        Args:
+            name (str): Cell name such as as ``A23`` or ``Sheet1.A23``
+            sheet_idx (int): Sheet index (zero based).
+
+        Returns:
+            CellObj: Cell Object.
+        """
+        ...
+
+    @overload
     def get_cell_obj(self, cell_obj: CellObj) -> CellObj:
         """
         Gets CellObj. Returns the same object.
@@ -512,8 +540,11 @@ class RangeConverter(LoInstPropsPartial):
                     break
             if count == 1:
                 return ka
-            if "row" in kwargs:
-                ka[2] = kwargs["row"]
+            keys = {"row", "sheet_idx"}
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
             if count == 2:
                 return ka
             if "sheet_idx" in kwargs:
@@ -527,11 +558,13 @@ class RangeConverter(LoInstPropsPartial):
         for i, arg in enumerate(args):
             kargs[ordered_keys[i]] = arg
 
-        if count == 2:
-            return self.get_cell_obj_from_col_row(kargs[1], kargs[2], -2)
-        if count == 3:
-            return self.get_cell_obj_from_col_row(kargs[1], kargs[2], kargs[3])
         arg1 = kargs[1]
+        if count == 2:
+            if mInfo.Info.is_instance(arg1, str):
+                return self.get_cell_obj_from_str_idx(arg1, kargs[2])
+            return self.get_cell_obj_from_col_row(arg1, kargs[2], -2)
+        if count == 3:
+            return self.get_cell_obj_from_col_row(arg1, kargs[2], kargs[3])
         if mInfo.Info.is_instance(arg1, CellObj):
             return arg1
         if hasattr(arg1, "typeName") and getattr(arg1, "typeName") == "com.sun.star.table.CellAddress":
@@ -906,6 +939,22 @@ class RangeConverter(LoInstPropsPartial):
             sheet_idx=idx,
         )
 
+    def rng_from_str_idx(self, rng_name: str, sheet_idx: int) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``.
+                Cell name is also valid such as ``A1``.
+            sheet_idx (int): Sheet index (zero based).
+
+        Returns:
+            RangeObj: Range object.
+        """
+        rng_obj = self.rng_from_str(rng_name)
+        rng_obj.set_sheet_index(sheet_idx)
+        return rng_obj
+
     # region get_range_obj() method
 
     @overload
@@ -1008,6 +1057,20 @@ class RangeConverter(LoInstPropsPartial):
         """
         ...
 
+    @overload
+    def get_range_obj(self, rng_name: str, sheet_idx: int) -> RangeObj:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            rng_name (str): Range as string such as ``Sheet1.A1:C125`` or ``A1:C125``
+            sheet_idx (int): Sheet index (zero based).
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
     def get_range_obj(self, *args, **kwargs) -> RangeObj:
         """
         Gets the cell as string from a cell.
@@ -1067,8 +1130,13 @@ class RangeConverter(LoInstPropsPartial):
                     break
             if count == 1:
                 return ka
-            if "row_start" in kwargs:
-                ka[2] = kwargs["row_start"]
+            keys = valid_keys = {"row_start", "sheet_idx"}
+            for key in keys:
+                if key in kwargs:
+                    ka[2] = kwargs[key]
+                    break
+            if count == 2:
+                return ka
             if "col_end" in kwargs:
                 ka[3] = kwargs["col_end"]
             if "row_end" in kwargs:
@@ -1079,7 +1147,7 @@ class RangeConverter(LoInstPropsPartial):
                 ka[5] = kwargs["sheet_idx"]
             return ka
 
-        if count not in (1, 4, 5):
+        if count not in (1, 2, 4, 5):
             raise TypeError("get_range_obj() got an invalid number of arguments")
 
         kargs = get_kwargs()
@@ -1090,6 +1158,8 @@ class RangeConverter(LoInstPropsPartial):
             return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], -2)
         if count == 5:
             return self.rng_from_position(kargs[1], kargs[2], kargs[3], kargs[4], kargs[5])
+        if count == 2:
+            return self.rng_from_str_idx(kargs[1], kargs[2])
         arg1 = kargs[1]
         if mInfo.Info.is_instance(arg1, RangeObj):
             return arg1

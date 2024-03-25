@@ -9037,11 +9037,13 @@ class Calc:
                 mCellObj.CellObj.from_idx(col_idx=kargs[1], row_idx=kargs[2], sheet_idx=cls.get_sheet_index())
             )
 
-        arg = kargs[1]
-        if isinstance(arg, mCellObj.CellObj):
+        arg = cast(Any, kargs[1])
+        if mLo.Lo.is_uno_interfaces(arg, "com.sun.star.table.XCell"):
+            return get_cell(mCellObj.CellObj.from_cell(arg.CellAddress))
+        if mInfo.Info.is_instance(arg, mCellObj.CellObj):
             return get_cell(arg)
 
-        if isinstance(arg, str):
+        if mInfo.Info.is_instance(arg, str):
             return get_cell(mCellObj.CellObj.from_cell(arg))
 
         if mInfo.Info.is_type_struct(arg, "com.sun.star.table.CellAddress"):

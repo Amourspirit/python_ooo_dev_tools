@@ -84,7 +84,7 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
 
     def _set_shape_props(self, shape: Shape) -> None:
         event_data = {"Anchor": self.calc_obj.component, "ResizeWithCell": True, "MoveProtect": True}
-        eargs = CancelEventArgs(source=self)
+        eargs = CancelEventArgs(source=shape)
         eargs.event_data = event_data
         self.on_setting_shape_props(eargs)
         if eargs.cancel:
