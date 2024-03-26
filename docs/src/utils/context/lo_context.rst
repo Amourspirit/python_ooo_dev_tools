@@ -19,7 +19,7 @@ An example of use is shown below:
 
     from ooodev.utils.info import Info
     from ooodev.write import WriteDoc
-    from ooodev.utils.context.lo_context import LoContext
+    from ooodev.utils.context import LoContext
 
     # create first document
     doc1  = WriteDoc.create_doc()
@@ -47,5 +47,5 @@ An example of use is shown below:
 Class Declaration
 -----------------
 
-.. autoclass:: ooodev.utils.context.lo_context.LoContext
+.. autoclass:: ooodev.utils.context.LoContext
     :members:

@@ -97,7 +97,7 @@ class CreateDialogPartial:
         ...
 
     @overload
-    def msgbox(self, msg: str, title: str, boxtype: MessageBoxType) -> MessageBoxResultsEnum:
+    def msgbox(self, msg: str, title: str, boxtype: MessageBoxType | int) -> MessageBoxResultsEnum:
         """
         Simple message box.
 
@@ -108,12 +108,21 @@ class CreateDialogPartial:
 
         Returns:
             Results: MessageBoxResultsEnum.
+
+        Note:
+            If BoxType is an integer, the following values are valid:
+
+            - 0: ``MESSAGEBOX``
+            - 1: ``INFOBOX``
+            - 2: ``WARNINGBOX``
+            - 3: ``ERRORBOX``
+            - 4: ``QUERYBOX``
         """
         ...
 
     @overload
     def msgbox(
-        self, msg: str, title: str, boxtype: MessageBoxType, buttons: MessageBoxButtonsEnum | int
+        self, msg: str, title: str, boxtype: MessageBoxType | int, buttons: MessageBoxButtonsEnum | int
     ) -> MessageBoxResultsEnum:
         """
         Simple message box.
@@ -126,6 +135,15 @@ class CreateDialogPartial:
 
         Returns:
             Results: MessageBoxResultsEnum.
+
+        Note:
+            If BoxType is an integer, the following values are valid:
+
+            - 0: ``MESSAGEBOX``
+            - 1: ``INFOBOX``
+            - 2: ``WARNINGBOX``
+            - 3: ``ERRORBOX``
+            - 4: ``QUERYBOX``
         """
         ...
 
@@ -133,7 +151,7 @@ class CreateDialogPartial:
         self,
         msg: str,
         title: str = "Message",
-        boxtype: MessageBoxType = MessageBoxType.MESSAGEBOX,
+        boxtype: MessageBoxType | int = MessageBoxType.MESSAGEBOX,
         buttons: MessageBoxButtonsEnum | int = MessageBoxButtonsEnum.BUTTONS_OK,
     ) -> MessageBoxResultsEnum:
         """
@@ -147,6 +165,15 @@ class CreateDialogPartial:
 
         Returns:
             Results: MessageBoxResultsEnum
+
+        Note:
+            If BoxType is an integer, the following values are valid:
+
+            - 0: ``MESSAGEBOX``
+            - 1: ``INFOBOX``
+            - 2: ``WARNINGBOX``
+            - 3: ``ERRORBOX``
+            - 4: ``QUERYBOX``
 
         Note:
 

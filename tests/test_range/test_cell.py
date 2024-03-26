@@ -338,3 +338,31 @@ def test_cell_math_errors(loader) -> None:
             _ = b2 / b4
     finally:
         Lo.close_doc(doc)
+
+
+def test_range_convertor_idx(loader) -> None:
+    from ooodev.calc import CalcDoc
+
+    doc = CalcDoc.create_doc()
+
+    try:
+
+        name = "B22"
+        cell = doc.range_converter.get_cell_obj(name)
+        assert cell.col == "B"
+        assert cell.row == 22
+
+        name = "B22"
+        cell = doc.range_converter.get_cell_obj(name, 2)
+        assert cell.col == "B"
+        assert cell.row == 22
+        assert cell.sheet_idx == 2
+
+        name = "B22"
+        cell = doc.range_converter.get_cell_obj(name=name, sheet_idx=2)
+        assert cell.col == "B"
+        assert cell.row == 22
+        assert cell.sheet_idx == 2
+
+    finally:
+        doc.close()

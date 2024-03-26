@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.38.1
+==============
+
+Added new :ref:`ooodev.utils.context.dispatch_context.DispatchContext`.
+
+Now Message box ``boxtype`` can also accept an ``int`` value.
+
+Minor updates and bug fixes.
+
 Version 0.38.0
 ==============
 

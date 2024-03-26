@@ -21,7 +21,7 @@ class MsgBox:
     def msgbox(
         msg: str,
         title: str = "Message",
-        boxtype: MessageBoxType = MessageBoxType.MESSAGEBOX,
+        boxtype: MessageBoxType | int = MessageBoxType.MESSAGEBOX,
         buttons: MessageBoxButtonsEnum | int = MessageBoxButtonsEnum.BUTTONS_OK,
     ) -> MessageBoxResultsEnum:
         """
@@ -30,11 +30,20 @@ class MsgBox:
         Args:
             msg (str): the message for display.
             title (str, optional): the title of the message box. Defaults to "Message".
-            boxtype (MessageBoxType, optional): determines the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
+            boxtype (MessageBoxType, int, optional): determines the type of message box to display. Defaults to ``Type.MESSAGEBOX``.
             buttons (MessageBoxButtonsEnum, int, optional): determines what buttons to display. Defaults to ``Buttons.BUTTONS_OK``.
 
         Returns:
             Results: MessageBoxResultsEnum.
+
+        Note:
+            If ``boxtype`` is an integer, the following values are valid:
+
+            - 0: ``MESSAGEBOX``
+            - 1: ``INFOBOX``
+            - 2: ``WARNINGBOX``
+            - 3: ``ERRORBOX``
+            - 4: ``QUERYBOX``
 
         Note:
 
@@ -58,7 +67,22 @@ class MsgBox:
 
             If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
             Otherwise if the event is not handled, a ``CancelEventError`` is raised.
+
+        .. versionchanged:: 0.38.1
+            Now ``boxtype`` can also be an integer value.
         """
+        if isinstance(boxtype, int):
+            if boxtype == 1:
+                boxtype = MessageBoxType.INFOBOX
+            elif boxtype == 2:
+                boxtype = MessageBoxType.WARNINGBOX
+            elif boxtype == 3:
+                boxtype = MessageBoxType.ERRORBOX
+            elif boxtype == 4:
+                boxtype = MessageBoxType.QUERYBOX
+            else:
+                boxtype = MessageBoxType.MESSAGEBOX
+
         cargs = CancelEventArgs(MsgBox.msgbox.__qualname__)
         cargs.event_data = {"msg": msg, "title": title, "boxtype": boxtype, "buttons": buttons}
 

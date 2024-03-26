@@ -1066,3 +1066,83 @@ def test_range_obj_iter_col():
 
 
 # endregion Test RangeObj iterate
+
+
+def test_range_values_converter_index(loader) -> None:
+    from ooodev.utils.data_type.range_values import RangeValues
+    from ooodev.calc import CalcDoc
+
+    doc = CalcDoc.create_doc()
+
+    try:
+        sheet = doc.sheets[0]
+        sheet_name = sheet.name
+        rng_name = "A2:D6"
+        rng = doc.range_converter.rng_from_str(rng_name)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == -2
+        assert str(rv1) == rng_name
+        assert rv1 == rng_name
+
+        rng_name = "A2:D6"
+        rng = doc.range_converter.get_range_obj(rng_name)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == -2
+        assert str(rv1) == rng_name
+        assert rv1 == rng_name
+
+        rng_cells = "A2:D6"
+        rng_name = f"{sheet_name}.{rng_cells}"
+        rng = doc.range_converter.rng_from_str(rng_name)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == 0
+        assert str(rv1) == rng_cells
+        assert rv1 == rng_cells
+
+        rng_name = "A2:D6"
+        rng = doc.range_converter.rng_from_str_idx(rng_name, 2)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == 2
+        assert str(rv1) == rng_name
+        assert rv1 == rng_name
+
+        rng_name = "A2:D6"
+        rng = doc.range_converter.get_range_obj(rng_name, 2)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == 2
+        assert str(rv1) == rng_name
+        assert rv1 == rng_name
+
+        rng_name = "A2:D6"
+        rng = doc.range_converter.get_range_obj(rng_name=rng_name, sheet_idx=2)
+        rv1 = RangeValues.from_range(rng)
+        assert rv1.col_start == 0
+        assert rv1.row_start == 1
+        assert rv1.col_end == 3
+        assert rv1.row_end == 5
+        assert rv1.sheet_idx == 2
+        assert str(rv1) == rng_name
+        assert rv1 == rng_name
+
+    finally:
+        doc.close()

@@ -45,6 +45,7 @@ class FormCtlTimeField(FormCtlBase, SpinEvents, TextEvents, ResetEvents):
         FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
+        TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)
 
     # region Lazy Listeners

@@ -42,6 +42,7 @@ class FormCtlScrollBar(FormCtlBase, AdjustmentEvents, ResetEvents):
         """
         FormCtlBase.__init__(self, ctl=ctl, lo_inst=lo_inst)
         generic_args = self._get_generic_args()
+        AdjustmentEvents.__init__(self, trigger_args=generic_args, cb=self._on_adjustment_events_listener_add_remove)
         ResetEvents.__init__(self, trigger_args=generic_args, cb=self._on_reset_add_remove)
 
     # region Lazy Listeners
