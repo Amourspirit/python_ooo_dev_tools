@@ -1806,11 +1806,14 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             result = FormCtlButton(ctl)
             result.control_shape = cast("ControlShape", ctl_shape)
             result.tab_stop = True
             if label:
                 result.label = label
+            ctl.setDesignMode(False)
             return result
         except Exception:
             raise
@@ -1893,6 +1896,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.CHECK_BOX:
                 checkbox = FormCtlCheckBox(ctl)
             else:
@@ -1903,6 +1908,7 @@ class Forms:
             checkbox.tri_state = tri_state
             if label:
                 checkbox.label = label
+            ctl.setDesignMode(False)
             return checkbox
         except Exception:
             raise
@@ -1988,6 +1994,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.COMBO_BOX:
                 combo = FormCtlComboBox(ctl)
             else:
@@ -1998,6 +2006,7 @@ class Forms:
             combo.read_only = read_only
             combo.max_text_len = max_text_len
             combo.drop_down = drop_down
+            ctl.setDesignMode(False)
             if entries:
                 combo.set_list_data(entries)
             return combo
@@ -2085,6 +2094,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.CURRENCY_FIELD:
                 currency = FormCtlCurrencyField(ctl)
             else:
@@ -2096,6 +2107,7 @@ class Forms:
             currency.increment = increment
             currency.accuracy = accuracy
             currency.border = border
+            ctl.setDesignMode(False)
             return currency
         except Exception:
             raise
@@ -2181,6 +2193,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.DATE_FIELD:
                 date_field = FormCtlDateField(ctl)
             else:
@@ -2191,6 +2205,7 @@ class Forms:
             date_field.dropdown = drop_down
             date_field.date_format = date_format
             date_field.border = border
+            ctl.setDesignMode(False)
             return date_field
         except Exception:
             raise
@@ -2254,8 +2269,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             result = FormCtlFile(ctl)
             result.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return result
         except Exception:
             raise
@@ -2337,6 +2355,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.FORMATTED_FIELD:
                 formatted_field = FormCtlFormattedField(ctl)
             else:
@@ -2346,6 +2366,7 @@ class Forms:
             formatted_field.min_value = min_value
             formatted_field.spin = spin_button
             formatted_field.border = border
+            ctl.setDesignMode(False)
             return formatted_field
         except Exception:
             raise
@@ -2412,8 +2433,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             gb = FormCtlGroupBox(ctl)
             gb.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return gb
 
         except Exception:
@@ -2481,8 +2505,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             ctl_grid = FormCtlGrid(ctl)
             ctl_grid.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return ctl_grid
         except Exception:
             raise
@@ -2542,9 +2569,12 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
 
             ctl_hidden = FormCtlHidden(ctl)
             ctl_hidden.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return ctl_hidden
 
         except Exception:
@@ -2620,11 +2650,14 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             img_btn = FormCtlImageButton(ctl)
             img_btn.control_shape = cast("ControlShape", ctl_shape)
             img_btn.border = border
             if image_url:
                 img_btn.picture = image_url
+            ctl.setDesignMode(False)
             return img_btn
         except Exception:
             raise
@@ -2690,8 +2723,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             ft = FormCtlFixedText(ctl)
             ft.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return ft
         except Exception:
             raise
@@ -2777,6 +2813,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, btn_props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.LIST_BOX:
                 lst_box = FormCtlListBox(ctl)
             else:
@@ -2787,6 +2825,7 @@ class Forms:
             lst_box.drop_down = drop_down
             lst_box.line_count = line_count
             lst_box.multi_selection = multi_select
+            ctl.setDesignMode(False)
             if entries:
                 lst_box.set_list_data(entries)
             return lst_box
@@ -2853,8 +2892,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             nav_ctl = FormCtlNavigationToolBar(ctl)
             nav_ctl.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return nav_ctl
 
         except Exception:
@@ -2941,6 +2983,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.NUMERIC_FIELD:
                 num_field = FormCtlNumericField(ctl)
             else:
@@ -2952,6 +2996,7 @@ class Forms:
             num_field.increment = increment
             num_field.accuracy = accuracy
             num_field.border = border
+            ctl.setDesignMode(False)
             return num_field
         except Exception:
             raise
@@ -3031,6 +3076,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.PATTERN_FIELD:
                 pattern_field = FormCtlPatternField(ctl)
             else:
@@ -3039,6 +3086,7 @@ class Forms:
             pattern_field.border = border
             pattern_field.edit_mask = edit_mask
             pattern_field.literal_mask = literal_mask
+            ctl.setDesignMode(False)
             return pattern_field
         except Exception:
             raise
@@ -3122,6 +3170,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.RADIO_BUTTON:
                 radio_btn = FormCtlRadioButton(ctl)
             else:
@@ -3132,6 +3182,7 @@ class Forms:
             radio_btn.multi_line = multiline
             if label:
                 radio_btn.label = label
+            ctl.setDesignMode(False)
             return radio_btn
         except Exception:
             raise
@@ -3200,9 +3251,12 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             rich_text = FormCtlRichText(ctl)
             rich_text.control_shape = cast("ControlShape", ctl_shape)
             rich_text.border = border
+            ctl.setDesignMode(False)
             return rich_text
         except Exception:
             raise
@@ -3278,12 +3332,15 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             scroll = FormCtlScrollBar(ctl)
             scroll.control_shape = cast("ControlShape", ctl_shape)
             scroll.border = border
             scroll.min_value = min_value
             scroll.max_value = max_value
             scroll.orientation = orientation
+            ctl.setDesignMode(False)
             return scroll
         except Exception:
             raise
@@ -3361,6 +3418,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             spin = FormCtlSpinButton(ctl)
             spin.control_shape = cast("ControlShape", ctl_shape)
             spin.max_value = max_value
@@ -3368,6 +3427,7 @@ class Forms:
             spin.increment = increment
             spin.border = border
             spin.default_value = value
+            ctl.setDesignMode(False)
             return spin
         except Exception:
             raise
@@ -3432,8 +3492,11 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             result = FormCtlSubmitButton(ctl)
             result.control_shape = cast("ControlShape", ctl_shape)
+            ctl.setDesignMode(False)
             return result
         except Exception:
             raise
@@ -3512,6 +3575,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.TEXT_FIELD:
                 text_field = FormCtlTextField(ctl)
             else:
@@ -3522,6 +3587,7 @@ class Forms:
                 text_field.text = text
             if echo_char:
                 text_field.echo_char = echo_char
+            ctl.setDesignMode(False)
             return text_field
         except Exception:
             raise
@@ -3609,6 +3675,8 @@ class Forms:
             )
             model = mLo.Lo.qi(XControlModel, props, True)
             ctl = cls.get_control(doc, model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
             if comp_kind == FormComponentKind.TIME_FIELD:
                 time_field = FormCtlTimeField(ctl)
             else:
@@ -3619,9 +3687,9 @@ class Forms:
             time_field.time_format = time_format
             time_field.spin = spin_button
             time_field.border = border
+            ctl.setDesignMode(False)
             if time_value is not None:
                 time_field.time = time_value
-
             return time_field
         except Exception:
             raise

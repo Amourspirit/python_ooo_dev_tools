@@ -91,7 +91,7 @@ class SelectionChangeEvents:
                 self.__callback = None
         self.__listener.on("disposing", cb)
 
-    def remove_event_modified(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_selection_changed(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """

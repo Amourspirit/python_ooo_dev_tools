@@ -1076,7 +1076,7 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
 
     @property
     def current_control(self) -> Any:
-        """Gets the control."""
+        """Gets/Sets the control."""
         # pylint: disable=import-outside-toplevel
         if self._current_control is NULL_OBJ:
             ps = self._get_pos_size()
@@ -1114,5 +1114,10 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
             self._current_control = factory.get_control_from_model(ctl)
 
         return self._current_control
+
+    @current_control.setter
+    def current_control(self, value: Any) -> None:
+        """Sets the control."""
+        self._current_control = value
 
     # endregion Properties
