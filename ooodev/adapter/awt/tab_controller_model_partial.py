@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.awt import XTabControllerModel
 
@@ -37,7 +37,7 @@ class TabControllerModelPartial:
         self.__component = component
 
     # region XTabControllerModel
-    def get_control_models(self) -> tuple[XControlModel, ...]:
+    def get_control_models(self) -> Tuple[XControlModel, ...]:
         """
         Returns the control models.
 

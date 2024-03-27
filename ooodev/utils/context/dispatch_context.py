@@ -22,7 +22,7 @@ class DispatchContext:
                 ctl.value = cell.get_num()
 
     See Also:
-        - :py:meth:`ooodev.loader.lo.Lo.dispatch_cmd`
+        - :py:meth:`ooodev.loader.Lo.dispatch_cmd`
 
     .. versionadded:: 0.38.1
     """

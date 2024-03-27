@@ -107,6 +107,45 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
         self.on_insert_control(eargs)
         return control
 
+    def _find_current_control(self) -> Any:
+        # pylint: disable=import-outside-toplevel
+        ps = self._get_pos_size()
+        cargs = CancelEventArgs(source=self)
+        cargs.event_data = {"pos_size": ps, "find_by_pos": True}
+        self.on_finding_control(cargs)
+        if cargs.cancel:
+            return None
+
+        sheet = self.calc_sheet
+        if len(sheet.draw_page.forms) == 0:
+            return None
+
+        if cargs.event_data.get("find_by_pos", True):
+            shape = sheet.draw_page.find_shape_at_position(ps[0], ps[1])
+        else:
+            shape = sheet.draw_page.find_shape_at_position_size(ps[0], ps[1], ps[2], ps[3])
+        if shape is None:
+            return None
+        x_shape = mLo.Lo.qi(XControlShape, shape.component)
+        if x_shape is None:
+            return None
+
+        ctl = x_shape.getControl()
+        if ctl is None:
+            return None
+        from ooodev.form.controls.from_control_factory import FormControlFactory
+
+        factory = FormControlFactory(draw_page=sheet.draw_page.component, lo_inst=self.lo_inst)
+        return factory.get_control_from_model(ctl)
+
+    def _remove_control(self, ctl: Any) -> None:
+        if ctl is None:
+            return
+        sheet = self.calc_sheet
+        dp = sheet.draw_page
+        shape = ctl.control_shape
+        dp.remove(shape)
+
     # endregion protected methods
 
     # region Event Handlers
@@ -1076,48 +1115,27 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
 
     @property
     def current_control(self) -> Any:
-        """Gets/Sets the control."""
+        """
+        Gets/Sets the control.
+
+        When setting the control any previous control for the cell is removed.
+        """
         # pylint: disable=import-outside-toplevel
         if self._current_control is NULL_OBJ:
-            ps = self._get_pos_size()
-            cargs = CancelEventArgs(source=self)
-            cargs.event_data = {"pos_size": ps, "find_by_pos": True}
-            self.on_finding_control(cargs)
-            if cargs.cancel:
-                self._current_control = None
-                return self._current_control
-
-            sheet = self.calc_sheet
-            if len(sheet.draw_page.forms) == 0:
-                self._current_control = None
-                return self._current_control
-
-            if cargs.event_data.get("find_by_pos", True):
-                shape = sheet.draw_page.find_shape_at_position(ps[0], ps[1])
-            else:
-                shape = sheet.draw_page.find_shape_at_position_size(ps[0], ps[1], ps[2], ps[3])
-            if shape is None:
-                self._current_control = None
-                return self._current_control
-            x_shape = mLo.Lo.qi(XControlShape, shape.component)
-            if x_shape is None:
-                self._current_control = None
-                return self._current_control
-
-            ctl = x_shape.getControl()
-            if ctl is None:
-                self._current_control = None
-                return self._current_control
-            from ooodev.form.controls.from_control_factory import FormControlFactory
-
-            factory = FormControlFactory(draw_page=sheet.draw_page.component, lo_inst=self.lo_inst)
-            self._current_control = factory.get_control_from_model(ctl)
+            self._current_control = self._find_current_control()
 
         return self._current_control
 
     @current_control.setter
     def current_control(self, value: Any) -> None:
         """Sets the control."""
+        # any old control should be removed before setting a new one
+        if self._current_control is not NULL_OBJ and self._current_control is not None:
+            self._remove_control(self._current_control)
+        else:
+            cc = self._find_current_control()
+            if cc is not None:
+                self._remove_control(cc)
         self._current_control = value
 
     # endregion Properties

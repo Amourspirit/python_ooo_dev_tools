@@ -13,6 +13,8 @@ Submodules
    ooodev.adapter.util.cloneable_partial
    ooodev.adapter.util.close_events
    ooodev.adapter.util.close_listener
+   ooodev.adapter.util.mode_selector_partial
+   ooodev.adapter.util.modify_broadcaster_partial
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
    ooodev.adapter.util.number_formats_supplier_partial

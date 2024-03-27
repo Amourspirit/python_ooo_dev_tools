@@ -20,6 +20,7 @@ from ooodev.adapter.sheet.spreadsheet_view_pane_comp import SpreadsheetViewPaneC
 from ooodev.adapter.sheet.spreadsheet_view_partial import SpreadsheetViewPartial
 from ooodev.adapter.sheet.view_freezable_partial import ViewFreezablePartial
 from ooodev.adapter.sheet.view_splitable_partial import ViewSplitablePartial
+from ooodev.adapter.view.form_layer_access_partial import FormLayerAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
@@ -33,6 +34,7 @@ class SpreadsheetViewComp(
     EnhancedMouseClickBroadcasterPartial,
     IndexAccessPartial["SpreadsheetViewPane"],
     EnumerationAccessPartial["SpreadsheetViewPane"],
+    FormLayerAccessPartial,
     RangeSelectionPartial,
     SelectionSupplierPartial,
     SpreadsheetViewPartial,
@@ -64,6 +66,7 @@ class SpreadsheetViewComp(
         EnhancedMouseClickBroadcasterPartial.__init__(self, component=component, interface=None)
         EnumerationAccessPartial.__init__(self, component=component, interface=None)
         IndexAccessPartial.__init__(self, component=component, interface=None)
+        FormLayerAccessPartial.__init__(self, component=component, interface=None)  # type: ignore
         RangeSelectionPartial.__init__(self, component=component, interface=None)
         SelectionSupplierPartial.__init__(self, component=component, interface=None)
         SpreadsheetViewPartial.__init__(self, component=component, interface=None)

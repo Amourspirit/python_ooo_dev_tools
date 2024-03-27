@@ -978,13 +978,13 @@ class CalcDoc(
         with LoContext(self.lo_inst):
             mCalc.Calc.zoom(doc=self.component, type=type)
 
-    def toggle_design_mode(self) -> None:
+    def toggle_design_mode(self) -> Any:
         """
         Toggle Control Design Mode using a dispatch command.
 
         .. versionadded:: 0.38.0
         """
-        self.dispatch_cmd("SwitchControlDesignMode")
+        return self.dispatch_cmd("SwitchControlDesignMode")
 
     # region create_doc()
 
