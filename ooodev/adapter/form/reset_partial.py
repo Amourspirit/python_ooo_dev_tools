@@ -14,11 +14,9 @@ if TYPE_CHECKING:
 class ResetPartial:
     """
     Partial Class for XReset.
-
-    This interface does not really provide an own functionality, it is only for easier runtime identification of form components.
     """
 
-    def __init__(self, component: XReset, interface: UnoInterface | None = None) -> None:
+    def __init__(self, component: XReset, interface: UnoInterface | None = XReset) -> None:
         """
         Constructor
 

@@ -21,6 +21,8 @@ Submodules
    ooodev.adapter.awt.action_listener
    ooodev.adapter.awt.adjustment_events
    ooodev.adapter.awt.adjustment_listener
+   ooodev.adapter.awt.control_container_comp
+   ooodev.adapter.awt.control_container_partial
    ooodev.adapter.awt.control_model_partial
    ooodev.adapter.awt.control_partial
    ooodev.adapter.awt.dialog2_partial
@@ -55,7 +57,9 @@ Submodules
    ooodev.adapter.awt.spin_events
    ooodev.adapter.awt.spin_listener
    ooodev.adapter.awt.spin_value_partial
+   ooodev.adapter.awt.tab_controller_model_comp
    ooodev.adapter.awt.tab_controller_model_partial
+   ooodev.adapter.awt.tab_controller_partial
    ooodev.adapter.awt.text_events
    ooodev.adapter.awt.text_listener
    ooodev.adapter.awt.top_window_events
