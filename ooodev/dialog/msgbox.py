@@ -47,8 +47,8 @@ class MsgBox:
 
         Note:
 
-            - Button press ``Abort`` return ``MessageBoxResultsEnum.CANCEL``
-            - Button press ``Cancel`` return ``MessageBoxResultsEnum.CANCEL``
+            - Button press ``Abort`` returns ``MessageBoxResultsEnum.CANCEL``
+            - Button press ``Cancel`` returns ``MessageBoxResultsEnum.CANCEL``
             - Button press ``Ignore`` returns ``MessageBoxResultsEnum.IGNORE``
             - Button press ``No`` returns ``MessageBoxResultsEnum.NO``
             - Button press ``OK`` returns ``MessageBoxResultsEnum.OK``

@@ -182,5 +182,14 @@ def test_add_button(loader) -> None:
         scroll = rng.control.current_control
         assert scroll is not None
 
+        control_count = len(sheet.draw_page)
+        assert control_count == 21
+
+        rng.control.current_control = None
+        assert rng.control.current_control is None
+
+        control_count = len(sheet.draw_page)
+        assert control_count == 20
+
     finally:
         doc.close()

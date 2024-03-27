@@ -23,7 +23,7 @@ class LoadablePartial:
         Constructor
 
         Args:
-            component (XLoadable): UNO Component that implements ``com.sun.star.container.XLoadable``.
+            component (XLoadable): UNO Component that implements ``com.sun.star.form.XLoadable``.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``None``.
         """
 

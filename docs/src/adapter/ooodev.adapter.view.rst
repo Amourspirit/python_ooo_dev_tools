@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.view.control_access_partial
+   ooodev.adapter.view.form_layer_access_partial
    ooodev.adapter.view.line_cursor_partial
    ooodev.adapter.view.print_job_events
    ooodev.adapter.view.print_job_listener

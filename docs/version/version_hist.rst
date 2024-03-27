@@ -2,6 +2,25 @@
 Version History
 ***************
 
+Version 0.38.2
+==============
+
+Extended ``ooodev.adapter.sheet.spreadsheet_view_comp.SpreadsheetViewComp`` to include ``ooodev.adapter.view.form_layer_access_partial.FormLayerAccessPartial``.
+
+Now checking of a Calc document in in design mode can be done as follows:
+
+.. code-block:: python
+
+    >>> from ooodev.calc import CalcDoc
+    >>> doc = CalcDoc.from_current_doc()
+    >>> view = doc.get_view()
+    >>> view.is_form_design_mode()
+    False
+
+    >>> view.set_form_design_mode(True)
+    >>> view.is_form_design_mode()
+    True
+
 Version 0.38.1
 ==============
 
