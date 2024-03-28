@@ -11,7 +11,9 @@ Guide on embedding python macros in a LibreOffice Document
 Introduction
 ------------
 
-LibreOffice does not have a build in editor for python. There are many advantages to using python for macros.
+LibreOffice does not have a build in editor for python. This entire project was created using VS Code.
+
+There are many advantages to using python for macros.
 But as with all good things there are often drawbacks.
 
 This guide address the drawback of getting python scripts into LibreOffice Documents.
@@ -23,7 +25,13 @@ This guide will address this issue with the help of |oooscript|_.
 This guide requires that |oooscript|_ be installed. The recommended way to do this is to have a virtual environment set up to work in.
 The recommended way to create an environment to work in is to actually use an existing preconfigured environment such as |llp|_. 
 
-See Also `Pip & Virtual Environments <https://python-ooo-dev-tools.readthedocs.io/en/latest/guide/virtual_env/index.html>`__.
+See Also
+^^^^^^^^
+
+- `Pip & Virtual Environments <https://python-ooo-dev-tools.readthedocs.io/en/latest/guide/virtual_env/index.html>`__.
+- |llp|_.
+- `Debug Macros in Vs Code <https://github.com/Amourspirit/live-libreoffice-python/wiki/Debug-Macros-in-Vs-Code>`__.
+- :ref:`linux_linking_paths`.
 
 Simple Macro
 ------------
@@ -61,7 +69,10 @@ The ``make build`` can be run in a terminal window for  the ``ex/general/python_
 
     (ooouno-ex-py3.11) root ➜ .../libreoffice_ex/ex/general/python_sample (develop) 
     $ make build
-    oooscript compile --embed --config "/workspace/libreoffice_ex/ex/general/python_sample/config.json" --embed-doc "/workspace/libreoffice_ex/ex/general/python_sample/data/sample.odt" --build-dir "build/python_sample"
+    oooscript compile --embed \
+        --config "/workspace/libreoffice_ex/ex/general/python_sample/config.json" \
+        --embed-doc "/workspace/libreoffice_ex/ex/general/python_sample/data/sample.odt" \
+        --build-dir "build/python_sample"
 
 As you can see the ``make build`` just call ``oooscript`` and passes it a few parameters.
 
@@ -217,7 +228,10 @@ To compile the scripts into a single script and embed the output in a Calc docum
 
     (ooouno-ex-py3.11) root ➜ .../libreoffice_ex/ex/dialog/tabs_list_box (develop) 
     $ make build
-    oooscript compile --embed --config "/workspace/libreoffice_ex/ex/dialog/tabs_list_box/config.json" --embed-doc "/workspace/libreoffice_ex/ex/dialog/tabs_list_box/data/sales_data.ods" --build-dir "build/sales_data"
+    oooscript compile --embed \
+        --config "/workspace/libreoffice_ex/ex/dialog/tabs_list_box/config.json" \
+        --embed-doc "/workspace/libreoffice_ex/ex/dialog/tabs_list_box/data/sales_data.ods" \
+        --build-dir "build/sales_data"
 
 As you can see ``make build`` calls ``oooscript``.
 The output can be found in the ``build`` folder in the root of the project which in this case is ``/workspace/libreoffice_ex/build/sales_grid``.
@@ -233,9 +247,17 @@ are also included and wrapped in ``__scriptmerge_write_module()`` methods.
 
 Screenshot of code output.
 
-.. image:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/b45e4718-2ce8-4088-8231-8b696acf5c15
-    :alt: tabs_list_box.py output
-    :align: center
+.. cssclass:: screen_shot
+
+    .. _b45e4718-2ce8-4088-8231-8b696acf5c15:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/b45e4718-2ce8-4088-8231-8b696acf5c15
+        :alt: tabs_list_box.py output
+        :figclass: align-center
+        :width: 600px
+
+        Calc Cell
+
 
 FAQ
 ---
@@ -243,14 +265,15 @@ FAQ
 How does Multi-script Work?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As seen in the screen shot above all the required code is contained in the output python file.
+As seen in :numref:`b45e4718-2ce8-4088-8231-8b696acf5c15` all the required code is contained in the output python file.
 This is the file that gets embedded in a LibreOffice Document.
 
 When |oooscript|_ is running it looks for all the imports that are contained within your module and sub-modules.
 If the module is not a system module then |oooscript|_ will include it in the output file.
 Any patterns that match in the ``exclude_modules`` section of the ``config.json`` are omitted.
 
-Be aware that packages such as Pandas and Numpy have binaries as part of their code. Packages that have binaries not supported.
+Be aware that packages such as `Pandas <https://pandas.pydata.org/>`__ and `Numpy <https://numpy.org/>`__ have binaries as part of their code.
+Packages that have binaries not supported.
 If you need Pandas see `Pandas for LibreOffice <https://extensions.libreoffice.org/en/extensions/show/41998>`__ extension.
 If you need Numpy see `Python Numpy <https://extensions.libreoffice.org/en/extensions/show/41995>`__ extension.
 
@@ -275,6 +298,41 @@ Where can I get more help on oooscript?
 ----------------------------------------
 
 See |oooscript|_ docs.
+
+Can I embed the ooo-dev-tools package in a document?
+----------------------------------------------------
+
+Yes. The |ooo_dev_tools|_ package is can be embedded in a document like any other dependencies.
+
+In the |tabs_sample|_ There is a ``make build_ooodev`` options. The build uses the ``config_ooodev.json`` file.
+
+.. code-block:: json
+
+    {
+        "id": "oooscript",
+        "name": "tabs_list_box",
+        "app": "CALC",
+        "version": "1.0.0",
+        "args": {
+            "src_file": "script.py",
+            "output_name": "tabs_list_box",
+            "single_script": false,
+            "clean": true,
+            "exclude_modules": [
+                "sphinx\\.*"
+            ]
+        },
+        "methods": [
+            "show_tabs"
+        ]
+    }
+
+Note that ``"ooodev\\.*"``, ``"com\\.*"``, and ``"ooo\\.*"`` are not part of the ``exclude_modules``.
+This means that the ``ooo-dev-tools`` package will be included in the output file.
+
+Note it is recommended that the ``clean`` option is set to ``true`` when including packages with a lot of doc strings (the ``ooo-dev-tools`` package has a lot of doc strings).
+The ``clean`` option will remove doc strings from the output file which can reduce the size of the output file.
+
 
 .. |oooscript| replace:: oooscript
 .. _oooscript: https://oooscript.readthedocs.io/en/latest/
