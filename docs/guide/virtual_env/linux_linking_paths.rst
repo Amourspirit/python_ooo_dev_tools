@@ -187,6 +187,13 @@ The addition of a symbolic link to the project ``macros`` folder in the LibreOff
 While this is not the only way to set up a development environment for LibreOffice, it is a simple and effective way to get started.
 When ever possible |live_office|_ is recommended for development.
 
+See Also
+--------
+
+- `Debug Macros in Vs Code <https://github.com/Amourspirit/live-libreoffice-python/wiki/Debug-Macros-in-Vs-Code>`__.
+- |live_office|_.
+- :ref:`guide_embed_python_macro`
+
 .. note::
 
     This guide is for development purposes only. It is not recommended to use this method for production.

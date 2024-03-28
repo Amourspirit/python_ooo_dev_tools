@@ -68,6 +68,7 @@ NoSuchElementException
 Occured
 odoc
 odt
+ooooscript
 overline
 pathlib
 PathSubstitution
