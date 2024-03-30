@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCurrencyField  # service
     from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
     from ooodev.dialog.dl_control.model.model_currency_field import ModelCurrencyField
+    from ooodev.dialog.dl_control.view.view_currency_field import ViewCurrencyField
 # endregion imports
 
 
@@ -41,6 +42,7 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -153,6 +155,22 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
         # pylint: disable=no-member
         return cast("UnoControlCurrencyField", super().view)
 
+    @property
+    def view_ex(self) -> ViewCurrencyField:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_currency_field import ViewCurrencyField
+
+            self._view_ex = ViewCurrencyField(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
@@ -160,3 +178,4 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_currency_field import ModelCurrencyField
+    from ooodev.dialog.dl_control.view.view_currency_field import ViewCurrencyField

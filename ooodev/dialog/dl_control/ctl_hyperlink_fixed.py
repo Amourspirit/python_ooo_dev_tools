@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFixedHyperlink  # service
     from com.sun.star.awt import UnoControlFixedHyperlinkModel  # service
     from ooodev.dialog.dl_control.model.model_hyperlink_fixed import ModelHyperlinkFixed
+    from ooodev.dialog.dl_control.view.view_fixed_hyperlink import ViewFixedHyperlink
 # endregion imports
 
 
@@ -38,6 +39,7 @@ class CtlHyperlinkFixed(DialogControlBase, UnoControlFixedHyperlinkModelPartial,
         # EventArgs.event_data will contain the ActionEvent
         ActionEvents.__init__(self, trigger_args=generic_args, cb=self._on_action_events_listener_add_remove)
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -99,8 +101,26 @@ class CtlHyperlinkFixed(DialogControlBase, UnoControlFixedHyperlinkModelPartial,
         # pylint: disable=no-member
         return cast("UnoControlFixedHyperlink", super().view)
 
+    @property
+    def view_ex(self) -> ViewFixedHyperlink:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_fixed_hyperlink import ViewFixedHyperlink
+
+            self._view_ex = ViewFixedHyperlink(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_hyperlink_fixed import ModelHyperlinkFixed
+    from ooodev.dialog.dl_control.view.view_fixed_hyperlink import ViewFixedHyperlink

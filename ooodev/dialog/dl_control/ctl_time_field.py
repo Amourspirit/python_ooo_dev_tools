@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlTimeField  # service
     from com.sun.star.awt import UnoControlTimeFieldModel  # service
     from ooodev.dialog.dl_control.model.model_time_field import ModelTimeField
+    from ooodev.dialog.dl_control.view.view_time_field import ViewTimeField
 # endregion imports
 
 
@@ -44,6 +45,7 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -125,8 +127,26 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
         # pylint: disable=no-member
         return cast("UnoControlTimeField", super().view)
 
+    @property
+    def view_ex(self) -> ViewTimeField:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_time_field import ViewTimeField
+
+            self._view_ex = ViewTimeField(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_time_field import ModelTimeField
+    from ooodev.dialog.dl_control.view.view_time_field import ViewTimeField

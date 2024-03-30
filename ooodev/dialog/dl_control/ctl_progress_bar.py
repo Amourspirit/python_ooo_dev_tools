@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlProgressBar  # service
     from com.sun.star.awt import UnoControlProgressBarModel  # service
     from ooodev.dialog.dl_control.model.model_progress_bar import ModelProgressBar
+    from ooodev.dialog.dl_control.view.view_progress_bar import ViewProgressBar
 # endregion imports
 
 
@@ -31,6 +32,7 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
         DialogControlBase.__init__(self, ctl)
         UnoControlProgressBarModelPartial.__init__(self, component=self.get_model())
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -94,8 +96,26 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
         # pylint: disable=no-member
         return cast("UnoControlProgressBar", super().view)
 
+    @property
+    def view_ex(self) -> ViewProgressBar:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_progress_bar import ViewProgressBar
+
+            self._view_ex = ViewProgressBar(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_progress_bar import ModelProgressBar
+    from ooodev.dialog.dl_control.view.view_progress_bar import ViewProgressBar

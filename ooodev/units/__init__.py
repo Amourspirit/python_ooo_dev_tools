@@ -4,6 +4,8 @@ from .angle10 import Angle10 as Angle10
 from .angle100 import Angle100 as Angle100
 from .size_mm100 import SizeMM100 as SizeMM100
 from .size_px import SizePX as SizePX
+from .size_pos_mm100 import SizePosMM100 as SizePosMM100
+from .size_pos_px import SizePosPX as SizePosPX
 from .unit_cm import UnitCM as UnitCM
 from .unit_convert import UnitConvert as UnitConvert
 from .unit_convert import UnitLength as UnitLength
@@ -25,6 +27,7 @@ from .unit_app_font_height import UnitAppFontHeight as UnitAppFontHeight
 from .app_font_pos import AppFontPos as AppFontPos
 from .app_font_size import AppFontSize as AppFontSize
 
+
 __all__ = [
     "Angle",
     "Angle10",
@@ -34,6 +37,8 @@ __all__ = [
     "AppFontSize",
     "SizeMM100",
     "SizePX",
+    "SizePosMM100",
+    "SizePosPX",
     "UnitAppFontWidth",
     "UnitAppFontHeight",
     "UnitAppFontX",
