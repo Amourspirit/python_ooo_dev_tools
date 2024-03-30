@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.39.0
+==============
+
+Add dozens of new classes to support Extended view on controls.
+
 Version 0.38.2
 ==============
 
