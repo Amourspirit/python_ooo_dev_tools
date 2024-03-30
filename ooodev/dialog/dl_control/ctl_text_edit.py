@@ -9,6 +9,7 @@ import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.selection import Selection
 
 # pylint: disable=useless-import-alias
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
@@ -20,6 +21,8 @@ from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlEdit  # service
     from com.sun.star.awt import UnoControlEditModel  # service
+    from ooodev.dialog.dl_control.model.model_text_edit import ModelTextEdit
+    from ooodev.dialog.dl_control.view.view_text_edit import ViewTextEdit
 # endregion imports
 
 
@@ -42,6 +45,8 @@ class CtlTextEdit(DialogControlBase, UnoControlEditModelPartial, TextEvents):
         generic_args = self._get_generic_args()
         # EventArgs.event_data will contain the ActionEvent
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
+        self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -121,11 +126,47 @@ class CtlTextEdit(DialogControlBase, UnoControlEditModelPartial, TextEvents):
         return cast("UnoControlEditModel", super().model)
 
     @property
+    def model_ex(self) -> ModelTextEdit:
+        """
+        Gets the extended Model for the control.
+
+        This is a wrapped instance for the model property.
+        It add some additional properties and methods to the model.
+        """
+        # pylint: disable=no-member
+        if self._model_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.model.model_text_edit import ModelTextEdit
+
+            self._model_ex = ModelTextEdit(self.model)
+        return self._model_ex
+
+    @property
     def view(self) -> UnoControlEdit:
         # pylint: disable=no-member
         return cast("UnoControlEdit", super().view)
 
+    @property
+    def view_ex(self) -> ViewTextEdit:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_text_edit import ViewTextEdit
+
+            self._view_ex = ViewTextEdit(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
-# ctl = CtlButton(None)
+if mock_g.FULL_IMPORT:
+    from ooodev.dialog.dl_control.model.model_text_edit import ModelTextEdit
+    from ooodev.dialog.dl_control.view.view_text_edit import ViewTextEdit

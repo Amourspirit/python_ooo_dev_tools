@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFormattedField  # service
     from com.sun.star.awt import UnoControlFormattedFieldModel  # service
     from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
+    from ooodev.dialog.dl_control.view.view_formatted_field import ViewFormattedField
 # endregion imports
 
 
@@ -41,6 +42,7 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         SpinEvents.__init__(self, trigger_args=generic_args, cb=self._on_spin_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -124,8 +126,26 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         # pylint: disable=no-member
         return cast("UnoControlFormattedField", super().view)
 
+    @property
+    def view_ex(self) -> ViewFormattedField:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_formatted_field import ViewFormattedField
+
+            self._view_ex = ViewFormattedField(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
+    from ooodev.dialog.dl_control.view.view_formatted_field import ViewFormattedField

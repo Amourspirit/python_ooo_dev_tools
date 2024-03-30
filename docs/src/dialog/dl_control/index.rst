@@ -9,3 +9,4 @@ dl_dialog
 
     *
     model/index
+    view/index

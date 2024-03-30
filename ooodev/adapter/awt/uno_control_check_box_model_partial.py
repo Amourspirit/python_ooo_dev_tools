@@ -310,7 +310,7 @@ class UnoControlCheckBoxModelPartial(UnoControlModelPartial):
             Value can be set with ``TriStateKind`` or ``int``.
 
         Hint:
-            - ``TriStateKind`` can be imported from ``ooodev.utils.kind.tri_state_kind``
+            - ``TriStateKind`` is an enum and can be imported from ``ooodev.utils.kind.tri_state_kind``
         """
         return TriStateKind(self.__component.State)
 

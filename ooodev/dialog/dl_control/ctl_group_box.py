@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlGroupBox  # service
     from com.sun.star.awt import UnoControlGroupBoxModel  # service
     from ooodev.dialog.dl_control.model.model_group_box import ModelGroupBox
+    from ooodev.dialog.dl_control.view.view_group_box import ViewGroupBox
 # endregion imports
 
 
@@ -31,6 +32,7 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
         DialogControlBase.__init__(self, ctl)
         UnoControlGroupBoxModelPartial.__init__(self, component=self.get_model())
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -84,8 +86,26 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
         # pylint: disable=no-member
         return cast("UnoControlGroupBox", super().view)
 
+    @property
+    def view_ex(self) -> ViewGroupBox:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_group_box import ViewGroupBox
+
+            self._view_ex = ViewGroupBox(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_group_box import ModelGroupBox
+    from ooodev.dialog.dl_control.view.view_group_box import ViewGroupBox

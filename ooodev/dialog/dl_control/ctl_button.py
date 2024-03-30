@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service
     from com.sun.star.awt import UnoControlButtonModel  # service
     from ooodev.dialog.dl_control.model.model_button import ModelButton
+    from ooodev.dialog.dl_control.view.view_button import ViewButton
 # endregion imports
 
 
@@ -32,6 +33,7 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
         """
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         self._model_ex = None
+        self._view_ex = None
         self.model: UnoControlButtonModel
         DialogControlBase.__init__(self, ctl)
         UnoControlButtonModelPartial.__init__(self, self.model)
@@ -120,8 +122,26 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
     def picture(self, value: PathOrStr) -> None:
         self.model_ex.picture = value
 
+    @property
+    def view_ex(self) -> ViewButton:
+        """
+        Gets the extended View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        # pylint: disable=no-member
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_button import ViewButton
+
+            self._view_ex = ViewButton(self.view)
+        return self._view_ex
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_button import ModelButton
+    from ooodev.dialog.dl_control.view.view_button import ViewButton

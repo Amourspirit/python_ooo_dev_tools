@@ -9,6 +9,7 @@ Subpackages
 
    ooodev.adapter.form.binding
    ooodev.adapter.form.component
+   ooodev.adapter.form.control
    ooodev.adapter.form.runtime
    ooodev.adapter.form.submission
 
@@ -20,6 +21,7 @@ Submodules
 
    ooodev.adapter.form.approve_action_events
    ooodev.adapter.form.approve_action_listener
+   ooodev.adapter.form.bound_control_partial
    ooodev.adapter.form.change_events
    ooodev.adapter.form.change_listener
    ooodev.adapter.form.confirm_delete_broadcaster_partial

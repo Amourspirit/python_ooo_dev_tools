@@ -12,13 +12,13 @@ from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.adapter.awt.uno_control_combo_box_model_partial import UnoControlComboBoxModelPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-
 from ooodev.dialog.dl_control.ctl_base import DialogControlBase
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlComboBox  # service
     from com.sun.star.awt import UnoControlComboBoxModel  # service
     from ooodev.dialog.dl_control.model.model_combo_box import ModelComboBox
+    from ooodev.dialog.dl_control.view.view_combo_box import ViewComboBox
 # endregion imports
 
 
@@ -44,6 +44,7 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
         ItemEvents.__init__(self, trigger_args=generic_args, cb=self._on_item_events_listener_add_remove)
         TextEvents.__init__(self, trigger_args=generic_args, cb=self._on_text_events_listener_add_remove)
         self._model_ex = None
+        self._view_ex = None
 
     # endregion init
 
@@ -134,6 +135,22 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
         return cast("UnoControlComboBox", super().view)
 
     @property
+    def view_ex(self) -> ViewComboBox:
+        """
+        Gets the View for the control.
+
+        This is a wrapped instance for the view property.
+        It add some additional properties and methods to the view.
+        """
+        if self._view_ex is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.dialog.dl_control.view.view_combo_box import ViewComboBox
+
+            self._view_ex = ViewComboBox(self.view)
+        return self._view_ex
+
+    @property
     def list_count(self) -> int:
         """Gets the number of items in the combo box"""
         with contextlib.suppress(Exception):
@@ -182,3 +199,4 @@ class CtlComboBox(DialogControlBase, UnoControlComboBoxModelPartial, ActionEvent
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dl_control.model.model_combo_box import ModelComboBox
+    from ooodev.dialog.dl_control.view.view_combo_box import ViewComboBox

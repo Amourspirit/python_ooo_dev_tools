@@ -6,7 +6,7 @@ from com.sun.star.awt import XWindow
 from ooo.dyn.awt.pos_size import PosSize
 
 from ooodev.utils.type_var import UnoInterface
-from ooodev.adapter.awt.control_partial import ControlPartial
+from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.units.unit_px import UnitPX
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
 
-class WindowPartial(ControlPartial):
+class WindowPartial(ComponentPartial):
     """
     Partial Class for XWindow.
     """
@@ -35,7 +35,7 @@ class WindowPartial(ControlPartial):
             component (XWindow): UNO Component that implements ``com.sun.star.awt.XWindow`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XWindow``.
         """
-        ControlPartial.__init__(self, component=component, interface=interface)  # type: ignore
+        ComponentPartial.__init__(self, component=component, interface=interface)  # type: ignore
         self.__component = component
 
     # region XWindow
