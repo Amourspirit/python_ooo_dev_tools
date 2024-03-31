@@ -44,7 +44,7 @@ class ThePopupMenuControllerFactoryComp(ComponentBase, UIControllerFactoryPartia
             ThePopupMenuControllerFactoryComp: The instance.
         """
         # pylint: disable=import-outside-toplevel
-        from ooodev.utils import lo as mLo
+        from ooodev.loader import lo as mLo
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo

@@ -11,7 +11,7 @@ Guide on embedding python macros in a LibreOffice Document
 Introduction
 ------------
 
-LibreOffice does not have a build in editor for python. This entire project was created using VS Code.
+LibreOffice does not have a built in editor for python. This entire project was created using VS Code.
 
 There are many advantages to using python for macros.
 But as with all good things there are often drawbacks.
@@ -356,4 +356,4 @@ The ``clean`` option will remove doc strings from the output file which can redu
 .. _ooo_dev_tools: https://python-ooo-dev-tools.readthedocs.io/en/latest/
 
 .. |ooo_dev_tools_ext| replace:: OOO Development Tools Extension
-.. _ooo_dev_tools-ext: https://extensions.libreoffice.org/en/extensions/show/41700
+.. _ooo_dev_tools_ext: https://extensions.libreoffice.org/en/extensions/show/41700

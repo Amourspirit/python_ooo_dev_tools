@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import contextlib
 import uno
 from com.sun.star.awt import XTopWindow2
@@ -14,6 +14,10 @@ from com.sun.star.view import XSelectionSupplier
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils import gui as mGui
 from ooodev.utils.context.lo_context import LoContext
+
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import XTopWindow
 
 
 class GuiPartial:
@@ -80,6 +84,19 @@ class GuiPartial:
         """
         frame = self.get_frame()
         return self.__lo_inst.qi(XDispatchProviderInterception, frame, True)
+
+    def get_top_window(self) -> XTopWindow | None:
+        """
+        Gets top window.
+
+        Returns:
+            XTopWindow | None: Top window or None if there is no Active Top Window.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.adapter.awt.toolkit_comp import ToolkitComp
+
+        tk = ToolkitComp.from_lo(self.__lo_inst)
+        return tk.get_active_top_window()
 
     def activate(self) -> None:
         """
