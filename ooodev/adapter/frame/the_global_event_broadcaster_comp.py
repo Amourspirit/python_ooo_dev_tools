@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-
 from ooodev.adapter.document.events_supplier_partial import EventsSupplierPartial
 from ooodev.adapter.document.document_event_broadcaster_partial import DocumentEventBroadcasterPartial
 from ooodev.adapter.container.set_partial import SetPartial
@@ -11,6 +10,7 @@ from ooodev.adapter.document.document_event_events import DocumentEventEvents
 if TYPE_CHECKING:
     from com.sun.star.frame import theGlobalEventBroadcaster  # singleton
     from com.sun.star.document import DocumentEvent
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class TheGlobalEventBroadcasterComp(
@@ -60,6 +60,28 @@ class TheGlobalEventBroadcasterComp(
         return ()
 
     # endregion Overrides
+
+    @classmethod
+    def from_lo(cls, lo_inst: LoInst | None = None) -> TheGlobalEventBroadcasterComp:
+        """
+        Get the singleton instance from the Lo.
+
+        Args:
+            lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
+
+        Returns:
+            TheGlobalEventBroadcasterComp: The instance.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.utils import lo as mLo
+
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        factory = lo_inst.get_singleton("/singletons/com.sun.star.frame.theGlobalEventBroadcaster")  # type: ignore
+        if factory is None:
+            raise ValueError("Could not get theGlobalEventBroadcaster singleton.")
+        return cls(factory)
+
     # region Properties
     @property
     def component(self) -> theGlobalEventBroadcaster:

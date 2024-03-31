@@ -2,13 +2,14 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.args.listener_event_args import ListenerEventArgs
-
 from ooodev.adapter.frame.desktop2_partial import Desktop2Partial
 from ooodev.adapter.frame.terminate_events import TerminateEvents
 from ooodev.adapter.frame.frame_action_events import FrameActionEvents
 
+
 if TYPE_CHECKING:
     from com.sun.star.frame import theDesktop  # singleton
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActionEvents):
@@ -51,6 +52,27 @@ class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActio
         return ()
 
     # endregion Overrides
+    @classmethod
+    def from_lo(cls, lo_inst: LoInst | None = None) -> TheDesktopComp:
+        """
+        Get the singleton instance from the Lo.
+
+        Args:
+            lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
+
+        Returns:
+            TheDesktopComp: The instance.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.utils import lo as mLo
+
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        factory = lo_inst.get_singleton("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
+        if factory is None:
+            raise ValueError("Could not get theDesktop singleton.")
+        return cls(factory)
+
     # region Properties
     @property
     def component(self) -> theDesktop:

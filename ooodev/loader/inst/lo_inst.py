@@ -640,10 +640,12 @@ class LoInst(EventsPartial):
         |lo_unsafe|
 
         Args:
-            loader (LoLoader): LoLoader instance
+            loader (LoLoader): LoLoader instance.
 
         Returns:
-            XComponentLoader: component loader
+            XComponentLoader: component loader.
+
+        .. versionadded:: 0.40.0
         """
         self._lo_loader = loader
         self._lo_inst = self._lo_loader.lo_inst
@@ -654,6 +656,23 @@ class LoInst(EventsPartial):
         if self._loader is None:
             raise mEx.LoadingError("Unable to access XComponentLoader")
         return self._loader
+
+    def get_singleton(self, name: str) -> Any:
+        """
+        Gets a singleton object from the office default context.
+
+        Args:
+            name (str): Singleton name such as ``/singletons/com.sun.star.frame.theDesktop``
+
+        Returns:
+            Any: Singleton object or ``None`` if not found
+        """
+        if self._mc_factory is None:
+            return None
+        result = None
+        with contextlib.suppress(Exception):
+            result = self._mc_factory.DefaultContext.getByName(name)  # type: ignore
+        return result
 
     def _load_from_context(self) -> None:
         if self._xcc is None:

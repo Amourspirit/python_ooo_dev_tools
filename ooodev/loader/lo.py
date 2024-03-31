@@ -540,6 +540,21 @@ class Lo(metaclass=StaticProperty):
 
     # endregion interface object creation
 
+    @classmethod
+    def get_singleton(cls, name: str) -> Any:
+        """
+        Gets a singleton object from the office default context.
+
+        Args:
+            name (str): Singleton name such as ``/singletons/com.sun.star.frame.theDesktop``.
+
+        Returns:
+            Any: Singleton object or ``None`` if not found.
+
+        .. versionadded:: 0.40.0
+        """
+        return cls._lo_inst.get_singleton(name)
+
     @staticmethod
     def get_parent(a_component: XChild) -> XInterface:
         """

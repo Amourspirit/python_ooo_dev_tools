@@ -17,6 +17,9 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.adapter.ui.context_menu_interception_partial import ContextMenuInterceptionPartial
+from ooodev.adapter.ui.context_menu_interceptor_events import ContextMenuInterceptorEvents
+from ooodev.events.args.generic_args import GenericArgs
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheetView
@@ -30,6 +33,8 @@ class CalcSheetView(
     LoInstPropsPartial,
     SpreadsheetViewComp,
     SpreadsheetViewSettingsComp,
+    ContextMenuInterceptorEvents,
+    ContextMenuInterceptionPartial,
     QiPartial,
     PropPartial,
     StylePartial,
@@ -42,6 +47,8 @@ class CalcSheetView(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         SpreadsheetViewComp.__init__(self, view)  # type: ignore
         SpreadsheetViewSettingsComp.__init__(self, view)  # type: ignore
+        ContextMenuInterceptorEvents.__init__(self, component=view, trigger_args=GenericArgs(view=self))  # type: ignore
+        ContextMenuInterceptionPartial.__init__(self, component=view, interface=None)  # type: ignore
         QiPartial.__init__(self, component=view, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=view, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=view)

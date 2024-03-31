@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 import uno
 
 from com.sun.star.container import XIndexReplace

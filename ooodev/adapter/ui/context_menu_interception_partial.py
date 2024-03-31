@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from com.sun.star.ui import XContextMenuInterceptor
     from ooodev.utils.type_var import UnoInterface
 
+# https://wiki.documentfoundation.org/Framework/Tutorial/Context_Menu_Interception
+
 
 class ContextMenuInterceptionPartial:
     """

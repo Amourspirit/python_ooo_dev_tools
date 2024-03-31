@@ -3,6 +3,7 @@ from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.index_container_partial import IndexContainerPartial
+from ooodev.utils import gen_util as mGenUtil
 
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
@@ -27,6 +28,26 @@ class IndexContainerComp(ComponentBase, IndexContainerPartial[T], Generic[T]):
 
         ComponentBase.__init__(self, component)
         IndexContainerPartial.__init__(self, component=self.component)
+
+    def __getitem__(self, idx: int) -> T:
+        """
+        Gets the element at the specified index.
+
+        Args:
+            index (int): The Zero-based index of the element to get. Negative values are allowed and are interpreted as counting from the end of the list.
+
+        Returns:
+            T: The element at the specified index.
+
+        Raises:
+            IndexOutOfBoundsException: ``com.sun.star.lang.IndexOutOfBoundsException``
+        """
+        if idx < 0:
+            count = self.component.getCount()
+            index = mGenUtil.Util.get_index(idx, count, False)
+        else:
+            index = idx
+        return self.component.getByIndex(index)
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
