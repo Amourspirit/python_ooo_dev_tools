@@ -28,6 +28,7 @@ from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.language_kind import LanguageKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.prop_partial import PropPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
@@ -42,6 +43,7 @@ if TYPE_CHECKING:
 
 class FormCtlBase(
     LoInstPropsPartial,
+    PropPartial,
     FocusEvents,
     KeyEvents,
     MouseEvents,
@@ -86,6 +88,7 @@ class FormCtlBase(
         # By capturing the model here, we can set it back to the control if it is removed.
         # The model is removed for instance when a control is on a spreadsheet and the sheet is deactivated.
         self.__model = self.get_control().getModel()
+        PropPartial.__init__(self, component=self.__model, lo_inst=self.lo_inst)
         trigger_args = self._get_generic_args()
         FocusEvents.__init__(self, trigger_args=trigger_args, cb=self._on_focus_listener_add_remove)
         KeyEvents.__init__(self, trigger_args=trigger_args, cb=self._on_key_events_listener_add_remove)
@@ -139,6 +142,41 @@ class FormCtlBase(
         event.remove_callback = True
 
     # endregion Lazy Listeners
+
+    # region PropPartial Overrides
+    def set_property(self, **kwargs: Any) -> None:
+        """
+        Set property value
+
+        Args:
+            **kwargs: Variable length Key value pairs used to set properties.
+
+        .. versionadded:: 0.39.1
+        """
+        ctl = self.get_control()
+        started_in_design_mode = ctl.isDesignMode()
+        if not started_in_design_mode:
+            ctl.setDesignMode(True)
+        super().set_property(**kwargs)
+        if not started_in_design_mode:
+            ctl.setDesignMode(False)
+
+    # end PropPartial Overrides
+
+    # region context manage
+    def __enter__(self) -> Any:
+        # new in 0.39.1
+        ctl = self.get_control()
+        if not ctl.isDesignMode():
+            ctl.setDesignMode(True)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        ctl = self.get_control()
+        if ctl.isDesignMode():
+            ctl.setDesignMode(False)
+
+    # endregion context manage
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, FormCtlBase):

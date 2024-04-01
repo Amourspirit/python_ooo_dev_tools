@@ -93,8 +93,21 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
         Returns:
             bool: True if successful, False otherwise
         """
+        # updated in 0.39.1, fix for multi-line ending
+        # LineEndFormat: https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt_1_1LineEndFormat.html
+        # LineEndFormat Property: https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlEditModel.html#aa4476f2609beb00283e82a3b77c22202
         # if not self.model.MultiLine:
         #     return False
+        # line end format can be changed at any time so we need to check it each time
+        ln = self.line_end_format
+        if ln == LineEndFormatEnum.CARRIAGE_RETURN:
+            lef = "\r"
+        elif ln == LineEndFormatEnum.CARRIAGE_RETURN_LINE_FEED:
+            lef = "\r\n"
+        elif ln == LineEndFormatEnum.LINE_FEED:
+            lef = "\n"
+        else:
+            lef = os.linesep
         with contextlib.suppress(Exception):
             # will raise an exception if not multi-line
             self.model.HardLineBreaks = True
@@ -108,9 +121,9 @@ class FormCtlTextField(FormCtlBase, TextEvents, ResetEvents):
                 # Put cursor at the end of the actual text
                 sel.Min = text_len
                 sel.Max = text_len
-                self.view.insertText(sel, f"{os.linesep}{line}")
+                self.view.insertText(sel, f"{lef}{line}")
             # Put the cursor at the end of the inserted text
-            sel.Max += len(os.linesep) + len(line)
+            sel.Max += len(lef) + len(line)
             sel.Min = sel.Max
             self.view.setSelection(sel)
             return True
