@@ -62,6 +62,7 @@ pytest-dotenv = "^0.5.2"
 sphobjinv = "^2.3.1"
 ooo-dev-odh = "^0.1.4"
 pydeps = "^1.12.18"
+oooscript = "^1.1.4"
 
 
 [tool.poetry.group.docs.dependencies]

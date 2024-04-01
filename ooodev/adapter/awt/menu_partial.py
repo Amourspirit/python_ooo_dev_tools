@@ -134,7 +134,7 @@ class MenuPartial:
         """
         retrieves the tip help text for the menu item.
         """
-        ...
+        return self.__component.getTipHelpText(item_id)
 
     def hide_disabled_entries(self, hide: bool = True) -> None:
         """
