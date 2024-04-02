@@ -30,6 +30,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
@@ -79,6 +80,7 @@ class CalcDoc(
     """Defines a Calc Document"""
 
     DOC_TYPE: DocType = DocType.CALC
+    DOC_CLSID: CLSID = CLSID.CALC
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
         """

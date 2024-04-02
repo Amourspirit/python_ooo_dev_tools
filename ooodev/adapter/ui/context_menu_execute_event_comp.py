@@ -28,7 +28,7 @@ class ContextMenuExecuteEventComp(ComponentBase):
         Constructor
 
         Args:
-            component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.text.ContextMenuExecuteEvent`` service.
+            component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.ui.ContextMenuExecuteEvent`` service.
         """
         # component is a struct
         ComponentBase.__init__(self, component)
@@ -38,7 +38,7 @@ class ContextMenuExecuteEventComp(ComponentBase):
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by mTextRangePartial.TextRangePartial
-        return ()  # ("com.sun.star.text.ContextMenuExecuteEvent",)
+        return ()  # ("com.sun.star.ui.ContextMenuExecuteEvent",)
 
     # endregion Overrides
 

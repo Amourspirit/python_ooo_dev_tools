@@ -44,6 +44,7 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
+from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.utils.kind.zoom_kind import ZoomKind
@@ -117,6 +118,7 @@ class WriteDoc(
     """A class to represent a Write document."""
 
     DOC_TYPE: DocType = DocType.WRITER
+    DOC_CLSID: CLSID = CLSID.WRITER
 
     def __init__(self, doc: XTextDocument, lo_inst: LoInst | None = None) -> None:
         """

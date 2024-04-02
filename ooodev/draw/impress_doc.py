@@ -9,6 +9,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.office import draw as mDraw
@@ -37,6 +38,7 @@ class ImpressDoc(
     """Impress Document Class"""
 
     DOC_TYPE: DocType = DocType.IMPRESS
+    DOC_CLSID: CLSID = CLSID.IMPRESS
 
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         """
