@@ -44,7 +44,7 @@ General setup for this example.
         from ooodev.office.calc import Calc
         from ooodev.office.chart2 import Chart2
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.utils.kind.zoom_kind import ZoomKind
         from ooodev.loader.lo import Lo
 

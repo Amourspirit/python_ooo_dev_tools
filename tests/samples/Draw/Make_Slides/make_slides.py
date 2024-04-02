@@ -8,7 +8,7 @@ from com.sun.star.drawing import XShape
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw, DrawingShapeKind, LineStyle
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.props import Props
 from ooodev.utils.gallery import Gallery
 

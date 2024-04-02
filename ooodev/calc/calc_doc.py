@@ -24,7 +24,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils import gui as mGUI
+from ooodev.gui import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState

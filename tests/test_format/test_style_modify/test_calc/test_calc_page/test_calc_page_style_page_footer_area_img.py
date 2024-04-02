@@ -8,7 +8,7 @@ import uno
 from ooodev.format.calc.modify.page.footer import Footer, CalcStylePageKind
 from ooodev.format.calc.modify.page.footer.area import Img, PresetImageKind
 from ooodev.format import Styler
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 

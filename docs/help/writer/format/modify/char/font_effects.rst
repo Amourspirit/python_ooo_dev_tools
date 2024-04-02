@@ -34,7 +34,7 @@ Setting the font effects
 
         from ooodev.format.writer.modify.char.font import FontEffects, StyleCharKind
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -112,6 +112,6 @@ Related Topics
         - :ref:`help_writer_format_modify_char_font_only`
         - :ref:`help_writer_format_direct_char_font_effects`
         - :ref:`help_calc_format_direct_cell_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.char.font.FontEffects`

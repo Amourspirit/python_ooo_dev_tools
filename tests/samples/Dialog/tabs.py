@@ -10,7 +10,7 @@ from ooodev.dialog import Dialogs, BorderKind, OrientationKind
 from ooodev.events.args.event_args import EventArgs
 from ooodev.calc import CalcDoc
 from ooodev.loader import lo as mLo
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.table_helper import TableHelper
 
 

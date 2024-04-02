@@ -37,7 +37,7 @@ from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.office import write as mWrite
-from ooodev.utils import gui as mGUI
+from ooodev.gui import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
@@ -1260,7 +1260,7 @@ class WriteDoc(
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.component, visible=visible)
+        mGui.GUI.set_visible(doc=self.component, visible=visible)
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
@@ -1275,7 +1275,7 @@ class WriteDoc(
 
         def zoom_val(value: int) -> None:
             with LoContext(self.lo_inst):
-                mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
+                mGui.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
 
         if type in (
             ZoomKind.ENTIRE_PAGE,
@@ -1284,7 +1284,7 @@ class WriteDoc(
             ZoomKind.PAGE_WIDTH_EXACT,
         ):
             with LoContext(self.lo_inst):
-                mGUI.GUI.zoom(view=type)
+                mGui.GUI.zoom(view=type)
         elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
         elif type == ZoomKind.ZOOM_150_PERCENT:
@@ -1304,7 +1304,7 @@ class WriteDoc(
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
         with LoContext(self.lo_inst):
-            mGUI.GUI.zoom_value(value=value)
+            mGui.GUI.zoom_value(value=value)
 
     # region Properties
     @property

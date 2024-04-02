@@ -19,7 +19,7 @@ from ooodev.office.chart2 import (
 )
 from ooodev.utils.color import CommonColor
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.kind.axis_kind import AxisKind
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind

@@ -12,7 +12,7 @@ from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 
 from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils.context.lo_context import LoContext
 
 

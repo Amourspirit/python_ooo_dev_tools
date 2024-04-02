@@ -21,7 +21,7 @@ Setup
 
         from ooodev.loader.lo import Lo
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.format.calc.direct.cell.font import Font
         from ooodev.format import CommonColor, Styler
 

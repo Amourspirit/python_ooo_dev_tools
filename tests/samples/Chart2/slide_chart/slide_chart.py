@@ -11,7 +11,7 @@ from ooodev.office.chart2 import Chart2, Angle
 from ooodev.office.draw import Draw, DrawingNameSpaceKind, mEx
 from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.loader.lo import Lo

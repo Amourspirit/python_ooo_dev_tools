@@ -19,7 +19,7 @@ from ooodev.format.writer.direct.table.background import (
     OffsetRow,
     RectanglePoint,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.table_helper import TableHelper

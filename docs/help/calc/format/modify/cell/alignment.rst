@@ -40,7 +40,7 @@ General setup for the examples in this section.
     .. code-tab:: python
         :emphasize-lines: 13, 14, 15, 16, 17, 18
 
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import TextAlign, StyleCellKind
         from ooodev.format.calc.modify.cell.alignment import HoriAlignKind, VertAlignKind
@@ -145,7 +145,7 @@ General setup for the examples in this section.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import TextOrientation
         from ooodev.format.calc.modify.cell.alignment import EdgeKind, StyleCellKind
@@ -251,7 +251,7 @@ General setup for the examples in this section.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.alignment import Properties
         from ooodev.format.calc.modify.cell.alignment import TextDirectionKind, StyleCellKind
@@ -350,7 +350,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_alignment`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.cell.alignment.TextAlign`
         - :py:class:`ooodev.format.calc.modify.cell.alignment.TextOrientation`

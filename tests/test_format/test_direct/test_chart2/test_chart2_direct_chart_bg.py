@@ -22,7 +22,7 @@ try:
 except ImportError:
     Chart2 = None
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.format.chart2.direct.general.area import (
     PresetGradientKind,

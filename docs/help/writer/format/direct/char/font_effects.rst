@@ -35,7 +35,7 @@ Setting the style
         )
         from ooodev.office.write import Write
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -140,7 +140,7 @@ Related Topics
         - :ref:`help_writer_format_modify_char_font_effects`
         - :ref:`help_writer_format_modify_para_font_effects`
         - :ref:`help_calc_format_direct_cell_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontEffects`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`

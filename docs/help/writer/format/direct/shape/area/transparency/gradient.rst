@@ -25,7 +25,7 @@ Setup
         from ooodev.format.draw.direct.transparency import GradientStyle, IntensityRange
         from ooodev.office.draw import Draw
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 

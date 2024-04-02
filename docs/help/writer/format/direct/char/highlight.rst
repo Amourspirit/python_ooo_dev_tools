@@ -23,7 +23,7 @@ General function used to run these examples.
         from ooodev.format.writer.direct.char.highlight import Highlight
         from ooodev.office.write import Write
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 
@@ -145,6 +145,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_char_highlight`
         - :ref:`help_writer_format_modify_para_highlight`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.highlight.Highlight`

@@ -20,7 +20,7 @@ except ImportError:
     CurveKind = None
 
 from ooodev.units import Angle
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.format.chart2.direct.title.area import (
     Color as ChartTitleBgColor,

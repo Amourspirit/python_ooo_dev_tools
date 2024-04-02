@@ -12,7 +12,7 @@ def test_num_style(loader):
     """
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = True
     delay = 300

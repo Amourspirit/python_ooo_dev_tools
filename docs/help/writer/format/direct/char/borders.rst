@@ -33,7 +33,7 @@ Setting the character borders
         from ooodev.format.writer.direct.char.borders import Shadow
         from ooodev.format import StandardColor
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -159,7 +159,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_char_borders`
         - :ref:`help_calc_format_direct_cell_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.borders.Borders`
         - :py:class:`ooodev.format.writer.direct.char.borders.Padding`

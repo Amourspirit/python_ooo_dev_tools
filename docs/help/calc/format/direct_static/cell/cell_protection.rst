@@ -56,7 +56,7 @@ Setup
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 
@@ -149,7 +149,7 @@ Setup
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 
@@ -220,7 +220,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_protection`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

@@ -20,7 +20,7 @@ Setup
 
         from ooodev.format.writer.modify.para.area import Color as ParaStyleColor, StyleParaKind
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -137,6 +137,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_area_color`
         - :ref:`help_writer_format_modify_page_area`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.area.Color`

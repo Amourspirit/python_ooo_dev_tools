@@ -17,7 +17,7 @@ from ooodev.format.calc.modify.cell.borders import (
     StyleCellKind,
     LineSize,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.utils.color import StandardColor

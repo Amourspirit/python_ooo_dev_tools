@@ -12,7 +12,7 @@ from ooo.dyn.table.cell_orientation import CellOrientation
 
 from ooodev.format.calc.direct.cell.alignment import Angle, EdgeKind, TextOrientation
 from ooodev.format import Styler
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.units.unit_mm100 import UnitMM100
 

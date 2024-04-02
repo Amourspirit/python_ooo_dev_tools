@@ -21,7 +21,7 @@ Setup
         from ooodev.format.writer.modify.para.highlight import Highlight, StyleParaKind
         from ooodev.utils.color import StandardColor
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -132,6 +132,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_highlight`
         - :ref:`help_writer_format_modify_char_highlight`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.highlight.Highlight`

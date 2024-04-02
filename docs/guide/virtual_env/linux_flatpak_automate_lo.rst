@@ -169,7 +169,7 @@ The rest is straight forward for |odev|_.
     import os
     import uno
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.utils.kind.zoom_kind import ZoomKind
     from ooodev.loader.lo import Lo
     from ooodev.dialog.msgbox import (

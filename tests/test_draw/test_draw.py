@@ -267,7 +267,7 @@ def test_lines_and_move_to_top(loader) -> None:
 
 
 def _test_shape_drawing_object(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     # With the following
     # nothing appears on the slide, but object is there

@@ -10,7 +10,7 @@ if __name__ == "__main__":
 def test_writer_lines(loader, tmp_path):
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Write.create_doc(loader)
@@ -52,7 +52,7 @@ def test_writer_lines(loader, tmp_path):
 def test_open_no_loader(loader, fix_writer_path):
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     test_doc = fix_writer_path("hello_sunny.odt")
     doc = Write.open_doc(test_doc)
@@ -66,7 +66,7 @@ def test_open_no_loader(loader, fix_writer_path):
 def test_open_no_file_no_loader(loader):
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     doc = Write.open_doc()
     if not Lo.bridge_connector.headless:

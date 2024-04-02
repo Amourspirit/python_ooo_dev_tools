@@ -35,7 +35,7 @@ Setting the font effects
 
         from ooodev.format.writer.modify.char.highlight import Highlight, StyleCharKind
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.utils.color import StandardColor
 
@@ -110,6 +110,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_highlight`
         - :ref:`help_writer_format_modify_para_highlight`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.char.highlight.Highlight`

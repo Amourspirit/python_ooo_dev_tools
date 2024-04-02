@@ -30,7 +30,7 @@ Setting the font name and size
 
         from ooodev.format.writer.direct.char.font import FontOnly
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -128,6 +128,6 @@ Related Topics
         - :ref:`help_writer_format_direct_char_font`
         - :ref:`help_writer_format_modify_char_font_only`
         - :ref:`help_writer_format_modify_para_font_only`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.FontOnly`

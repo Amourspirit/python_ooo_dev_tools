@@ -27,7 +27,7 @@ from ooodev.format.chart2.direct.series.data_series.options import MissingValueK
 from ooodev.format.chart2.direct.series.data_series.options import Orientation
 from ooodev.units import Angle
 from ooodev.utils.color import StandardColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.loader.lo import Lo

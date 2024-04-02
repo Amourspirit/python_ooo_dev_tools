@@ -66,7 +66,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.units.angle import Angle as Angle
 from ooodev.utils import color as mColor
 from ooodev.utils import file_io as mFileIo
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils import images_lo as mImgLo
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo

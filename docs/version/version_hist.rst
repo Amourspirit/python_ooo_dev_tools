@@ -2,6 +2,39 @@
 Version History
 ***************
 
+Version 0.40.0
+==============
+
+The ``gui`` module has been moved from the ``ooodev.utils`` to the ``ooodev.gui`` module.
+
+The old imports still work but are deprecated.
+
+New proper usage:
+
+.. code-block:: python
+
+    from ooodev.gui import Gui
+    # ...
+
+
+Version 0.39.1
+==============
+
+Update Form Controls to allow for better access to the control properties.
+Form controls are now also context managers.
+
+Using ``ctl.set_property()`` will automatically toggle control design  mode if needed.
+
+Example of using a control as a context manager:
+
+The width block will toggle design mode on and off.
+
+.. code-block:: python
+
+    with ctl:
+        ctl.model.Width = 200   
+
+
 Version 0.39.0
 ==============
 

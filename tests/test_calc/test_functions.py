@@ -45,7 +45,7 @@ def test_abs_with_sheet(loader) -> None:
 
 
 def test_percentile_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -64,7 +64,7 @@ def test_percentile_with_sheet(loader) -> None:
 
 
 def test_transpose_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -91,7 +91,7 @@ def test_transpose_with_sheet(loader) -> None:
 
 
 def test_ztest_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -115,7 +115,7 @@ def test_round(loader) -> None:
 
 
 def test_round_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -139,7 +139,7 @@ def test_radians(loader) -> None:
 
 
 def test_radians_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -163,7 +163,7 @@ def test_average(loader) -> None:
 
 
 def test_average_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -187,7 +187,7 @@ def test_max(loader) -> None:
 
 
 def test_max_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0
@@ -206,7 +206,7 @@ def test_max_with_sheet(loader) -> None:
 
 
 def test_slop_with_sheet(loader) -> None:
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0

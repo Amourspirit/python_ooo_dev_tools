@@ -28,7 +28,7 @@ General function used to run these examples.
         import uno
         from ooodev.format.calc.style import Cell as CellStyle, StyleCellKind
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -293,7 +293,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`ch06`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.style.Cell`
         - :py:class:`Calc.set_val() <ooodev.office.calc.Calc.set_val>`

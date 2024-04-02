@@ -42,7 +42,7 @@ General setup for the examples in this section.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.alignment import TextAlign
         from ooodev.format.calc.direct.cell.alignment import HoriAlignKind, VertAlignKind
@@ -219,7 +219,7 @@ General setup for the examples in this section.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.alignment import TextOrientation, EdgeKind
 
@@ -394,7 +394,7 @@ General setup for the examples in this section.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.alignment import Properties, TextDirectionKind
 

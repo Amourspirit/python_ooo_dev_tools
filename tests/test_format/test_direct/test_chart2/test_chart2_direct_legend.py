@@ -15,7 +15,7 @@ try:
 except ImportError:
     Chart2 = None
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.color import StandardColor

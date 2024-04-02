@@ -35,7 +35,7 @@ Setting the font name and size
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.cell.font import FontEffects, FontLine
         from ooodev.format.calc.modify.cell.font import StyleCellKind, FontUnderlineEnum
@@ -112,6 +112,6 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.cell.font.FontEffects`

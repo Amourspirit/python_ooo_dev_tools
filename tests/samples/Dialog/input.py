@@ -8,7 +8,7 @@ from ooo.dyn.awt.push_button_type import PushButtonType
 
 from ooodev.dialog import Dialogs, BorderKind
 from ooodev.loader import lo as mLo
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.office.calc import Calc
 
 

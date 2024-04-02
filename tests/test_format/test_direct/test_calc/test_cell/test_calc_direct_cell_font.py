@@ -10,7 +10,7 @@ import uno
 # simpler test then test_char_font because it is testing the same font class under the hood.
 from ooodev.format.calc.direct.cell.font import Font, FontLine, FontOnly, FontUnderlineEnum, FontWeightEnum, FontSlant
 from ooodev.format import CommonColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.units.unit_pt import UnitPT
 

@@ -40,7 +40,7 @@ General function used to run these examples.
         from ooodev.utils.data_type.size_mm import SizeMM
         from ooodev.units import UnitInch
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -348,7 +348,7 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.page.PaperFormat`
         - :py:class:`ooodev.format.writer.modify.page.page.Margins`

@@ -37,7 +37,7 @@ from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
 from ooodev.proto.style_obj import StyleT
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps

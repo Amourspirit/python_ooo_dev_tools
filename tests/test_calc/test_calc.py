@@ -136,9 +136,9 @@ def test_get_sheet(loader) -> None:
     from ooodev.events.args.event_args import EventArgs
     from ooodev.events.lo_events import event_ctx, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     on_firing = False
     on_fired = False
@@ -508,7 +508,7 @@ def test_get_controller(loader) -> None:
 def test_zoom_value(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -523,7 +523,7 @@ def test_zoom_value(loader) -> None:
 def test_zoom(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -607,7 +607,7 @@ def test_get_set_active_sheet(loader) -> None:
 def test_freeze(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     # with Lo.Loader() as loader:
     assert loader is not None
@@ -623,7 +623,7 @@ def test_freeze(loader) -> None:
 def test_freeze_cols(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -638,7 +638,7 @@ def test_freeze_cols(loader) -> None:
 def test_freeze_rows(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -743,7 +743,7 @@ def test_goto_cell(loader) -> None:
 def test_split_window(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -921,7 +921,7 @@ def test_insert_row(loader) -> None:
         assert is_meth_event(source, Calc.insert_row)
         on_fired = True
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     doc = Calc.create_doc(loader)
     try:
@@ -954,7 +954,7 @@ def test_delete_row(loader) -> None:
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     on_firing = False
     on_fired = False
@@ -1003,7 +1003,7 @@ def test_insert_column(loader) -> None:
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     on_firing = False
     on_fired = False
@@ -1071,7 +1071,7 @@ def test_insert_cells_down(loader) -> None:
         assert args.event_data["is_shift_right"] is False
         on_fired = True
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1158,7 +1158,7 @@ def test_insert_cells_right(loader) -> None:
         assert args.event_data["is_shift_right"] is True
         on_fired = True
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1211,7 +1211,7 @@ def test_delete_cells_down(loader) -> None:
         assert args.event_data["is_shift_left"] is False
         on_fired = True
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1247,7 +1247,7 @@ def test_delete_cells_down_rng(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     doc = Calc.create_doc(loader)
     try:
         sheet = Calc.get_active_sheet(doc)
@@ -1269,7 +1269,7 @@ def test_delete_cells_down_rng_postional(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     doc = Calc.create_doc(loader)
     try:
         sheet = Calc.get_active_sheet(doc)
@@ -1290,7 +1290,7 @@ def test_delete_cells_left(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1316,7 +1316,7 @@ def test_delete_cells_left(loader) -> None:
 def test_clear_cells(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc, CellFlagsEnum
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.events.lo_events import Events, is_meth_event
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_args import CellArgs
@@ -1552,7 +1552,7 @@ def test_set_val(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1600,11 +1600,11 @@ def test_set_val_style(loader) -> None:
     from ooodev.format.calc.direct.cell.borders import Borders, Side, Padding
     from ooodev.office.calc import Calc
     from ooodev.utils.color import StandardColor
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.loader.lo import Lo
     from ooodev.units import UnitMM100
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1641,7 +1641,7 @@ def test_get_val(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1693,7 +1693,7 @@ def test_get_num(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1765,7 +1765,7 @@ def test_get_str(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1844,7 +1844,7 @@ def test_set_array_by_range(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.utils.table_helper import TableHelper
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -1890,7 +1890,7 @@ def test_set_array_by_cell(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
@@ -1938,7 +1938,7 @@ def test_set_array(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
@@ -2017,7 +2017,7 @@ def test_set_array_style(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.utils.color import StandardColor
     from ooodev.utils.data_type.range_obj import RangeObj
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.loader.lo import Lo
 
     def arr_cb(row: int, col: int, prev_val) -> float:
@@ -2025,7 +2025,7 @@ def test_set_array_style(loader) -> None:
             return 1.0
         return prev_val + 1.0
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
@@ -2072,7 +2072,7 @@ def test_get_array(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
@@ -2159,7 +2159,7 @@ def test_get_float_array(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
     from ooodev.utils.table_helper import TableHelper
 
     assert loader is not None
@@ -2184,7 +2184,7 @@ def test_get_set_col(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -2249,7 +2249,7 @@ def test_get_set_row(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -2312,7 +2312,7 @@ def test_set_date(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -2334,7 +2334,7 @@ def test_annotation(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -2369,7 +2369,7 @@ def test_get_cell(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -3284,7 +3284,7 @@ def test_add_remove_border(loader) -> None:
     from ooodev.utils.props import Props
     from ooodev.utils import color
     from com.sun.star.table import TableBorder2
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0  # 300
@@ -3566,7 +3566,7 @@ def test_add_remove_border(loader) -> None:
 def test_highlight_range(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.utils.color import CommonColor
     from ooodev.events.lo_events import event_ctx, EventArg
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -3748,7 +3748,7 @@ def test_set_row_height(loader) -> None:
 def test_scenarios(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = False
     delay = 0

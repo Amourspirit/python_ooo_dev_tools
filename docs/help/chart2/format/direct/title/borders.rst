@@ -181,6 +181,6 @@ Related Topics
         - :ref:`part05`
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`CalcSheet.dispatch_recalculate() <ooodev.calc.calc_sheet.CalcSheet.dispatch_recalculate>`
