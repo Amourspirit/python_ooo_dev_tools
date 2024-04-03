@@ -50,3 +50,27 @@ class NamedPartial:
         self.__component.setName(name)
 
     # endregion XNamed
+
+
+def get_builder(component: Any, lo_inst: Any = None) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+        lo_inst (Any, optional): Lo Instance. Defaults to None.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component, lo_inst)
+    builder.add_import(
+        name="ooodev.adapter.container.named_partial.NamedPartial",
+        uno_name="com.sun.star.container.XNamed",
+        optional=False,
+        init_kind=2,
+    )
+    return builder

@@ -414,12 +414,29 @@ class Lo(metaclass=StaticProperty):
     @overload
     @classmethod
     def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True], *args: Any
+    ) -> T: ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
         cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
+    ) -> T | None: ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False], *args: Any
     ) -> T | None: ...
 
     @classmethod
     def create_instance_msf(
-        cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+        cls,
+        atype: Type[T],
+        service_name: str,
+        msf: XMultiServiceFactory | None = None,
+        raise_err: bool = False,
+        *args: Any,
     ) -> T | None:
         """
         Creates an instance classified by the specified service name and
@@ -435,6 +452,7 @@ class Lo(metaclass=StaticProperty):
             service_name (str): Service name
             msf (XMultiServiceFactory, optional): Multi service factory used to create instance
             raise_err (bool, optional): If ``True`` then can raise CreateInstanceMsfError or MissingInterfaceError. Default is ``False``
+            args (Any, optional): Arguments to pass to instance
 
         Raises:
             CreateInstanceMsfError: If ``raise_err`` is ``True`` and no instance was created
@@ -455,11 +473,13 @@ class Lo(metaclass=StaticProperty):
                 from com.sun.star.sheet import XSheetCellRangeContainer
                 src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
 
+        .. versionchanged:: 0.40.0
+            Added args parameter
         """
         if raise_err:
-            return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err)
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err, *args)
         else:
-            return cls._lo_inst.create_instance_msf(atype, service_name, msf)
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf, False, *args)
 
     # endregion create_instance_msf()
 

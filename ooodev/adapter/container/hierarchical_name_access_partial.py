@@ -57,3 +57,27 @@ class HierarchicalNameAccessPartial(Generic[T]):
         return self.__component.hasByHierarchicalName(name)
 
     # endregion XHierarchicalNameAccess
+
+
+def get_builder(component: Any, lo_inst: Any = None) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+        lo_inst (Any, optional): Lo Instance. Defaults to None.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component, lo_inst)
+    builder.add_import(
+        name="ooodev.adapter.container.hierarchical_name_access_partial.HierarchicalNameAccessPartial",
+        uno_name="com.sun.star.container.XHierarchicalNameAccess",
+        optional=False,
+        init_kind=2,
+    )
+    return builder

@@ -2,30 +2,28 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 
-from com.sun.star.container import XChild
+from com.sun.star.beans import XExactName
+
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
-    from com.sun.star.uno import XInterface
 
 
-class ChildPartial:
+class ExactNamePartial:
     """
-    Partial class for XChild.
+    Partial class for XExactName.
     """
 
-    # pylint: disable=unused-argument
-
-    def __init__(self, component: XChild, interface: UnoInterface | None = XChild) -> None:
+    def __init__(self, component: XExactName, interface: UnoInterface | None = XExactName) -> None:
         """
         Constructor
 
         Args:
-            component (XChild): UNO Component that implements ``com.sun.star.container.XChild`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XChild``.
+            component (XExactName): UNO Component that implements ``com.sun.star.container.XExactName`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XExactName``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:
@@ -37,16 +35,15 @@ class ChildPartial:
         validate(component, interface)
         self.__component = component
 
-    # region XChild
-    def get_parent(self) -> XInterface:
-        """Returns the parent of the object."""
-        return self.__component.getParent()
+    # region XExactName
 
-    def set_parent(self, parent: XInterface) -> None:
-        """Sets the parent of the object."""
-        self.__component.setParent(parent)
+    def get_exact_name(self, approximate_name: str) -> str:
+        """
+        For example ``getExactName`` could be returned for ``GETEXACTNAME`` when ``GETEXACTNAME`` was used by a case insensitive scripting language.
+        """
+        return self.__component.getExactName(approximate_name)
 
-    # endregion XChild
+    # endregion XExactName
 
 
 def get_builder(component: Any, lo_inst: Any = None) -> Any:
@@ -65,8 +62,8 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
 
     builder = DefaultBuilder(component, lo_inst)
     builder.add_import(
-        name="ooodev.adapter.container.child_partial.ChildPartial",
-        uno_name="com.sun.star.container.XChild",
+        name="ooodev.adapter.beans.exact_name_partial.ExactNamePartial",
+        uno_name="com.sun.star.beans.XExactName",
         optional=False,
         init_kind=2,
     )

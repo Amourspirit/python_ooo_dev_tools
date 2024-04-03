@@ -11,6 +11,7 @@
 from __future__ import annotations
 import contextlib
 from datetime import datetime, timezone
+from symbol import factor
 import time
 from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
 from urllib.parse import urlparse
@@ -446,23 +447,41 @@ class LoInst(EventsPartial):
 
     @overload
     def create_instance_msf(
+        self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True], *args: Any
+    ) -> T: ...
+
+    @overload
+    def create_instance_msf(
         self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
     ) -> T | None: ...
 
+    @overload
     def create_instance_msf(
-        self, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+        self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False], *args: Any
+    ) -> T | None: ...
+
+    def create_instance_msf(
+        self,
+        atype: Type[T],
+        service_name: str,
+        msf: XMultiServiceFactory | None = None,
+        raise_err: bool = False,
+        *args: Any,
     ) -> T | None:  # sourcery skip: raise-specific-error
         # in a multi document environment, get the multi service factory from the current document
-        doc = self.desktop.get_current_component()
-        ms_factory = self.qi(XMultiServiceFactory, doc)
+        if msf is None:
+            doc = self.desktop.get_current_component()
+            factory = self.qi(XMultiServiceFactory, doc)
+            if factory is None:
+                raise Exception("No document found")
+        else:
+            factory = msf
 
-        if ms_factory is None:
-            raise Exception("No document found")
         try:
-            if msf is None:
-                obj = ms_factory.createInstance(service_name)
+            if args:
+                obj = factory.createInstanceWithArguments(service_name, args)
             else:
-                obj = msf.createInstance(service_name)
+                obj = factory.createInstance(service_name)
             if raise_err and obj is None:
                 raise mEx.CreateInstanceMsfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)

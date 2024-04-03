@@ -1,31 +1,29 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Tuple
 import uno
 
-from com.sun.star.container import XChild
+from com.sun.star.beans import XProperty
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from com.sun.star.beans import Property  # struct
     from ooodev.utils.type_var import UnoInterface
-    from com.sun.star.uno import XInterface
 
 
-class ChildPartial:
+class PropertyPartial:
     """
-    Partial class for XChild.
+    Partial class for XProperty.
     """
 
-    # pylint: disable=unused-argument
-
-    def __init__(self, component: XChild, interface: UnoInterface | None = XChild) -> None:
+    def __init__(self, component: XProperty, interface: UnoInterface | None = XProperty) -> None:
         """
         Constructor
 
         Args:
-            component (XChild): UNO Component that implements ``com.sun.star.container.XChild`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XChild``.
+            component (XProperty): UNO Component that implements ``com.sun.star.bean.XProperty`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XProperty``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:
@@ -37,16 +35,15 @@ class ChildPartial:
         validate(component, interface)
         self.__component = component
 
-    # region XChild
-    def get_parent(self) -> XInterface:
-        """Returns the parent of the object."""
-        return self.__component.getParent()
+    # region XProperty
 
-    def set_parent(self, parent: XInterface) -> None:
-        """Sets the parent of the object."""
-        self.__component.setParent(parent)
+    def get_as_property(self) -> Property:
+        """
+        Gets the property.
+        """
+        return self.__component.getAsProperty()
 
-    # endregion XChild
+    # endregion XProperty
 
 
 def get_builder(component: Any, lo_inst: Any = None) -> Any:
@@ -65,8 +62,8 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
 
     builder = DefaultBuilder(component, lo_inst)
     builder.add_import(
-        name="ooodev.adapter.container.child_partial.ChildPartial",
-        uno_name="com.sun.star.container.XChild",
+        name="ooodev.adapter.beans.property_partial.PropertyPartial",
+        uno_name="com.sun.star.beans.XProperty",
         optional=False,
         init_kind=2,
     )

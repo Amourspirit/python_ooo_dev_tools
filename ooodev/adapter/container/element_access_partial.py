@@ -51,3 +51,28 @@ class ElementAccessPartial:
         return self.__component.hasElements()
 
     # endregion XElementAccess
+
+
+def get_builder(component: Any, lo_inst: Any = None) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+        lo_inst (Any, optional): Lo Instance. Defaults to None.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component, lo_inst)
+    this_name = "ooodev.adapter.container.element_access_partial.ElementAccessPartial"
+    builder.add_import(
+        name=this_name,
+        uno_name="com.sun.star.container.XNameAccess",
+        optional=False,
+        init_kind=2,
+    )
+    return builder
