@@ -1,5 +1,8 @@
+from math import e
+from multiprocessing import Value
 import sys
 import inspect
+import types
 import typing
 import ast
 from contextlib import contextmanager
@@ -99,6 +102,17 @@ class _ImportFromSourceChecker(NodeVisitor):
         else:
             self._module_file = ""
 
+    def _test_if_module_import(self, module_to_import: str) -> bool:
+        try:
+            module = import_module(module_to_import)
+        except ImportError:
+            return False
+        if module_to_import != module.__name__:
+            raise ValueError(
+                f"Imported Module {module_to_import} does not match actual module name: {module.__name__}"
+            )
+        return True
+
     def visit_ImportFrom(self, node: ImportFrom) -> Any:
         # Check that there are no relative imports that attempt to read from a parent module. We've found that there
         # generally is no good reason to have such imports.
@@ -145,7 +159,19 @@ class _ImportFromSourceChecker(NodeVisitor):
             #     TableProperties,
             # )
             # see: ooodev.format.inner.partial.write.table.write_table_properties_partial.WriteTablePropertiesPartial
-            assert hasattr(module, alias.name), f"No alias name attr: {self._module_file}"
+            if not hasattr(module, alias.name):
+                try:
+                    if self._test_if_module_import(f"{module_to_import}.{alias.name}"):
+                        continue
+                except Exception as e:
+                    raise ValueError(
+                        f"Test alias.name of {alias.name} as module has failed: {self._module_file}. {self._module_file}"
+                    ) from e
+
+                raise ValueError(
+                    f"NO alias name attr: {self._module_file}. {self._module_file} "
+                    f"Imported {alias.name} from {module_to_import}."
+                )
             attr = getattr(module, alias.name)
 
             # For some objects (pretty much everything except for classes and functions), we are not able to figure

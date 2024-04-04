@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import uno
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -108,3 +108,9 @@ class RefreshEvents:
         return self.__listener
 
     # endregion Manage Events
+
+
+def on_lazy_cb(source: Any, event: ListenerEventArgs, comp: XRefreshable, inst: RefreshEvents) -> None:
+    # will only ever fire once
+    comp.addRefreshListener(inst.events_listener_refresh)
+    event.remove_callback = True

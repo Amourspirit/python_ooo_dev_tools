@@ -30,7 +30,10 @@ class ConfigurationProviderComp(ComponentBase, MultiServiceFactoryPartial):
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.ConfigurationProvider",)
+        return (
+            "com.sun.star.configuration.ConfigurationProvider",
+            "com.sun.star.configuration.DefaultProvider",
+        )
 
     # endregion Overrides
 
