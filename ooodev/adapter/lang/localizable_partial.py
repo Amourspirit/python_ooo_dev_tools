@@ -2,27 +2,28 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 
-from com.sun.star.configuration import XTemplateContainer
+from com.sun.star.lang import XLocalizable
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from com.sun.star.lang import Locale
     from ooodev.utils.type_var import UnoInterface
 
 
-class TemplateContainerPartial:
+class LocalizablePartial:
     """
-    Partial class for XTemplateContainer.
+    Partial class for ``XLocalizable``.
     """
 
-    def __init__(self, component: XTemplateContainer, interface: UnoInterface | None = XTemplateContainer) -> None:
+    def __init__(self, component: XLocalizable, interface: UnoInterface | None = XLocalizable) -> None:
         """
         Constructor
 
         Args:
-            component (XTemplateContainer): UNO Component that implements ``com.sun.star.configuration.XTemplateContainer`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTemplateContainer``.
+            component (XLocalizable  ): UNO Component that implements ``com.sun.star.lang.XLocalizable  `` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XLocalizable  ``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:
@@ -34,19 +35,20 @@ class TemplateContainerPartial:
         validate(component, interface)
         self.__component = component
 
-    # region XTemplateContainer
-
-    def get_element_template_name(self) -> str:
+    # region XLocalizable
+    def get_locale(self) -> Locale:
         """
-        Gets the name of the template
-
-        If instances of multiple templates are accepted by the container, this is the name of the basic or primary template.
-
-        Instances of the template must be created using an appropriate factory.
+        returns the locale of the object.
         """
-        return self.__component.getElementTemplateName()
+        return self.__component.getLocale()
 
-    # endregion XTemplateContainer
+    def setLocale(self, value: Locale) -> None:
+        """
+        Sets the locale to be used by this object.
+        """
+        self.__component.setLocale(value)
+
+    # endregion XLocalizable
 
 
 def get_builder(component: Any, lo_inst: Any = None) -> Any:
@@ -64,5 +66,5 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component, lo_inst)
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer", False)
+    builder.auto_add_interface("com.sun.star.lang.XLocalizable", False)
     return builder

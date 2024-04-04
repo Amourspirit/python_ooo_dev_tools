@@ -204,6 +204,10 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         """Get the list of BuildImportArg."""
         return list(self._build_args.keys())
 
+    def get_events(self) -> List[BuildEventArg]:
+        """Get the list of BuildImportArg."""
+        return list(self._event_args.keys())
+
     def add_from_instance(self, instance: DefaultBuilder, make_optional: bool = False) -> None:
         """
         Add the builders from another instance.
@@ -224,6 +228,20 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             else:
                 cp = copy.copy(arg)
                 self.add_build_arg(cp)
+
+        for arg in instance.get_events():
+            if make_optional:
+                self.add_event(
+                    module_name=arg.module_name,
+                    class_name=arg.class_name,
+                    callback_name=arg.callback_name,
+                    uno_name=arg.uno_name,
+                    optional=True,
+                    check_kind=arg.check_kind,
+                )
+            else:
+                cp = copy.copy(arg)
+                self.add_event_arg(cp)
         self.omits.update(instance.omits)
 
     def add_ooodev_builder(

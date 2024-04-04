@@ -58,31 +58,43 @@ class HierarchyAccessComp(
     # endregion Properties
 
 
-def get_builder(component: Any, lo_inst: Any = None) -> Any:
+def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
     # pylint: disable=import-outside-toplevel
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component, lo_inst)
+    local = kwargs.get("local", False)
 
     # region Excludes
     na_ex = cast(DefaultBuilder, name_access_partial.get_builder(component, lo_inst))
-    builder.set_omit(*na_ex.get_import_names())
     ha_ex = cast(DefaultBuilder, hierarchical_name_access_partial.get_builder(component, lo_inst))
-    builder.set_omit(*ha_ex.get_import_names())
     container_ex = cast(DefaultBuilder, container_partial.get_builder(component, lo_inst))
-    builder.set_omit(*container_ex.get_import_names())
     exact_ex = cast(DefaultBuilder, exact_name_partial.get_builder(component, lo_inst))
-    builder.set_omit(*exact_ex.get_import_names())
+    builder.omits.update(na_ex.omits)
+    builder.omits.update(ha_ex.omits)
+    builder.omits.update(container_ex.omits)
+    builder.omits.update(exact_ex.omits)
+
+    if local:
+        builder.set_omit(*na_ex.get_import_names())
+        builder.set_omit(*ha_ex.get_import_names())
+        builder.set_omit(*container_ex.get_import_names())
+        builder.set_omit(*exact_ex.get_import_names())
+    else:
+        builder.add_from_instance(na_ex, make_optional=True)
+        builder.add_from_instance(ha_ex, make_optional=True)
+        builder.add_from_instance(container_ex, make_optional=True)
+        builder.add_from_instance(exact_ex, make_optional=True)
     # endregion Excludes
 
     # in a from_lo method in this class the HierarchyAccessComp would be removed and used as the base class
 
-    builder.add_import(
-        name="ooodev.adapter.configuration.hierarchy_access_comp.HierarchyAccessComp",
-        uno_name="com.sun.star.configuration.HierarchyAccess",
-        optional=False,
-        init_kind=1,
-    )
+    # builder.add_import(
+    #     name="ooodev.adapter.configuration.hierarchy_access_comp.HierarchyAccessComp",
+    #     uno_name="com.sun.star.configuration.HierarchyAccess",
+    #     optional=False,
+    #     init_kind=1,
+    # )
     builder.add_import(
         name="ooodev.adapter.beans.property_set_info_partial.PropertySetInfoPartial",
         uno_name="com.sun.star.beans.XPropertySetInfo",
@@ -96,6 +108,12 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     builder.add_import(
         name="ooodev.adapter.beans.multi_property_states_partial.MultiPropertyStatesPartial",
         uno_name="com.sun.star.beans.XMultiPropertyStates",
+        optional=True,
+    )
+    builder.add_event(
+        module_name="ooodev.adapter.container.container_events",
+        class_name="ContainerEvents",
+        uno_name="com.sun.star.container.XContainer",
         optional=True,
     )
     return builder

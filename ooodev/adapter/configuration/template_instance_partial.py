@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
 
-from com.sun.star.configuration import XTemplateContainer
+from com.sun.star.configuration import XTemplateInstance
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
@@ -11,18 +11,18 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
 
 
-class TemplateContainerPartial:
+class TemplateInstancePartial:
     """
-    Partial class for XTemplateContainer.
+    Partial class for XTemplateInstance.
     """
 
-    def __init__(self, component: XTemplateContainer, interface: UnoInterface | None = XTemplateContainer) -> None:
+    def __init__(self, component: XTemplateInstance, interface: UnoInterface | None = XTemplateInstance) -> None:
         """
         Constructor
 
         Args:
-            component (XTemplateContainer): UNO Component that implements ``com.sun.star.configuration.XTemplateContainer`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTemplateContainer``.
+            component (XTemplateInstance): UNO Component that implements ``com.sun.star.configuration.XTemplateInstance`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTemplateInstance``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:
@@ -34,19 +34,15 @@ class TemplateContainerPartial:
         validate(component, interface)
         self.__component = component
 
-    # region XTemplateContainer
+    # region XTemplateInstance
 
-    def get_element_template_name(self) -> str:
+    def get_template_name(self) -> str:
         """
         Gets the name of the template
-
-        If instances of multiple templates are accepted by the container, this is the name of the basic or primary template.
-
-        Instances of the template must be created using an appropriate factory.
         """
-        return self.__component.getElementTemplateName()
+        return self.__component.getTemplateName()
 
-    # endregion XTemplateContainer
+    # endregion XTemplateInstance
 
 
 def get_builder(component: Any, lo_inst: Any = None) -> Any:
@@ -64,5 +60,5 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component, lo_inst)
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer", False)
+    builder.auto_add_interface("com.sun.star.configuration.XTemplateInstance", False)
     return builder

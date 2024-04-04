@@ -1,28 +1,29 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno
-
-from com.sun.star.configuration import XTemplateContainer
-
+from com.sun.star.util import XChangesNotifier
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
+    from com.sun.star.util import XChangesListener
 
 
-class TemplateContainerPartial:
+class ChangesNotifierPartial:
     """
-    Partial class for XTemplateContainer.
+    Partial Class XChangesNotifier.
     """
 
-    def __init__(self, component: XTemplateContainer, interface: UnoInterface | None = XTemplateContainer) -> None:
+    # pylint: disable=unused-argument
+
+    def __init__(self, component: XChangesNotifier, interface: UnoInterface | None = XChangesNotifier) -> None:
         """
         Constructor
 
         Args:
-            component (XTemplateContainer): UNO Component that implements ``com.sun.star.configuration.XTemplateContainer`` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTemplateContainer``.
+            component (XChangesNotifier): UNO Component that implements ``com.sun.star.util.XChangesNotifier`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XChangesNotifier``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:
@@ -34,19 +35,20 @@ class TemplateContainerPartial:
         validate(component, interface)
         self.__component = component
 
-    # region XTemplateContainer
-
-    def get_element_template_name(self) -> str:
+    # region XChangesNotifier
+    def add_changes_listener(self, listener: XChangesListener) -> None:
         """
-        Gets the name of the template
-
-        If instances of multiple templates are accepted by the container, this is the name of the basic or primary template.
-
-        Instances of the template must be created using an appropriate factory.
+        Adds the specified listener to receive events when changes occurred.
         """
-        return self.__component.getElementTemplateName()
+        self.__component.addChangesListener(listener)
 
-    # endregion XTemplateContainer
+    def remove_changes_listener(self, listener: XChangesListener) -> None:
+        """
+        Removes the specified listener.
+        """
+        self.__component.removeChangesListener(listener)
+
+    # endregion XChangesNotifier
 
 
 def get_builder(component: Any, lo_inst: Any = None) -> Any:
@@ -64,5 +66,5 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component, lo_inst)
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer", False)
+    builder.auto_add_interface("com.sun.star.util.XChangesNotifier", False)
     return builder

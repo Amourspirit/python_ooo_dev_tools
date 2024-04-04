@@ -1,6 +1,4 @@
 from __future__ import annotations
-from calendar import c
-from pydoc import classname
 from typing import Any, cast, TYPE_CHECKING
 import uno
 from com.sun.star.lang import XMultiServiceFactory
@@ -18,6 +16,8 @@ from ooodev.adapter.beans import property_state_partial
 from ooodev.adapter.beans import multi_property_states_partial
 from ooodev.adapter.beans import property_with_state_partial
 from ooodev.adapter.container import child_partial
+from ooodev.adapter.configuration import hierarchy_element_comp
+from ooodev.adapter.configuration import hierarchy_access_comp
 
 
 if TYPE_CHECKING:
@@ -141,6 +141,7 @@ def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
     local = kwargs.get("local", False)
 
     # region exclude local builders
+
     inc_hnp = cast(DefaultBuilder, hierarchical_name_partial.get_builder(component, lo_inst))
     inc_ha = cast(DefaultBuilder, hierarchical_name_access_partial.get_builder(component, lo_inst))
     inc_np = cast(DefaultBuilder, named_partial.get_builder(component, lo_inst))
@@ -188,19 +189,41 @@ def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
     # builder.set_omit("ooodev.utils.partial.interface_partial.InterfacePartial")
     # endregion exclude other builders
 
+    hac_builder = hierarchy_access_comp.get_builder(component, lo_inst)
+    builder.add_from_instance(hac_builder, make_optional=True)
+
+    hec_builder = hierarchy_element_comp.get_builder(component, lo_inst)
+    builder.add_from_instance(hec_builder, make_optional=True)
+
     if mInfo.Info.support_service(component, "com.sun.star.configuration.SetAccess"):
+        # com.sun.star.configuration.SetAccess service includes...
+        #  com.sun.star.configuration.HierarchyAccess service
+        #  com.sun.star.configuration.SimpleSetAccess service
+        #  com.sun.star.container.XContainer          interface
         from ooodev.adapter.configuration import set_access_comp
 
         builder.add_from_instance(set_access_comp.get_builder(component, lo_inst), make_optional=False)
 
-    # builder.add_import(
-    #     name="ooodev.adapter.beans.property_set_info_partial.PropertySetInfoPartial",
-    #     uno_name="com.sun.star.beans.XPropertySetInfo",
-    #     optional=True,
-    # )
-    builder.auto_add_interface("com.sun.star.beans.XPropertySetInfo")
-    builder.auto_add_interface("com.sun.star.beans.XPropertyState")
-    builder.auto_add_interface("com.sun.star.beans.XMultiPropertyStates")
+    if mInfo.Info.support_service(component, "com.sun.star.configuration.GroupAccess"):
+        from ooodev.adapter.configuration import group_access_comp
+
+        builder.add_from_instance(group_access_comp.get_builder(component, lo_inst), make_optional=False)
+
+    if mInfo.Info.support_service(component, "com.sun.star.configuration.AccessRootElement"):
+        from ooodev.adapter.configuration import access_root_element_comp
+
+        builder.add_from_instance(access_root_element_comp.get_builder(component, lo_inst), make_optional=False)
+
+    if mInfo.Info.support_service(component, "com.sun.star.configuration.SetElement"):
+        from ooodev.adapter.configuration import set_element_comp
+
+        builder.add_from_instance(set_element_comp.get_builder(component, lo_inst), make_optional=False)
+
+    if mInfo.Info.support_service(component, "com.sun.star.configuration.GroupElement"):
+        from ooodev.adapter.configuration import group_element_comp
+
+        builder.add_from_instance(group_element_comp.get_builder(component, lo_inst), make_optional=False)
+
     builder.auto_add_interface("com.sun.star.util.XRefreshable")
 
     # ooodev.adapter.util.refresh_events
