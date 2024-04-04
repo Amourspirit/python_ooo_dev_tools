@@ -193,26 +193,16 @@ def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
 
         builder.add_from_instance(set_access_comp.get_builder(component, lo_inst), make_optional=False)
 
-    builder.add_import(
-        name="ooodev.adapter.beans.property_set_info_partial.PropertySetInfoPartial",
-        uno_name="com.sun.star.beans.XPropertySetInfo",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.beans.property_state_partial.PropertyStatePartial",
-        uno_name="com.sun.star.beans.XPropertyState",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.beans.multi_property_states_partial.MultiPropertyStatesPartial",
-        uno_name="com.sun.star.beans.XMultiPropertyStates",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.util.refreshable_partial.RefreshablePartial",
-        uno_name="com.sun.star.util.XRefreshable",
-        optional=True,
-    )
+    # builder.add_import(
+    #     name="ooodev.adapter.beans.property_set_info_partial.PropertySetInfoPartial",
+    #     uno_name="com.sun.star.beans.XPropertySetInfo",
+    #     optional=True,
+    # )
+    builder.auto_add_interface("com.sun.star.beans.XPropertySetInfo")
+    builder.auto_add_interface("com.sun.star.beans.XPropertyState")
+    builder.auto_add_interface("com.sun.star.beans.XMultiPropertyStates")
+    builder.auto_add_interface("com.sun.star.util.XRefreshable")
+
     # ooodev.adapter.util.refresh_events
     builder.add_event(
         module_name="ooodev.adapter.util.refresh_events",

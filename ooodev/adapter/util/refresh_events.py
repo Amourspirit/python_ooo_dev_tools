@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import cast, Any, TYPE_CHECKING
 import uno
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -110,7 +110,29 @@ class RefreshEvents:
     # endregion Manage Events
 
 
-def on_lazy_cb(source: Any, event: ListenerEventArgs, comp: XRefreshable, inst: RefreshEvents) -> None:
+def on_lazy_cb(source: Any, event: ListenerEventArgs) -> None:
+    """
+    Callback that is invoked when an event is added or removed.
+
+    This method is generally used to add the listener to the component in a lazy manner.
+    This means this callback will only be called once in the lifetime of the component.
+
+    Args:
+        source (Any): Expected to be an instance of RefreshEvents that is a partial class of a component based class.
+        event (ListenerEventArgs): Event arguments.
+
+    Returns:
+        None:
+
+    Warning:
+        This method is intended for internal use only.
+    """
     # will only ever fire once
-    comp.addRefreshListener(inst.events_listener_refresh)
+    if not isinstance(source, RefreshEvents):
+        return
+    if not hasattr(source, "component"):
+        return
+
+    comp = cast("XRefreshable", source.component)  # type: ignore
+    comp.addRefreshListener(source.events_listener_refresh)
     event.remove_callback = True

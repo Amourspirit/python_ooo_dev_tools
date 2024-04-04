@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -108,3 +108,31 @@ class PrintJobEvents:
         return self.__listener
 
     # endregion Manage Events
+
+
+def on_lazy_cb(source: Any, event: ListenerEventArgs) -> None:
+    """
+    Callback that is invoked when an event is added or removed.
+
+    This method is generally used to add the listener to the component in a lazy manner.
+    This means this callback will only be called once in the lifetime of the component.
+
+    Args:
+        source (Any): Expected to be an instance of PrintJobEvents that is a partial class of a component based class.
+        event (ListenerEventArgs): Event arguments.
+
+    Returns:
+        None:
+
+    Warning:
+        This method is intended for internal use only.
+    """
+    # will only ever fire once
+    if not isinstance(source, PrintJobEvents):
+        return
+    if not hasattr(source, "component"):
+        return
+
+    comp = cast("XPrintJobBroadcaster", source.component)  # type: ignore
+    comp.addPrintJobListener(source.events_listener_print_job)
+    event.remove_callback = True

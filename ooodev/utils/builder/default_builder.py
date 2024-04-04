@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import copy
 import importlib
 import types
+
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
@@ -12,6 +13,7 @@ from ooodev.utils.builder.build_event_arg import BuildEventArg
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils import gen_util as gUtil
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -144,10 +146,11 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
     def _init_event_class(self, instance: Any, mod: types.ModuleType, arg: BuildEventArg) -> Any:
         # after instance is created, we need to callback to the module on_lazy_cb()
         clz = getattr(mod, arg.class_name)
+        trigger_args = GenericArgs(src_comp=self._component, src_instance=instance)
         cb = getattr(mod, arg.callback_name)
-        obj = clz.__new__(clz)  # type: ignore
-        trigger_args = GenericArgs(comp=self._component, inst=obj)
-        obj.__init__(trigger_args=trigger_args, cb=cb)
+        # obj = clz.__new__(clz)  # type: ignore
+        # obj.__init__(trigger_args=trigger_args, cb=cb)
+        clz.__init__(instance, trigger_args=trigger_args, cb=cb)  # type: ignore
 
     def _create_class(self, clz: Type[Any], kind: InitKind) -> Any:
         if kind == InitKind.COMPONENT:
@@ -178,6 +181,16 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             return base_class
         else:
             return type(name, tuple(bases), kwargs)
+
+    def _convert_to_ooodev(self, name: str) -> str:
+        # sample input: com.sun.star.beans.XExactName
+        suffix = name.replace("com.sun.star.", "")  # beans.XExactName
+        ns, class_name = suffix.rsplit(".", 1)  #  beans, XExactName
+        if class_name.startswith("X"):
+            class_name = class_name[1:]  # ExactName
+        odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.to_snake_case(class_name)}_partial"
+        odev_class = f"{class_name}Partial"
+        return f"{odev_ns}.{odev_class}"
 
     def add_build_arg(self, *args: BuildImportArg) -> None:
         for arg in args:
@@ -260,6 +273,16 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
                 del self._event_args[arg]
                 break
 
+    def auto_add_interface(self, uno_name: str, optional: bool = True) -> None:
+        """
+        Add an import from a UNO name.
+
+        Args:
+            uno_name (str): UNO Name. such as ``com.sun.star.container.XIndexAccess``.
+        """
+        name = self._convert_to_ooodev(uno_name)
+        self.add_import(name=name, uno_name=uno_name, optional=optional, check_kind=CheckKind.INTERFACE)
+
     def add_import(
         self,
         name: str,
@@ -321,7 +344,7 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         callback_name: str = "on_lazy_cb",
         uno_name: str | Tuple[str] = "",
         optional: bool = False,
-        check_kind: CheckKind | int = CheckKind.NONE,
+        check_kind: CheckKind | int = CheckKind.INTERFACE,
     ) -> BuildEventArg:
         """
         Add an import to the builder.
@@ -332,7 +355,7 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             callback_name (str): Callback name such as ``on_lazy_cb``.
             uno_name (str, optional): UNO Name. such as ``com.sun.star.container.XIndexAccess``.
             optional (bool, optional): Specifies if the import is optional. Defaults to ``False``.
-            check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.NONE``.
+            check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.INTERFACE``.
 
         Returns:
             BuildImportArg: _description_
