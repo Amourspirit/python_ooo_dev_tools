@@ -68,11 +68,5 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component, lo_inst)
-    this_name = "ooodev.adapter.container.element_access_partial.ElementAccessPartial"
-    builder.add_import(
-        name=this_name,
-        uno_name="com.sun.star.container.XNameAccess",
-        optional=False,
-        init_kind=2,
-    )
+    builder.auto_add_interface("com.sun.star.container.XNameAccess", False)
     return builder

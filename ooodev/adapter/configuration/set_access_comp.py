@@ -104,24 +104,8 @@ def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
     builder.set_omit(*ex_el.get_import_names())
     # endregion exclude other builders
 
-    builder.add_import(
-        name="ooodev.adapter.container.name_access_partialNameAccessPartial.",
-        uno_name="com.sun.star.container.XNameAccess",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.container.hierarchical_name_access_partial.HierarchicalNameAccessPartial",
-        uno_name="com.sun.star.container.XHierarchicalNameAccess",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.configuration.template_container_partial.TemplateContainerPartial",
-        uno_name="com.sun.star.configuration.XTemplateContainer",
-        optional=True,
-    )
-    builder.add_import(
-        name="ooodev.adapter.util.string_escape_partial.StringEscapePartial",
-        uno_name="com.sun.star.util.XStringEscape",
-        optional=True,
-    )
+    builder.auto_add_interface("com.sun.star.container.XNameAccess")
+    builder.auto_add_interface("com.sun.star.container.XHierarchicalNameAccess")
+    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer")
+    builder.auto_add_interface("com.sun.star.util.XStringEscape")
     return builder

@@ -1,8 +1,12 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Type, Tuple, Set, TYPE_CHECKING
+from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import copy
 import importlib
 import types
+
+import uno
+from com.sun.star.lang import XServiceInfo
+from com.sun.star.lang import XTypeProvider
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
@@ -36,6 +40,18 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         self._build_args: Dict[BuildImportArg, Any] = {}
         self._event_args: Dict[BuildEventArg, Any] = {}
         self._omit: Set[str] = set()
+        self._service_info = mLo.Lo.qi(XServiceInfo, self._component, True)
+        self._type_names = None
+
+    def _get_type_names(self) -> Set[str]:
+        if self._type_names is None:
+            provider = mLo.Lo.qi(XTypeProvider, self._component, True)
+            result: Set[str] = set()
+            component_types = cast(Tuple[Any], provider.getTypes())
+            for t in component_types:
+                result.add(t.typeName)
+            self._type_names = result
+        return self._type_names
 
     def _get_import(self, name: str) -> types.ModuleType:
         return importlib.import_module(name)
@@ -50,10 +66,20 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         return getattr(self._get_import(mod_name), class_name)
 
     def _has_interface(self, *name: str) -> bool:
-        return mLo.Lo.is_uno_interfaces(self._component, *name)
+        type_names = self._get_type_names()
+        for n in name:
+            if n in type_names:
+                return True
+        return False
+        # return mLo.Lo.is_uno_interfaces(self._component, *name)
 
     def _supports_service(self, *name: str) -> bool:
-        return mInfo.Info.support_service(self._component, *name)
+        result = False
+        for srv in name:
+            result = self._service_info.supportsService(srv)
+            if result:
+                break
+        return result
 
     def _get_optional_class(self, arg: BuildImportArg) -> Any:
         if not arg.uno_name:
