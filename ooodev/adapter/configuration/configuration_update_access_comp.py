@@ -13,16 +13,16 @@ from ooodev.utils.partial.interface_partial import InterfacePartial
 from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.configuration import ConfigurationAccess  # service
+    from com.sun.star.configuration import ConfigurationUpdateAccess  # service
 
     # from ooodev.utils.builder.default_builder import DefaultBuilder
     from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
-class _ConfigurationAccessComp(ComponentProp):
+class _ConfigurationUpdateAccessComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _ConfigurationAccessComp):
+        if not isinstance(other, _ConfigurationUpdateAccessComp):
             return False
         if self is other:
             return True
@@ -32,11 +32,11 @@ class _ConfigurationAccessComp(ComponentProp):
 
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.ConfigurationAccess", "com.sun.star.configuration.DefaultProvider")
+        return ("com.sun.star.configuration.ConfigurationUpdateAccess", "com.sun.star.configuration.DefaultProvider")
 
 
-class ConfigurationAccessComp(
-    _ConfigurationAccessComp,
+class ConfigurationUpdateAccessComp(
+    _ConfigurationUpdateAccessComp,
     exact_name_partial.ExactNamePartial,
     property_partial.PropertyPartial,
     InterfacePartial,
@@ -45,7 +45,7 @@ class ConfigurationAccessComp(
     # child_partial.ChildPartial,
 ):
     """
-    Class for managing ConfigurationAccess Component.
+    Class for managing ConfigurationUpdateAccess Component.
 
     Note:
         This is a Dynamic class that is created at runtime.
@@ -70,7 +70,7 @@ class ConfigurationAccessComp(
             return cast(Any, builder)
         inst = builder.build_class(
             name="ooodev.adapter.configuration.configuration_access_comp.ConfigurationAccessComp",
-            base_class=_ConfigurationAccessComp,
+            base_class=_ConfigurationUpdateAccessComp,
         )
 
         return inst
@@ -80,7 +80,7 @@ class ConfigurationAccessComp(
         Constructor
 
         Args:
-            component (Any): UNO Component that supports ``com.sun.star.configuration.ConfigurationAccess`` service.
+            component (Any): UNO Component that supports ``com.sun.star.configuration.ConfigurationUpdateAccess`` service.
         """
         # this it not actually called as __new__ is overridden
         super().__init__(component)
@@ -88,10 +88,10 @@ class ConfigurationAccessComp(
     # region Properties
 
     @property
-    def component(self) -> ConfigurationAccess:
-        """ConfigurationAccess Component"""
+    def component(self) -> ConfigurationUpdateAccess:
+        """ConfigurationUpdateAccess Component"""
         # pylint: disable=no-member
-        return cast("ConfigurationAccess", self._ComponentBase__get_component())  # type: ignore
+        return cast("ConfigurationUpdateAccess", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
 
@@ -119,14 +119,14 @@ class ConfigurationAccessComp(
 
         cp = ConfigurationProviderComp.from_lo(lo_inst=lo_inst)
         inst = cp.create_instance_with_arguments(
-            service_name="com.sun.star.configuration.ConfigurationAccess", *cfg_args
+            service_name="com.sun.star.configuration.ConfigurationUpdateAccess", *cfg_args
         )
 
         # inst = lo_inst.create_instance_mcf(
         #     XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", args=args, raise_err=True
         # )
         # return cls(inst)  # type: ignore
-        return ConfigurationAccessComp(inst)
+        return ConfigurationUpdateAccessComp(inst)
 
 
 def get_builder(component: Any) -> DefaultBuilder:

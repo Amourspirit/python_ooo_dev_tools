@@ -1,19 +1,36 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans import property_with_state_partial
+from ooodev.adapter.configuration import hierarchy_element_comp
 from ooodev.adapter.container import child_partial
 from ooodev.adapter.lang import component_partial
-from ooodev.adapter.util import changes_notifier_partial
 from ooodev.adapter.util import changes_events
+from ooodev.adapter.util import changes_notifier_partial
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import AccessRootElement  # service
 
 
+class _AccessRootElementComp(hierarchy_element_comp._HierarchyElementComp):
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, _AccessRootElementComp):
+            return False
+        if self is other:
+            return True
+        if self.component is other.component:
+            return True
+        return self.component == other.component
+
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
+        """Returns a tuple of supported service names."""
+        return ("com.sun.star.configuration.AccessRootElement",)
+
+
 class AccessRootElementComp(
-    ComponentBase,
+    _AccessRootElementComp,
     property_with_state_partial.PropertyWithStatePartial,
     child_partial.ChildPartial,
     component_partial.ComponentPartial,
@@ -22,9 +39,38 @@ class AccessRootElementComp(
 ):
     """
     Class for managing AccessRootElement Component.
+
+    Note:
+        This is a Dynamic class that is created at runtime.
+        This means that the class is created at runtime and not defined in the source code.
+        In addition, the class may be created with additional classes implemented.
+
+        The Type hints for this class at design time may not be accurate.
+        To check if a class implements a specific interface, use the ``isinstance`` function
+        or :py:meth:`~.InterfacePartial.is_supported_interface` methods which is always available in this class.
     """
 
     # pylint: disable=unused-argument
+
+    def __new__(cls, component: Any, *args, **kwargs):
+        builder = cast(
+            DefaultBuilder,
+            hierarchy_element_comp.HierarchyElementComp.__new__(cls, component, _builder_only=True, *args, **kwargs),
+        )
+
+        local_builder = get_builder(component=component, _for_new=True)
+        builder.merge(local_builder)
+
+        builder_only = kwargs.get("_builder_only", False)
+        if builder_only:
+            # cast to prevent type checker error
+            return cast(Any, builder)
+        inst = builder.build_class(
+            name="ooodev.adapter.configuration.access_root_element_comp.AccessRootElementComp",
+            base_class=_AccessRootElementComp,
+        )
+
+        return inst
 
     def __init__(self, component: Any) -> None:
         """
@@ -33,20 +79,8 @@ class AccessRootElementComp(
         Args:
             component (Any): UNO Component that supports ``com.sun.star.configuration.AccessRootElement`` service.
         """
-
-        ComponentBase.__init__(self, component)
-        property_with_state_partial.PropertyWithStatePartial.__init__(self, component=component, interface=None)
-        child_partial.ChildPartial.__init__(self, component=component, interface=None)
-        component_partial.ComponentPartial.__init__(self, component=component, interface=None)
-        changes_notifier_partial.ChangesNotifierPartial.__init__(self, component=component, interface=None)
-        changes_events.ChangesEvents.__init__(self, cb=changes_events.on_lazy_cb)
-
-    # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.AccessRootElement",)
-
-    # endregion Overrides
+        # this it not actually called as __new__ is overridden
+        pass
 
     # region Properties
 
@@ -59,40 +93,24 @@ class AccessRootElementComp(
     # endregion Properties
 
 
-def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
-    # pylint: disable=import-outside-toplevel
-    from ooodev.utils.builder.default_builder import DefaultBuilder
+def get_builder(component: Any, **kwargs) -> DefaultBuilder:
 
-    builder = DefaultBuilder(component, lo_inst)
-
-    local = kwargs.get("local", False)
-
-    pwsp = cast(DefaultBuilder, property_with_state_partial.get_builder(component, lo_inst))
-    cpp = cast(DefaultBuilder, child_partial.get_builder(component, lo_inst))
-    cp = cast(DefaultBuilder, component_partial.get_builder(component, lo_inst))
-    cn = cast(DefaultBuilder, changes_notifier_partial.get_builder(component, lo_inst))
-    builder.omits.update(pwsp.omits)
-    builder.omits.update(cpp.omits)
-    builder.omits.update(cp.omits)
-    builder.omits.update(cn.omits)
-
-    if local:
-        builder.set_omit(*pwsp.get_import_names())
-        builder.set_omit(*cpp.get_import_names())
-        builder.set_omit(*cp.get_import_names())
-        builder.set_omit(*cn.get_import_names())
+    for_new = kwargs.get("_for_new", False)
+    if for_new:
+        builder = DefaultBuilder(component)
     else:
-        builder.add_from_instance(pwsp, make_optional=True)
-        builder.add_from_instance(cpp, make_optional=True)
-        builder.add_from_instance(cp, make_optional=True)
-        builder.add_from_instance(cn, make_optional=True)
-
-    builder.set_omit("ooodev.adapter.util.changes_events.ChangesEvents")
+        builder = hierarchy_element_comp.get_builder(component)
 
     # in a from_lo method in this class the HierarchyAccessComp would be removed and used as the base class
-    builder.auto_add_interface("com.sun.star.container.XHierarchicalName", optional=True)
-    builder.auto_add_interface("com.sun.star.container.XNamed", optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XProperty", optional=True)
-    builder.auto_add_interface("com.sun.star.lang.XLocalizable", optional=True)
+    builder.auto_add_interface("com.sun.star.lang.XComponent")
+    builder.auto_add_interface("com.sun.star.util.XChangesNotifier")
+    builder.auto_add_interface("com.sun.star.lang.XLocalizable")
+
+    builder.add_event(
+        module_name="ooodev.adapter.util.changes_events",
+        class_name="ChangesEvents",
+        uno_name="com.sun.star.util.XChangesNotifier",
+        optional=True,
+    )
 
     return builder

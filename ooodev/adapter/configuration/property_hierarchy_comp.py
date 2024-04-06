@@ -2,22 +2,22 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 from ooodev.adapter import builder_helper
+from ooodev.adapter.beans.hierarchical_property_set_partial import HierarchicalPropertySetPartial
+from ooodev.adapter.beans.multi_hierarchical_property_set_partial import MultiHierarchicalPropertySetPartial
+from ooodev.adapter.beans.multi_property_set_partial import MultiPropertySetPartial
+from ooodev.adapter.beans.property_set_partial import PropertySetPartial
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.adapter.beans.property_state_partial import PropertyStatePartial
-from ooodev.adapter.beans.multi_property_states_partial import MultiPropertyStatesPartial
-from ooodev.adapter.configuration import property_hierarchy_comp
-from ooodev.adapter.configuration import hierarchy_access_comp
 from ooodev.utils.builder.default_builder import DefaultBuilder
 
 
 if TYPE_CHECKING:
-    from com.sun.star.configuration import GroupAccess  # service
+    from com.sun.star.configuration import PropertyHierarchy  # service
 
 
-class _GroupAccessComp(ComponentProp):
+class _PropertyHierarchyComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _GroupAccessComp):
+        if not isinstance(other, _PropertyHierarchyComp):
             return False
         if self is other:
             return True
@@ -27,16 +27,18 @@ class _GroupAccessComp(ComponentProp):
 
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.GroupAccess",)
+        return ("com.sun.star.configuration.PropertyHierarchy",)
 
 
-class GroupAccessComp(
-    _GroupAccessComp,
-    PropertyStatePartial,
-    MultiPropertyStatesPartial,
+class PropertyHierarchyComp(
+    _PropertyHierarchyComp,
+    PropertySetPartial,
+    MultiPropertySetPartial,
+    HierarchicalPropertySetPartial,
+    MultiHierarchicalPropertySetPartial,
 ):
     """
-    Class for managing GroupAccess Component.
+    Class for managing PropertyHierarchy Component.
 
     Note:
         This is a Dynamic class that is created at runtime.
@@ -58,9 +60,10 @@ class GroupAccessComp(
             # cast to prevent type checker error
             return cast(Any, builder)
         inst = builder.build_class(
-            name="ooodev.adapter.configuration.group_access_comp.GroupAccessComp",
-            base_class=_GroupAccessComp,
+            name="ooodev.adapter.configuration.property_hierarchy_comp.PropertyHierarchyComp",
+            base_class=_PropertyHierarchyComp,
         )
+
         return inst
 
     def __init__(self, component: Any) -> None:
@@ -68,28 +71,26 @@ class GroupAccessComp(
         Constructor
 
         Args:
-            component (XNameAccess): UNO Component that implements ``com.sun.star.container.XNameAccess``.
+            component (Any): UNO Component that supports ``com.sun.star.configuration.PropertyHierarchy`` service.
         """
-
         # this it not actually called as __new__ is overridden
         pass
 
     # region Properties
 
     @property
-    def component(self) -> GroupAccess:
-        """GroupAccess Component"""
+    def component(self) -> PropertyHierarchy:
+        """PropertyHierarchy Component"""
         # pylint: disable=no-member
-        return cast("GroupAccess", self._ComponentBase__get_component())  # type: ignore
+        return cast("PropertyHierarchy", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
 
 
 def get_builder(component: Any) -> Any:
     builder = DefaultBuilder(component)
-    builder.merge(property_hierarchy_comp.get_builder(component=component), make_optional=True)
-    builder.merge(hierarchy_access_comp.get_builder(component=component), make_optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XMultiPropertyStates", optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XPropertyState", optional=True)
-
+    builder.auto_add_interface("com.sun.star.beans.XPropertySet")
+    builder.auto_add_interface("com.sun.star.beans.XMultiPropertySet")
+    builder.auto_add_interface("com.sun.star.beans.XHierarchicalPropertySet")
+    builder.auto_add_interface("com.sun.star.beans.XMultiHierarchicalPropertySet")
     return builder

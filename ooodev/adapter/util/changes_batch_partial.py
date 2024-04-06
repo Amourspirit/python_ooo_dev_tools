@@ -69,13 +69,12 @@ class ChangesBatchPartial:
     # endregion XCloneable
 
 
-def get_builder(component: Any, lo_inst: Any = None) -> Any:
+def get_builder(component: Any) -> Any:
     """
     Get the builder for the component.
 
     Args:
         component (Any): The component.
-        lo_inst (Any, optional): Lo Instance. Defaults to None.
 
     Returns:
         DefaultBuilder: Builder instance.
@@ -83,6 +82,6 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     # pylint: disable=import-outside-toplevel
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
-    builder = DefaultBuilder(component, lo_inst)
+    builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.util.XChangesBatch", False)
     return builder

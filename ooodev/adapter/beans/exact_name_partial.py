@@ -46,13 +46,12 @@ class ExactNamePartial:
     # endregion XExactName
 
 
-def get_builder(component: Any, lo_inst: Any = None) -> Any:
+def get_builder(component: Any) -> Any:
     """
     Get the builder for the component.
 
     Args:
         component (Any): The component.
-        lo_inst (Any, optional): Lo Instance. Defaults to None.
 
     Returns:
         DefaultBuilder: Builder instance.
@@ -60,7 +59,7 @@ def get_builder(component: Any, lo_inst: Any = None) -> Any:
     # pylint: disable=import-outside-toplevel
     from ooodev.utils.builder.default_builder import DefaultBuilder
 
-    builder = DefaultBuilder(component, lo_inst)
+    builder = DefaultBuilder(component)
     builder.add_import(
         name="ooodev.adapter.beans.exact_name_partial.ExactNamePartial",
         uno_name="com.sun.star.beans.XExactName",

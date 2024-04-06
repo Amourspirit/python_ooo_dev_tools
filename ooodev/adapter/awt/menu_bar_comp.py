@@ -5,6 +5,7 @@ from com.sun.star.awt import XMenuBar
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.awt.menu_bar_partial import MenuBarPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
+from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 if TYPE_CHECKING:
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class MenuBarComp(ComponentBase, MenuBarPartial, MenuEvents):
+class MenuBarComp(ComponentBase, MenuBarPartial, ServiceInfoPartial, MenuEvents):
     """
     Class for managing MenuBar Component.
     """
@@ -29,6 +30,7 @@ class MenuBarComp(ComponentBase, MenuBarPartial, MenuEvents):
         # pylint: disable=no-member
         ComponentBase.__init__(self, component)
         MenuBarPartial.__init__(self, component=component)
+        ServiceInfoPartial.__init__(self, component=component, interface=None)  # type: ignore
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         MenuEvents.__init__(self, trigger_args=generic_args, cb=self.__on_menu_add_remove_add_remove)
 

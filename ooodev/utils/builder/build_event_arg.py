@@ -43,6 +43,8 @@ class BuildEventArg(NamedTuple):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BuildEventArg):
             return NotImplemented
-        return self.module_name == (
-            other.module_name and self.class_name == other.class_name and self.callback_name == other.callback_name
+        return (
+            self.module_name == other.module_name
+            and self.class_name == other.class_name
+            and self.callback_name == other.callback_name
         )

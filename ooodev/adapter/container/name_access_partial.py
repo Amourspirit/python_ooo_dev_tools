@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import Any, cast, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 import uno
 
 from com.sun.star.container import XNameAccess
 
 from ooodev.utils.type_var import UnoInterface
 from ooodev.adapter.container import element_access_partial
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 T = TypeVar("T")
 
@@ -65,28 +66,18 @@ class NameAccessPartial(Generic[T], element_access_partial.ElementAccessPartial)
     # endregion Methods
 
 
-def get_builder(component: Any, lo_inst: Any = None) -> Any:
+def get_builder(component: Any) -> DefaultBuilder:
     """
     Get the builder for the component.
 
     Args:
         component (Any): The component.
-        lo_inst (Any, optional): Lo Instance. Defaults to None.
 
     Returns:
         DefaultBuilder: Builder instance.
     """
-    # pylint: disable=import-outside-toplevel
-    from ooodev.utils.builder.default_builder import DefaultBuilder
 
-    eap = cast(DefaultBuilder, element_access_partial.get_builder(component, lo_inst))
-
-    builder = DefaultBuilder(component, lo_inst)
-    builder.add_import(
-        name="ooodev.adapter.container.name_access_partial.NameAccessPartial",
-        uno_name="com.sun.star.container.XNameAccess",
-        optional=False,
-        init_kind=2,
-    )
-    builder.set_omit(*eap.get_import_names())
+    builder = DefaultBuilder(component)
+    builder.set_omit("com.sun.star.container.XElementAccess")
+    builder.auto_add_interface("com.sun.star.container.XNameAccess")
     return builder

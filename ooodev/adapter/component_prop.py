@@ -9,4 +9,4 @@ class ComponentProp(ComponentBase):
     def component(self):
         """Gets component for this instance."""
         # pylint: disable=no-member
-        return self._ComponentBase__get_component()  # tyep: ignore
+        return self._ComponentBase__get_component()  # type: ignore

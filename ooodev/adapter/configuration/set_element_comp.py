@@ -1,18 +1,36 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter import builder_helper
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.beans import property_with_state_partial
 from ooodev.adapter.container import child_partial
 from ooodev.adapter.lang import component_partial
 from ooodev.adapter.configuration import template_instance_partial
+from ooodev.utils.builder.default_builder import DefaultBuilder
+from ooodev.adapter.configuration import hierarchy_element_comp
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import SetElement  # service
 
 
+class _SetElementComp(ComponentProp):
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, _SetElementComp):
+            return False
+        if self is other:
+            return True
+        if self.component is other.component:
+            return True
+        return self.component == other.component
+
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
+        """Returns a tuple of supported service names."""
+        return ("com.sun.star.configuration.SetElement",)
+
+
 class SetElementComp(
-    ComponentBase,
+    _SetElementComp,
     property_with_state_partial.PropertyWithStatePartial,
     child_partial.ChildPartial,
     component_partial.ComponentPartial,
@@ -20,7 +38,30 @@ class SetElementComp(
 ):
     """
     Class for managing SetElement Component.
+
+    Note:
+        This is a Dynamic class that is created at runtime.
+        This means that the class is created at runtime and not defined in the source code.
+        In addition, the class may be created with additional classes implemented.
+
+        The Type hints for this class at design time may not be accurate.
+        To check if a class implements a specific interface, use the ``isinstance`` function
+        or :py:meth:`~.InterfacePartial.is_supported_interface` methods which is always available in this class.
     """
+
+    def __new__(cls, component: Any, *args, **kwargs):
+        builder = get_builder(component=component)
+        builder_helper.builder_add_comp_defaults(builder)
+        builder_helper.builder_add_service_defaults(builder)
+        builder_only = kwargs.get("_builder_only", False)
+        if builder_only:
+            # cast to prevent type checker error
+            return cast(Any, builder)
+        inst = builder.build_class(
+            name="ooodev.adapter.configuration.set_element_comp.SetElementComp",
+            base_class=_SetElementComp,
+        )
+        return inst
 
     # pylint: disable=unused-argument
 
@@ -32,18 +73,8 @@ class SetElementComp(
             component (Any): UNO Component that supports ``com.sun.star.configuration.SetElement`` service.
         """
 
-        ComponentBase.__init__(self, component)
-        property_with_state_partial.PropertyWithStatePartial.__init__(self, component=component, interface=None)
-        child_partial.ChildPartial.__init__(self, component=component, interface=None)
-        component_partial.ComponentPartial.__init__(self, component=component, interface=None)
-        template_instance_partial.TemplateInstancePartial.__init__(self, component=component, interface=None)
-
-    # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.SetElement",)
-
-    # endregion Overrides
+        # this it not actually called as __new__ is overridden
+        pass
 
     # region Properties
 
@@ -56,37 +87,12 @@ class SetElementComp(
     # endregion Properties
 
 
-def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
-    # pylint: disable=import-outside-toplevel
-    from ooodev.utils.builder.default_builder import DefaultBuilder
+def get_builder(component: Any) -> Any:
+    builder = DefaultBuilder(component)
+    builder.merge(hierarchy_element_comp.get_builder(component), make_optional=True)
 
-    builder = DefaultBuilder(component, lo_inst)
-
-    local = kwargs.get("local", False)
-
-    pwsp = cast(DefaultBuilder, property_with_state_partial.get_builder(component, lo_inst))
-    cpp = cast(DefaultBuilder, child_partial.get_builder(component, lo_inst))
-    cp = cast(DefaultBuilder, component_partial.get_builder(component, lo_inst))
-    tmpl = cast(DefaultBuilder, template_instance_partial.get_builder(component, lo_inst))
-    builder.omits.update(pwsp.omits)
-    builder.omits.update(cpp.omits)
-    builder.omits.update(cp.omits)
-    builder.omits.update(tmpl.omits)
-
-    if local:
-        builder.set_omit(*pwsp.get_import_names())
-        builder.set_omit(*cpp.get_import_names())
-        builder.set_omit(*cp.get_import_names())
-        builder.set_omit(*tmpl.get_import_names())
-    else:
-        builder.add_from_instance(pwsp, make_optional=True)
-        builder.add_from_instance(cpp, make_optional=True)
-        builder.add_from_instance(cp, make_optional=True)
-        builder.add_from_instance(tmpl, make_optional=True)
-
-    # in a from_lo method in this class the HierarchyAccessComp would be removed and used as the base class
-    builder.auto_add_interface("com.sun.star.container.XHierarchicalName", optional=True)
-    builder.auto_add_interface("com.sun.star.container.XNamed", optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XProperty", optional=True)
+    builder.auto_add_interface("com.sun.star.container.XChild")
+    builder.auto_add_interface("com.sun.star.lang.XComponent")
+    builder.auto_add_interface("com.sun.star.configuration.XTemplateInstance")
 
     return builder

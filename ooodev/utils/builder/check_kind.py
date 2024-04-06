@@ -11,3 +11,7 @@ class CheckKind(IntEnum):
     """Check for service."""
     INTERFACE = 2
     """Check for interface."""
+    SERVICE_ALL = 3
+    """Check that all services are matched."""
+    INTERFACE_ALL = 4
+    """Check that all interfaces are matched."""

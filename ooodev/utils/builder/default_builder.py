@@ -1,4 +1,5 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import copy
 import importlib
@@ -11,23 +12,18 @@ from com.sun.star.lang import XTypeProvider
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
-from ooodev.utils import info as mInfo
 from ooodev.utils.builder.build_import_arg import BuildImportArg
 from ooodev.utils.builder.build_event_arg import BuildEventArg
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
-from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils import gen_util as gUtil
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class DefaultBuilder(ComponentBase, LoInstPropsPartial):
-    def __init__(self, component: Any, lo_inst: LoInst | None = None):
-        if lo_inst is None:
-            lo_inst = mLo.Lo.current_lo
-        LoInstPropsPartial.__init__(self, lo_inst)
+class DefaultBuilder(ComponentBase):
+    def __init__(self, component: Any):
         ComponentBase.__init__(self, component)
 
         self._component = component
@@ -65,19 +61,33 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         mod_name, class_name = self._get_mod_class_names(arg.ooodev_name)
         return getattr(self._get_import(mod_name), class_name)
 
-    def _has_interface(self, *name: str) -> bool:
+    def _supports_interface(self, *name: str) -> bool:
         type_names = self._get_type_names()
         for n in name:
             if n in type_names:
                 return True
         return False
-        # return mLo.Lo.is_uno_interfaces(self._component, *name)
+
+    def _supports_all_interface(self, *name: str) -> bool:
+        type_names = self._get_type_names()
+        for n in name:
+            if n not in type_names:
+                return False
+        return True
 
     def _supports_service(self, *name: str) -> bool:
         result = False
         for srv in name:
             result = self._service_info.supportsService(srv)
             if result:
+                break
+        return result
+
+    def _supports_all_service(self, *name: str) -> bool:
+        result = True
+        for srv in name:
+            result = self._service_info.supportsService(srv)
+            if not result:
                 break
         return result
 
@@ -98,8 +108,12 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             return True
         if arg.check_kind == CheckKind.SERVICE:
             return self._supports_service(*arg.uno_name)
+        elif arg.check_kind == CheckKind.SERVICE_ALL:
+            return self._supports_all_service(*arg.uno_name)
         elif arg.check_kind == CheckKind.INTERFACE:
-            return self._has_interface(*arg.uno_name)
+            return self._supports_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.INTERFACE_ALL:
+            return self._supports_all_interface(*arg.uno_name)
         return True
 
     def _passes_event_check(self, arg: BuildEventArg) -> bool:
@@ -111,8 +125,12 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             return False
         if arg.check_kind == CheckKind.SERVICE:
             return self._supports_service(*arg.uno_name)
+        elif arg.check_kind == CheckKind.SERVICE_ALL:
+            return self._supports_all_service(*arg.uno_name)
         elif arg.check_kind == CheckKind.INTERFACE:
-            return self._has_interface(*arg.uno_name)
+            return self._supports_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.INTERFACE_ALL:
+            return self._supports_all_interface(*arg.uno_name)
         return True
 
     def _add_base(self, base: Type[Any], arg: BuildImportArg) -> None:
@@ -209,6 +227,10 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             return type(name, tuple(bases), kwargs)
 
     def _convert_to_ooodev(self, name: str) -> str:
+        if not name:
+            raise ValueError("Name cannot be empty.")
+        if name.startswith("ooodev."):
+            return name
         # sample input: com.sun.star.beans.XExactName
         suffix = name.replace("com.sun.star.", "")  # beans.XExactName
         ns, class_name = suffix.rsplit(".", 1)  #  beans, XExactName
@@ -234,7 +256,7 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         """Get the list of BuildImportArg."""
         return list(self._event_args.keys())
 
-    def add_from_instance(self, instance: DefaultBuilder, make_optional: bool = False) -> None:
+    def merge(self, instance: DefaultBuilder, make_optional: bool = False) -> None:
         """
         Add the builders from another instance.
 
@@ -290,8 +312,8 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         if not hasattr(mod, func_name):
             return
         func = getattr(mod, func_name)
-        result = func(self._component, self.lo_inst)
-        self.add_from_instance(result, make_optional)
+        result = func(self._component)
+        self.merge(result, make_optional)
 
     def remove_import(self, name: str) -> None:
         """
@@ -361,6 +383,8 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             - NONE = 0
             - SERVICE = 1
             - INTERFACE = 2
+            - SERVICE_ALL = 3
+            - INTERFACE_ALL = 4
         """
         if isinstance(uno_name, str):
             uname = uno_name.strip()
@@ -410,6 +434,8 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             - NONE = 0
             - SERVICE = 1
             - INTERFACE = 2
+            - SERVICE_ALL = 3
+            - INTERFACE_ALL = 4
         """
         if isinstance(uno_name, str):
             uname = uno_name.strip()
@@ -434,7 +460,8 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         Build the import.
 
         Args:
-            name (str): Class Name
+            name (str): Class Name. This can just be a class name or a full import name including the class.
+                When a full import name is passed then the last part is used as the class name and parts before are used as the module name.
             init_kind (InitKind, int, optional): Init Option. Defaults to ``InitKind.COMPONENT``.
             base_class (Type[Any], optional): Base Class. Defaults to ``BuilderBase``.
 
@@ -449,7 +476,15 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             - COMPONENT_INTERFACE = 2
         """
         self._process_imports()
-        clz = self._generate_class(base_class, name)
+        if "." in name:
+            mod, class_name = name.rsplit(".", 1)
+        else:
+            mod = ""
+            class_name = name
+        clz = self._generate_class(base_class, class_name)
+        if mod:
+            with contextlib.suppress(Exception):
+                clz.__module__ = mod
         inst = self._create_class(clz, InitKind(init_kind))
         self._init_classes(inst)
         return inst
@@ -461,7 +496,7 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
         This is useful with the base class already implements the class.
 
         Args:
-            names (str): The names to omit.
+            names (str): The CASE Sensitive names to omit.
 
         Note:
             Names can be the name of the ``ooodev`` full import name or the UNO name.
@@ -469,7 +504,7 @@ class DefaultBuilder(ComponentBase, LoInstPropsPartial):
             or ``com.sun.star.container.XNameAccess``.
         """
         for name in names:
-            self._omit.add(name)
+            self._omit.add(self._convert_to_ooodev(name))
 
     def get_import_names(self) -> List[str]:
         """Get the list of import names that have been added to the current instance."""

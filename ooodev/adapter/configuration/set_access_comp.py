@@ -1,32 +1,65 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.adapter.component_base import ComponentBase
-from ooodev.adapter.container import element_access_partial
-from ooodev.adapter.beans import exact_name_partial
-from ooodev.adapter.beans import property_set_info_partial
-from ooodev.adapter.beans import property_state_partial
-from ooodev.adapter.beans import multi_property_states_partial
-from ooodev.adapter.container import container_partial
+from ooodev.adapter import builder_helper
+from ooodev.adapter.component_prop import ComponentProp
+from ooodev.adapter.configuration import hierarchy_access_comp
+from ooodev.adapter.configuration import simple_set_access_comp
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import SetAccess  # service
 
 
+class _SetAccessComp(ComponentProp):
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, _SetAccessComp):
+            return False
+        if self is other:
+            return True
+        if self.component is other.component:
+            return True
+        return self.component == other.component
+
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
+        """Returns a tuple of supported service names."""
+        return ("com.sun.star.configuration.SetAccess",)
+
+
 class SetAccessComp(
-    ComponentBase,
-    exact_name_partial.ExactNamePartial,
-    property_set_info_partial.PropertySetInfoPartial,
-    property_state_partial.PropertyStatePartial,
-    multi_property_states_partial.MultiPropertyStatesPartial,
-    container_partial.ContainerPartial,
+    _SetAccessComp,
+    hierarchy_access_comp.HierarchyAccessComp,
+    simple_set_access_comp.SimpleSetAccessComp,
 ):
     """
     Class for managing SetAccess Component.
+
+    Note:
+        This is a Dynamic class that is created at runtime.
+        This means that the class is created at runtime and not defined in the source code.
+        In addition, the class may be created with additional classes implemented.
+
+        The Type hints for this class at design time may not be accurate.
+        To check if a class implements a specific interface, use the ``isinstance`` function
+        or :py:meth:`~.InterfacePartial.is_supported_interface` methods which is always available in this class.
     """
 
     # pylint: disable=unused-argument
+    def __new__(cls, component: Any, *args, **kwargs):
+        builder = get_builder(component=component)
+        builder_helper.builder_add_comp_defaults(builder)
+        builder_helper.builder_add_service_defaults(builder)
+        builder_only = kwargs.get("_builder_only", False)
+        if builder_only:
+            # cast to prevent type checker error
+            return cast(Any, builder)
+        inst = builder.build_class(
+            name="ooodev.adapter.configuration.set_access_comp.SetAccessComp",
+            base_class=_SetAccessComp,
+        )
+        return inst
 
     def __init__(self, component: Any) -> None:
         """
@@ -36,17 +69,8 @@ class SetAccessComp(
             component (XNameAccess): UNO Component that implements ``com.sun.star.container.XNameAccess``.
         """
 
-        ComponentBase.__init__(self, component)
-        exact_name_partial.ExactNamePartial.__init__(self, component=component, interface=None)
-        property_set_info_partial.PropertySetInfoPartial.__init__(self, component=component, interface=None)
-        property_state_partial.PropertyStatePartial.__init__(self, component=component, interface=None)
-        multi_property_states_partial.MultiPropertyStatesPartial.__init__(self, component=component, interface=None)
-        container_partial.ContainerPartial.__init__(self, component=component, interface=None)
-
-    # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.SetAccess",)
+        # this it not actually called as __new__ is overridden
+        pass
 
     # endregion Overrides
 
@@ -61,51 +85,9 @@ class SetAccessComp(
     # endregion Properties
 
 
-def get_builder(component: Any, lo_inst: Any = None, **kwargs) -> Any:
-    # pylint: disable=import-outside-toplevel
-    from ooodev.utils.builder.default_builder import DefaultBuilder
-
-    builder = DefaultBuilder(component, lo_inst)
-    # when local this modules class is added as the base class.
-    # When not local this modules base class in not included but all of its import classes are.
-    # see from_lo() above.
-    local = kwargs.get("local", False)
-
-    # region exclude local builders
-    inc_exact = cast(DefaultBuilder, exact_name_partial.get_builder(component, lo_inst))
-    inc_psi = cast(DefaultBuilder, property_set_info_partial.get_builder(component, lo_inst))
-    inc_pss = cast(DefaultBuilder, property_state_partial.get_builder(component, lo_inst))
-    inc_mps = cast(DefaultBuilder, multi_property_states_partial.get_builder(component, lo_inst))
-    inc_cp = cast(DefaultBuilder, container_partial.get_builder(component, lo_inst))
-    builder.omits.update(inc_exact.omits)
-    builder.omits.update(inc_psi.omits)
-    builder.omits.update(inc_pss.omits)
-    builder.omits.update(inc_mps.omits)
-    builder.omits.update(inc_cp.omits)
-
-    if local:
-        builder.set_omit(*inc_exact.get_import_names())
-        builder.set_omit(*inc_psi.get_import_names())
-        builder.set_omit(*inc_pss.get_import_names())
-        builder.set_omit(*inc_mps.get_import_names())
-        builder.set_omit(*inc_cp.get_import_names())
-    else:
-        builder.add_from_instance(inc_exact, make_optional=True)
-        builder.add_from_instance(inc_psi, make_optional=True)
-        builder.add_from_instance(inc_pss, make_optional=True)
-        builder.add_from_instance(inc_mps, make_optional=True)
-        builder.add_from_instance(inc_cp, make_optional=True)
-
-    # endregion exclude local builders
-
-    # region exclude other builders
-
-    ex_el = cast(DefaultBuilder, element_access_partial.get_builder(component, lo_inst))
-    builder.set_omit(*ex_el.get_import_names())
-    # endregion exclude other builders
-
-    builder.auto_add_interface("com.sun.star.container.XNameAccess")
-    builder.auto_add_interface("com.sun.star.container.XHierarchicalNameAccess")
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer")
-    builder.auto_add_interface("com.sun.star.util.XStringEscape")
+def get_builder(component: Any) -> Any:
+    builder = DefaultBuilder(component)
+    builder.merge(hierarchy_access_comp.get_builder(component))
+    builder.merge(simple_set_access_comp.get_builder(component))
+    # com.sun.star.container.XContainer is already added.
     return builder
