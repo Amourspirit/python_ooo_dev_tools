@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class _HierarchyAccessComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _HierarchyAccessComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -89,6 +89,15 @@ class HierarchyAccessComp(
 
 
 def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
 
     builder = DefaultBuilder(component)
     builder.set_omit("com.sun.star.container.XElementAccess")

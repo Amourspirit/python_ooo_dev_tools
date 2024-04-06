@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class _HierarchyElementComp(ComponentProp):
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _HierarchyElementComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -82,6 +82,15 @@ class HierarchyElementComp(
 
 
 def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
 
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.container.XHierarchicalName", optional=True)

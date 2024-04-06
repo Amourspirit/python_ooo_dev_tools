@@ -31,7 +31,8 @@ def builder_add_comp_defaults(builder: DefaultBuilder) -> None:
         check_kind=CheckKind.INTERFACE,
     )
 
-    builder.add_import(
+    builder.insert_import(
+        idx=0,
         name="ooodev.events.partial.events_partial.EventsPartial",
         optional=False,
         init_kind=InitKind.NONE,

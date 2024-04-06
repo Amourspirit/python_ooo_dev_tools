@@ -21,62 +21,21 @@ if TYPE_CHECKING:
     pass
 
 
-class _CombinedServiceFactoryPartial:
-
-    pass
-
-
 class CombinedServiceFactoryPartial:
     """
     Partial class for ``XSingleServiceFactory``  and ``XMultiServiceFactory``.
 
     Because the two interface has the same method names, this class allows for overloads of the methods.
 
-    This class is also a factory class that can create a class based on the component for ``XSingleServiceFactory`` or ``XMultiServiceFactory``
-    If only one interface is implemented, the class will be created with the appropriate interface.
-    If no interface is implemented, an error will be raised.
+    The builder that is return by ``get_builder()`` for this module will only include the ``CombinedServiceFactoryPartial`` class if both ``XMultiServiceFactory`` and ``XSingleServiceFactory`` are supported.
     """
-
-    def __new__(cls, component: Any, *args, **kwargs):
-        has_single = mLo.Lo.is_uno_interfaces(component, XSingleServiceFactory)
-        has_multi = mLo.Lo.is_uno_interfaces(component, XMultiServiceFactory)
-        if has_single and has_multi:
-            inst = super(CombinedServiceFactoryPartial, cls).__new__(cls)
-            inst.__init__(component)
-            return inst
-        builder_only = kwargs.get("_builder_only", False)
-        if has_single:
-            builder = single_service_factory_partial.get_builder(component=component)
-            builder_helper.builder_add_interface_defaults(builder)
-            if builder_only:
-                # cast to prevent type checker error
-                return cast(Any, builder)
-            inst = builder.build_class(
-                name="ooodev.adapter.lang.single_service_factory_partial.SingleServiceFactoryPartial",
-                base_class=_CombinedServiceFactoryPartial,
-            )
-            return inst
-        elif has_multi:
-            builder = multi_service_factory_partial.get_builder(component=component)
-            builder_helper.builder_add_interface_defaults(builder)
-            if builder_only:
-                # cast to prevent type checker error
-                return cast(Any, builder)
-            inst = builder.build_class(
-                name="ooodev.adapter.lang.multi_service_factory_partial.MultiServiceFactoryPartial",
-                base_class=_CombinedServiceFactoryPartial,
-            )
-            return inst
-
-        raise mEx.MissingInterfaceError((XSingleServiceFactory, XMultiServiceFactory))
 
     def __init__(self, component: Any) -> None:
         """
         Constructor
 
         Args:
-            component (XMultiServiceFactory  ): UNO Component that implements ``com.sun.star.lang.XMultiServiceFactory  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XMultiServiceFactory  ``.
+            component (Any ): UNO Component that implements ``com.sun.star.lang.XMultiServiceFactory`` and ``com.sun.star.lang.XSingleServiceFactory`` interfaces.
         """
 
         def on_is_supported_interface(src: Any, event_args: CancelEventArgs) -> None:

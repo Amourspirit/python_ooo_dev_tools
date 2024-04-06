@@ -1,20 +1,21 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
+
 from ooodev.adapter import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.adapter.beans.property_state_partial import PropertyStatePartial
-from ooodev.adapter.beans.multi_property_states_partial import MultiPropertyStatesPartial
-from ooodev.adapter.configuration import property_hierarchy_comp
-from ooodev.adapter.configuration import hierarchy_access_comp
+from ooodev.adapter.configuration import configuration_provider_comp
 from ooodev.utils.builder.default_builder import DefaultBuilder
 
 
 if TYPE_CHECKING:
-    from com.sun.star.configuration import GroupAccess  # service
+    from com.sun.star.configuration import DefaultProvider  # service
+
+    # from ooodev.utils.builder.default_builder import DefaultBuilder
+    from ooodev.utils.inst.lo.lo_inst import LoInst
 
 
-class _GroupAccessComp(ComponentProp):
+class _DefaultProviderComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
@@ -27,16 +28,15 @@ class _GroupAccessComp(ComponentProp):
 
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.GroupAccess",)
+        return ("com.sun.star.configuration.DefaultProvider",)
 
 
-class GroupAccessComp(
-    _GroupAccessComp,
-    PropertyStatePartial,
-    MultiPropertyStatesPartial,
+class DefaultProviderComp(
+    _DefaultProviderComp,
+    configuration_provider_comp.ConfigurationProviderComp,
 ):
     """
-    Class for managing GroupAccess Component.
+    Class for managing DefaultProvider Component.
 
     Note:
         This is a Dynamic class that is created at runtime.
@@ -49,18 +49,21 @@ class GroupAccessComp(
     """
 
     # pylint: disable=unused-argument
+
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
         builder_helper.builder_add_service_defaults(builder)
+
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
             # cast to prevent type checker error
             return cast(Any, builder)
         inst = builder.build_class(
-            name="ooodev.adapter.configuration.group_access_comp.GroupAccessComp",
-            base_class=_GroupAccessComp,
+            name="ooodev.adapter.configuration.configuration_access_comp.ConfigurationAccessComp",
+            base_class=_DefaultProviderComp,
         )
+
         return inst
 
     def __init__(self, component: Any) -> None:
@@ -68,21 +71,41 @@ class GroupAccessComp(
         Constructor
 
         Args:
-            component (XNameAccess): UNO Component that implements ``com.sun.star.container.XNameAccess``.
+            component (Any): UNO Component that supports ``com.sun.star.configuration.DefaultProvider`` service.
         """
-
         # this it not actually called as __new__ is overridden
-        pass
+        super().__init__(component)
 
     # region Properties
 
     @property
-    def component(self) -> GroupAccess:
-        """GroupAccess Component"""
+    def component(self) -> DefaultProvider:
+        """DefaultProvider Component"""
         # pylint: disable=no-member
-        return cast("GroupAccess", self._ComponentBase__get_component())  # type: ignore
+        return cast("DefaultProvider", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
+
+    @classmethod
+    def from_lo(cls, lo_inst: LoInst | None = None) -> DefaultProviderComp:
+        """
+        Get the singleton instance from the Lo.
+
+        Args:
+            lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
+
+        Returns:
+            ThePopupMenuControllerFactoryComp: The instance.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.loader import lo as mLo
+
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        factory = lo_inst.get_singleton("/singletons/com.sun.star.configuration.theDefaultProvider")  # type: ignore
+        if factory is None:
+            raise ValueError("Could not get theDefaultProvider singleton.")
+        return cls(factory)
 
 
 def get_builder(component: Any) -> DefaultBuilder:
@@ -96,9 +119,9 @@ def get_builder(component: Any) -> DefaultBuilder:
         DefaultBuilder: Builder instance.
     """
     builder = DefaultBuilder(component)
-    builder.merge(property_hierarchy_comp.get_builder(component=component), make_optional=True)
-    builder.merge(hierarchy_access_comp.get_builder(component=component), make_optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XMultiPropertyStates", optional=True)
-    builder.auto_add_interface("com.sun.star.beans.XPropertyState", optional=True)
+    builder.merge(configuration_provider_comp.get_builder(component), make_optional=True)
+    builder.auto_add_interface("com.sun.star.util.XRefreshable")
+    builder.auto_add_interface("com.sun.star.util.XFlushable")
+    builder.auto_add_interface("com.sun.star.lang.XLocalizable")
 
     return builder

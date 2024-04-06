@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class _SimpleSetAccessComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _SimpleSetAccessComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -61,7 +61,7 @@ class SimpleSetAccessComp(ComponentBase, name_access_partial.NameAccessPartial):
         Constructor
 
         Args:
-            component (XNameAccess): UNO Component that implements ``com.sun.star.container.XNameAccess``.
+            component (XNameAccess): UNO Component that supports ``com.sun.star.configuration.SimpleSetAccess`` service.
         """
 
         # this it not actually called as __new__ is overridden
@@ -80,8 +80,16 @@ class SimpleSetAccessComp(ComponentBase, name_access_partial.NameAccessPartial):
     # endregion Properties
 
 
-def get_builder(component: Any) -> Any:
-    # pylint: disable=import-outside-toplevel
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
 
     builder = DefaultBuilder(component)
     builder.set_omit("com.sun.star.container.XElementAccess")

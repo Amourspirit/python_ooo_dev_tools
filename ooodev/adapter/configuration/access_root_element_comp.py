@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.beans import property_with_state_partial
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.configuration import hierarchy_element_comp
 from ooodev.adapter.container import child_partial
 from ooodev.adapter.lang import component_partial
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class _AccessRootElementComp(hierarchy_element_comp._HierarchyElementComp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _AccessRootElementComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -94,7 +95,15 @@ class AccessRootElementComp(
 
 
 def get_builder(component: Any, **kwargs) -> DefaultBuilder:
+    """
+    Get the builder for the component.
 
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
     for_new = kwargs.get("_for_new", False)
     if for_new:
         builder = DefaultBuilder(component)

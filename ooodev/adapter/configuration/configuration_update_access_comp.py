@@ -2,15 +2,12 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
 from ooodev.adapter import builder_helper
-from ooodev.adapter.beans import exact_name_partial
-from ooodev.adapter.beans import property_partial
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
-from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.default_builder import DefaultBuilder
-from ooodev.utils.builder.init_kind import InitKind
-from ooodev.utils.partial.interface_partial import InterfacePartial
-from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.adapter.configuration import configuration_access_comp
+from ooodev.adapter.configuration import set_update_comp
+from ooodev.adapter.configuration import group_update_comp
+from ooodev.adapter.configuration import update_root_element_comp
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import ConfigurationUpdateAccess  # service
@@ -22,7 +19,7 @@ if TYPE_CHECKING:
 class _ConfigurationUpdateAccessComp(ComponentProp):
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _ConfigurationUpdateAccessComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -32,17 +29,12 @@ class _ConfigurationUpdateAccessComp(ComponentProp):
 
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
-        return ("com.sun.star.configuration.ConfigurationUpdateAccess", "com.sun.star.configuration.DefaultProvider")
+        return ("com.sun.star.configuration.ConfigurationUpdateAccess",)
 
 
 class ConfigurationUpdateAccessComp(
     _ConfigurationUpdateAccessComp,
-    exact_name_partial.ExactNamePartial,
-    property_partial.PropertyPartial,
-    InterfacePartial,
-    ServiceInfoPartial,
-    QiPartial,
-    # child_partial.ChildPartial,
+    configuration_access_comp.ConfigurationAccessComp,
 ):
     """
     Class for managing ConfigurationUpdateAccess Component.
@@ -96,7 +88,7 @@ class ConfigurationUpdateAccessComp(
     # endregion Properties
 
     @classmethod
-    def from_lo(cls, node_name: str, lo_inst: LoInst | None = None, *args: Any) -> ConfigurationAccessComp:
+    def from_lo(cls, node_name: str, lo_inst: LoInst | None = None, *args: Any) -> ConfigurationUpdateAccessComp:
         """
         Get the singleton instance from the Lo.
 
@@ -122,71 +114,23 @@ class ConfigurationUpdateAccessComp(
             service_name="com.sun.star.configuration.ConfigurationUpdateAccess", *cfg_args
         )
 
-        # inst = lo_inst.create_instance_mcf(
-        #     XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", args=args, raise_err=True
-        # )
-        # return cls(inst)  # type: ignore
         return ConfigurationUpdateAccessComp(inst)
 
 
 def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
     builder = DefaultBuilder(component)
-
-    builder.auto_add_interface("com.sun.star.beans.XExactName")
-    builder.auto_add_interface("com.sun.star.beans.XHierarchicalPropertySet")
-    builder.auto_add_interface("com.sun.star.beans.XMultiHierarchicalPropertySet")
-    builder.auto_add_interface("com.sun.star.beans.XMultiPropertyStates")
-    builder.auto_add_interface("com.sun.star.beans.XProperty")
-    builder.auto_add_interface("com.sun.star.beans.XPropertySetInfo")
-    builder.auto_add_interface("com.sun.star.beans.XPropertyState")
-    builder.auto_add_interface("com.sun.star.beans.XPropertyWithState")
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateContainer")
-    builder.auto_add_interface("com.sun.star.configuration.XTemplateInstance")
-    builder.auto_add_interface("com.sun.star.container.XChild")
-    builder.auto_add_interface("com.sun.star.container.XContainer")
-    builder.auto_add_interface("com.sun.star.container.XHierarchicalName")
-    builder.auto_add_interface("com.sun.star.container.XHierarchicalNameAccess")
-    builder.auto_add_interface("com.sun.star.container.XNameAccess")
-    builder.auto_add_interface("com.sun.star.container.XNamed")
-    builder.auto_add_interface("com.sun.star.lang.XComponent")
-    builder.auto_add_interface("com.sun.star.lang.XLocalizable")
-    builder.auto_add_interface("com.sun.star.util.XChangesNotifier")
-    builder.auto_add_interface("com.sun.star.util.XStringEscape")
-    builder.auto_add_interface("com.sun.star.util.XChangesBatch")
-
-    builder.add_event(
-        module_name="ooodev.adapter.container.container_events",
-        class_name="ContainerEvents",
-        uno_name="com.sun.star.container.XContainer",
-        optional=True,
-    )
-    builder.add_event(
-        module_name="ooodev.adapter.util.changes_events",
-        class_name="ChangesEvents",
-        uno_name="com.sun.star.util.XChangesNotifier",
-        optional=True,
-    )
-
-    builder.add_import(
-        name="ooodev.adapter.beans.property_change_implement.PropertyChangeImplement",
-        uno_name="com.sun.star.beans.XPropertySet",
-        optional=True,
-        init_kind=InitKind.COMPONENT,
-        check_kind=CheckKind.INTERFACE,
-    )
-    builder.add_import(
-        name="ooodev.adapter.beans.vetoable_change_implement.VetoableChangeImplement",
-        uno_name="com.sun.star.beans.XPropertySet",
-        optional=True,
-        init_kind=InitKind.COMPONENT,
-        check_kind=CheckKind.INTERFACE,
-    )
-    builder.add_import(
-        name="ooodev.adapter.beans.properties_change_implement.PropertiesChangeImplement",
-        uno_name="com.sun.star.beans.XMultiPropertySet",
-        optional=True,
-        init_kind=InitKind.COMPONENT,
-        check_kind=CheckKind.INTERFACE,
-    )
+    builder.merge(configuration_access_comp.get_builder(component), make_optional=True)
+    builder.merge(set_update_comp.get_builder(component), make_optional=True)
+    builder.merge(group_update_comp.get_builder(component), make_optional=True)
+    builder.merge(update_root_element_comp.get_builder(component), make_optional=True)
 
     return builder

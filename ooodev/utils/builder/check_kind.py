@@ -15,3 +15,7 @@ class CheckKind(IntEnum):
     """Check that all services are matched."""
     INTERFACE_ALL = 4
     """Check that all interfaces are matched."""
+    SERVICE_ONLY = 5
+    """Check that only the first service in a services sequence is matched."""
+    INTERFACE_ONLY = 6
+    """Check that only the first interface in an interfaces sequence is matched."""

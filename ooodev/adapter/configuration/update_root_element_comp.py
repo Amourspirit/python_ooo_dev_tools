@@ -1,20 +1,19 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, Generic, TypeVar
+from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
-from ooodev.adapter.container import name_replace_partial
+from ooodev.adapter.configuration import access_root_element_comp
+from ooodev.adapter.util import changes_batch_partial
 
 if TYPE_CHECKING:
-    from com.sun.star.container import XNameReplace
-
-T = TypeVar("T")
+    from com.sun.star.configuration import UpdateRootElement  # service
 
 
-class _NameReplaceComp(ComponentProp):
+class _UpdateRootElementComp(ComponentProp):
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _NameReplaceComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -22,10 +21,18 @@ class _NameReplaceComp(ComponentProp):
             return True
         return self.component == other.component
 
+    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
+        """Returns a tuple of supported service names."""
+        return ("com.sun.star.configuration.UpdateRootElement",)
 
-class NameReplaceComp(_NameReplaceComp, name_replace_partial.NameReplacePartial[T], Generic[T]):
+
+class UpdateRootElementComp(
+    _UpdateRootElementComp,
+    access_root_element_comp.AccessRootElementComp,
+    changes_batch_partial.ChangesBatchPartial,
+):
     """
-    Class for managing XNameContainer Component.
+    Class for managing UpdateRootElement Component.
 
     Note:
         This is a Dynamic class that is created at runtime.
@@ -47,29 +54,28 @@ class NameReplaceComp(_NameReplaceComp, name_replace_partial.NameReplacePartial[
             # cast to prevent type checker error
             return cast(Any, builder)
         inst = builder.build_class(
-            name="ooodev.adapter.container.name_replace_comp.NameReplaceComp",
-            base_class=_NameReplaceComp,
+            name="ooodev.adapter.configuration.update_root_element_comp.UpdateRootElementComp",
+            base_class=_UpdateRootElementComp,
         )
         return inst
 
-    def __init__(self, component: XNameReplace) -> None:
+    def __init__(self, component: Any) -> None:
         """
         Constructor
 
         Args:
-            component (XNameReplace): UNO Component that implements ``com.sun.star.container.XNameReplace``.
+            component (Any): UNO Component that supports ``com.sun.star.configuration.UpdateRootElement`` service.
         """
-
         # this it not actually called as __new__ is overridden
         pass
 
     # region Properties
 
     @property
-    def component(self) -> XNameReplace:
-        """XNameReplace Component"""
+    def component(self) -> UpdateRootElement:
+        """UpdateRootElement Component"""
         # pylint: disable=no-member
-        return cast("XNameReplace", self._ComponentBase__get_component())  # type: ignore
+        return cast("UpdateRootElement", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
 
@@ -84,4 +90,9 @@ def get_builder(component: Any) -> DefaultBuilder:
     Returns:
         DefaultBuilder: Builder instance.
     """
-    return name_replace_partial.get_builder(component=component)
+
+    builder = DefaultBuilder(component)
+    builder.merge(access_root_element_comp.get_builder(component), make_optional=True)
+    builder.merge(changes_batch_partial.get_builder(component), make_optional=True)
+
+    return builder

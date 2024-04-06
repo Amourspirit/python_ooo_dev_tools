@@ -13,9 +13,8 @@ if TYPE_CHECKING:
 
 
 class _SetAccessComp(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _SetAccessComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -72,8 +71,6 @@ class SetAccessComp(
         # this it not actually called as __new__ is overridden
         pass
 
-    # endregion Overrides
-
     # region Properties
 
     @property
@@ -85,7 +82,16 @@ class SetAccessComp(
     # endregion Properties
 
 
-def get_builder(component: Any) -> Any:
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
     builder = DefaultBuilder(component)
     builder.merge(hierarchy_access_comp.get_builder(component))
     builder.merge(simple_set_access_comp.get_builder(component))

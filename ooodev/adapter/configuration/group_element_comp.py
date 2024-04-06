@@ -6,7 +6,6 @@ from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container import child_partial
 from ooodev.adapter.configuration import hierarchy_element_comp
 from ooodev.utils.builder.default_builder import DefaultBuilder
-from ooodev.adapter.configuration import hierarchy_element_comp
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import GroupElement  # service
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
 
 class _GroupElementComp(ComponentProp):
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _GroupElementComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -81,7 +80,16 @@ class GroupElementComp(
     # endregion Properties
 
 
-def get_builder(component: Any, **kwargs) -> Any:
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
 
     builder = DefaultBuilder(component)
 

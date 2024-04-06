@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ast import Name
-from typing import Any, TYPE_CHECKING, Tuple
+from typing import Any, TYPE_CHECKING
 import uno
 
 from com.sun.star.lang import XSingleServiceFactory

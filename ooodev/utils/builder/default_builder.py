@@ -68,6 +68,26 @@ class DefaultBuilder(ComponentBase):
                 return True
         return False
 
+    def _supports_only_interface(self, *name: str) -> bool:
+        """
+        Check if the component supports only the first interface in the list.
+
+        Returns:
+            bool: True if the component supports only the first interface in the list; otherwise, False.
+        """
+        count = len(name)
+        if count == 0:
+            return False
+        type_names = self._get_type_names()
+        if count == 1:
+            return name[0] in type_names
+        if name[0] not in type_names:
+            return False
+        for n in name[1:]:
+            if n in type_names:
+                return False
+        return True
+
     def _supports_all_interface(self, *name: str) -> bool:
         type_names = self._get_type_names()
         for n in name:
@@ -90,6 +110,26 @@ class DefaultBuilder(ComponentBase):
             if not result:
                 break
         return result
+
+    def _supports_only_service(self, *name: str) -> bool:
+        """
+        Check if the component supports only the first services in the list.
+
+        Returns:
+            bool: True if the component supports only the first services in the list; otherwise, False.
+        """
+        count = len(name)
+        if count == 0:
+            return False
+        if count == 1:
+            return self._service_info.supportsService(name[0])
+        result = self._service_info.supportsService(name[0])
+        if not result:
+            return False
+        for srv in name[1:]:
+            if self._service_info.supportsService(srv):
+                return False
+        return True
 
     def _get_optional_class(self, arg: BuildImportArg) -> Any:
         if not arg.uno_name:
@@ -114,6 +154,10 @@ class DefaultBuilder(ComponentBase):
             return self._supports_interface(*arg.uno_name)
         elif arg.check_kind == CheckKind.INTERFACE_ALL:
             return self._supports_all_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.INTERFACE_ONLY:
+            return self._supports_only_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.SERVICE_ONLY:
+            return self._supports_only_service(*arg.uno_name)
         return True
 
     def _passes_event_check(self, arg: BuildEventArg) -> bool:
@@ -131,6 +175,10 @@ class DefaultBuilder(ComponentBase):
             return self._supports_interface(*arg.uno_name)
         elif arg.check_kind == CheckKind.INTERFACE_ALL:
             return self._supports_all_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.INTERFACE_ONLY:
+            return self._supports_only_interface(*arg.uno_name)
+        elif arg.check_kind == CheckKind.SERVICE_ONLY:
+            return self._supports_only_service(*arg.uno_name)
         return True
 
     def _add_base(self, base: Type[Any], arg: BuildImportArg) -> None:
@@ -241,12 +289,66 @@ class DefaultBuilder(ComponentBase):
         return f"{odev_ns}.{odev_class}"
 
     def add_build_arg(self, *args: BuildImportArg) -> None:
+        """
+        Add one or more import builder to the instance.
+
+        Args:
+            args (BuildImportArg): One or more BuildImportArg instance.
+        """
         for arg in args:
             self._build_args[arg] = None
 
+    def insert_build_arg(self, idx: int, *args: BuildImportArg) -> None:
+        """
+        Insert one or more import builder to the instance.
+
+        Args:
+            idx (int): The index to insert the import.
+            args (BuildImportArg): One or more BuildImportArg instance.
+        """
+        if not args:
+            return
+        items = list(self._build_args.items())
+        if len(args) == 1:
+            reversed_args = list(args)
+        else:
+            list_args = list(args)
+            reversed_args = list_args[::-1]
+
+        for arg in reversed_args:
+            items.insert(idx, (arg, None))
+        self._build_args = dict(items)
+
     def add_event_arg(self, *args: BuildEventArg) -> None:
+        """
+        Add one or more import event to the instance.
+
+        Args:
+            args (BuildEventArg): One or more BuildImportArg instance.
+        """
         for arg in args:
             self._event_args[arg] = None
+
+    def insert_event_arg(self, idx: int, *args: BuildEventArg) -> None:
+        """
+        Insert one or more import event to the instance.
+
+        Args:
+            idx (int): The index to insert the import.
+            args (BuildEventArg): One or more BuildImportArg instance.
+        """
+        if not args:
+            return
+        items = list(self._event_args.items())
+        if len(args) == 1:
+            reversed_args = list(args)
+        else:
+            list_args = list(args)
+            reversed_args = list_args[::-1]
+
+        for arg in reversed_args:
+            items.insert(idx, (arg, None))
+        self._event_args = dict(items)
 
     def get_builders(self) -> List[BuildImportArg]:
         """Get the list of BuildImportArg."""
@@ -349,6 +451,37 @@ class DefaultBuilder(ComponentBase):
         name = self._convert_to_ooodev(uno_name)
         self.add_import(name=name, uno_name=uno_name, optional=optional, check_kind=CheckKind.INTERFACE)
 
+    def insert_import(
+        self,
+        idx: int,
+        name: str,
+        *,
+        uno_name: str | Tuple[str] = "",
+        optional: bool = False,
+        init_kind: InitKind | int = InitKind.COMPONENT_INTERFACE,
+        check_kind: CheckKind | int = CheckKind.NONE,
+    ) -> BuildImportArg:
+        """
+        Insert an import into the builder.
+
+        Args:
+            idx (int): The index to insert the import.
+            name (str): Ooodev name such as ``ooodev.adapter.container.index_access_partial.IndexAccessPartial``.
+            uno_name (str, optional): UNO Name. such as ``com.sun.star.container.XIndexAccess``.
+            optional (bool, optional): Specifies if the import is optional. Defaults to ``False``.
+            init_kind (InitKind, int, optional): Init Option. Defaults to ``InitKind.COMPONENT_INTERFACE``.
+            check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.NONE``.
+
+        Returns:
+            BuildImportArg: BuildImportArg instance.
+        """
+        arg = self.add_import(
+            name=name, uno_name=uno_name, optional=optional, init_kind=init_kind, check_kind=check_kind
+        )
+        _ = self._build_args.pop(arg)
+        self.insert_build_arg(idx, arg)
+        return arg
+
     def add_import(
         self,
         name: str,
@@ -369,7 +502,7 @@ class DefaultBuilder(ComponentBase):
             check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.NONE``.
 
         Returns:
-            BuildImportArg: _description_
+            BuildImportArg: BuildImportArg instance.
 
         Note:
             ``init_kind`` can be an ``InitKind`` or an ``int``:
@@ -385,6 +518,8 @@ class DefaultBuilder(ComponentBase):
             - INTERFACE = 2
             - SERVICE_ALL = 3
             - INTERFACE_ALL = 4
+            - SERVICE_ONLY = 5
+            - INTERFACE_ONLY = 6
         """
         if isinstance(uno_name, str):
             uname = uno_name.strip()
@@ -404,6 +539,44 @@ class DefaultBuilder(ComponentBase):
         self.add_build_arg(bi)
         return bi
 
+    def insert_event(
+        self,
+        idx: int,
+        module_name: str,
+        class_name: str,
+        *,
+        callback_name: str = "on_lazy_cb",
+        uno_name: str | Tuple[str] = "",
+        optional: bool = False,
+        check_kind: CheckKind | int = CheckKind.INTERFACE,
+    ) -> BuildEventArg:
+        """
+        Insert an event into the builder.
+
+        Args:
+            idx (int): The index to insert the import.
+            module_name (str): Ooodev name of the module such as ``ooodev.adapter.util.refresh_events``.
+            class_name (str):Ooodev class name such as ``RefreshEvents``.
+            callback_name (str): Callback name such as ``on_lazy_cb``.
+            uno_name (str, optional): UNO Name. such as ``com.sun.star.container.XIndexAccess``.
+            optional (bool, optional): Specifies if the import is optional. Defaults to ``False``.
+            check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.INTERFACE``.
+
+        Returns:
+            BuildImportArg: _description_
+        """
+        arg = self.add_event(
+            module_name,
+            class_name,
+            callback_name=callback_name,
+            uno_name=uno_name,
+            optional=optional,
+            check_kind=check_kind,
+        )
+        _ = self._event_args.pop(arg)
+        self.insert_event_arg(idx, arg)
+        return arg
+
     def add_event(
         self,
         module_name: str,
@@ -415,7 +588,7 @@ class DefaultBuilder(ComponentBase):
         check_kind: CheckKind | int = CheckKind.INTERFACE,
     ) -> BuildEventArg:
         """
-        Add an import to the builder.
+        Add an event to the builder.
 
         Args:
             module_name (str): Ooodev name of the module such as ``ooodev.adapter.util.refresh_events``.
@@ -436,6 +609,8 @@ class DefaultBuilder(ComponentBase):
             - INTERFACE = 2
             - SERVICE_ALL = 3
             - INTERFACE_ALL = 4
+            - SERVICE_ONLY = 5
+            - INTERFACE_ONLY = 6
         """
         if isinstance(uno_name, str):
             uname = uno_name.strip()

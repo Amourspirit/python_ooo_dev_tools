@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class _SetElementComp(ComponentProp):
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, _SetElementComp):
+        if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
@@ -87,7 +87,16 @@ class SetElementComp(
     # endregion Properties
 
 
-def get_builder(component: Any) -> Any:
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
     builder = DefaultBuilder(component)
     builder.merge(hierarchy_element_comp.get_builder(component), make_optional=True)
 
