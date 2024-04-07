@@ -114,7 +114,7 @@ class ConfigurationUpdateAccessComp(
             service_name="com.sun.star.configuration.ConfigurationUpdateAccess", *cfg_args
         )
 
-        return ConfigurationUpdateAccessComp(inst)
+        return cls(inst)
 
 
 def get_builder(component: Any) -> DefaultBuilder:

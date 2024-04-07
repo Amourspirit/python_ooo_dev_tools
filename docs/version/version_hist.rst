@@ -16,6 +16,10 @@ New proper usage:
     from ooodev.gui import Gui
     # ...
 
+New ``ooodev.macro.MacroScript`` class tha can be used to invoke python or basic macro scripts.
+
+Many new enhancements to the underlying dynamic construction of components that implement services.
+Now classes can be implemented based upon the services they support at runtime.
 
 Version 0.39.1
 ==============
