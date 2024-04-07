@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
+import uno
 from com.sun.star.ui import XUIConfigurationStorage
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
@@ -52,3 +54,19 @@ class UIConfigurationStoragePartial:
         self.__component.setStorage(storage)
 
     # endregion XUIConfigurationStorage
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    builder.auto_add_interface("com.sun.star.ui.XUIConfigurationStorage")
+    return builder

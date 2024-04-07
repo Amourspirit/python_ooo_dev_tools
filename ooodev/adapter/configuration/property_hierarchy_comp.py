@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.adapter import builder_helper
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.beans.hierarchical_property_set_partial import HierarchicalPropertySetPartial
 from ooodev.adapter.beans.multi_hierarchical_property_set_partial import MultiHierarchicalPropertySetPartial
 from ooodev.adapter.beans.multi_property_set_partial import MultiPropertySetPartial
@@ -36,6 +37,7 @@ class PropertyHierarchyComp(
     MultiPropertySetPartial,
     HierarchicalPropertySetPartial,
     MultiHierarchicalPropertySetPartial,
+    CompDefaultsPartial,
 ):
     """
     Class for managing PropertyHierarchy Component.
@@ -54,7 +56,6 @@ class PropertyHierarchyComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_service_defaults(builder)
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
             # cast to prevent type checker error

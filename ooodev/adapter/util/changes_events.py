@@ -7,7 +7,7 @@ from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.loader import lo as mLo
-from .changes_listener import ChangesListener
+from ooodev.adapter.util.changes_listener import ChangesListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT

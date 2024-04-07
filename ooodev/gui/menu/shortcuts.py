@@ -1,10 +1,9 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, Tuple
+from typing import cast, Dict, TYPE_CHECKING, Tuple, Union
 
 import uno
 from ooo.dyn.awt.key_event import KeyEvent
 from ooo.dyn.awt.key_modifier import KeyModifierEnum
-from ooo.dyn.beans.property_concept import PropertyConceptEnum
 from com.sun.star.awt import Key
 from com.sun.star.container import NoSuchElementException
 
@@ -17,8 +16,7 @@ from ooodev.macro.script.macro_script import MacroScript
 from ooodev.io.logging import error, debug
 
 if TYPE_CHECKING:
-    from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
-    from com.sun.star.ui import XAcceleratorConfiguration
+    from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
 
 
 class ShortCuts:
@@ -50,21 +48,31 @@ class ShortCuts:
         15: "shift+ctrl+alt+ctrlmac",
     }
 
-    def __init__(self, app: str = ""):
-        self._app = app
+    def __init__(self, app: str | Service = ""):
+        """
+        Constructor
+
+        Args:
+            app (str | Service, optional): App Name such as ``Service.CALC``. Defaults to "".
+                If no app is provided, the global shortcuts will be used.
+
+        Hint:
+            - ``Service`` is an enum and can be imported from ``ooodev.loader.inst.service``
+        """
+        self._app = str(app)
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
 
-    def _get_config(self) -> XAcceleratorConfiguration:
+    def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
             supp = TheModuleUIConfigurationManagerSupplierComp.from_lo()
             config = supp.get_ui_configuration_manager(self._app)
-            return config.get_short_cut_manager().component
+            return config.get_short_cut_manager()
         else:
-            return GlobalAcceleratorConfigurationComp.from_lo().component
+            return GlobalAcceleratorConfigurationComp.from_lo()
 
-    def __getitem__(self, index):
-        return ShortCuts(index)
+    def __getitem__(self, app: str | Service):
+        return ShortCuts(app)
 
     def __contains__(self, item):
         cmd = self.get_by_shortcut(item)
@@ -72,7 +80,7 @@ class ShortCuts:
 
     def __iter__(self):
         self._i = -1
-        self._key_events = self._config.getAllKeyEvents()
+        self._key_events = self._config.get_all_key_events()
         return self
 
     def __next__(self):
@@ -103,7 +111,7 @@ class ShortCuts:
         return key_event
 
     @classmethod
-    def get_url_script(cls, command: str | dict) -> str:
+    def get_url_script(cls, command: str | Dict[str, str]) -> str:
         """Get uno command or url for macro"""
         url = command
         if isinstance(url, str) and not url.startswith(".uno:"):
@@ -120,19 +128,19 @@ class ShortCuts:
 
     def _get_info(self, key):
         """Get shortcut and command"""
-        cmd = self._config.getCommandByKeyEvent(key)
+        cmd = self._config.get_command_by_key_event(key)
         shortcut = self._get_shortcut(key)
         return shortcut, cmd
 
     def get_all(self):
         """Get all events key"""
-        events = [(self._get_info(k)) for k in self._config.getAllKeyEvents()]
+        events = [(self._get_info(k)) for k in self._config.get_all_key_events()]
         return events
 
-    def get_by_command(self, command: str | dict):
+    def get_by_command(self, command: str | Dict[str, str]):
         """Get shortcuts by command"""
         url = ShortCuts.get_url_script(command)
-        key_events = self._config.getKeyEventsByCommand(url)
+        key_events = self._config.get_key_events_by_command(url)
         shortcuts = [self._get_shortcut(k) for k in key_events]
         return shortcuts
 
@@ -143,21 +151,22 @@ class ShortCuts:
             error(f"Not exists shortcut: {shortcut}")
             return ""
         try:
-            command = self._config.getCommandByKeyEvent(key_event)
+            command = self._config.get_command_by_key_event(key_event)
         except NoSuchElementException:
             error(f"Not exists shortcut: {shortcut}")
             command = ""
         return command
 
-    def set(self, shortcut: str, command: str | dict) -> bool:
-        """Set shortcut to command
+    def set(self, shortcut: str, command: str | Dict[str, str]) -> bool:
+        """
+        Set shortcut to command
 
-        :param shortcut: Shortcut like Shift+Ctrl+Alt+LETTER
-        :type shortcut: str
-        :param command: Command tu assign, 'UNOCOMMAND' or dict with macro info
-        :type command: str or dict
-        :return: True if set successfully
-        :rtype: bool
+        Args:
+            shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
+            command (str | dict): Command to assign, 'UNOCOMMAND' or dict with macro info
+
+        Returns:
+            bool: True if set successfully
         """
         result = True
         url = ShortCuts.get_url_script(command)
@@ -166,7 +175,7 @@ class ShortCuts:
             error(f"Not exists shortcut: {shortcut}")
             return False
         try:
-            self._config.setKeyEvent(key_event, url)
+            self._config.set_key_event(key_event, url)
             self._config.store()
         except Exception as e:
             error(e)
@@ -174,25 +183,37 @@ class ShortCuts:
 
         return result
 
-    def remove_by_shortcut(self, shortcut: str):
-        """Remove by shortcut"""
-        key_event = ShortCuts.to_key_event(shortcut)
+    def remove_by_shortcut(self, shortcut: str) -> bool:
+        """
+        Remove by shortcut
+
+        Args:
+            shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
+
+        Returns:
+            bool: ``True`` if removed successfully
+        """
         key_event = ShortCuts.to_key_event(shortcut)
         if key_event is None:
             error(f"Not exists shortcut: {shortcut}")
             return False
         try:
-            self._config.removeKeyEvent(key_event)
+            self._config.remove_key_event(key_event)
             result = True
         except NoSuchElementException:
             debug(f"No exists: {shortcut}")
             result = False
         return result
 
-    def remove_by_command(self, command: str | dict):
-        """Remove by shortcut"""
+    def remove_by_command(self, command: str | Dict[str, str]):
+        """
+        Remove by shortcut.
+
+        Args:
+            command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info
+        """
         url = ShortCuts.get_url_script(command)
-        self._config.removeCommandFromAllKeyEvents(url)
+        self._config.remove_command_from_all_key_events(url)
         return
 
     def reset(self):

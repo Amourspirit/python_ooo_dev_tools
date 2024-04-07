@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from ooodev.adapter import builder_helper
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.beans import exact_name_partial
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container import container_partial
@@ -37,6 +38,7 @@ class HierarchyAccessComp(
     container_partial.ContainerPartial,
     exact_name_partial.ExactNamePartial,
     ContainerEvents,
+    CompDefaultsPartial,
 ):
     """
     Class for managing HierarchyAccess Component.
@@ -56,7 +58,6 @@ class HierarchyAccessComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_service_defaults(builder)
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
             # cast to prevent type checker error

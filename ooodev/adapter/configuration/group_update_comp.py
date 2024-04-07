@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.adapter import builder_helper
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.configuration import group_access_comp
@@ -32,6 +33,7 @@ class GroupUpdateComp(
     _GroupUpdateComp,
     group_access_comp.GroupAccessComp,
     name_replace_partial.NameReplacePartial,
+    CompDefaultsPartial,
 ):
     """
     Class for managing GroupUpdate Component.
@@ -50,7 +52,6 @@ class GroupUpdateComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_service_defaults(builder)
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
             # cast to prevent type checker error

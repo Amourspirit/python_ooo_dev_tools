@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
-from ooodev.adapter import builder_helper
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.beans import property_with_state_partial
 from ooodev.adapter.container import child_partial
@@ -35,6 +36,7 @@ class SetElementComp(
     child_partial.ChildPartial,
     component_partial.ComponentPartial,
     template_instance_partial.TemplateInstancePartial,
+    CompDefaultsPartial,
 ):
     """
     Class for managing SetElement Component.
@@ -52,7 +54,6 @@ class SetElementComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_service_defaults(builder)
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
             # cast to prevent type checker error

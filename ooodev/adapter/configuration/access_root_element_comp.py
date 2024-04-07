@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.beans import property_with_state_partial
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.configuration import hierarchy_element_comp
 from ooodev.adapter.container import child_partial
@@ -37,6 +38,7 @@ class AccessRootElementComp(
     component_partial.ComponentPartial,
     changes_notifier_partial.ChangesNotifierPartial,
     changes_events.ChangesEvents,
+    CompDefaultsPartial,
 ):
     """
     Class for managing AccessRootElement Component.

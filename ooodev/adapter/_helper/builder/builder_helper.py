@@ -14,9 +14,14 @@ def builder_add_comp_defaults(builder: DefaultBuilder) -> None:
     Note:
         Adds the following imports:
 
+        - ``ServiceInfoPartial``
+        - ``TypeProviderPartial``
         - ``InterfacePartial``
         - ``QiPartial``
+        - ``EventsPartial``
     """
+    builder.auto_add_interface("com.sun.star.lang.XTypeProvider")
+    builder.auto_add_interface("com.sun.star.lang.XServiceInfo")
     builder.add_import(
         name="ooodev.utils.partial.interface_partial.InterfacePartial",
         optional=False,
@@ -27,7 +32,7 @@ def builder_add_comp_defaults(builder: DefaultBuilder) -> None:
         name="ooodev.utils.partial.qi_partial.QiPartial",
         uno_name="com.sun.star.uno.XInterface",
         optional=True,
-        init_kind=InitKind.COMPONENT_INTERFACE,
+        init_kind=InitKind.COMPONENT,
         check_kind=CheckKind.INTERFACE,
     )
 
@@ -48,11 +53,9 @@ def builder_add_service_defaults(builder: DefaultBuilder) -> None:
         builder (DefaultBuilder): A Builder instance.
 
     Note:
-        Adds the following imports:
-
-        - ``ServiceInfoPartial``
+        Not currently adding anything. May be used in the future.
     """
-    builder.auto_add_interface("com.sun.star.lang.XServiceInfo")
+    pass
 
 
 def builder_add_interface_defaults(builder: DefaultBuilder) -> None:

@@ -1,24 +1,13 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, Tuple, overload
+from typing import Any, cast, Tuple, overload
 import uno
 
-from com.sun.star.lang import XMultiServiceFactory
-from com.sun.star.lang import XSingleServiceFactory
 from ooo.dyn.beans.property_value import PropertyValue
-from ooodev.adapter import builder_helper
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
-from ooodev.adapter.lang import single_service_factory_partial
-from ooodev.adapter.lang import multi_service_factory_partial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
-
-if TYPE_CHECKING:
-    pass
 
 
 class CombinedServiceFactoryPartial:

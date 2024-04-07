@@ -11,7 +11,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import KeyEvent
     from ooodev.utils.type_var import UnoInterface
 
 
@@ -49,7 +48,3 @@ class ModuleUIConfigurationManager2Partial(
         UIConfigurationManagerPartial.__init__(self, component=component, interface=None)
         ModuleUIConfigurationManagerPartial.__init__(self, component=component, interface=None)
         UIConfigurationPartial.__init__(self, component=component, interface=None)
-
-    # region XModuleUIConfigurationManager2
-
-    # endregion XModuleUIConfigurationManager2

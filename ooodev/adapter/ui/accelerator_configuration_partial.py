@@ -2,9 +2,11 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
 
 from com.sun.star.ui import XAcceleratorConfiguration
+from ooodev.adapter.ui.ui_configuration_partial import UIConfigurationPartial
 from ooodev.adapter.ui.ui_configuration_persistence_partial import UIConfigurationPersistencePartial
 from ooodev.adapter.ui.ui_configuration_storage_partial import UIConfigurationStoragePartial
-from ooodev.adapter.ui.ui_configuration_partial import UIConfigurationPartial
+from ooodev.utils.builder.check_kind import CheckKind
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
@@ -139,3 +141,26 @@ class AcceleratorConfigurationPartial(
         self.__component.setKeyEvent(key_event, cmd)
 
     # endregion XAcceleratorConfiguration
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    if hasattr(component, "store"):
+        # for some unknown reason is not implemented in some components as a type but the methods are there.
+        # Just add the interface, overriding the optional, if the store method is available.
+        builder.auto_add_interface(
+            "com.sun.star.ui.XUIConfigurationPersistence", optional=False, check_kind=CheckKind.NONE
+        )
+    builder.auto_add_interface("com.sun.star.ui.XUIConfigurationStorage")
+    builder.auto_add_interface("com.sun.star.ui.XUIConfiguration")
+    return builder

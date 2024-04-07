@@ -1,16 +1,14 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.adapter import builder_helper
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.beans import exact_name_partial
 from ooodev.adapter.beans import property_partial
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.utils.builder.init_kind import InitKind
-from ooodev.utils.partial.interface_partial import InterfacePartial
-from ooodev.utils.partial.qi_partial import QiPartial
 
 if TYPE_CHECKING:
     from com.sun.star.configuration import ConfigurationAccess  # service
@@ -39,9 +37,7 @@ class ConfigurationAccessComp(
     _ConfigurationAccessComp,
     exact_name_partial.ExactNamePartial,
     property_partial.PropertyPartial,
-    InterfacePartial,
-    ServiceInfoPartial,
-    QiPartial,
+    CompDefaultsPartial,
     # child_partial.ChildPartial,
 ):
     """
@@ -62,7 +58,6 @@ class ConfigurationAccessComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = get_builder(component=component)
         builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_service_defaults(builder)
 
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
@@ -72,7 +67,6 @@ class ConfigurationAccessComp(
             name="ooodev.adapter.configuration.configuration_access_comp.ConfigurationAccessComp",
             base_class=_ConfigurationAccessComp,
         )
-
         return inst
 
     def __init__(self, component: Any) -> None:
@@ -83,7 +77,7 @@ class ConfigurationAccessComp(
             component (Any): UNO Component that supports ``com.sun.star.configuration.ConfigurationAccess`` service.
         """
         # this it not actually called as __new__ is overridden
-        super().__init__(component)
+        pass
 
     # region Properties
 

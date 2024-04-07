@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
+import uno
 from com.sun.star.ui import XUIConfiguration
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 if TYPE_CHECKING:
     from com.sun.star.ui import XUIConfigurationListener
@@ -52,3 +54,19 @@ class UIConfigurationPartial:
         self.__component.removeConfigurationListener(listener)
 
     # endregion XUIConfiguration
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    builder.auto_add_interface("com.sun.star.ui.XUIConfiguration")
+    return builder

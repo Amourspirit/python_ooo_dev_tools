@@ -33,8 +33,10 @@ class DefaultBuilder(ComponentBase):
         self._bases_interfaces: Dict[Type[Any], BuildImportArg] = {}
         self._bases_event_interfaces: Dict[types.ModuleType, BuildEventArg] = {}
         # _build_args is a dictionary of BuildImportArg, using dictionary to avoid duplicates and to keep order
-        self._build_args: Dict[BuildImportArg, Any] = {}
-        self._event_args: Dict[BuildEventArg, Any] = {}
+        # because BuildImportArg, and BuildEventArg do not use the entire object as the key, we are also storing the value,
+        # this way the values can be changed without changing the key. EG: a BuildImportArg optional value is changed.
+        self._build_args: Dict[BuildImportArg, BuildImportArg] = {}
+        self._event_args: Dict[BuildEventArg, BuildEventArg] = {}
         self._omit: Set[str] = set()
         self._service_info = mLo.Lo.qi(XServiceInfo, self._component, True)
         self._type_names = None
@@ -56,8 +58,6 @@ class DefaultBuilder(ComponentBase):
         return tuple(name.rsplit(".", 1))  # type: ignore
 
     def _get_class(self, arg: BuildImportArg) -> Any:
-        if not self._passes_check(arg):
-            raise ValueError(f"Component does not support {arg.uno_name}")
         mod_name, class_name = self._get_mod_class_names(arg.ooodev_name)
         return getattr(self._get_import(mod_name), class_name)
 
@@ -199,7 +199,7 @@ class DefaultBuilder(ComponentBase):
 
     def _process_imports(self) -> None:
         self._clear_imports()
-        for arg in self._build_args.keys():
+        for arg in self._build_args.values():
             if not arg.ooodev_name:
                 continue
             if arg.ooodev_name in self._omit:
@@ -212,7 +212,7 @@ class DefaultBuilder(ComponentBase):
                 clz = self._get_class(arg)
                 self._add_base(clz, arg)
 
-        for arg in self._event_args.keys():
+        for arg in self._event_args.values():
             if not arg.module_name:
                 continue
             if not arg.class_name:
@@ -284,7 +284,7 @@ class DefaultBuilder(ComponentBase):
         ns, class_name = suffix.rsplit(".", 1)  #  beans, XExactName
         if class_name.startswith("X"):
             class_name = class_name[1:]  # ExactName
-        odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.to_snake_case(class_name)}_partial"
+        odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.camel_to_snake(class_name)}_partial"
         odev_class = f"{class_name}Partial"
         return f"{odev_ns}.{odev_class}"
 
@@ -296,7 +296,7 @@ class DefaultBuilder(ComponentBase):
             args (BuildImportArg): One or more BuildImportArg instance.
         """
         for arg in args:
-            self._build_args[arg] = None
+            self._build_args[arg] = arg
 
     def insert_build_arg(self, idx: int, *args: BuildImportArg) -> None:
         """
@@ -316,7 +316,7 @@ class DefaultBuilder(ComponentBase):
             reversed_args = list_args[::-1]
 
         for arg in reversed_args:
-            items.insert(idx, (arg, None))
+            items.insert(idx, (arg, arg))
         self._build_args = dict(items)
 
     def add_event_arg(self, *args: BuildEventArg) -> None:
@@ -327,7 +327,9 @@ class DefaultBuilder(ComponentBase):
             args (BuildEventArg): One or more BuildImportArg instance.
         """
         for arg in args:
-            self._event_args[arg] = None
+            if arg in self._event_args:
+                _ = self._event_args.pop(arg)
+            self._event_args[arg] = arg
 
     def insert_event_arg(self, idx: int, *args: BuildEventArg) -> None:
         """
@@ -347,16 +349,16 @@ class DefaultBuilder(ComponentBase):
             reversed_args = list_args[::-1]
 
         for arg in reversed_args:
-            items.insert(idx, (arg, None))
+            items.insert(idx, (arg, arg))
         self._event_args = dict(items)
 
     def get_builders(self) -> List[BuildImportArg]:
         """Get the list of BuildImportArg."""
-        return list(self._build_args.keys())
+        return list(self._build_args.values())
 
     def get_events(self) -> List[BuildEventArg]:
         """Get the list of BuildImportArg."""
-        return list(self._event_args.keys())
+        return list(self._event_args.values())
 
     def merge(self, instance: DefaultBuilder, make_optional: bool = False) -> None:
         """
@@ -441,15 +443,19 @@ class DefaultBuilder(ComponentBase):
                 del self._event_args[arg]
                 break
 
-    def auto_add_interface(self, uno_name: str, optional: bool = True) -> None:
+    def auto_add_interface(
+        self, uno_name: str, optional: bool = True, check_kind: CheckKind | int = CheckKind.INTERFACE
+    ) -> None:
         """
         Add an import from a UNO name.
 
         Args:
             uno_name (str): UNO Name. such as ``com.sun.star.container.XIndexAccess``.
+            optional (bool, optional): Specifies if the import is optional. Defaults to ``True``.
+            check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.INTERFACE``.
         """
         name = self._convert_to_ooodev(uno_name)
-        self.add_import(name=name, uno_name=uno_name, optional=optional, check_kind=CheckKind.INTERFACE)
+        self.add_import(name=name, uno_name=uno_name, optional=optional, check_kind=check_kind)
 
     def insert_import(
         self,
