@@ -65,6 +65,10 @@ class IndexAccessPartial(Generic[T], ElementAccessPartial):
         """.. versionadded:: 0.20.2"""
         return self.get_count()
 
+    def __getitem__(self, idx: int) -> T:
+        """Get By Index"""
+        return self.get_by_index(idx)
+
     # region XIndexAccess
     def get_count(self) -> int:
         """

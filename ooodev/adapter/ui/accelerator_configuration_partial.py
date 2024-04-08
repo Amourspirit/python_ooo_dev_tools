@@ -70,7 +70,7 @@ class AcceleratorConfigurationPartial(
 
     def get_key_events_by_command(self, cmd: str) -> Tuple[KeyEvent, ...]:
         """
-        optimized access to the relation ``command-key`` instead of ``key-command`` which is provided normally by this interface.
+        Optimized access to the relation ``command-key`` instead of ``key-command`` which is provided normally by this interface.
 
         It can be used to implement collision handling, if more than one key event match to the same command.
         The returned list contains all possible key events - and the outside code can select a possible one.
@@ -155,12 +155,21 @@ def get_builder(component: Any) -> DefaultBuilder:
     """
     builder = DefaultBuilder(component)
 
+    # for some unknown reason is not implemented in some components as a type but the methods are there.
+    # Just add the interface, overriding the optional, if the store method is available.
+    if hasattr(component, "getAllKeyEvents"):
+        builder.auto_add_interface(
+            "com.sun.star.ui.XAcceleratorConfiguration", optional=False, check_kind=CheckKind.NONE
+        )
+
     if hasattr(component, "store"):
-        # for some unknown reason is not implemented in some components as a type but the methods are there.
-        # Just add the interface, overriding the optional, if the store method is available.
         builder.auto_add_interface(
             "com.sun.star.ui.XUIConfigurationPersistence", optional=False, check_kind=CheckKind.NONE
         )
-    builder.auto_add_interface("com.sun.star.ui.XUIConfigurationStorage")
-    builder.auto_add_interface("com.sun.star.ui.XUIConfiguration")
+    if hasattr(component, "hasStorage"):
+        builder.auto_add_interface(
+            "com.sun.star.ui.XUIConfigurationStorage", optional=False, check_kind=CheckKind.NONE
+        )
+    if hasattr(component, "addConfigurationListener"):
+        builder.auto_add_interface("com.sun.star.ui.XUIConfiguration", optional=False, check_kind=CheckKind.NONE)
     return builder

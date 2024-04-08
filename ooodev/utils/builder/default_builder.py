@@ -360,40 +360,48 @@ class DefaultBuilder(ComponentBase):
         """Get the list of BuildImportArg."""
         return list(self._event_args.values())
 
-    def merge(self, instance: DefaultBuilder, make_optional: bool = False) -> None:
+    def merge(
+        self, instance: DefaultBuilder, make_optional: bool | None = None, check_kind: CheckKind | int | None = None
+    ) -> None:
         """
         Add the builders from another instance.
 
         Args:
             instance (DefaultBuilder): The instance to add the builders from.
-            make_optional (bool, optional): Specifies if the import is optional. Defaults to ``False``.
+            make_optional (bool, None, optional): Specifies if the import is optional. A value of None means do not change. Defaults to ``None``.
+            check_kind (CheckKind, int, None, optional): Check Kind. A value of None means do not change. Defaults to ``None``.
         """
+
+        def get_check_kind(arg: BuildImportArg | BuildEventArg) -> CheckKind | int:
+            nonlocal check_kind
+            if check_kind is not None:
+                return check_kind
+            return arg.check_kind
+
+        def get_make_optional(arg: BuildImportArg | BuildEventArg) -> bool:
+            nonlocal make_optional
+            if make_optional is not None:
+                return make_optional
+            return arg.optional
+
         for arg in instance.get_builders():
-            if make_optional:
-                self.add_import(
-                    name=arg.ooodev_name,
-                    uno_name=arg.uno_name,
-                    optional=True,
-                    init_kind=arg.init_kind,
-                    check_kind=arg.check_kind,
-                )
-            else:
-                cp = copy.copy(arg)
-                self.add_build_arg(cp)
+            self.add_import(
+                name=arg.ooodev_name,
+                uno_name=arg.uno_name,
+                optional=get_make_optional(arg),
+                init_kind=arg.init_kind,
+                check_kind=get_check_kind(arg),
+            )
 
         for arg in instance.get_events():
-            if make_optional:
-                self.add_event(
-                    module_name=arg.module_name,
-                    class_name=arg.class_name,
-                    callback_name=arg.callback_name,
-                    uno_name=arg.uno_name,
-                    optional=True,
-                    check_kind=arg.check_kind,
-                )
-            else:
-                cp = copy.copy(arg)
-                self.add_event_arg(cp)
+            self.add_event(
+                module_name=arg.module_name,
+                class_name=arg.class_name,
+                callback_name=arg.callback_name,
+                uno_name=arg.uno_name,
+                optional=get_make_optional(arg),
+                check_kind=get_check_kind(arg),
+            )
         self.omits.update(instance.omits)
 
     def add_ooodev_builder(

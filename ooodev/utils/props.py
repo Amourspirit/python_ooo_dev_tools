@@ -6,7 +6,7 @@
 # region Imports
 from __future__ import annotations
 import contextlib
-from typing import Any, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload
+from typing import Any, Dict, List, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload, Union
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -22,6 +22,7 @@ from com.sun.star.ui import ItemStyle  # const
 from com.sun.star.ui import ItemType  # const
 
 from ooo.dyn.beans.property_value import PropertyValue
+from ooo.dyn.beans.named_value import NamedValue
 from ooo.dyn.beans.property import Property
 
 
@@ -103,7 +104,7 @@ class Props:
         return (p1, p2, p3, p4, p5)
 
     @classmethod
-    def make_props(cls, **kwargs) -> Tuple[PropertyValue, ...]:
+    def make_props(cls, **kwargs: Any) -> Tuple[PropertyValue, ...]:
         """
         Make Properties.
 
@@ -133,7 +134,56 @@ class Props:
         lst = [cls.make_prop_value(name=k, value=v) for k, v in kwargs.items()]
         return tuple(lst)
 
+    @classmethod
+    def make_props_any(cls, **kwargs: Any) -> Any:
+        """
+        Makes a uno.Any object for properties.
+
+        Keyword Args:
+            kwargs (Dict[str, Any]): Each key, value pair is assigned to a PropertyValue.
+
+        Returns:
+            uno.Any: Array of ``[]com.sun.star.beans.PropertyValue``
+
+        .. versionadded:: 0.40.0
+        """
+        props = cls.make_props(**kwargs)
+        return uno.Any("[]com.sun.star.beans.PropertyValue", props)  # type: ignore
+
     # endregion ---------------- make properties -----------------------
+
+    # region ------------------- Data -----------------------------------
+
+    @staticmethod
+    def data_to_dict(
+        data: Sequence[Tuple[str, Any]] | Sequence[List[str]] | Sequence[PropertyValue] | Sequence[NamedValue]
+    ) -> Dict[str, Any]:
+        """
+        Convert tuples, list, PropertyValue, NamedValue to dictionary.
+
+        |lo_safe|
+
+        Args:
+            data (Sequence[Tuple[str, Any]] | Sequence[List[str]] | Sequence[PropertyValue] | Sequence[NamedValue]): Data to convert to dictionary.
+                If data is a sequence of tuples or list, the first element is the key and the second element is the value.
+
+        Returns:
+            Dict[str, Any]: Dictionary.
+
+        .. versionadded:: 0.40.0
+        """
+        d = {}
+
+        if isinstance(data[0], (tuple, list)):
+            data_seq = cast(Union[Sequence[Tuple[str, Any]], Sequence[List[str]]], data)
+            d = {r[0]: r[1] for r in data_seq}
+        elif isinstance(data[0], (PropertyValue, NamedValue)):
+            data_seq = cast(Union[Sequence[PropertyValue], Sequence[NamedValue]], data)
+            d = {r.Name: r.Value for r in data_seq}
+
+        return d
+
+    # endregion ---------------- Data -----------------------------------
 
     # region ------------------- uno -----------------------------------
     @staticmethod

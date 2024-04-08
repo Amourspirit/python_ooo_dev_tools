@@ -110,7 +110,6 @@ def get_builder(component: Any) -> DefaultBuilder:
 
     builder.merge(accelerator_configuration_partial.get_builder(component))
     builder.auto_add_interface("com.sun.star.form.XReset")
-    builder.auto_add_interface("com.sun.star.lang.XTypeProvider")
     builder.auto_add_interface("com.sun.star.util.XChangesNotifier")
 
     builder.add_event(

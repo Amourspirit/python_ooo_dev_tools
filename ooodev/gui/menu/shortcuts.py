@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, Dict, TYPE_CHECKING, Tuple, Union
+from typing import cast, Dict, List, TYPE_CHECKING, Tuple, Union
 
 import uno
 from ooo.dyn.awt.key_event import KeyEvent
@@ -62,6 +62,7 @@ class ShortCuts:
         self._app = str(app)
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
+        self._command_dict = cast(Dict[str, List[str]], None)
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
@@ -103,6 +104,9 @@ class ShortCuts:
         keys = shortcut.split("+")
         try:
             for m in keys[:-1]:
+                if not m:
+                    # could be empty string
+                    continue
                 key_event.Modifiers += cls.MODIFIERS[m.lower()]
             key_event.KeyCode = getattr(Key, keys[-1].upper())
         except Exception as e:
@@ -120,35 +124,70 @@ class ShortCuts:
             url = MacroScript.get_url_script(**url)
         return url
 
-    def _get_shortcut(self, k):
+    def _get_shortcut(self, key: KeyEvent):
         """Get shortcut for key event"""
-        # ~ print(k.KeyCode, str(k.KeyChar), k.KeyFunc, k.Modifiers)
-        shortcut = f"{self.COMBINATIONS[k.Modifiers]}+{self.KEYS[k.KeyCode]}"
+        # print(k.KeyCode, str(k.KeyChar), k.KeyFunc, k.Modifiers)
+        shortcut = f"{self.COMBINATIONS[key.Modifiers]}+{self.KEYS[key.KeyCode]}"
         return shortcut
 
-    def _get_info(self, key):
+    def _get_info(self, key: KeyEvent) -> Tuple[str, str]:
         """Get shortcut and command"""
         cmd = self._config.get_command_by_key_event(key)
         shortcut = self._get_shortcut(key)
         return shortcut, cmd
 
-    def get_all(self):
-        """Get all events key"""
+    def get_all(self) -> List[Tuple[str, str]]:
+        """
+        Get all events key.
+
+        Returns:
+            List[Tuple[str, str]]: List of tuples with shortcut and command.
+        """
         events = [(self._get_info(k)) for k in self._config.get_all_key_events()]
         return events
 
-    def get_by_command(self, command: str | Dict[str, str]):
-        """Get shortcuts by command"""
+    def _get_by_command_dict(self, url: str) -> List[str]:
+        # for unknown reason LibreOffice does not return the command for most urls.
+        # This method is a workaround to get the command by url.
+        if self._command_dict is None:
+            self._command_dict: Dict[str, List[str]] = {}
+            for key in self._config.get_all_key_events():
+                try:
+                    cmd = self._config.get_command_by_key_event(key)
+                except Exception:
+                    continue
+                if cmd in self._command_dict:
+                    self._command_dict[cmd].append(self._get_shortcut(key))
+                else:
+                    self._command_dict[cmd] = [self._get_shortcut(key)]
+        if url in self._command_dict:
+            return self._command_dict[url]
+        return []
+
+    def get_by_command(self, command: str | Dict[str, str]) -> List[str]:
+        """
+        Get shortcuts by command.
+
+        Args:
+            command (str | dict): Command to search, 'UNOCOMMAND' or dict with macro info.
+
+        Returns:
+            List[str]: List of shortcuts or empty list of not found.
+        """
         url = ShortCuts.get_url_script(command)
-        key_events = self._config.get_key_events_by_command(url)
-        shortcuts = [self._get_shortcut(k) for k in key_events]
+        try:
+            key_events = self._config.get_key_events_by_command(url)
+            shortcuts = [self._get_shortcut(k) for k in key_events]
+        except NoSuchElementException:
+            # fallback on workaround
+            shortcuts = self._get_by_command_dict(url)
         return shortcuts
 
-    def get_by_shortcut(self, shortcut: str):
+    def get_by_shortcut(self, shortcut: str) -> str:
         """Get command by shortcut"""
         key_event = ShortCuts.to_key_event(shortcut)
         if key_event is None:
-            error(f"Not exists shortcut: {shortcut}")
+            error(f"get_by_shortcut() - Not exists shortcut: {shortcut}")
             return ""
         try:
             command = self._config.get_command_by_key_event(key_event)

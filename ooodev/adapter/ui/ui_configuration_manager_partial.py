@@ -42,7 +42,7 @@ class UIConfigurationManagerPartial:
         self.__component = component
 
     # region XUIConfigurationManager
-    def create_settings(self) -> IndexContainerComp:
+    def create_settings(self) -> IndexContainerComp[Any]:
         """
         Creates an empty settings data container.
         """
@@ -67,7 +67,7 @@ class UIConfigurationManagerPartial:
         """
         return self.__component.getImageManager()
 
-    def get_settings(self, resource_url: str, writeable: bool) -> IndexAccessComp:
+    def get_settings(self, resource_url: str, writeable: bool) -> IndexAccessComp[Any]:
         """
         retrieves the settings of a user interface element.
 
