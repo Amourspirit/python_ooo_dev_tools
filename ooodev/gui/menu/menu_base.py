@@ -5,7 +5,7 @@ import uno
 from ooodev.gui.menu.shortcuts import ShortCuts
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.logging import debug, error
+from ooodev.io.log.logging import debug, error
 from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:

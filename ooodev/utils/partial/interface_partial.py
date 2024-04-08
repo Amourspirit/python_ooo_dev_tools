@@ -104,7 +104,7 @@ class InterfacePartial:
                 ns, class_name = suffix.rsplit(".", 1)  #  beans, XExactName
                 if class_name.startswith("X"):
                     class_name = class_name[1:]  # ExactName
-                odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.to_snake_case(class_name)}_partial"
+                odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.camel_to_snake(class_name)}_partial"
                 odev_class = f"{class_name}Partial"
                 return f"{odev_ns}.{odev_class}"
 

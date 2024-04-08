@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
-import copy
+from typing import Any, cast, Dict, List, Type, Tuple, Set
 import importlib
 import types
 
@@ -9,6 +8,7 @@ import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 
+from ooodev.io.log.class_logger import ClassLogger
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
@@ -17,9 +17,6 @@ from ooodev.utils.builder.build_event_arg import BuildEventArg
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
 from ooodev.utils import gen_util as gUtil
-
-if TYPE_CHECKING:
-    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class DefaultBuilder(ComponentBase):
@@ -40,16 +37,33 @@ class DefaultBuilder(ComponentBase):
         self._omit: Set[str] = set()
         self._service_info = mLo.Lo.qi(XServiceInfo, self._component, True)
         self._type_names = None
+        self._logger = ClassLogger(name=self.__class__.__name__)
+
+    def _get_type_names_list(self) -> List[str]:
+        result: List[str] = []
+        provider = mLo.Lo.qi(XTypeProvider, self._component, True)
+        component_types = cast(Tuple[Any], provider.getTypes())
+        for t in component_types:
+            result.append(t.typeName)
+        return result
 
     def _get_type_names(self) -> Set[str]:
         if self._type_names is None:
-            provider = mLo.Lo.qi(XTypeProvider, self._component, True)
+            component_types = self._get_type_names_list()
             result: Set[str] = set()
-            component_types = cast(Tuple[Any], provider.getTypes())
-            for t in component_types:
-                result.add(t.typeName)
+            for type_name in component_types:
+                result.add(type_name)
             self._type_names = result
         return self._type_names
+
+    def auto_interface(self) -> None:
+        unique_type_names: Set[str] = set()
+        lst = self._get_type_names_list()
+        for type_name in lst:
+            if type_name in unique_type_names:
+                continue
+            unique_type_names.add(type_name)
+            self.auto_add_interface(type_name)
 
     def _get_import(self, name: str) -> types.ModuleType:
         return importlib.import_module(name)
@@ -135,12 +149,20 @@ class DefaultBuilder(ComponentBase):
         if not arg.uno_name:
             return None
         if self._passes_check(arg):
-            return self._get_class(arg)
+            try:
+                return self._get_class(arg)
+            except ImportError:
+                self._logger.error(f"Import Error: {arg.ooodev_name}")
+                return None
         return None
 
     def _get_optional_event(self, arg: BuildEventArg) -> types.ModuleType | None:
         if self._passes_event_check(arg):
-            return self._get_import(arg.module_name)
+            try:
+                return self._get_import(arg.module_name)
+            except ImportError:
+                self._logger.error(f"Import Error: {arg.module_name}")
+                return None
         return None
 
     def _passes_check(self, arg: BuildImportArg) -> bool:
@@ -209,8 +231,13 @@ class DefaultBuilder(ComponentBase):
                 if clz:
                     self._add_base(clz, arg)
             else:
-                clz = self._get_class(arg)
-                self._add_base(clz, arg)
+                try:
+                    clz = self._get_class(arg)
+                    self._add_base(clz, arg)
+                    self._logger.debug(f"Added: {arg.ooodev_name}")
+                except ImportError:
+                    self._logger.error(f"Import Error: {arg.ooodev_name}")
+                    continue
 
         for arg in self._event_args.values():
             if not arg.module_name:
@@ -224,8 +251,12 @@ class DefaultBuilder(ComponentBase):
                 if mod:
                     self._add_event_base(mod, arg)
             else:
-                mod = self._get_import(arg.module_name)
-                self._add_event_base(mod, arg)
+                try:
+                    mod = self._get_import(arg.module_name)
+                    self._add_event_base(mod, arg)
+                except ImportError:
+                    self._logger.error(f"Import Error: {arg.module_name}")
+                    continue
 
     def _init_class(self, instance: Any, clz: Type[Any], kind: InitKind) -> Any:
         if kind == InitKind.COMPONENT:
@@ -253,8 +284,8 @@ class DefaultBuilder(ComponentBase):
             inst = clz()
         return inst
 
-    def _init_classes(self, instance: Any) -> None:
-
+    def init_classes(self, instance: Any) -> None:
+        """Initialize the classes including the events."""
         for clz, kind in self._bases_partial.items():
             self._init_class(instance, clz, kind.init_kind)
         for clz, kind in self._bases_interfaces.items():
@@ -287,6 +318,29 @@ class DefaultBuilder(ComponentBase):
         odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.camel_to_snake(class_name)}_partial"
         odev_class = f"{class_name}Partial"
         return f"{odev_ns}.{odev_class}"
+
+    def has_type(self, t: Type[Any]) -> bool:
+        """
+        Gets if the builder has a type in the partial or interface bases.
+
+        This check does not check for events.
+        """
+        if t in self._bases_partial:
+            return True
+        if t in self._bases_interfaces:
+            return True
+        return False
+
+    def pop_type(self, t: Type[Any]) -> None:
+        """
+        Removes a type from the partial or interface bases.
+
+        This will not remove events.
+        """
+        if t in self._bases_partial:
+            del self._bases_partial[t]
+        if t in self._bases_interfaces:
+            del self._bases_interfaces[t]
 
     def add_build_arg(self, *args: BuildImportArg) -> None:
         """
@@ -496,6 +550,16 @@ class DefaultBuilder(ComponentBase):
         self.insert_build_arg(idx, arg)
         return arg
 
+    def has_import(self, name: str) -> bool:
+        """
+        Check if the builder has an import.
+
+        Args:
+            name (str): Ooodev or UNO name such as ``ooodev.adapter.container.index_access_partial.IndexAccessPartial`` or  ``com.sun.star.awt.XWindow``.
+        """
+        ooo_dev_name = self._convert_to_ooodev(name)
+        return any(arg.ooodev_name == ooo_dev_name for arg in self._build_args.keys())
+
     def add_import(
         self,
         name: str,
@@ -644,7 +708,7 @@ class DefaultBuilder(ComponentBase):
         self.add_event_arg(bi)
         return bi
 
-    def build_class(self, name: str, base_class: Type[Any], init_kind: InitKind | int = InitKind.COMPONENT) -> Any:
+    def get_class_type(self, name: str, base_class: Type[Any]) -> Type[Any]:
         """
         Build the import.
 
@@ -674,8 +738,31 @@ class DefaultBuilder(ComponentBase):
         if mod:
             with contextlib.suppress(Exception):
                 clz.__module__ = mod
+        return clz
+
+    def build_class(self, name: str, base_class: Type[Any], init_kind: InitKind | int = InitKind.COMPONENT) -> Any:
+        """
+        Build the import.
+
+        Args:
+            name (str): Class Name. This can just be a class name or a full import name including the class.
+                When a full import name is passed then the last part is used as the class name and parts before are used as the module name.
+            init_kind (InitKind, int, optional): Init Option. Defaults to ``InitKind.COMPONENT``.
+            base_class (Type[Any], optional): Base Class. Defaults to ``BuilderBase``.
+
+        Returns:
+            Any: Class instance
+
+        Note:
+            ``init_kind`` can be an ``InitKind`` or an ``int``:
+
+            - NONE = 0
+            - COMPONENT = 1
+            - COMPONENT_INTERFACE = 2
+        """
+        clz = self.get_class_type(name=name, base_class=base_class)
         inst = self._create_class(clz, InitKind(init_kind))
-        self._init_classes(inst)
+        self.init_classes(inst)
         return inst
 
     def set_omit(self, *names: str) -> None:

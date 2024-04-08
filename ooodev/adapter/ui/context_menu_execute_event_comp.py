@@ -1,10 +1,13 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
+from ooodev.adapter.component_prop import ComponentProp
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from com.sun.star.container import XEnumerationAccess
 from com.sun.star.container import XContainer
 from ooodev.adapter.awt.window_comp import WindowComp
-from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.container_partial import ContainerPartial
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
 from ooodev.adapter.ui.action_trigger_container_comp import ActionTriggerContainerComp
@@ -16,12 +19,7 @@ if TYPE_CHECKING:
     from com.sun.star.ui import ContextMenuExecuteEvent  # struct
 
 
-class ContextMenuExecuteEventComp(ComponentBase):
-    """
-    Class for managing ContextMenuExecuteEvent Component.
-    """
-
-    # pylint: disable=unused-argument
+class _ContextMenuExecuteEventComp(ComponentProp):
 
     def __init__(self, component: ContextMenuExecuteEvent) -> None:
         """
@@ -31,16 +29,17 @@ class ContextMenuExecuteEventComp(ComponentBase):
             component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.ui.ContextMenuExecuteEvent`` service.
         """
         # component is a struct
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         self.__action_trigger_container = None
 
-    # region Overrides
-    def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
-        """Returns a tuple of supported service names."""
-        # validated by mTextRangePartial.TextRangePartial
-        return ()  # ("com.sun.star.ui.ContextMenuExecuteEvent",)
-
-    # endregion Overrides
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, ComponentProp):
+            return False
+        if self is other:
+            return True
+        if self.component is other.component:
+            return True
+        return self.component == other.component
 
     def __get_action_trigger_container(self) -> ActionTriggerContainerComp:
         """
@@ -99,3 +98,50 @@ class ContextMenuExecuteEventComp(ComponentBase):
         return SelectionSupplierComp(self.component.Selection)
 
     # endregion Properties
+
+
+class ContextMenuExecuteEventComp(_ContextMenuExecuteEventComp, CompDefaultsPartial):
+    """
+    Class for managing ContextMenuExecuteEvent Component.
+    """
+
+    # pylint: disable=unused-argument
+    def __new__(cls, component: Any, *args, **kwargs):
+        builder = get_builder(component=component)
+        builder_helper.builder_add_comp_defaults(builder)
+
+        builder_only = kwargs.get("_builder_only", False)
+        if builder_only:
+            # cast to prevent type checker error
+            return cast(Any, builder)
+        inst = builder.build_class(
+            name="ooodev.adapter.ui.context_menu_execute_event_comp.ContextMenuExecuteEventComp",
+            base_class=_ContextMenuExecuteEventComp,
+        )
+        return inst
+
+    def __init__(self, component: ContextMenuExecuteEvent) -> None:
+        """
+        Constructor
+
+        Args:
+            component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.ui.ContextMenuExecuteEvent`` service.
+        """
+        # this it not actually called as __new__ is overridden
+        pass
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    builder.auto_interface()
+    return builder

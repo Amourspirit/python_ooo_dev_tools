@@ -3,12 +3,15 @@ from typing import Any
 import uno
 from ooodev.adapter.lang.type_provider_partial import TypeProviderPartial
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
+from ooodev.adapter.uno.weak_partial import WeakPartial
 from ooodev.utils.partial.interface_partial import InterfacePartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.events.partial.events_partial import EventsPartial
 
 
-class CompDefaultsPartial(TypeProviderPartial, ServiceInfoPartial, InterfacePartial, QiPartial, EventsPartial):
+class CompDefaultsPartial(
+    WeakPartial, TypeProviderPartial, ServiceInfoPartial, InterfacePartial, QiPartial, EventsPartial
+):
     """
     Class for managing default imports for the builder.
 
@@ -20,6 +23,7 @@ class CompDefaultsPartial(TypeProviderPartial, ServiceInfoPartial, InterfacePart
     """
 
     def __init__(self, component: Any, interface: Any | None = None) -> None:
+        WeakPartial.__init__(self, component=component, interface=interface)
         TypeProviderPartial.__init__(self, component=component, interface=interface)
         ServiceInfoPartial.__init__(self, component=component, interface=interface)
         InterfacePartial.__init__(self)

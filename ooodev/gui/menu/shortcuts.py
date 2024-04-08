@@ -13,7 +13,8 @@ from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import 
     TheModuleUIConfigurationManagerSupplierComp,
 )
 from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.logging import error, debug
+from ooodev.io.log.class_logger import ClassLogger
+from ooodev.io.log import logging as logger
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
@@ -63,6 +64,7 @@ class ShortCuts:
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
         self._command_dict = cast(Dict[str, List[str]], None)
+        self._logger = ClassLogger(name="ShortCuts")
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
@@ -110,7 +112,7 @@ class ShortCuts:
                 key_event.Modifiers += cls.MODIFIERS[m.lower()]
             key_event.KeyCode = getattr(Key, keys[-1].upper())
         except Exception as e:
-            error(e)
+            logger.error("Exception occured", exc_info=True)
             key_event = None
         return key_event
 
@@ -187,12 +189,12 @@ class ShortCuts:
         """Get command by shortcut"""
         key_event = ShortCuts.to_key_event(shortcut)
         if key_event is None:
-            error(f"get_by_shortcut() - Not exists shortcut: {shortcut}")
+            self._logger.warning(f"get_by_shortcut() - Not exists shortcut: {shortcut}")
             return ""
         try:
             command = self._config.get_command_by_key_event(key_event)
         except NoSuchElementException:
-            error(f"Not exists shortcut: {shortcut}")
+            self._logger.warning(f"Not exists shortcut: {shortcut}")
             command = ""
         return command
 
@@ -211,13 +213,13 @@ class ShortCuts:
         url = ShortCuts.get_url_script(command)
         key_event = ShortCuts.to_key_event(shortcut)
         if key_event is None:
-            error(f"Not exists shortcut: {shortcut}")
+            self._logger.warning(f"Not exists shortcut: {shortcut}")
             return False
         try:
             self._config.set_key_event(key_event, url)
             self._config.store()
         except Exception as e:
-            error(e)
+            self._logger.error(e)
             result = False
 
         return result
@@ -234,13 +236,13 @@ class ShortCuts:
         """
         key_event = ShortCuts.to_key_event(shortcut)
         if key_event is None:
-            error(f"Not exists shortcut: {shortcut}")
+            self._logger.warning(f"Not exists shortcut: {shortcut}")
             return False
         try:
             self._config.remove_key_event(key_event)
             result = True
         except NoSuchElementException:
-            debug(f"No exists: {shortcut}")
+            self._logger.debug(f"No exists: {shortcut}")
             result = False
         return result
 
@@ -257,6 +259,6 @@ class ShortCuts:
 
     def reset(self):
         """Reset configuration"""
-        self._config.reset()
+        self._config.reset()  # type: ignore
         self._config.store()
         return

@@ -9,7 +9,7 @@ from ooo.dyn.util.date import Date as UnoDate
 from ooo.dyn.util.time import Time as UnoTime
 from ooodev.loader import lo as mLo
 from ooodev.meta.static_meta import classproperty
-from ooodev.io.logging import info
+from ooodev.io.log.logging import info
 
 
 class DateUtil:

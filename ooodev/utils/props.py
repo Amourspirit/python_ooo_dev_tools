@@ -24,6 +24,7 @@ from com.sun.star.ui import ItemType  # const
 from ooo.dyn.beans.property_value import PropertyValue
 from ooo.dyn.beans.named_value import NamedValue
 from ooo.dyn.beans.property import Property
+from ooo.dyn.beans.string_pair import StringPair
 
 
 from ooodev.utils import gen_util as gUtil
@@ -74,6 +75,27 @@ class Props:
             p.Name = name
         if value is not None:
             p.Value = value
+        return p
+
+    @staticmethod
+    def make_sting_pair(first: str = "", second: str = "") -> StringPair:
+        """
+        Makes a Uno String Pair and assigns first and second.
+
+        |lo_safe|
+
+        Args:
+            first (str, optional): First string.
+            second (str, optional): Second string.
+
+        Returns:
+            StringPair: com.sun.star.beans.StringPair
+
+        .. versionadded:: 0.40.0
+        """
+        p = cast(StringPair, uno.createUnoStruct("com.sun.star.beans.StringPair"))
+        p.First = first
+        p.Second = second
         return p
 
     @classmethod
@@ -132,6 +154,24 @@ class Props:
                 props = Props.make_props(**p_dic)
         """
         lst = [cls.make_prop_value(name=k, value=v) for k, v in kwargs.items()]
+        return tuple(lst)
+
+    @classmethod
+    def make_strings(cls, **kwargs: str) -> Tuple[StringPair, ...]:
+        """
+        Make String Pairs.
+
+        |lo_safe|
+
+        Keyword Args:
+            kwargs (Dict[str, str]): Each key, value pair is assigned to a StringPair.
+
+        Returns:
+            Tuple[StringPair, ...]: Tuple of String Pairs
+
+        .. versionadded:: 0.40.0
+        """
+        lst = [cls.make_sting_pair(first=k, second=v) for k, v in kwargs.items()]
         return tuple(lst)
 
     @classmethod

@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno
 from ooo.dyn.sheet.spreadsheet_view_objects_mode import SpreadsheetViewObjectsModeEnum
 from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 
+from ooodev.adapter._helper.builder import builder_helper
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -149,3 +151,26 @@ class SpreadsheetViewSettingsComp(
         self.component.ZoomValue = value
 
     # endregion Properties
+
+
+def get_builder(component: Any, **kwargs: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    auto_interface = kwargs.pop("auto_interface", True)
+
+    if auto_interface:
+        builder.auto_interface()
+
+    builder_helper.builder_add_property_change_implement(builder)
+    builder_helper.builder_add_property_veto_implement(builder)
+
+    return builder

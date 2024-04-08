@@ -13,6 +13,7 @@ Subpackages
    ooodev.adapter.beans
    ooodev.adapter.chart
    ooodev.adapter.chart2
+   ooodev.adapter.configuration
    ooodev.adapter.container
    ooodev.adapter.datatransfer
    ooodev.adapter.document
@@ -32,9 +33,11 @@ Subpackages
    ooodev.adapter.sheet
    ooodev.adapter.style
    ooodev.adapter.table
+   ooodev.adapter.task
    ooodev.adapter.text
    ooodev.adapter.tree
    ooodev.adapter.ui
+   ooodev.adapter.uno
    ooodev.adapter.util
    ooodev.adapter.view
 
@@ -46,6 +49,7 @@ Submodules
 
    ooodev.adapter.adapter_base
    ooodev.adapter.component_base
+   ooodev.adapter.component_prop
    ooodev.adapter.struct_base
 
 Module contents
