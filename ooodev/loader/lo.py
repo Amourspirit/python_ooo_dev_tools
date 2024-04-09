@@ -183,7 +183,7 @@ class Lo(metaclass=StaticProperty):
             self,
             connector: connectors.ConnectPipe | connectors.ConnectSocket | None,
             cache_obj: mCache.Cache | None = None,
-            opt: Lo.Options | None = None,
+            opt: LoOptions | None = None,
         ):
             """
             Create a connection to office
@@ -197,6 +197,9 @@ class Lo(metaclass=StaticProperty):
             .. versionchanged:: 0.6.10
 
                 Added ``opt`` parameter.
+
+            Hint:
+            - ``Options`` can be imported from ``ooodev.loader.inst.options``
             """
             self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj, opt=opt)
 
@@ -1604,7 +1607,7 @@ class Lo(metaclass=StaticProperty):
         |lo_unsafe|
 
         Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not need to start with ``.uno:`` prefix.
             props (PropertyValue, optional): properties for dispatch.
             frame (XFrame, optional): Frame to dispatch to.
 

@@ -33,6 +33,9 @@ class LoLoader:
             cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
             opt (Options, optional): Extra Load options.
+
+        Hint:
+            - ``Options`` can be imported from ``ooodev.loader.inst.options``
         """
         self._lo_inst: ConnectBase | None = None
         if opt is None:

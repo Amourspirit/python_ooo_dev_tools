@@ -49,6 +49,9 @@ class _Logger(metaclass=Singleton):
     def critical(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         self.logger.critical(msg, *args, **kwargs)
 
+    def get_effective_level(self) -> int:
+        return self.logger.getEffectiveLevel()
+
 
 def debug(msg: Any, *args: Any, **kwargs: Any) -> None:
     """
@@ -189,7 +192,7 @@ def get_log_level() -> int:
         int: The log level.
     """
     log = _Logger()
-    return log.logger.level
+    return log.get_effective_level()
 
 
 def save_log(path: str, data: Any) -> bool:

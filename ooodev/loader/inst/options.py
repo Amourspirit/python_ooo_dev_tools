@@ -1,5 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
+import logging
 
 
 @dataclass(frozen=True)
@@ -27,3 +28,5 @@ class Options:
     
     .. versionadded:: 0.11.13
     """
+    log_level: int = logging.INFO
+    """Logging level. Default ``logging.INFO``"""

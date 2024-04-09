@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import Any, Union, List, Dict, TYPE_CHECKING
+from typing import Any, Union, List, Dict, TYPE_CHECKING, Tuple
 import uno
+from com.sun.star.beans import PropertyValue
 
-from ooodev.gui.menu.shortcuts import ShortCuts
+from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.io.log.logging import debug, error
@@ -10,7 +12,6 @@ from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
-    from ooodev.adapter.container.index_access_comp import IndexAccessComp
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
 
 
@@ -23,7 +24,7 @@ class MenuBase:
         self,
         *,
         config: UIConfigurationManagerComp,
-        menus: IndexAccessComp[Any],
+        menus: IndexAccessComp[Tuple[PropertyValue, ...]],
         app: str | Service = "",
     ):
         """
@@ -76,9 +77,9 @@ class MenuBase:
         """
         shortcut = menu.pop("ShortCut", "")
         command = menu["CommandURL"]
-        url = ShortCuts.get_url_script(command)
+        url = Shortcuts.get_url_script(command)
         if shortcut:
-            ShortCuts(self._app).set(shortcut, command)
+            Shortcuts(self._app).set(shortcut, command)
         return url
 
     def _save(self, parent: Any, menu: Dict[str, Any], index: int):
@@ -180,5 +181,5 @@ class MenuBase:
         return self._config
 
     @property
-    def menus(self) -> Any:
+    def menus(self) -> IndexAccessComp[Tuple[PropertyValue, ...]]:
         return self._menus

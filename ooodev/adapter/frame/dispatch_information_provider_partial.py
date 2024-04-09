@@ -44,7 +44,7 @@ class DispatchInformationProviderPartial:
         """
         returns additional information about supported commands of a given command group.
         """
-        ...
+        return tuple(self.__component.getConfigurableDispatchInformation(command_group))
 
     def get_supported_command_groups(self) -> Tuple[CommandGroupEnum, ...]:
         """

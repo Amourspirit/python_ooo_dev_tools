@@ -2,6 +2,7 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+from ast import Dict
 import sys
 import contextlib
 import datetime
@@ -1476,6 +1477,37 @@ class Info(metaclass=StaticProperty):
         print(f"{obj_name} Interfaces ({len(interfaces)})")
         for s in interfaces:
             print(f"  {s}")
+
+    @classmethod
+    def show_enum_name_values(cls, obj: Any) -> None:
+        """
+        Prints Enum Name and Values to console.
+
+        |lo_safe|
+
+        Args:
+            obj (object): Object that contains enum values.
+                Can be a Name such as ``com.sun.star.awt.MenuItemType`` or a UNO enum.
+        """
+        if not obj:
+            return
+        from ooodev.utils.kind.enum_helper import EnumHelper
+
+        try:
+            if isinstance(obj, str):
+                name = obj
+            elif hasattr(obj, "typeName"):
+                name = str(obj.typeName)
+            enum_info = EnumHelper.get_enum_info(name)
+            if not enum_info:
+                print(f"No enum values found for {name}")
+                return
+            print(f"Enum Name: {name}")
+            for k, v in enum_info.get_name_value_dict().items():
+                print(f"  {k} = {v}")
+        except Exception as e:
+            print("Could not get enumeration")
+            print(f"    {e}")
 
     @staticmethod
     def show_conversion_values(value: Any, frm: mConvert.UnitLength) -> None:

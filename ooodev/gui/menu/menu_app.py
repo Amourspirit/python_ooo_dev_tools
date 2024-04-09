@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Any, cast, Dict, TYPE_CHECKING
+from typing import Any, cast, Dict, TYPE_CHECKING, Tuple
 import uno
+from com.sun.star.beans import PropertyValue
 from ooodev.utils import props as mProps
 from ooodev.gui.menu.menu_debug import MenuDebug
 from ooodev.gui.menu.menu_base import MenuBase
@@ -9,6 +10,8 @@ from ooodev.loader.inst.service import Service
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
     TheModuleUIConfigurationManagerSupplierComp,
 )
+from ooodev.adapter.container.index_access_comp import IndexAccessComp
+
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
@@ -79,8 +82,12 @@ class MenuApp:
                 cmd = menu.get("CommandURL", "")
                 if cmd == index or cmd == self.MENUS[index.lower()]:
                     break
-
-        obj = Menu(self._config, self._menus, self._app, menu["ItemDescriptorContainer"])
+        ia = menu["ItemDescriptorContainer"]
+        if ia is None:
+            ia_menu = None
+        else:
+            ia_menu = cast(IndexAccessComp[Tuple[PropertyValue, ...]], IndexAccessComp(ia))
+        obj = Menu(self._config, self._menus, self._app, ia_menu)
         return obj
 
     def insert(self, menu: Dict[str, Any], after: int | str = "", save: bool = True):

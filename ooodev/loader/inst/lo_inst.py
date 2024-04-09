@@ -72,6 +72,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
+from ooodev.io.log import logging as logger
 
 
 if TYPE_CHECKING:
@@ -124,8 +125,15 @@ class LoInst(EventsPartial):
         Args:
             opt (LoOptions, optional): Options
             events (EventObserver, optional): Event observer
+
+        Hint:
+            - ``LoOptions`` can be imported from ``ooodev.loader.inst.options``
         """
         self._singleton_instance = kwargs.get("is_singleton", False)
+        self._opt = LoOptions() if opt is None else opt
+        if self._singleton_instance:
+            # only set the log level if thi instance is the ooodev.loader.lo.Lo instance
+            logger.set_log_level(self._opt.log_level)
         self._is_default = False
         self._current_doc = None
         _events = Events(source=self) if events is None else events
@@ -145,7 +153,6 @@ class LoInst(EventsPartial):
         self._sys_font_pixel_ratio = None
         self._cache = {}
 
-        self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
         self._set_lo_events()
 
@@ -1459,7 +1466,7 @@ class LoInst(EventsPartial):
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
         try:
-            str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
+            str_cmd = str(cmd).replace(".uno:", "")  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(self.dispatch_cmd.__qualname__, str_cmd)
             cargs.event_data = props
             self.on_dispatching(cargs)

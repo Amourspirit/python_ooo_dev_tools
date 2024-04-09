@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import Any
 from ooodev.io.log import logging as logger
+import logging
 
 
-class ClassLogger:
+class NamedLogger:
     """
     Class for Logging class messages
     """
@@ -16,6 +17,7 @@ class ClassLogger:
             name (str): Name of the class.
         """
         self._name = name
+        self._logging_level = logger.get_log_level()
 
     def debug(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         """
@@ -108,3 +110,26 @@ class ClassLogger:
         """
         logger.warning(f"{self._name}: {msg}", *args, **kwargs)
         return
+
+    # region Properties
+    @property
+    def is_debug(self) -> bool:
+        """Check if is debug"""
+        return self._logging_level >= logging.DEBUG
+
+    @property
+    def is_info(self) -> bool:
+        """Check if is info"""
+        return self._logging_level >= logging.INFO
+
+    @property
+    def is_warning(self) -> bool:
+        """Check if is warning"""
+        return self._logging_level >= logging.WARNING
+
+    @property
+    def is_error(self) -> bool:
+        """Check if is error"""
+        return self._logging_level >= logging.ERROR
+
+    # endregion Properties

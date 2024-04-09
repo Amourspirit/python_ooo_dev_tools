@@ -1,11 +1,8 @@
-.. _ns_gui:
-
-gui
-===
+menu
+====
 
 .. toctree::
     :titlesonly:
     :glob:
 
-    index/menu
     *

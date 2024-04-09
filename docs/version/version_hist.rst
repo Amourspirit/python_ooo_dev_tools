@@ -21,6 +21,85 @@ New ``ooodev.macro.MacroScript`` class tha can be used to invoke python or basic
 Many new enhancements to the underlying dynamic construction of components that implement services.
 Now classes can be implemented based upon the services they support at runtime.
 
+Logging
+-------
+
+A new logger has been added to the library.
+
+The default logging level is ``logging.INFO``.
+
+Currently there is only logging to the console.
+
+The |odev| Library uses is currently using this logging in a limited way.
+This will change in subsequent versions.
+
+Logging Module
+^^^^^^^^^^^^^^
+
+This logger is a singleton and can be accessed via the ``ooodev.logger`` module.
+
+To use the logger simply import the module and use th logging methods:
+
+Logging Date format is in the format ``"%d/%m/%Y %H:%M:%S"`` (Day, Month, Year, Hour, Minute, Second).
+
+.. code-block:: python
+
+    from ooodev.io.log import logging as logger
+    logger.info("Hello World")
+    logger.error("Error has occured")
+
+Named Logger
+^^^^^^^^^^^^
+
+For convenience a named logger has been added to the library.
+It is a wrapper around the logger that allows for a name to be added to the log output.
+
+.. code-block:: python
+
+    from ooodev.io.log import NamedLogger
+
+    class MyClass:
+        def __init__(self):
+            # ...
+            self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
+
+        def _process_import(self, arg) -> None:
+            # ...
+            clz = self._get_class(arg)
+            self._add_base(clz, arg)
+            self._logger.debug(f"Added: {arg.ooodev_name}")
+            # ...
+
+The log output might look like this:
+
+.. code-block::
+
+    09/04/2024 10:15:45 - DEBUG - MyClass - ScTabViewObj: Added: ooodev.utils.partial.service_partial.ServicePartial
+
+Logging Options
+^^^^^^^^^^^^^^^
+
+``Options`` now has a new ``log_level`` property that can be set to control the logging level of the library.
+
+.. code-block:: python
+
+    import logging
+    from ooodev.loader.inst.options import Options
+
+    loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+    # ...
+
+Also the log level can be set via the logging module.
+
+.. code-block:: python
+
+    import logging
+    from ooodev.io.log import logging as logger
+
+    logger.set_log_level(logging.DEBUG)
+    assert logger.get_log_level() == logging.DEBUG
+
+
 Version 0.39.1
 ==============
 

@@ -8,7 +8,7 @@ import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 
-from ooodev.io.log.class_logger import ClassLogger
+from ooodev.io.log.named_logger import NamedLogger
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
@@ -37,7 +37,8 @@ class DefaultBuilder(ComponentBase):
         self._omit: Set[str] = set()
         self._service_info = mLo.Lo.qi(XServiceInfo, self._component, True)
         self._type_names = None
-        self._logger = ClassLogger(name=self.__class__.__name__)
+        self._implementation_name = self._service_info.getImplementationName()
+        self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
 
     def _get_type_names_list(self) -> List[str]:
         result: List[str] = []
@@ -152,7 +153,8 @@ class DefaultBuilder(ComponentBase):
             try:
                 return self._get_class(arg)
             except ImportError:
-                self._logger.error(f"Import Error: {arg.ooodev_name}")
+                if self._logger.is_error:
+                    self._logger.error(f"Import Error: {arg.ooodev_name}")
                 return None
         return None
 
@@ -161,7 +163,8 @@ class DefaultBuilder(ComponentBase):
             try:
                 return self._get_import(arg.module_name)
             except ImportError:
-                self._logger.error(f"Import Error: {arg.module_name}")
+                if self._logger.is_error:
+                    self._logger.error(f"Import Error: {arg.module_name}")
                 return None
         return None
 
@@ -234,7 +237,8 @@ class DefaultBuilder(ComponentBase):
                 try:
                     clz = self._get_class(arg)
                     self._add_base(clz, arg)
-                    self._logger.debug(f"Added: {arg.ooodev_name}")
+                    if self._logger.is_debug:
+                        self._logger.debug(f"Added: {arg.ooodev_name}")
                 except ImportError:
                     self._logger.error(f"Import Error: {arg.ooodev_name}")
                     continue

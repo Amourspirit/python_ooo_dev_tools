@@ -13,14 +13,14 @@ from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import 
     TheModuleUIConfigurationManagerSupplierComp,
 )
 from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.log.class_logger import ClassLogger
+from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
 
 
-class ShortCuts:
+class Shortcuts:
     """Class for manager shortcuts"""
 
     KEYS = {getattr(Key, k): k for k in dir(Key)}
@@ -64,7 +64,7 @@ class ShortCuts:
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
         self._command_dict = cast(Dict[str, List[str]], None)
-        self._logger = ClassLogger(name="ShortCuts")
+        self._logger = NamedLogger(name="ShortCuts")
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
@@ -75,7 +75,7 @@ class ShortCuts:
             return GlobalAcceleratorConfigurationComp.from_lo()
 
     def __getitem__(self, app: str | Service):
-        return ShortCuts(app)
+        return Shortcuts(app)
 
     def __contains__(self, item):
         cmd = self.get_by_shortcut(item)
@@ -176,7 +176,7 @@ class ShortCuts:
         Returns:
             List[str]: List of shortcuts or empty list of not found.
         """
-        url = ShortCuts.get_url_script(command)
+        url = Shortcuts.get_url_script(command)
         try:
             key_events = self._config.get_key_events_by_command(url)
             shortcuts = [self._get_shortcut(k) for k in key_events]
@@ -187,7 +187,7 @@ class ShortCuts:
 
     def get_by_shortcut(self, shortcut: str) -> str:
         """Get command by shortcut"""
-        key_event = ShortCuts.to_key_event(shortcut)
+        key_event = Shortcuts.to_key_event(shortcut)
         if key_event is None:
             self._logger.warning(f"get_by_shortcut() - Not exists shortcut: {shortcut}")
             return ""
@@ -210,8 +210,8 @@ class ShortCuts:
             bool: True if set successfully
         """
         result = True
-        url = ShortCuts.get_url_script(command)
-        key_event = ShortCuts.to_key_event(shortcut)
+        url = Shortcuts.get_url_script(command)
+        key_event = Shortcuts.to_key_event(shortcut)
         if key_event is None:
             self._logger.warning(f"Not exists shortcut: {shortcut}")
             return False
@@ -234,7 +234,7 @@ class ShortCuts:
         Returns:
             bool: ``True`` if removed successfully
         """
-        key_event = ShortCuts.to_key_event(shortcut)
+        key_event = Shortcuts.to_key_event(shortcut)
         if key_event is None:
             self._logger.warning(f"Not exists shortcut: {shortcut}")
             return False
@@ -253,7 +253,7 @@ class ShortCuts:
         Args:
             command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info
         """
-        url = ShortCuts.get_url_script(command)
+        url = Shortcuts.get_url_script(command)
         self._config.remove_command_from_all_key_events(url)
         return
 
