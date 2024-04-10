@@ -11,6 +11,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
 
 
 if TYPE_CHECKING:
@@ -22,27 +23,7 @@ class MenuApp(LoInstPropsPartial):
     """Class for manager menu by LibreOffice module"""
 
     NODE = "private:resource/menubar/menubar"
-    MENUS = {
-        "file": ".uno:PickList",
-        "picklist": ".uno:PickList",
-        "tools": ".uno:ToolsMenu",
-        "help": ".uno:HelpMenu",
-        "window": ".uno:WindowList",
-        "edit": ".uno:EditMenu",
-        "view": ".uno:ViewMenu",
-        "insert": ".uno:InsertMenu",
-        "format": ".uno:FormatMenu",
-        "styles": ".uno:FormatStylesMenu",
-        "formatstyles": ".uno:FormatStylesMenu",
-        "sheet": ".uno:SheetMenu",
-        "data": ".uno:DataMenu",
-        "table": ".uno:TableMenu",
-        "formatform": ".uno:FormatFormMenu",
-        "page": ".uno:PageMenu",
-        "shape": ".uno:ShapeMenu",
-        "slide": ".uno:SlideMenu",
-        "slideshow": ".uno:SlideShowMenu",
-    }
+    MENUS = MenuLookupKind.get_dict()
 
     def __init__(self, app: str | Service, lo_inst: LoInst | None = None):
         """
@@ -65,8 +46,13 @@ class MenuApp(LoInstPropsPartial):
         MenuDebug()(self._menus)
         return
 
-    def __contains__(self, name):
-        """If exists name in menu"""
+    def __contains__(self, name: str):
+        """
+        If exists name in menu.
+
+        Args:
+            name (str): Menu CommandURL.
+        """
         exists = False
         for m in self._menus:
             menu = mProps.Props.data_to_dict(m)
@@ -76,15 +62,41 @@ class MenuApp(LoInstPropsPartial):
                 break
         return exists
 
-    def __getitem__(self, index):
-        """Index access"""
+    def __getitem__(self, index: int | str | MenuLookupKind):
+        """
+        Index access.
+
+        Args:
+            index (int, str, MenuLookupKind): Index or Menu name or MenuLookupKind or CommandURL.
+                If index is a str then it can be a know menu name or a CommandURL.
+
+        Returns:
+            Menu: Menu instance.
+
+        Hint:
+            - ``MenuLookupKind`` is an enum and can be imported from ``ooodev.utils.kind.menu_lookup_kind``
+
+        Note:
+            Index can also be any object the returns a command URL when str() is called on it.
+        """
         if isinstance(index, int):
             menu = mProps.Props.data_to_dict(self._menus[index])
         else:
+            if isinstance(index, str):
+                if index.lower() in self.MENUS:
+                    key = self.MENUS[index.lower()]
+                else:
+                    # assume a command URL has been passed in
+                    key = index
+            else:
+                # MenuLookupKind
+                # By calling str() on the enum, we get the value of the enum.
+                # This can also allow other custom enums to be used as lookup values in the future.
+                key = str(index)
             for m in self._menus:
                 menu = mProps.Props.data_to_dict(m)
                 cmd = menu.get("CommandURL", "")
-                if cmd == index or cmd == self.MENUS[index.lower()]:
+                if cmd == key:
                     break
         ia = menu["ItemDescriptorContainer"]
         if ia is None:
@@ -106,7 +118,7 @@ class MenuApp(LoInstPropsPartial):
 
         Args:
             menu (dict): New menu data
-            after (int, str, optional): Insert in after menu. Defaults to "".
+            after (int, str, optional): Insert in after menu (CommandURL). Defaults to "".
             save (bool, optional): For persistent save. Defaults to True.
         """
         mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
@@ -121,7 +133,7 @@ class MenuApp(LoInstPropsPartial):
         Remove menu.
 
         Args:
-            menu (str): Menu name
+            menu (str): Menu CommandURL
         """
         mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.remove(self._menus, menu)

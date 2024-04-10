@@ -7,6 +7,8 @@ from ooo.dyn.awt.key_modifier import KeyModifierEnum
 from com.sun.star.awt import Key
 from com.sun.star.container import NoSuchElementException
 
+from ooodev import mock
+from ooodev.mock import mock_g
 from ooodev.adapter.ui.global_accelerator_configuration_comp import GlobalAcceleratorConfigurationComp
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
     TheModuleUIConfigurationManagerSupplierComp,
@@ -26,7 +28,20 @@ if TYPE_CHECKING:
 class Shortcuts(LoInstPropsPartial):
     """Class for manager shortcuts"""
 
-    KEYS = {getattr(Key, k): k for k in dir(Key)}
+    if mock_g.DOCS_BUILDING:
+        # When docs are building it may not have access to uno.
+        # Key is a uno object and it is not available so this will cause errors when building docs.
+        KEYS: Dict[int, str] = {}
+        """
+        Keys dictionary. This is a dictionary that is built at runtime with the keys and values of the ``Key`` class.
+        The dictionary Keys are the integer values of the keys and the values are the key names.
+        
+        See `API Key <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt_1_1Key.html>`_
+        """
+    else:
+        KEYS: Dict[int, str] = {getattr(Key, k): k for k in dir(Key)}
+        """The dictionary Keys are the integer values of the keys and the values are the key names."""
+
     MODIFIERS = {
         "shift": KeyModifierEnum.SHIFT.value,
         "ctrl": KeyModifierEnum.MOD1.value,

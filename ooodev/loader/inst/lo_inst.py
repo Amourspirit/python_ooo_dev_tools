@@ -11,9 +11,8 @@
 from __future__ import annotations
 import contextlib
 from datetime import datetime, timezone
-from symbol import factor
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
 from urllib.parse import urlparse
 import uno
 from com.sun.star.beans import XIntrospection
@@ -1447,6 +1446,21 @@ class LoInst(EventsPartial):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
+    def get_supported_dispatch_prefixes(self) -> Set[str]:
+        """
+        Gets the prefixes are are supported by the local ``dispatch_cmd()`` method.
+
+        Returns:
+            Set[str]: Set of prefixes
+
+        .. versionadded:: 0.40.0
+        """
+        return {
+            ".uno:",
+            "vnd.sun.star.",
+            "service:",
+        }
+
     # region dispatch_cmd()
 
     @overload
@@ -1486,7 +1500,18 @@ class LoInst(EventsPartial):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
+            prefixes = self.get_supported_dispatch_prefixes()
+            prefixes.remove(".uno:")
+            supported_prefix = False
+            for prefix in prefixes:
+                if str_cmd.startswith(prefix):
+                    supported_prefix = True
+                    break
+            if supported_prefix:
+                dispatch_cmd = str_cmd
+            else:
+                dispatch_cmd = f".uno:{str_cmd}"
+            result = helper.executeDispatch(provider, dispatch_cmd, "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self.on_dispatched(eargs)

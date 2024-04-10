@@ -7,7 +7,7 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type, cast
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
 
 import uno  # pylint: disable=W0611
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
@@ -1581,6 +1581,20 @@ class Lo(metaclass=StaticProperty):
 
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
+
+    @classmethod
+    def get_supported_dispatch_prefixes(cls) -> Set[str]:
+        """
+        Get supported dispatch prefixes  by the ``dispatch_cmd()`` method.
+
+        |lo_safe|
+
+        Returns:
+            Set[str]: Set of supported dispatch prefixes.
+
+        .. versionadded:: 0.40.0
+        """
+        return cls._lo_inst.get_supported_dispatch_prefixes()
 
     # region dispatch_cmd()
     @overload

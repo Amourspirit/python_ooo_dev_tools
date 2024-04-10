@@ -164,7 +164,7 @@ class MenuBase(LoInstPropsPartial):
 
         Args:
             parent (Any): Menu parent. UNO object.
-            name (str,  Dict[str, str]): Menu name or data
+            name (str,  Dict[str, str]): Menu CommandURL or data
 
         Returns:
             None:

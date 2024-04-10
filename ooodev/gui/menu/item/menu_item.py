@@ -42,7 +42,8 @@ class MenuItem(MenuItemBase):
         cmd = self.command
         if not cmd:
             return False
-        if cmd.startswith(".uno:"):
+        supported_prefixes = tuple(self.lo_inst.get_supported_dispatch_prefixes())
+        if cmd.startswith(supported_prefixes):
             self.lo_inst.dispatch_cmd(cmd)
             return True
         try:
