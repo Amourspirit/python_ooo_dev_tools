@@ -11,6 +11,11 @@ from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
 
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
+from ooodev.calc import calc_sheet as mCalcSheet
+from ooodev.calc import calc_sheet_view as mCalcSheetView
+from ooodev.calc import calc_sheets as mCalcSheets
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -22,17 +27,19 @@ from ooodev.events.lo_events import observe_events
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
-from ooodev.office import calc as mCalc
-from ooodev.utils import gen_util as mGenUtil
-from ooodev.gui import gui as mGui
-from ooodev.utils import info as mInfo
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
 from ooodev.loader import lo as mLo
-from ooodev.utils import view_state as mViewState
-from ooodev.utils.context.lo_context import LoContext
-from ooodev.utils.data_type import range_obj as mRngObj
 from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
+from ooodev.office import calc as mCalc
+from ooodev.utils import gen_util as mGenUtil
+from ooodev.utils import info as mInfo
+from ooodev.utils import view_state as mViewState
+from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.data_type.rng.range_converter import RangeConverter
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -41,12 +48,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.calc import calc_sheet as mCalcSheet
-from ooodev.calc import calc_sheets as mCalcSheets
-from ooodev.calc import calc_sheet_view as mCalcSheetView
-from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
-from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
-from ooodev.utils.data_type.rng.range_converter import RangeConverter
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -116,6 +117,7 @@ class CalcDoc(
         self._draw_pages = None
         self._current_controller = None
         self._range_converter = None
+        self._menu = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -1136,5 +1138,26 @@ class CalcDoc(
         if self._range_converter is None:
             self._range_converter = RangeConverter(lo_inst=self.lo_inst)
         return self._range_converter
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Calc Menus.
+
+        Returns:
+            MenuApp: Calc Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                tools_menu = doc.menu["tools"]
+                tools_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.CALC]
+        return self._menu  # type: ignore
 
     # endregion Properties

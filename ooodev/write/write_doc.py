@@ -47,6 +47,8 @@ from ooodev.utils.data_type.size import Size
 from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -167,6 +169,7 @@ class WriteDoc(
         self._draw_pages = None
         self._text_frames = None
         self._tables = None
+        self._menu = None
 
     # region Lazy Listeners
 
@@ -1362,6 +1365,27 @@ class WriteDoc(
 
             self._tables = WriteTables(owner=self, component=self.component.getTextTables(), lo_inst=self.lo_inst)
         return self._tables
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Draw Menus.
+
+        Returns:
+            MenuApp: Draw Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                file_menu = doc.menu["file"]
+                file_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.DRAW]
+        return self._menu  # type: ignore
 
     # endregion Properties
 

@@ -5,17 +5,20 @@ from com.sun.star.beans import PropertyValue
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.gui.menu.shortcuts import Shortcuts
+from ooodev.io.log.logging import debug, error
+from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.log.logging import debug, error
 from ooodev.utils import props as mProps
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class MenuBase:
+class MenuBase(LoInstPropsPartial):
     """Class Base for menus"""
 
     NODE = "private:resource/menubar/menubar"
@@ -26,6 +29,7 @@ class MenuBase:
         config: UIConfigurationManagerComp,
         menus: IndexAccessComp[Tuple[PropertyValue, ...]],
         app: str | Service = "",
+        lo_inst: LoInst | None = None,
     ):
         """
         Constructor
@@ -37,6 +41,9 @@ class MenuBase:
         Hint:
             - ``Service`` is an enum and can be imported from ``ooodev.loader.inst.service``
         """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst)
         self._app = str(app)
         self._config = config
         self._menus = menus

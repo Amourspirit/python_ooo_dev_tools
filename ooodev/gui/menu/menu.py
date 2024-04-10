@@ -1,19 +1,23 @@
 from __future__ import annotations
-from typing import Any, cast, List, Dict, TYPE_CHECKING, Tuple
+from typing import Any, Dict, TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.beans import PropertyValue
+
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
-from ooodev.utils import props as mProps
-from ooodev.gui.menu.menu_debug import MenuDebug
-from ooodev.gui.menu.menu_base import MenuBase
-from ooodev.loader.inst.service import Service
 from ooodev.gui.menu.item.menu_items import MenuItems
+from ooodev.gui.menu.menu_base import MenuBase
+from ooodev.gui.menu.menu_debug import MenuDebug
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.service import Service
+from ooodev.utils import props as mProps
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class Menu:
+class Menu(LoInstPropsPartial):
     """Class for individual menu"""
 
     def __init__(
@@ -22,7 +26,8 @@ class Menu:
         menus: IndexAccessComp[Tuple[PropertyValue, ...]],
         app: str | Service,
         menu: IndexAccessComp[Tuple[PropertyValue, ...]],
-    ):
+        lo_inst: LoInst | None = None,
+    ) -> None:
         """
         Constructor
 
@@ -32,11 +37,14 @@ class Menu:
             app (str | Service): Name LibreOffice module.
             menu (Any): Particular menu, UNO Object.
         """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst)
         self._config = config
         self._menus = menus
         self._app = str(app)
         self._current_menu = menu
-        self._items = MenuItems(menu.component)
+        self._items = MenuItems(component=menu.component, lo_inst=self.lo_inst)
 
     def __contains__(self, name) -> bool:
         """If exists name in menu"""
@@ -63,8 +71,14 @@ class Menu:
         if ia is None:
             ia_menu = None
         else:
-            ia_menu = cast(IndexAccessComp[Tuple[PropertyValue, ...]], IndexAccessComp(ia))
-        obj = Menu(self._config, self._menus, self._app, ia_menu)
+            ia_menu = IndexAccessComp(ia)
+        obj = Menu(
+            config=self._config,
+            menus=self._menus,
+            app=self._app,
+            menu=ia_menu,  # type: ignore
+            lo_inst=self.lo_inst,
+        )
         return obj
 
     def debug(self) -> None:
@@ -80,7 +94,7 @@ class Menu:
             after (int | str, optional): Insert in after menu. Defaults to "".
             save (bool, optional): For persistent save. Defaults to True.
         """
-        mb = MenuBase(config=self._config, menus=self._menus, app=self._app)
+        mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.insert(self._current_menu, menu, after)
         if save:
             self._config.component.store()  # type: ignore
@@ -92,7 +106,7 @@ class Menu:
         Args:
             menu (str): Menu name.
         """
-        mb = MenuBase(config=self._config, menus=self._menus, app=self._app)
+        mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.remove(self._current_menu, menu)
 
     @property

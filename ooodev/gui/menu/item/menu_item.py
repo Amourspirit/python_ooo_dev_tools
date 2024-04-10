@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Tuple, List
+from typing import Tuple, List, TYPE_CHECKING
+import contextlib
 import uno
 from ooodev.loader.inst.service import Service
 from ooodev.loader import lo as mLo
@@ -7,11 +8,21 @@ from ooodev.utils.kind.item_style_kind import ItemStyleKind
 from com.sun.star.beans import PropertyValue
 from ooodev.gui.menu.item.menu_item_base import MenuItemBase
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.macro.script.macro_script import MacroScript
+from ooodev.io.log.named_logger import NamedLogger
+
+if TYPE_CHECKING:
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class MenuItem(MenuItemBase):
     def __init__(
-        self, *, data: Tuple[Tuple[PropertyValue, ...], ...], owner: IndexAccessComp, app: str | Service = ""
+        self,
+        *,
+        data: Tuple[Tuple[PropertyValue, ...], ...],
+        owner: IndexAccessComp,
+        app: str | Service = "",
+        lo_inst: LoInst | None = None,
     ):
         """
         Constructor
@@ -19,7 +30,12 @@ class MenuItem(MenuItemBase):
         Args:
             component (XIndexAccess): UNO Object containing menu item properties.
         """
-        super().__init__(data=data, owner=owner, app=app)
+        super().__init__(data=data, owner=owner, app=app, lo_inst=lo_inst)
+        if self.command:
+            lg_name = f"{self.__class__.__name__} ({self.command})"
+        else:
+            lg_name = self.__class__.__name__
+        self.__logger = NamedLogger(lg_name)
 
     def execute(self) -> bool:
         """Execute menu item"""
@@ -27,8 +43,14 @@ class MenuItem(MenuItemBase):
         if not cmd:
             return False
         if cmd.startswith(".uno:"):
-            mLo.Lo.dispatch_cmd(cmd)
+            self.lo_inst.dispatch_cmd(cmd)
             return True
+        try:
+            script = MacroScript.get_script(cmd)
+            script.invoke((), None, None)  # type: ignore
+        except Exception as e:
+            self.__logger.error(f"Error executing menu item with command value of '{cmd}': {e}")
+            return False
         return False
 
     def __str__(self) -> str:
@@ -43,7 +65,7 @@ class MenuItem(MenuItemBase):
         """Get shortcuts"""
         from ooodev.gui.menu.shortcuts import Shortcuts
 
-        sc = Shortcuts(app=self._app)
+        sc = Shortcuts(app=self._app, lo_inst=self.lo_inst)
         return sc.get_by_command(self.command)
 
     @property

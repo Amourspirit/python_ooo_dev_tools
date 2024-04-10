@@ -12,6 +12,8 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
 from ooodev.utils import info as mInfo
 from ooodev.draw.draw_pages import DrawPages
 from ooodev.draw.partial.draw_doc_partial import DrawDocPartial
@@ -69,6 +71,7 @@ class DrawDoc(
         # ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         Storable2Partial.__init__(self, component=doc, interface=None)  # type: ignore
         self._pages = None
+        self._menu = None
 
     # region Lazy Listeners
 
@@ -186,5 +189,26 @@ class DrawDoc(
         """
         comp = DrawDocView(owner=self, component=self.component.CurrentController)  # type: ignore
         return comp
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Draw Menus.
+
+        Returns:
+            MenuApp: Draw Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                file_menu = doc.menu["file"]
+                file_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.DRAW]
+        return self._menu  # type: ignore
 
     # endregion Properties

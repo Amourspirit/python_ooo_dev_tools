@@ -1,18 +1,28 @@
 from __future__ import annotations
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, TYPE_CHECKING
 import uno
 from com.sun.star.beans import PropertyValue
 
-from ooodev.loader.inst.service import Service
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.loader.inst.service import Service
+from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+
+if TYPE_CHECKING:
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class MenuItemBase:
+class MenuItemBase(LoInstPropsPartial):
     """Base class for individual menu item"""
 
     def __init__(
-        self, *, data: Tuple[Tuple[PropertyValue, ...], ...], owner: IndexAccessComp, app: str | Service = ""
+        self,
+        *,
+        data: Tuple[Tuple[PropertyValue, ...], ...],
+        owner: IndexAccessComp,
+        app: str | Service = "",
+        lo_inst: LoInst | None = None,
     ):
         """
         Constructor
@@ -20,6 +30,9 @@ class MenuItemBase:
         Args:
             component (XIndexAccess): UNO Object containing menu item properties.
         """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst)
         self._owner = owner
         self._data = data
         self._menu_data = mProps.Props.data_to_dict(self._data)  # type: ignore

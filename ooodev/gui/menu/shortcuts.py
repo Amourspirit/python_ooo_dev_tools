@@ -7,20 +7,23 @@ from ooo.dyn.awt.key_modifier import KeyModifierEnum
 from com.sun.star.awt import Key
 from com.sun.star.container import NoSuchElementException
 
-from ooodev.loader.inst.service import Service
 from ooodev.adapter.ui.global_accelerator_configuration_comp import GlobalAcceleratorConfigurationComp
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
     TheModuleUIConfigurationManagerSupplierComp,
 )
-from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
+from ooodev.io.log.named_logger import NamedLogger
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.service import Service
+from ooodev.macro.script.macro_script import MacroScript
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class Shortcuts:
+class Shortcuts(LoInstPropsPartial):
     """Class for manager shortcuts"""
 
     KEYS = {getattr(Key, k): k for k in dir(Key)}
@@ -49,7 +52,7 @@ class Shortcuts:
         15: "shift+ctrl+alt+ctrlmac",
     }
 
-    def __init__(self, app: str | Service = ""):
+    def __init__(self, app: str | Service = "", lo_inst: LoInst | None = None):
         """
         Constructor
 
@@ -60,6 +63,9 @@ class Shortcuts:
         Hint:
             - ``Service`` is an enum and can be imported from ``ooodev.loader.inst.service``
         """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst)
         self._app = str(app)
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
@@ -68,11 +74,11 @@ class Shortcuts:
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
-            supp = TheModuleUIConfigurationManagerSupplierComp.from_lo()
+            supp = TheModuleUIConfigurationManagerSupplierComp.from_lo(lo_inst=self.lo_inst)
             config = supp.get_ui_configuration_manager(self._app)
             return config.get_short_cut_manager()
         else:
-            return GlobalAcceleratorConfigurationComp.from_lo()
+            return GlobalAcceleratorConfigurationComp.from_lo(lo_inst=self.lo_inst)
 
     def __getitem__(self, app: str | Service):
         return Shortcuts(app)
