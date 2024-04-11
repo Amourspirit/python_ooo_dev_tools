@@ -27,6 +27,7 @@ from ooodev.events.lo_events import observe_events
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.gui import gui as mGui
 from ooodev.gui.menu.menu_app import MenuApp
 from ooodev.gui.menu.menus import Menus
 from ooodev.loader import lo as mLo
@@ -118,6 +119,7 @@ class CalcDoc(
         self._current_controller = None
         self._range_converter = None
         self._menu = None
+        self._menu_bar = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -940,7 +942,7 @@ class CalcDoc(
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.component, visible=visible)
+        mGui.GUI.set_visible(doc=self.component, visible=visible)
 
     def unfreeze(self) -> None:
         """

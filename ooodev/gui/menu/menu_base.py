@@ -102,7 +102,11 @@ class MenuBase(LoInstPropsPartial):
             None:
         """
         properties = mProps.Props.make_props_any(**menu)
-        uno.invoke(parent, "insertByIndex", (index, properties))  # type: ignore
+        if hasattr(parent, "component"):
+            obj = parent.component
+        else:
+            obj = parent
+        uno.invoke(obj, "insertByIndex", (index, properties))  # type: ignore
         self._config.replace_settings(self.NODE, self._menus.component)
         return
 

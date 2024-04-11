@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class BorderResizeEvents:
     """
-    Class for managing FrameAction Events.
+    Class for managing Border resize Events.
     """
 
     def __init__(

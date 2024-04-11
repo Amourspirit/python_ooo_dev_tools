@@ -46,7 +46,7 @@ class DispatchProviderInterceptionPartial:
 
     def release_dispatch_provider_interceptor(self, interceptor: XDispatchProviderInterceptor) -> None:
         """
-        removes an ``XDispatchProviderInterceptor`` which was previously registered
+        Removes an ``XDispatchProviderInterceptor`` which was previously registered
 
         The order of removals is arbitrary. It is not necessary to remove the last registered interceptor first.
         """

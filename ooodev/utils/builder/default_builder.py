@@ -35,10 +35,17 @@ class DefaultBuilder(ComponentBase):
         self._build_args: Dict[BuildImportArg, BuildImportArg] = {}
         self._event_args: Dict[BuildEventArg, BuildEventArg] = {}
         self._omit: Set[str] = set()
-        self._service_info = mLo.Lo.qi(XServiceInfo, self._component, True)
+        self._service_info = mLo.Lo.qi(XServiceInfo, self._component)
         self._type_names = None
-        self._implementation_name = self._service_info.getImplementationName()
-        self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
+        if self._service_info is None:
+            self._implementation_name = ""
+        else:
+            self._implementation_name = self._service_info.getImplementationName()
+        if self._implementation_name:
+            self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
+        self._logger = NamedLogger(
+            name=f"{self.__class__.__name__} - ID: {gUtil.Util.generate_random_string(6).upper()}"
+        )
 
     def _get_type_names_list(self) -> List[str]:
         result: List[str] = []
@@ -111,6 +118,8 @@ class DefaultBuilder(ComponentBase):
         return True
 
     def _supports_service(self, *name: str) -> bool:
+        if self._service_info is None:
+            return False
         result = False
         for srv in name:
             result = self._service_info.supportsService(srv)
@@ -119,6 +128,8 @@ class DefaultBuilder(ComponentBase):
         return result
 
     def _supports_all_service(self, *name: str) -> bool:
+        if self._service_info is None:
+            return False
         result = True
         for srv in name:
             result = self._service_info.supportsService(srv)
@@ -133,6 +144,8 @@ class DefaultBuilder(ComponentBase):
         Returns:
             bool: True if the component supports only the first services in the list; otherwise, False.
         """
+        if self._service_info is None:
+            return False
         count = len(name)
         if count == 0:
             return False

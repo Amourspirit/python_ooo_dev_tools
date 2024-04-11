@@ -2,47 +2,41 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import uno
-from com.sun.star.frame import XTitleChangeListener
+from com.sun.star.frame import XStatusListener
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
+    from com.sun.star.frame import XDispatch
     from com.sun.star.lang import EventObject
-    from com.sun.star.frame import TitleChangedEvent
-    from com.sun.star.frame import XTitleChangeBroadcaster
+    from com.sun.star.frame import FeatureStateEvent
 
 
-class TitleChangeListener(AdapterBase, XTitleChangeListener):
+class StatusListener(AdapterBase, XStatusListener):
     """
-    Allows to receive notifications when the frame title changes.
+    Makes it possible to receive events when the state of a feature changes.
+
+    Nobody guarantee any notification. Use combination of XNotifyingDispatch and XDispatchResultListener for that.
 
     See Also:
-        `API XTitleChangeListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTitleChangeListener.html>`_
+        `API XStatusListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XStatusListener.html>`_
     """
 
-    def __init__(
-        self,
-        trigger_args: GenericArgs | None = None,
-        subscriber: XTitleChangeBroadcaster | None = None,
-    ) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
-            subscriber (XTitleChangeBroadcaster, optional): An UNO object that implements the ``XTitleChangeBroadcaster`` interface.
-                If passed in then this listener instance is automatically added to it.
         """
         super().__init__(trigger_args=trigger_args)
-        if subscriber is not None:
-            subscriber.addTitleChangeListener(self)
 
-    def titleChanged(self, event: TitleChangedEvent) -> None:
+    def statusChanged(self, event: FeatureStateEvent) -> None:
         """
-        Is invoked whenever the frame title has changed.
+        Event is invoked when the status of the feature changes.
         """
-        self._trigger_event("titleChanged", event)
+        self._trigger_event("statusChanged", event)
 
     def disposing(self, event: EventObject) -> None:
         """

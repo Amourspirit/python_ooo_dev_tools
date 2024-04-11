@@ -26,7 +26,6 @@ class BorderResizeListener(AdapterBase, XBorderResizeListener):
     def __init__(
         self,
         trigger_args: GenericArgs | None = None,
-        add_listener: bool = True,
         subscriber: XControllerBorder | None = None,
     ) -> None:
         """

@@ -5,4 +5,5 @@ menu
     :titlesonly:
     :glob:
 
+    item/index
     *
