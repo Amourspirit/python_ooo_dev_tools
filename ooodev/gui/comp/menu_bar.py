@@ -13,11 +13,13 @@ from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import MenuBar
+    from com.sun.star.awt import MenuBar as UnoMenuBar
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class _MenuBarComp(ComponentProp):
+class _MenuBar(ComponentProp):
+
+    NODE = "private:resource/menubar/menubar"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
@@ -33,7 +35,7 @@ class _MenuBarComp(ComponentProp):
         return ("com.sun.star.awt.MenuBar",)
 
 
-class MenuBarComp(_MenuBarComp, MenuBarPartial, ServiceInfoPartial, MenuEvents):
+class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, MenuEvents):
     """
     Class for managing MenuBar Component.
     """
@@ -48,8 +50,8 @@ class MenuBarComp(_MenuBarComp, MenuBarPartial, ServiceInfoPartial, MenuEvents):
             # cast to prevent type checker error
             return cast(Any, builder)
         inst = builder.build_class(
-            name="ooodev.adapter.awt.menu_bar_comp.MenuBarComp",
-            base_class=_MenuBarComp,
+            name="ooodev.gui.comp.menu_bar.MenuBar",
+            base_class=_MenuBar,
         )
         return inst
 
@@ -71,9 +73,9 @@ class MenuBarComp(_MenuBarComp, MenuBarPartial, ServiceInfoPartial, MenuEvents):
     # endregion Overrides
 
     @classmethod
-    def from_lo(cls, lo_inst: LoInst | None = None) -> MenuBarComp:
+    def from_lo(cls, lo_inst: LoInst | None = None) -> _MenuBar:
         """
-        Creates a new instance from Lo.
+        Creates a new  instance from Lo.
 
         Args:
             lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
@@ -92,10 +94,10 @@ class MenuBarComp(_MenuBarComp, MenuBarPartial, ServiceInfoPartial, MenuEvents):
     # region Properties
 
     @property
-    def component(self) -> MenuBar:
+    def component(self) -> UnoMenuBar:
         """MenuBar Component"""
         # pylint: disable=no-member
-        return cast("MenuBar", self._ComponentBase__get_component())  # type: ignore
+        return cast("UnoMenuBar", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties
 

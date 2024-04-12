@@ -4,6 +4,7 @@ import uno
 
 from com.sun.star.frame import XDispatchProviderInterception
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils.type_var import UnoInterface
@@ -53,3 +54,20 @@ class DispatchProviderInterceptionPartial:
         self.__component.releaseDispatchProviderInterceptor(interceptor)
 
     # endregion XDispatchProviderInterception
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XDispatchProviderInterception", False)
+    return builder

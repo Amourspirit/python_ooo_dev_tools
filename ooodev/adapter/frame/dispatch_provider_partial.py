@@ -7,6 +7,7 @@ from com.sun.star.frame import XDispatchProvider
 # com.sun.star.frame.FrameSearchFlag
 from ooo.dyn.frame.frame_search_flag import FrameSearchFlagEnum
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
@@ -76,3 +77,20 @@ class DispatchProviderPartial:
         return self.__component.queryDispatches(requests)
 
     # endregion XDispatchProvider
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XDispatchProvider", False)
+    return builder

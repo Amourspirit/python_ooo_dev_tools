@@ -1,5 +1,10 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Union
+import uno
+from com.sun.star.awt import Size
+
+from ooodev.units.unit_convert import UnitLength
+from ooodev.units import unit_factory
 from ooodev.units.unit_obj import UnitT  # do not import from ooodev.unit or will cause circular import.
 from ooodev.utils.data_type.generic_size import GenericSize
 
@@ -51,6 +56,35 @@ class GenericUnitSize(Generic[_T, TNum]):
         self._height = value
 
     # endregion Properties
+
+    def convert_to(self, unit_length: UnitLength) -> GenericUnitSize[UnitT, Union[int, float]]:
+        """
+        Converts current values to specified unit length.
+
+        Args:
+            unit_length (UnitLength): Unit length to convert to.
+
+        Returns:
+            GenericUnitSize[UnitT, Union[int, float]]: Converted Units.
+        """
+        current_unit = self.height.get_unit_length()
+        if current_unit == unit_length:
+            return GenericUnitSize(self.width, self.height)
+        width = unit_factory.get_unit(unit_length, self.width.convert_to(unit_length))
+        height = unit_factory.get_unit(unit_length, self.height.convert_to(unit_length))
+        return GenericUnitSize(width, height)
+
+    def get_uno_size(self) -> Size:
+        """
+        Gets current values as Size
+
+        Returns:
+            Size: UNO Size instance
+        """
+        size = Size()
+        size.Width = int(self.width)
+        size.Height = int(self.height)
+        return size
 
     def get_size(self) -> GenericSize[TNum]:
         """Gets instance value as Size"""

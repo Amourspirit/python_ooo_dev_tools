@@ -1,9 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 import uno
 from com.sun.star.frame import XFrame
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.lang.component_partial import ComponentPartial
 
 if TYPE_CHECKING:
@@ -196,3 +197,21 @@ class FramePartial(ComponentPartial):
         self.__component.setName(name)
 
     # endregion XFrame
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XFrame", False)
+    builder.set_omit("com.sun.star.lang.XComponent")
+    return builder

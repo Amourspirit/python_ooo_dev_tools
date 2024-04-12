@@ -1,6 +1,6 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, cast, Dict, List, Type, Tuple, Set
+from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import importlib
 import types
 
@@ -8,6 +8,7 @@ import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 
+from ooodev.events.args.event_args import EventArgs
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.component_base import ComponentBase
@@ -16,12 +17,17 @@ from ooodev.utils.builder.build_import_arg import BuildImportArg
 from ooodev.utils.builder.build_event_arg import BuildEventArg
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
+from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils import gen_util as gUtil
 
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import EventCallback
 
-class DefaultBuilder(ComponentBase):
+
+class DefaultBuilder(ComponentBase, EventsPartial):
     def __init__(self, component: Any):
         ComponentBase.__init__(self, component)
+        EventsPartial.__init__(self)
 
         self._component = component
         # _bases_partial could be classes such as property classes
@@ -43,9 +49,10 @@ class DefaultBuilder(ComponentBase):
             self._implementation_name = self._service_info.getImplementationName()
         if self._implementation_name:
             self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
-        self._logger = NamedLogger(
-            name=f"{self.__class__.__name__} - ID: {gUtil.Util.generate_random_string(6).upper()}"
-        )
+        else:
+            self._logger = NamedLogger(
+                name=f"{self.__class__.__name__} - ID: {gUtil.Util.generate_random_string(6).upper()}"
+            )
 
     def _get_type_names_list(self) -> List[str]:
         result: List[str] = []
@@ -275,15 +282,36 @@ class DefaultBuilder(ComponentBase):
                     self._logger.error(f"Import Error: {arg.module_name}")
                     continue
 
-    def _init_class(self, instance: Any, clz: Type[Any], kind: InitKind) -> Any:
+    def _init_class(self, instance: Any, clz: Type[Any], kind: InitKind) -> None:
+        """
+        Initialize a class.
+
+        Args:
+            instance (Any): The instance to initialize.
+            clz (Type[Any]): The partial class to initialize.
+            kind (InitKind): The kind of initialization.
+
+        Note:
+            If the class init kind is ``InitKind.CALLBACK`` then an event is triggered.
+            The event name is ``class_init`` and the event data is a dictionary with keys ``class``, ``kind``, ``instance``.
+            After the event is triggered, if the event data has keys ``args`` and ``kwargs`` then they will be passed to the class constructor.
+        """
         if kind == InitKind.COMPONENT:
             clz.__init__(instance, self._component)  # type: ignore
         elif kind == InitKind.COMPONENT_INTERFACE:
             clz.__init__(instance, self._component, None)  # type: ignore
+        elif kind == InitKind.CALLBACK:
+            eargs = EventArgs(source=self)
+            eargs.event_data = {"class": clz, "kind": kind, "instance": instance}
+            self.trigger_event("class_init", eargs)
+            args = eargs.event_data.get("args", ())
+            kwargs = eargs.event_data.get("kwargs", {})
+            clz.__init__(instance, *args, **kwargs)
         else:
             clz.__init__(instance)
 
-    def _init_event_class(self, instance: Any, mod: types.ModuleType, arg: BuildEventArg) -> Any:
+    def _init_event_class(self, instance: Any, mod: types.ModuleType, arg: BuildEventArg) -> None:
+
         # after instance is created, we need to callback to the module on_lazy_cb()
         clz = getattr(mod, arg.class_name)
         trigger_args = GenericArgs(src_comp=self._component, src_instance=instance)
@@ -293,10 +321,32 @@ class DefaultBuilder(ComponentBase):
         clz.__init__(instance, trigger_args=trigger_args, cb=cb)  # type: ignore
 
     def _create_class(self, clz: Type[Any], kind: InitKind) -> Any:
+        """
+        Creates a class.
+
+        Args:
+            clz (Type[Any]): The class to create.
+            kind (InitKind): The kind of initialization.
+
+        Returns:
+            Any: Class instance
+
+        Note:
+            If the class init kind is ``InitKind.CALLBACK`` then an event is triggered.
+            The event name is ``class_create`` and the event data is a dictionary with keys ``class``, ``kind``.
+            After the event is triggered, if the event data has keys ``args`` and ``kwargs`` then they will be passed to the class constructor.
+        """
         if kind == InitKind.COMPONENT:
             inst = clz(self._component)  # type: ignore
         elif kind == InitKind.COMPONENT_INTERFACE:
             inst = clz(self._component, None)  # type: ignore
+        elif kind == InitKind.CALLBACK:
+            eargs = EventArgs(source=self)
+            eargs.event_data = {"class": clz, "kind": kind}
+            self.trigger_event("class_create", eargs)
+            args = eargs.event_data.get("args", ())
+            kwargs = eargs.event_data.get("kwargs", {})
+            clz(*args, **kwargs)
         else:
             inst = clz()
         return inst
@@ -311,16 +361,20 @@ class DefaultBuilder(ComponentBase):
             self._init_event_class(instance, mod, arg)
 
     def _generate_class(self, base_class: Type[Any], name: str, **kwargs) -> Type[Any]:
-        bases = (
-            [base_class]
-            + list(self._bases_partial.keys())
-            + list(self._bases_interfaces.keys())
-            + list([getattr(mod, arg.class_name) for mod, arg in self._bases_event_interfaces.items()])
-        )
-        if len(bases) == 1 and not kwargs:
-            return base_class
-        else:
-            return type(name, tuple(bases), kwargs)
+        try:
+            bases = (
+                [base_class]
+                + list(self._bases_partial.keys())
+                + list(self._bases_interfaces.keys())
+                + list([getattr(mod, arg.class_name) for mod, arg in self._bases_event_interfaces.items()])
+            )
+            if len(bases) == 1 and not kwargs:
+                return base_class
+            else:
+                return type(name, tuple(bases), kwargs)
+        except Exception:
+            self._logger.error(f"Error generating class: {name}", exc_info=True)
+            raise
 
     def _convert_to_ooodev(self, name: str) -> str:
         if not name:
@@ -803,6 +857,39 @@ class DefaultBuilder(ComponentBase):
         """Get the list of import names that have been added to the current instance."""
         return [arg.ooodev_name for arg in self._build_args.keys()]
 
+    # region Events
+    def subscribe_class_init(self, cb: EventCallback) -> None:
+        """
+        Subscribe to the class init event.
+
+        Args:
+            cb (EventCallback): Callback function.
+
+        Note:
+            If the class init kind is ``InitKind.CALLBACK`` callbacks subscribed here will be called.
+            The event data is a dictionary with keys ``class``, ``kind``.
+            After the event is triggered, if the event data has keys ``args`` and ``kwargs`` then they will be passed to the class constructor.
+        """
+        self.subscribe_event("class_init", cb)
+
+    def subscribe_class_create(self, cb: EventCallback) -> None:
+        """
+        Subscribe to the class create event.
+
+        Args:
+            cb (EventCallback): Callback function.
+
+        Note:
+            If the class init kind is ``InitKind.CALLBACK`` then an event is triggered.
+            The event data is a dictionary with keys ``class``, ``kind``.
+            After the event is triggered, if the event data has keys ``args`` and ``kwargs`` then they will be passed to the class constructor.
+        """
+        self.subscribe_event("class_create", cb)
+
+    # endregion Events
+
+    # region Properties
+
     @property
     def component(self) -> Any:
         return self._component
@@ -810,3 +897,5 @@ class DefaultBuilder(ComponentBase):
     @property
     def omits(self) -> Set[str]:
         return self._omit
+
+    # endregion Properties

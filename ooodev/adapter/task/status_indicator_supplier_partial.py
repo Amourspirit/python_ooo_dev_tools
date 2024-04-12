@@ -4,6 +4,7 @@ import uno
 
 from com.sun.star.task import XStatusIndicatorSupplier
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
@@ -47,3 +48,20 @@ class StatusIndicatorSupplierPartial:
         return self.__component.getStatusIndicator()
 
     # endregion XCellRangesAccess
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.task.XStatusIndicatorSupplier", False)
+    return builder

@@ -22,6 +22,7 @@ import pytest
 
 IF_IGNORE_ATTRIBUTES = {"TYPE_CHECKING", "DOCS_BUILDING"}
 MODULES_EXCLUDE = {"ooodev.dialog.tk_input", "ooodev.utils.color"}
+MODULES_PREFIX_EXCLUDE = ("ooodev.adapter._helper",)
 
 
 @contextmanager
@@ -139,9 +140,12 @@ class _ImportFromSourceChecker(NodeVisitor):
         if not module_to_import.startswith(self._top_level_module):
             return
 
-        # Actually import the module and iterate through all the objects potentially exported by it.
+        if module_to_import.startswith(MODULES_PREFIX_EXCLUDE):
+            # if a module has a path part that starts with an underscore it will not work for this test.
+            return
         if module_to_import in MODULES_EXCLUDE:
             return
+        # Actually import the module and iterate through all the objects potentially exported by it.
         module = import_module(module_to_import)
         for alias in node.names:
             # if getting an error here it may be because then module has been imported using a

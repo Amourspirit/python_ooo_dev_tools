@@ -18,15 +18,29 @@ Submodules
    ooodev.adapter.frame.desktop2_partial
    ooodev.adapter.frame.desktop_partial
    ooodev.adapter.frame.dispatch_information_provider_partial
+   ooodev.adapter.frame.dispatch_partial
    ooodev.adapter.frame.dispatch_provider_interception_partial
    ooodev.adapter.frame.dispatch_provider_partial
+   ooodev.adapter.frame.dispatch_result_listener
+   ooodev.adapter.frame.frame2_partial
    ooodev.adapter.frame.frame_action_events
    ooodev.adapter.frame.frame_action_listener
+   ooodev.adapter.frame.frame_comp
    ooodev.adapter.frame.frame_partial
    ooodev.adapter.frame.frames_supplier_partial
    ooodev.adapter.frame.global_event_broadcaster_partial
    ooodev.adapter.frame.infobar_provider_partial
+   ooodev.adapter.frame.layout_manager2_partial
+   ooodev.adapter.frame.layout_manager_comp
+   ooodev.adapter.frame.layout_manager_event_broadcaster_partial
+   ooodev.adapter.frame.layout_manager_events
+   ooodev.adapter.frame.layout_manager_listener
+   ooodev.adapter.frame.layout_manager_partial
+   ooodev.adapter.frame.menu_bar_merging_acceptor_partial
    ooodev.adapter.frame.model_partial
+   ooodev.adapter.frame.notifying_dispatch_partial
+   ooodev.adapter.frame.status_events
+   ooodev.adapter.frame.status_listener
    ooodev.adapter.frame.storable2_partial
    ooodev.adapter.frame.storable_partial
    ooodev.adapter.frame.terminate_events

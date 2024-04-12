@@ -99,6 +99,10 @@ Also the log level can be set via the logging module.
     logger.set_log_level(logging.DEBUG)
     assert logger.get_log_level() == logging.DEBUG
 
+Bug Fixes
+---------
+
+Fixed bug in ``ooodev.units.UnitMM10.from_unit_val()`` that was not converting the value correctly.
 
 Version 0.39.1
 ==============

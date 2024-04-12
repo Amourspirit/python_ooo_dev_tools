@@ -88,7 +88,11 @@ class MenuItem(MenuItemBase):
         return None
 
     def get_dispatch(self) -> DispatchComp | None:
-        """Get dispatch object."""
+        """
+        Get dispatch object.
+
+        If the menu item is disabled, this method will return None.
+        """
         dispatch = self._get_dispatch()
         if dispatch is None:
             return None

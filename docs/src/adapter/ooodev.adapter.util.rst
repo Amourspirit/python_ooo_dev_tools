@@ -36,6 +36,8 @@ Submodules
    ooodev.adapter.util.search_descriptor_partial_props
    ooodev.adapter.util.searchable_partial
    ooodev.adapter.util.string_escape_partial
+   ooodev.adapter.util.url_transformer_comp
+   ooodev.adapter.util.url_transformer_partial
 
 Module contents
 ---------------

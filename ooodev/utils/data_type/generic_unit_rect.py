@@ -1,10 +1,7 @@
 from __future__ import annotations
-from typing import Generic, TypeVar, Union, Tuple
+from typing import Generic, TypeVar, Union
 import uno
-from com.sun.star.awt import Point
-from com.sun.star.awt import Size
 from com.sun.star.awt import Rectangle
-
 
 from ooodev.utils.data_type.generic_size_pos import GenericSizePos
 from ooodev.units.unit_convert import UnitLength
@@ -16,23 +13,11 @@ TNum = TypeVar(name="TNum", bound=Union[int, float])
 _TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
 
-# class FloatSize(GenericSize[float]):
-#     """Represents a size with positive values of Float."""
-
-#     pass
-
-
-# class IntSize(GenericSize[int]):
-#     """Represents a size with positive values of Int."""
-
-#     pass
-
-
-class GenericUnitSizePos(Generic[_T, TNum]):
+class GenericUnitRect(Generic[_T, TNum]):
     """
-    Size Width and Height
+    Rect X, Y, Width, Height
 
-    .. versionadded:: 0.14.0
+    .. versionadded:: 0.40.0
     """
 
     def __init__(self, x: _T, y: _T, width: _T, height: _T) -> None:
@@ -87,7 +72,10 @@ class GenericUnitSizePos(Generic[_T, TNum]):
     def height(self, value: _T):
         self._height = value
 
-    def convert_to(self, unit_length: UnitLength) -> GenericUnitSizePos[UnitT, Union[int, float]]:
+    # endregion Properties
+
+    # region Methods
+    def convert_to(self, unit_length: UnitLength) -> GenericUnitRect[UnitT, Union[int, float]]:
         """
         Converts current values to specified unit length.
 
@@ -99,27 +87,12 @@ class GenericUnitSizePos(Generic[_T, TNum]):
         """
         current_unit = self.x.get_unit_length()
         if current_unit == unit_length:
-            return GenericUnitSizePos(self.x, self.y, self.width, self.height)
+            return GenericUnitRect(self.x, self.y, self.width, self.height)
         x = unit_factory.get_unit(unit_length, self.x.convert_to(unit_length))
         y = unit_factory.get_unit(unit_length, self.y.convert_to(unit_length))
         width = unit_factory.get_unit(unit_length, self.width.convert_to(unit_length))
         height = unit_factory.get_unit(unit_length, self.height.convert_to(unit_length))
-        return GenericUnitSizePos(x, y, width, height)
-
-    def get_uno_point_size(self) -> Tuple[Point, Size]:
-        """
-        Gets current values as Point and Size
-
-        Returns:
-            Tuple[Point, Size]: UNO Point and Size.
-        """
-        pos = Point()
-        pos.X = int(self.x)
-        pos.Y = int(self.y)
-        size = Size()
-        size.Width = int(self.width)
-        size.Height = int(self.height)
-        return pos, size
+        return GenericUnitRect(x, y, width, height)
 
     def get_uno_rectangle(self) -> Rectangle:
         """Gets current values as Rectangle
@@ -134,22 +107,13 @@ class GenericUnitSizePos(Generic[_T, TNum]):
         rect.Height = int(self.height)
         return rect
 
-    # endregion Properties
-
     def get_size_pos(self) -> GenericSizePos[TNum]:
         """Gets instance value as Size"""
 
-        class Size(GenericSizePos[_TNum]):
+        class Rect(GenericSizePos[_TNum]):
             def __init__(self, x: _TNum, y: _TNum, width: _TNum, height: _TNum) -> None:
                 super().__init__(x, y, width, height)
 
-        return Size(self.x.value, self.y.value, self.width.value, self.height.value)  # type: ignore
+        return Rect(self.x.value, self.y.value, self.width.value, self.height.value)  # type: ignore
 
-
-# class SizeMM(GenericUnitSizePos[UnitCM, float]):
-#     pass
-
-
-# size = SizeMM(UnitCM(2.0), UnitCM(3.0), UnitCM.from_cm(2), UnitCM.from_cm(3))
-# size.height.value
-# size.get_size_pos().y
+    # endregion Methods

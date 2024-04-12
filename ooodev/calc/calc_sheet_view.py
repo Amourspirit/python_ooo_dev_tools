@@ -19,7 +19,6 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils import info as mInfo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
-from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.adapter.ui.context_menu_interception_partial import ContextMenuInterceptionPartial
 from ooodev.adapter.ui.context_menu_interceptor_events import ContextMenuInterceptorEvents

@@ -5,14 +5,16 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.frame.desktop2_partial import Desktop2Partial
 from ooodev.adapter.frame.terminate_events import TerminateEvents
 from ooodev.adapter.frame.frame_action_events import FrameActionEvents
-
+from ooodev.adapter.frame.dispatch_provider_interception_partial import DispatchProviderInterceptionPartial
 
 if TYPE_CHECKING:
     from com.sun.star.frame import theDesktop  # singleton
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActionEvents):
+class TheDesktopComp(
+    ComponentBase, Desktop2Partial, DispatchProviderInterceptionPartial, TerminateEvents, FrameActionEvents
+):
     """
     Class for managing theDesktop Component.
     """
@@ -28,6 +30,7 @@ class TheDesktopComp(ComponentBase, Desktop2Partial, TerminateEvents, FrameActio
         """
         ComponentBase.__init__(self, component)
         Desktop2Partial.__init__(self, component=component, interface=None)
+        DispatchProviderInterceptionPartial.__init__(self, component=component, interface=None)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         TerminateEvents.__init__(self, trigger_args=generic_args, cb=self._on_key_terminate_events_add_remove)

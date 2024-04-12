@@ -5,6 +5,7 @@ import uno
 from ooo.dyn.frame.command_group import CommandGroupEnum
 from com.sun.star.frame import XDispatchInformationProvider
 
+from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
@@ -63,3 +64,20 @@ class DispatchInformationProviderPartial:
         return tuple(CommandGroupEnum(group) for group in groups)
 
     # endregion XDispatchInformationProvider
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XDispatchProvider", False)
+    return builder

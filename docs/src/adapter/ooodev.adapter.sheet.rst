@@ -33,7 +33,6 @@ Submodules
    ooodev.adapter.sheet.spreadsheet_document_settings_comp
    ooodev.adapter.sheet.spreadsheet_draw_page_comp
    ooodev.adapter.sheet.spreadsheet_view_comp
-   ooodev.adapter.sheet.spreadsheet_view_comp2
    ooodev.adapter.sheet.spreadsheet_view_pane_comp
    ooodev.adapter.sheet.spreadsheet_view_partial
    ooodev.adapter.sheet.spreadsheet_view_settings_comp

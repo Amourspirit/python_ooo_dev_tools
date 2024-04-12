@@ -99,7 +99,7 @@ class MenuEvents:
         """
         self.__add_listener("itemSelected", cb)
 
-    def add_event_mouse_events_disposing(self, cb: EventArgsCallbackT) -> None:
+    def add_event_menu_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
@@ -133,7 +133,7 @@ class MenuEvents:
         """
         self.__remove_listener("itemSelected", cb)
 
-    def remove_event_mouse_events_disposing(self, cb: EventArgsCallbackT) -> None:
+    def remove_event_menu_events_disposing(self, cb: EventArgsCallbackT) -> None:
         """
         Removes a listener for an event
         """

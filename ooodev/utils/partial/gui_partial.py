@@ -11,6 +11,7 @@ from com.sun.star.frame import XModel
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 
+from ooodev.gui.comp.frame import Frame
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.gui import gui as mGui
 from ooodev.utils.context.lo_context import LoContext
@@ -44,6 +45,18 @@ class GuiPartial:
         """
         controller = self.get_current_controller()
         return controller.getFrame()
+
+    def get_frame_comp(self) -> Frame:
+        """
+        Gets frame from doc as a FrameComp.
+
+        Returns:
+            FrameComp: document frame.
+        """
+        frm = self.get_frame()
+        if frm is None:
+            return None  # type: ignore
+        return Frame(frm)
 
     def get_control_access(self) -> XControlAccess:
         """

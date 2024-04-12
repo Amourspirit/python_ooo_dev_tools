@@ -120,7 +120,7 @@ class ConfigurationAccessComp(
         #     XMultiServiceFactory, "com.sun.star.configuration.ConfigurationProvider", args=args, raise_err=True
         # )
         # return cls(inst)  # type: ignore
-        return ConfigurationAccessComp(inst)
+        return cls(inst)
 
 
 def get_builder(component: Any) -> DefaultBuilder:

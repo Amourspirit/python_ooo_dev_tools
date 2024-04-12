@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Union
 from ooodev.format.inner.kind.format_kind import FormatKind as FormatKind
 from ooodev.mock.mock_g import DOCS_BUILDING
 
@@ -28,8 +28,17 @@ if TYPE_CHECKING or DOCS_BUILDING:
         # a property can be a float only and still work. int is a subclass of float.
         # see: https://mypy.readthedocs.io/en/stable/common_issues.html#covariant-subtyping-of-mutable-protocol-members-is-rejected
 
+        def __int__(self) -> int:
+            """
+            Gets instance value as an integer.
+
+            Returns:
+                int: Value as an integer.
+            """
+            ...
+
         @property
-        def value(self) -> float | int:
+        def value(self) -> Union[float, int]:
             """Unit actual value. Generally a ``float`` or ``int``"""
             ...
 
@@ -95,7 +104,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
             """
             ...
 
-        def get_value_app_font(self, kind: PointSizeKind | int) -> float:
+        def get_value_app_font(self, kind: Union[PointSizeKind, int]) -> float:
             """
             Gets instance value in ``AppFont`` units.
 
@@ -121,7 +130,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
             ...
 
         @classmethod
-        def from_unit_val(cls, value: UnitT | float | int) -> Self:
+        def from_unit_val(cls, value: Union[UnitT, float, int]) -> Self:
             """
             Get instance from ``UnitT`` or float or int value.
 
@@ -136,7 +145,7 @@ if TYPE_CHECKING or DOCS_BUILDING:
             ...
 
         @classmethod
-        def from_app_font(cls, value: float, kind: PointSizeKind | int) -> Self:
+        def from_app_font(cls, value: float, kind: Union[PointSizeKind, int]) -> Self:
             """
             Get instance from ``AppFont`` value.
 

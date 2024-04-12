@@ -7,7 +7,6 @@ from ooo.dyn.awt.key_modifier import KeyModifierEnum
 from com.sun.star.awt import Key
 from com.sun.star.container import NoSuchElementException
 
-from ooodev import mock
 from ooodev.mock import mock_g
 from ooodev.adapter.ui.global_accelerator_configuration_comp import GlobalAcceleratorConfigurationComp
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
@@ -33,8 +32,7 @@ class Shortcuts(LoInstPropsPartial):
         # Key is a uno object and it is not available so this will cause errors when building docs.
         KEYS: Dict[int, str] = {}
         """
-        Keys dictionary. This is a dictionary that is built at runtime with the keys and values of the ``Key`` class.
-        The dictionary Keys are the integer values of the keys and the values are the key names.
+        Keys dictionary. This is a dictionary that is built at runtime with the keys and values of the ``Key`` class. The dictionary Keys are the integer values of the keys and the values are the key names.
         
         See `API Key <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1awt_1_1Key.html>`_
         """
@@ -85,7 +83,7 @@ class Shortcuts(LoInstPropsPartial):
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
         self._command_dict = cast(Dict[str, List[str]], None)
-        self._logger = NamedLogger(name="ShortCuts")
+        self._logger = NamedLogger(name="Shortcuts")
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:

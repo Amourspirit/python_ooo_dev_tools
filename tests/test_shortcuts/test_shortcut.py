@@ -4,12 +4,12 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.gui.menu.shortcuts import ShortCuts
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.loader.inst.service import Service
 
 
 def test_shortcut_global(loader) -> None:
-    sc = ShortCuts()
+    sc = Shortcuts()
     sc_all = sc.get_all()
     # get a list of shortcuts such as:
     # [('shift+ctrl+N', '.uno:NewDoc'), ('ctrl+O', '.uno:Open'), ('ctrl+S', '.uno:Save'), ('ctrl+V', '.uno:Paste'), ('ctrl+X', '.uno:Cut'), ...]
@@ -39,7 +39,7 @@ def test_shortcut_calc(loader) -> None:
 
     doc = CalcDoc.create_doc(loader)
     try:
-        sc = ShortCuts(app=Service.CALC)
+        sc = Shortcuts(app=Service.CALC)
         sc_all = sc.get_all()
         assert sc_all
         cmd = sc.get_by_shortcut(sc_all[3][0])
