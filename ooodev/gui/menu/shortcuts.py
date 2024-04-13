@@ -140,7 +140,10 @@ class Shortcuts(LoInstPropsPartial):
         """Get uno command or url for macro"""
         url = command
         if isinstance(url, str) and not url.startswith(".uno:"):
-            url = f".uno:{command}"
+            if url.startswith(".custom:"):
+                url = url[8:]
+            else:
+                url = f".uno:{command}"
         elif isinstance(url, dict):
             url = MacroScript.get_url_script(**url)
         return url

@@ -4,6 +4,7 @@ from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import importlib
 import types
 
+from hypothesis import event
 import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
@@ -311,10 +312,19 @@ class DefaultBuilder(ComponentBase, EventsPartial):
             clz.__init__(instance)
 
     def _init_event_class(self, instance: Any, mod: types.ModuleType, arg: BuildEventArg) -> None:
-
+        # see subscribe_class_event_init() for more information
         # after instance is created, we need to callback to the module on_lazy_cb()
         clz = getattr(mod, arg.class_name)
-        trigger_args = GenericArgs(src_comp=self._component, src_instance=instance)
+        eargs = EventArgs(source=self)
+        triggers = {"src_comp": self._component, "src_instance": instance}
+        event_data = {"class": clz, "instance": instance}
+        eargs.event_data = {"triggers": triggers, "data": event_data}
+        self.trigger_event("class_event_init", eargs)
+        generic_triggers = eargs.event_data.get("triggers", {})
+        if generic_triggers:
+            trigger_args = GenericArgs(**generic_triggers)
+        else:
+            trigger_args = None
         cb = getattr(mod, arg.callback_name)
         # obj = clz.__new__(clz)  # type: ignore
         # obj.__init__(trigger_args=trigger_args, cb=cb)
@@ -871,6 +881,25 @@ class DefaultBuilder(ComponentBase, EventsPartial):
             After the event is triggered, if the event data has keys ``args`` and ``kwargs`` then they will be passed to the class constructor.
         """
         self.subscribe_event("class_init", cb)
+
+    def subscribe_class_event_init(self, cb: EventCallback) -> None:
+        """
+        Subscribe to the class event init event.
+
+        Args:
+            cb (EventCallback): Callback function.
+
+        Note:
+            The event data is a dictionary with keys ``triggers``, ``data``.
+            After the event is triggered, if the event data ``triggers`` has key value pairs then they are passed to a
+            ``GenericArgs`` and passed to the event as ``trigger_args``.
+
+            The default ``event_data["triggers"]`` contains key ``src_comp`` (source component)
+            and ``src_instance`` (current event class instance).
+
+            The default ``event_data["data"]`` contains key ``class`` (event class type), ``instance`` (current event class instance).
+        """
+        self.subscribe_event("class_event_init", cb)
 
     def subscribe_class_create(self, cb: EventCallback) -> None:
         """
