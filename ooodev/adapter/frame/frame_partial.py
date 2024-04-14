@@ -4,10 +4,10 @@ from typing import Any, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XFrame
 
-from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.lang.component_partial import ComponentPartial
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XFrameActionListener
     from com.sun.star.awt import XWindow
     from com.sun.star.frame import XController
@@ -210,6 +210,7 @@ def get_builder(component: Any) -> DefaultBuilder:
         DefaultBuilder: Builder instance.
     """
     # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.frame.XFrame", False)

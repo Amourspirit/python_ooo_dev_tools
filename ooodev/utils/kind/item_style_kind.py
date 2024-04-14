@@ -38,61 +38,61 @@ class ItemStyleKind(IntFlag):
 
     ALIGN_LEFT = ItemStyle.ALIGN_LEFT
     """
-    specifies how the output of the item is aligned in the bounding box of the user interface element.
+    Specifies how the output of the item is aligned in the bounding box of the user interface element.
     
     This style is only valid for an item which describes a statusbar item. Draw item with a left aligned output.
     """
     ALIGN_CENTER = ItemStyle.ALIGN_CENTER
     """
-    specifies how the output of the item is aligned in the bounding box of the user interface element.
+    Specifies how the output of the item is aligned in the bounding box of the user interface element.
     
     This style is only valid for an item which describes a statusbar item. Draw item with a centered aligned output.
     """
     ALIGN_RIGHT = ItemStyle.ALIGN_RIGHT
     """
-    specifies how the output of the item is aligned in the bounding box of the user interface element.
+    Specifies how the output of the item is aligned in the bounding box of the user interface element.
     
     This style is only valid for an item which describes a statusbar item. Draw item with a right aligned output.
     """
     DRAW_OUT3D = ItemStyle.DRAW_OUT3D
     """
-    specifies how the implementation should draw the item.
+    Specifies how the implementation should draw the item.
     
     This style is only valid for an item which describes a statusbar item. Draw item with an embossed 3D effect.
     """
     DRAW_IN3D = ItemStyle.DRAW_IN3D
     """
-    specifies how the implementation should draw the item.
+    Specifies how the implementation should draw the item.
     
     This style is only valid for an item which describes a statusbar item. Draw item with an impressed 3D effect.
     """
     DRAW_FLAT = ItemStyle.DRAW_FLAT
     """
-    specifies how the implementation should draw the item.
+    Specifies how the implementation should draw the item.
     
     This style is only valid for an item which describes a statusbar item. Draw item without an 3D effect.
     """
     OWNER_DRAW = ItemStyle.OWNER_DRAW
     """
-    specifies whether or not an item is displayed using an external function.
+    Specifies whether or not an item is displayed using an external function.
     
     This style is only valid if the item describes a statusbar item.
     """
     AUTO_SIZE = ItemStyle.AUTO_SIZE
     """
-    specifies whether or not the size of the item is set automatically by the parent user interface element.
+    Specifies whether or not the size of the item is set automatically by the parent user interface element.
     
     This style is only valid if the item describes a toolbar or statusbar item.
     """
     RADIO_CHECK = ItemStyle.RADIO_CHECK
     """
-    determines whether the item unchecks neighbor entries which have also this style set.
+    Determines whether the item unchecks neighbor entries which have also this style set.
     
     This style is only valid if the item describes a toolbar item.
     """
     ICON = ItemStyle.ICON
     """
-    specifies if an icon is placed on left side of the text, like an entry in a taskbar.
+    Specifies if an icon is placed on left side of the text, like an entry in a taskbar.
     
     This style is only valid if the item describes a toolbar item and visible if style of the toolbar is set to symboltext.
     
@@ -100,19 +100,19 @@ class ItemStyleKind(IntFlag):
     """
     DROP_DOWN = ItemStyle.DROP_DOWN
     """
-    specifies that the item supports a dropdown menu or toolbar for additional functions.
+    Specifies that the item supports a dropdown menu or toolbar for additional functions.
     
     This style is only valid if the item describes a toolbar item.
     """
     REPEAT = ItemStyle.REPEAT
     """
-    indicates that the item continues to execute the command while you click and hold the mouse button.
+    Indicates that the item continues to execute the command while you click and hold the mouse button.
     
     This style is only valid if the item describes a toolbar item.
     """
     DROPDOWN_ONLY = ItemStyle.DROPDOWN_ONLY
     """
-    indicates that the item only supports a dropdown menu or toolbar for additional functions.
+    Indicates that the item only supports a dropdown menu or toolbar for additional functions.
     
     There is no function on the button itself.
     
@@ -126,7 +126,7 @@ class ItemStyleKind(IntFlag):
     """
     MANDATORY = ItemStyle.MANDATORY
     """
-    marks always visible element which can not be removed when statusbar width is not sufficient.
+    Marks always visible element which can not be removed when statusbar width is not sufficient.
     
     **since**
     

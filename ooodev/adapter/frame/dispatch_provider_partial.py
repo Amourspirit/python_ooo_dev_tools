@@ -7,11 +7,11 @@ from com.sun.star.frame import XDispatchProvider
 # com.sun.star.frame.FrameSearchFlag
 from ooo.dyn.frame.frame_search_flag import FrameSearchFlagEnum
 
-from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XDispatch
     from com.sun.star.util import URL  # Struct
     from com.sun.star.frame import DispatchDescriptor  # Struct
@@ -90,6 +90,7 @@ def get_builder(component: Any) -> DefaultBuilder:
         DefaultBuilder: Builder instance.
     """
     # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.frame.XDispatchProvider", False)

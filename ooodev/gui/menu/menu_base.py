@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Union, List, Dict, TYPE_CHECKING, Tuple
+from typing import Any, Union, List, Dict, TYPE_CHECKING, Tuple, Iterable
 import uno
 from com.sun.star.beans import PropertyValue
 
@@ -22,6 +22,7 @@ class MenuBase(LoInstPropsPartial):
     """Class Base for menus"""
 
     NODE = "private:resource/menubar/menubar"
+    VALID_KEYS = {"Label", "CommandURL", "ShortCut", "Style", "Type", "ItemDescriptorContainer"}
 
     def __init__(
         self,
@@ -89,6 +90,36 @@ class MenuBase(LoInstPropsPartial):
             Shortcuts(self._app).set(shortcut, command)
         return url
 
+    def validate_keys(self, dictionary: dict, valid_keys: Iterable[str]) -> bool:
+        """
+        Validate keys in dictionary.
+
+        Args:
+            dictionary (dict): Dictionary to validate.
+            valid_keys (Iterable[str]): Valid keys.
+
+        Returns:
+            bool: True if all keys are valid.
+        """
+        return all(key in valid_keys for key in dictionary.keys())
+
+    def _process_menu(self, menu: Dict[str, Any]):
+        """
+        Process menu data.
+
+        Args:
+            menu (dict): Menu data
+
+        Returns:
+            dict: Processed menu data
+        """
+        if not self.validate_keys(menu, MenuBase.VALID_KEYS):
+            raise ValueError(f"Invalid keys: {menu}")
+        mnu = menu.copy()
+        if "Style" in mnu:
+            mnu["Style"] = int(mnu["Style"])
+        return mnu
+
     def _save(self, parent: Any, menu: Dict[str, Any], index: int):
         """
         Insert menu.
@@ -101,7 +132,10 @@ class MenuBase(LoInstPropsPartial):
         Returns:
             None:
         """
-        properties = mProps.Props.make_props_any(**menu)
+        # changes: are saved in ..\AppData\Roaming\LibreOffice\4\user\config\soffice.cfg\modules\...
+        # for calc that would be ..\AppData\Roaming\LibreOffice\4\user\config\soffice.cfg\modules\scalc\menubar
+        mnu = self._process_menu(menu)
+        properties = mProps.Props.make_props_any(**mnu)
         if hasattr(parent, "component"):
             obj = parent.component
         else:
@@ -136,6 +170,9 @@ class MenuBase(LoInstPropsPartial):
         url = command
         if isinstance(command, dict):
             url = MacroScript.get_url_script(**command)
+        elif isinstance(command, str):
+            if command.startswith(".custom:"):
+                url = command[8:]
         return url
 
     def insert(self, parent: Any, menu: Dict[str, Any], after: int | str = "") -> None:

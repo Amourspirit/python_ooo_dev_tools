@@ -3,11 +3,12 @@ from typing import Any, TYPE_CHECKING
 
 import uno
 from com.sun.star.frame import XFramesSupplier
-from ooodev.utils.builder.default_builder import DefaultBuilder
+
 
 from ooodev.adapter.frame.frame_partial import FramePartial
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XFrame
     from com.sun.star.frame import XFrames
     from ooodev.utils.type_var import UnoInterface
@@ -78,6 +79,7 @@ def get_builder(component: Any) -> DefaultBuilder:
         DefaultBuilder: Builder instance.
     """
     # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.frame.XFrame", False)

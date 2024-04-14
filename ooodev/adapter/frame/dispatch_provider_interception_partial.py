@@ -4,12 +4,13 @@ import uno
 
 from com.sun.star.frame import XDispatchProviderInterception
 
-from ooodev.utils.builder.default_builder import DefaultBuilder
+
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XDispatchProviderInterceptor
 
 
@@ -67,6 +68,7 @@ def get_builder(component: Any) -> DefaultBuilder:
         DefaultBuilder: Builder instance.
     """
     # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
 
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.frame.XDispatchProviderInterception", False)

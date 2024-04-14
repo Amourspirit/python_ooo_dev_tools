@@ -4,7 +4,7 @@ import uno
 
 from com.sun.star.awt import XMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
-from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
+from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
@@ -57,33 +57,33 @@ class MenuPartial:
         """
         self.__component.enableAutoMnemonics(enable)
 
-    def enable_item(self, item_id: int, enable: bool = False) -> None:
+    def enable_item(self, menu_id: int, enable: bool = False) -> None:
         """
         Enables or disables the menu item.
 
         Args:
-            item_id (int): The ID of the menu item.
+            menu_id (int): The ID of the menu item.
             enable (bool, optional): The state of the menu item. Defaults to ``False``.
         """
-        self.__component.enableItem(item_id, enable)
+        self.__component.enableItem(menu_id, enable)
 
-    def get_command(self, item_id: int) -> str:
+    def get_command(self, menu_id: int) -> str:
         """
         Gets the command string for the menu item.
         """
-        return self.__component.getCommand(item_id)
+        return self.__component.getCommand(menu_id)
 
-    def get_help_command(self, item_id: int) -> str:
+    def get_help_command(self, menu_id: int) -> str:
         """
         Gets the help command string for the menu item.
         """
-        return self.__component.getHelpCommand(item_id)
+        return self.__component.getHelpCommand(menu_id)
 
-    def get_help_text(self, item_id: int) -> str:
+    def get_help_text(self, menu_id: int) -> str:
         """
         Gets the help text for the menu item.
         """
-        return self.__component.getHelpText(item_id)
+        return self.__component.getHelpText(menu_id)
 
     def get_item_count(self) -> int:
         """
@@ -97,17 +97,17 @@ class MenuPartial:
         """
         return self.__component.getItemId(item_pos)
 
-    def get_item_pos(self, item_id: int) -> int:
+    def get_item_pos(self, menu_id: int) -> int:
         """
         Gets the position of the item with the specified ID.
         """
-        return self.__component.getItemPos(item_id)
+        return self.__component.getItemPos(menu_id)
 
-    def get_item_text(self, item_id: int) -> str:
+    def get_item_text(self, menu_id: int) -> str:
         """
         returns the string for the given item id.
         """
-        return self.__component.getItemText(item_id)
+        return self.__component.getItemText(menu_id)
 
     def get_item_type(self, item_pos: int) -> MenuItemType:
         """
@@ -124,11 +124,11 @@ class MenuPartial:
         """
         return self.__component.getItemType(item_pos)  # type: ignore
 
-    def get_popup_menu(self, item_id: int) -> XPopupMenu:
+    def get_popup_menu(self, menu_id: int) -> XPopupMenu:
         """
         Gets the popup menu from the menu item.
         """
-        return self.__component.getPopupMenu(item_id)
+        return self.__component.getPopupMenu(menu_id)
 
     def get_tip_help_text(self, item_id: int) -> str:
         """
@@ -145,31 +145,31 @@ class MenuPartial:
         """
         self.__component.hideDisabledEntries(hide)
 
-    def insert_item(self, item_id: int, text: str, item_style: int | MenuItemStyleEnum, item_pos: int) -> None:
+    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind, item_pos: int) -> None:
         """
         Inserts an item into the menu.
 
         The item is appended if the position is greater than or equal to ``get_item_count()`` or if it is negative.
 
         Args:
-            item_id (int): The ID of the menu item.
+            menu_id (int): The ID of the menu item.
             text (str): The text for the menu item.
-            item_style (int | MenuItemStyleEnum): The style of the menu item. ``MenuItemStyleEnum`` is a flags enum.
+            item_style (int | MenuItemStyleKind): The style of the menu item. ``MenuItemStyleKind`` is a flag enum.
             item_pos (int): The position of the menu item.
 
         Returns:
             None:
 
         Hint:
-            - ``MenuItemStyleEnum`` is an enum and can be imported from ``ooo.dyn.awt.menu_item_style``.
+            - ``MenuItemStyleKind`` is an enum and can be imported from ``ooodev.utils.kind.menu_item_style_kind``.
         """
-        self.__component.insertItem(item_id, text, int(item_style), item_pos)
+        self.__component.insertItem(menu_id, text, int(item_style), item_pos)
 
-    def is_item_enabled(self, item_id: int) -> bool:
+    def is_item_enabled(self, menu_id: int) -> bool:
         """
         Gets the state of the menu item.
         """
-        return self.__component.isItemEnabled(item_id)
+        return self.__component.isItemEnabled(menu_id)
 
     def is_popup_menu(self) -> bool:
         """
@@ -189,40 +189,40 @@ class MenuPartial:
         """
         self.__component.removeMenuListener(listener)
 
-    def set_command(self, item_id: int, command: str) -> None:
+    def set_command(self, menu_id: int, command: str) -> None:
         """
         Sets the command string for the menu item.
         """
-        self.__component.setCommand(item_id, command)
+        self.__component.setCommand(menu_id, command)
 
-    def set_help_command(self, item_id: int, command: str) -> None:
+    def set_help_command(self, menu_id: int, command: str) -> None:
         """
         Sets the help command string for the menu item.
         """
-        self.__component.setHelpCommand(item_id, command)
+        self.__component.setHelpCommand(menu_id, command)
 
-    def set_help_text(self, item_id: int, text: str) -> None:
+    def set_help_text(self, menu_id: int, text: str) -> None:
         """
         Sets the help text for the menu item.
         """
-        self.__component.setHelpText(item_id, text)
+        self.__component.setHelpText(menu_id, text)
 
-    def set_item_text(self, item_id: int, text: str) -> None:
+    def set_item_text(self, menu_id: int, text: str) -> None:
         """
         Sets the text for the menu item.
         """
-        self.__component.setItemText(item_id, text)
+        self.__component.setItemText(menu_id, text)
 
-    def set_popup_menu(self, item_id: int, popup_menu: XPopupMenu) -> None:
+    def set_popup_menu(self, menu_id: int, popup_menu: XPopupMenu) -> None:
         """
         Sets the popup menu for a specified menu item.
         """
-        self.__component.setPopupMenu(item_id, popup_menu)
+        self.__component.setPopupMenu(menu_id, popup_menu)
 
-    def set_tip_help_text(self, item_id: int, text: str) -> None:
+    def set_tip_help_text(self, menu_id: int, text: str) -> None:
         """
         Sets the tip help text for the menu item.
         """
-        self.__component.setTipHelpText(item_id, text)
+        self.__component.setTipHelpText(menu_id, text)
 
     # endregion XMenu

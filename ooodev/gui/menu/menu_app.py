@@ -121,6 +121,8 @@ class MenuApp(LoInstPropsPartial):
             after (int, str, optional): Insert in after menu (CommandURL). Defaults to "".
             save (bool, optional): For persistent save. Defaults to True.
         """
+        # changes: are saved in ..\AppData\Roaming\LibreOffice\4\user\config\soffice.cfg\modules\...
+        # for calc that would be ..\AppData\Roaming\LibreOffice\4\user\config\soffice.cfg\modules\scalc\menubar
         mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
 
         mb.insert(self._menus, menu, after)

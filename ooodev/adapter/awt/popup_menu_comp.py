@@ -18,6 +18,7 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 if TYPE_CHECKING:
     from com.sun.star.awt import PopupMenu
     from ooodev.loader.inst.lo_inst import LoInst
+    from typing_extensions import Self
 
 
 class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
@@ -26,11 +27,10 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
     Events for this component are managed by the ``MenuEvents`` class.
 
-    Event Callbacks are passed the following arguments:
-        - source: The source of the event.
-        - trigger_name: The name of the event that was triggered.
-        - is_add: Whether the event was added or removed.
-        - remove_callback: Whether to remove the callback.
+    Event Callbacks are passed the following positional arguments:
+        - src: The source of the event.
+        - event: The event arguments. The event_data attribute contains ``com.sun.star.awt.MenuEvent``.
+        - menu: The popup menu component that triggered the event.
 
     Example:
         .. code-block:: python
@@ -74,21 +74,21 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
     # endregion Lazy Listeners
 
     # region MenuPartial Overrides
-    def get_popup_menu(self, item_id: int) -> PopupMenuComp | None:
+    def get_popup_menu(self, menu_id: int) -> Self | None:
         """
         Gets the popup menu from the menu item.
         """
-        menu = self.component.getPopupMenu(item_id)
+        menu = self.component.getPopupMenu(menu_id)
         if menu is None:
             return None
-        return PopupMenuComp(menu)
+        return self.__class__(menu)  # type: ignore
 
     # endregion MenuPartial Overrides
 
     # region MenuEvents Overrides
     if TYPE_CHECKING or mock_g.DOCS_BUILDING:
 
-        def add_event_item_activated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def add_event_item_activated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Adds a callback for the item activated event for all menu items in the current instance.
 
@@ -97,7 +97,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().add_event_item_activated(cb)  # type: ignore
 
-        def add_event_item_deactivated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def add_event_item_deactivated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Adds a callback for the item deactivated event for all menu items in the current instance.
 
@@ -106,7 +106,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().add_event_item_deactivated(cb)  # type: ignore
 
-        def add_event_item_highlighted(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def add_event_item_highlighted(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Adds a callback for the item highlighted event for all menu items in the current instance.
 
@@ -115,7 +115,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().add_event_item_highlighted(cb)  # type: ignore
 
-        def add_event_item_selected(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def add_event_item_selected(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Adds a callback for the item selected event for all menu items in the current instance.
 
@@ -124,7 +124,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().add_event_item_selected(cb)  # type: ignore
 
-        def add_event_menu_events_disposing(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def add_event_menu_events_disposing(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Adds a callback for the menu events disposing event for all menu items in the current instance.
 
@@ -133,7 +133,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().add_event_menu_events_disposing(cb)  # type: ignore
 
-        def remove_event_item_activated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def remove_event_item_activated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Removes a callback for the item activated event for all menu items in the current instance.
 
@@ -142,7 +142,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().remove_event_item_activated(cb)  # type: ignore
 
-        def remove_event_item_deactivated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def remove_event_item_deactivated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Removes a callback for the item deactivated event for all menu items in the current instance.
 
@@ -151,7 +151,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().remove_event_item_deactivated(cb)  # type: ignore
 
-        def remove_event_item_highlighted(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def remove_event_item_highlighted(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Removes a callback for the item highlighted event for all menu items in the current instance.
 
@@ -160,7 +160,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().remove_event_item_highlighted(cb)  # type: ignore
 
-        def remove_event_item_selected(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def remove_event_item_selected(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Removes a callback for the item selected event for all menu items in the current instance.
 
@@ -169,7 +169,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             """
             super().remove_event_item_selected(cb)  # type: ignore
 
-        def remove_event_menu_events_disposing(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+        def remove_event_menu_events_disposing(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
             """
             Removes a callback for the menu events disposing event for all menu items in the current instance.
 
@@ -200,11 +200,12 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         result["is_popup"] = self.is_popup_menu()
         return result
 
-    def __iter__(self) -> PopupMenuComp:
+    def __iter__(self) -> Self:
         self._index = 0
         return self
 
     def __next__(self) -> int:
+        """Gets the next item id."""
         if self._index >= self.get_item_count():
             self._index = -1
             raise StopIteration
@@ -214,8 +215,10 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
     # endregion Dunder Methods
 
+    # region Static Methods
+
     @classmethod
-    def from_lo(cls, lo_inst: LoInst | None = None) -> PopupMenuComp:
+    def from_lo(cls, lo_inst: LoInst | None = None) -> Self:
         """
         Creates the instance from the Lo.
 
@@ -233,8 +236,10 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         inst = lo_inst.create_instance_mcf(XPopupMenu, "com.sun.star.awt.PopupMenu", raise_err=True)  # type: ignore
         return cls(inst)
 
+    # endregion Static Methods
+
     # region Add/Remove Events
-    def subscribe_all_item_activated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def subscribe_all_item_activated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Adds a callbacks for the item activated event for all menu and submenus items.
 
@@ -245,7 +250,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def add_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.add_event_item_activated(cb)
+                mnu.add_event_item_activated(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -253,7 +258,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         add_menu_event(self)
 
-    def subscribe_all_item_deactivated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def subscribe_all_item_deactivated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Adds a callbacks for the item deactivated event for all menu and submenus items.
 
@@ -264,7 +269,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def add_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.add_event_item_deactivated(cb)
+                mnu.add_event_item_deactivated(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -272,7 +277,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         add_menu_event(self)
 
-    def subscribe_all_item_highlighted(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def subscribe_all_item_highlighted(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Adds a callbacks for the item highlighted event for all menu and submenus items.
 
@@ -283,7 +288,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def add_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.add_event_item_highlighted(cb)
+                mnu.add_event_item_highlighted(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -291,7 +296,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         add_menu_event(self)
 
-    def subscribe_all_item_selected(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def subscribe_all_item_selected(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Adds a callbacks for the item selected event for all menu and submenus items.
 
@@ -302,7 +307,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def add_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.add_event_item_selected(cb)
+                mnu.add_event_item_selected(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -310,7 +315,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         add_menu_event(self)
 
-    def unsubscribe_all_item_activated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def unsubscribe_all_item_activated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Remove callbacks for the item selected event for all menu and submenus items.
 
@@ -321,7 +326,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def remove_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.remove_event_item_activated(cb)
+                mnu.remove_event_item_activated(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -329,7 +334,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         remove_menu_event(self)
 
-    def unsubscribe_all_item_deactivated(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def unsubscribe_all_item_deactivated(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Remove callbacks for the item deactivated event for all menu and submenus items.
 
@@ -340,7 +345,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def remove_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.remove_event_item_deactivated(cb)
+                mnu.remove_event_item_deactivated(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -348,7 +353,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         remove_menu_event(self)
 
-    def unsubscribe_all_item_highlighted(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def unsubscribe_all_item_highlighted(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Remove callbacks for the item highlighted event for all menu and submenus items.
 
@@ -359,7 +364,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def remove_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.remove_event_item_highlighted(cb)
+                mnu.remove_event_item_highlighted(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:
@@ -367,7 +372,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
 
         remove_menu_event(self)
 
-    def unsubscribe_all_item_selected(self, cb: Callable[[Any, EventArgs, PopupMenuComp], None]) -> None:
+    def unsubscribe_all_item_selected(self, cb: Callable[[Any, EventArgs, Self], None]) -> None:
         """
         Remove callbacks for the item selected event for all menu and submenus items.
 
@@ -378,7 +383,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
         def remove_menu_event(mnu: PopupMenuComp) -> None:
             nonlocal cb
             with contextlib.suppress(Exception):
-                mnu.remove_event_item_selected(cb)
+                mnu.remove_event_item_selected(cb)  # type: ignore
             for i in mnu:
                 pop_menu = mnu.get_popup_menu(i)
                 if pop_menu is not None:

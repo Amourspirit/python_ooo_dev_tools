@@ -4,8 +4,6 @@ from abc import ABC
 
 import uno  # pylint: disable=unused-import
 from ooodev.events.args.generic_args import GenericArgs
-from ooodev.utils import info as mInfo
-from ooodev.exceptions import ex as mEx
 
 
 class ComponentBase(ABC):
@@ -63,3 +61,8 @@ class ComponentBase(ABC):
         if not srv_name:
             return True
         return mInfo.Info.support_service(component, *srv_name)
+
+
+# Leave this import here to avoid circular imports.
+from ooodev.utils import info as mInfo
+from ooodev.exceptions import ex as mEx

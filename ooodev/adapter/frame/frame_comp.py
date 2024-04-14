@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 class _FrameComp(ComponentProp):
 
+    # region Dunder Methods
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -26,9 +27,51 @@ class _FrameComp(ComponentProp):
             return True
         return self.component == other.component
 
+    # endregion Dunder Methods
+
+    # region XFramesSupplier Overrides
+    def get_active_frame(self) -> FrameComp | None:
+        """
+        Gets the current active frame of this container (not of any other available supplier)
+
+        This may be the frame itself. The active frame is defined as the frame which contains (recursively) the window with the focus.
+        If no window within the frame contains the focus, this method returns the last frame which had the focus.
+        If no containing window ever had the focus, the first frame within this frame is returned.
+        """
+        frm = self.__component.getActiveFrame()
+        if frm is None:
+            return None
+        return FrameComp(component=frm)
+
+    def set_active_frame(self, frame: XFrame | FrameComp) -> None:
+        """
+        Is called on activation of a direct sub-frame.
+
+        This method is only allowed to be called by a sub-frame according to ``XFrame.activate()`` or ``XFramesSupplier.setActiveFrame()``.
+        After this call ``XFramesSupplier.getActiveFrame()`` will return the frame specified by Frame.
+
+        In general this method first calls the method ``XFramesSupplier.setActiveFrame()`` at the creator frame with this as the current argument.
+        Then it broadcasts the FrameActionEvent ``FrameAction.FRAME_ACTIVATED``.
+
+        Args:
+            frame (XFrame | FrameComp): The frame to set as active.
+
+        Note:
+            Given parameter Frame must already exist inside the container (e.g., inserted by using ``XFrames.append()``)
+        """
+        if mInfo.Info.is_instance(frame, FrameComp):
+            self.__component.setActiveFrame(frame.component)
+        else:
+            self.__component.setActiveFrame(frame)
+
+    # endregion XFramesSupplier Overrides
+
+    # region ComponentBase Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.frame.Frame",)
+
+    # endregion ComponentBase Overrides
 
 
 class FrameComp(
@@ -78,43 +121,6 @@ class FrameComp(
         """
         # this it not actually called as __new__ is overridden
         pass
-
-    # region XFramesSupplier Overrides
-    def get_active_frame(self) -> FrameComp | None:
-        """
-        Gets the current active frame of this container (not of any other available supplier)
-
-        This may be the frame itself. The active frame is defined as the frame which contains (recursively) the window with the focus.
-        If no window within the frame contains the focus, this method returns the last frame which had the focus.
-        If no containing window ever had the focus, the first frame within this frame is returned.
-        """
-        frm = self.__component.getActiveFrame()
-        if frm is None:
-            return None
-        return FrameComp(component=frm)
-
-    def set_active_frame(self, frame: XFrame | FrameComp) -> None:
-        """
-        Is called on activation of a direct sub-frame.
-
-        This method is only allowed to be called by a sub-frame according to ``XFrame.activate()`` or ``XFramesSupplier.setActiveFrame()``.
-        After this call ``XFramesSupplier.getActiveFrame()`` will return the frame specified by Frame.
-
-        In general this method first calls the method ``XFramesSupplier.setActiveFrame()`` at the creator frame with this as the current argument.
-        Then it broadcasts the FrameActionEvent ``FrameAction.FRAME_ACTIVATED``.
-
-        Args:
-            frame (XFrame | FrameComp): The frame to set as active.
-
-        Note:
-            Given parameter Frame must already exist inside the container (e.g., inserted by using ``XFrames.append()``)
-        """
-        if mInfo.Info.is_instance(frame, FrameComp):
-            self.__component.setActiveFrame(frame.component)
-        else:
-            self.__component.setActiveFrame(frame)
-
-    # endregion XFramesSupplier Overrides
 
     # region Properties
 

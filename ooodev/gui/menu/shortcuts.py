@@ -137,7 +137,22 @@ class Shortcuts(LoInstPropsPartial):
 
     @classmethod
     def get_url_script(cls, command: str | Dict[str, str]) -> str:
-        """Get uno command or url for macro"""
+        """
+        Get uno command or url for macro.
+
+        Args:
+            command (str | dict): Command to search, 'UNOCOMMAND' or dict with macro info.
+
+        Returns:
+            str: Url for macro or uno command or custom command.
+
+        Note:
+            If ``command`` is passed in a a string and it starts with ``.custom:``
+            then it will be returned with the ``.custom:`` prefix dropped.
+
+            The ``.custom:`` prefix is used to indicate that the command is a custom command
+            and can be used in a menu callback to capture user clicks.
+        """
         url = command
         if isinstance(url, str) and not url.startswith(".uno:"):
             if url.startswith(".custom:"):
@@ -220,13 +235,14 @@ class Shortcuts(LoInstPropsPartial):
             command = ""
         return command
 
-    def set(self, shortcut: str, command: str | Dict[str, str]) -> bool:
+    def set(self, shortcut: str, command: str | Dict[str, str], save: bool = True) -> bool:
         """
         Set shortcut to command
 
         Args:
             shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
-            command (str | dict): Command to assign, 'UNOCOMMAND' or dict with macro info
+            command (str | dict): Command to assign, 'UNOCOMMAND' or dict with macro info.
+            save (bool, optional): Save configuration causing it to persist. Defaults to ``True``.
 
         Returns:
             bool: True if set successfully
@@ -239,19 +255,21 @@ class Shortcuts(LoInstPropsPartial):
             return False
         try:
             self._config.set_key_event(key_event, url)
-            self._config.store()
+            if save:
+                self._config.store()
         except Exception as e:
             self._logger.error(e)
             result = False
 
         return result
 
-    def remove_by_shortcut(self, shortcut: str) -> bool:
+    def remove_by_shortcut(self, shortcut: str, save: bool = False) -> bool:
         """
         Remove by shortcut
 
         Args:
             shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
+            save (bool, optional): Save configuration causing it to persist. Defaults to ``False``.
 
         Returns:
             bool: ``True`` if removed successfully
@@ -262,24 +280,29 @@ class Shortcuts(LoInstPropsPartial):
             return False
         try:
             self._config.remove_key_event(key_event)
+            if save:
+                self._config.store()
             result = True
         except NoSuchElementException:
             self._logger.debug(f"No exists: {shortcut}")
             result = False
         return result
 
-    def remove_by_command(self, command: str | Dict[str, str]):
+    def remove_by_command(self, command: str | Dict[str, str], save: bool = False):
         """
         Remove by shortcut.
 
         Args:
-            command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info
+            command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info.
+            save (bool, optional): Save configuration causing it to persist. Defaults to ``False``.
         """
         url = Shortcuts.get_url_script(command)
         self._config.remove_command_from_all_key_events(url)
+        if save:
+            self._config.store()
         return
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset configuration"""
         self._config.reset()  # type: ignore
         self._config.store()

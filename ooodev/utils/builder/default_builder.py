@@ -12,7 +12,8 @@ from com.sun.star.lang import XTypeProvider
 from ooodev.events.args.event_args import EventArgs
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.events.args.generic_args import GenericArgs
-from ooodev.adapter.component_base import ComponentBase
+
+# from ooodev.adapter.component_base import ComponentBase
 from ooodev.loader import lo as mLo
 from ooodev.utils.builder.build_import_arg import BuildImportArg
 from ooodev.utils.builder.build_event_arg import BuildEventArg
@@ -25,9 +26,9 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import EventCallback
 
 
-class DefaultBuilder(ComponentBase, EventsPartial):
+class DefaultBuilder(EventsPartial):
     def __init__(self, component: Any):
-        ComponentBase.__init__(self, component)
+        # ComponentBase.__init__(self, component)
         EventsPartial.__init__(self)
 
         self._component = component

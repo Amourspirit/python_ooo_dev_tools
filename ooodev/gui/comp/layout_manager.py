@@ -12,7 +12,7 @@ from ooodev.utils import props as mProps
 
 if TYPE_CHECKING:
     from com.sun.star.frame import LayoutManager as UnoLayoutManager  # service
-    from ooodev.gui.comp.menu_bar import MenuBar
+    from ooodev.gui.menu.menu_bar import MenuBar
 
 
 class _LayoutManager(ComponentProp):
@@ -50,7 +50,7 @@ class _LayoutManager(ComponentProp):
         """
         # pylint: disable=import-outside-toplevel
         # pylint: disable=redefined-outer-name
-        from ooodev.gui.comp.menu_bar import MenuBar
+        from ooodev.gui.menu.menu_bar import MenuBar
 
         mb_el = self.get_element(MenuBar.NODE)  # type: ignore
         if mb_el is None:
@@ -147,4 +147,4 @@ def get_builder(component: Any) -> DefaultBuilder:
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.gui.comp.menu_bar import MenuBar
+    from ooodev.gui.menu.menu_bar import MenuBar
