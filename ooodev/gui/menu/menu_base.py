@@ -5,7 +5,7 @@ from com.sun.star.beans import PropertyValue
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.gui.menu.shortcuts import Shortcuts
-from ooodev.io.log.logging import debug, error
+from ooodev.io.log.named_logger import NamedLogger
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
@@ -48,6 +48,7 @@ class MenuBase(LoInstPropsPartial):
         self._app = str(app)
         self._config = config
         self._menus = menus
+        self._logger = NamedLogger(self.__class__.__name__)
 
     def _get_index(self, parent: Any, name: Union[int, str] = "") -> int:
         """
@@ -83,11 +84,23 @@ class MenuBase(LoInstPropsPartial):
         Returns:
             str: URL command
         """
-        shortcut = menu.pop("ShortCut", "")
+        save = True
+        sc = menu.pop("ShortCut", None)
+        if sc is None:
+            shortcut = ""
+        elif isinstance(sc, str):
+            shortcut = sc
+        elif isinstance(sc, dict):
+            shortcut = sc.get("key", "")
+            save = sc.get("save", False)
+        else:
+            self._logger.error(f"Invalid shortcut: {sc}")
+            shortcut = ""
+
         command = menu["CommandURL"]
         url = Shortcuts.get_url_script(command)
         if shortcut:
-            Shortcuts(self._app).set(shortcut, command)
+            Shortcuts(self._app).set(shortcut, command, save)
         return url
 
     def validate_keys(self, dictionary: dict, valid_keys: Iterable[str]) -> bool:
@@ -167,13 +180,14 @@ class MenuBase(LoInstPropsPartial):
                 self._insert_submenu(idc, submenu)
 
     def _get_first_command(self, command: str | Dict[str, str]):
-        url = command
-        if isinstance(command, dict):
-            url = MacroScript.get_url_script(**command)
-        elif isinstance(command, str):
-            if command.startswith(".custom:"):
-                url = command[8:]
-        return url
+        return Shortcuts.get_url_script(command)
+        # url = command
+        # if isinstance(command, dict):
+        #     url = MacroScript.get_url_script(**command)
+        # elif isinstance(command, str):
+        #     if command.startswith(".custom:"):
+        #         url = command[8:]
+        # return url
 
     def insert(self, parent: Any, menu: Dict[str, Any], after: int | str = "") -> None:
         """
@@ -187,14 +201,15 @@ class MenuBase(LoInstPropsPartial):
         parent_index = self._get_index(parent, after)
         if parent_index == -1:
             msg = f"Parent not found: {after}"
-            error(msg)
+            self._logger.error(msg)
             raise ValueError(msg)
         index = parent_index + 1
         submenu = menu.pop("Submenu", False)
         menu["Type"] = 0
-        idc = self._config.component.createSettings()
-        menu["ItemDescriptorContainer"] = idc
         menu["CommandURL"] = self._get_first_command(menu["CommandURL"])
+        if submenu:
+            idc = self._config.component.createSettings()
+            menu["ItemDescriptorContainer"] = idc
         self._save(parent, menu, index)
         if submenu:
             self._insert_submenu(idc, submenu)
@@ -214,7 +229,7 @@ class MenuBase(LoInstPropsPartial):
             name = MacroScript.get_url_script(**name)
         index = self._get_index(parent, name)
         if index == -1:
-            debug(f"Not found: {name}")
+            self._logger.debug(f"Not found: {name}")
             return
         uno.invoke(parent, "removeByIndex", (index,))  # type: ignore
         self._config.replace_settings(self.NODE, self._menus.component)

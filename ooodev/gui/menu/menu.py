@@ -4,6 +4,7 @@ import uno
 from com.sun.star.beans import PropertyValue
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.adapter.container.index_access_implement import IndexAccessImplement
 from ooodev.gui.menu.item.menu_items import MenuItems
 from ooodev.gui.menu.menu_base import MenuBase
 from ooodev.gui.menu.menu_debug import MenuDebug
@@ -44,7 +45,8 @@ class Menu(LoInstPropsPartial):
         self._menus = menus
         self._app = str(app)
         self._current_menu = menu
-        self._items = MenuItems(component=menu.component, lo_inst=self.lo_inst)
+        self._items = MenuItems(component=menu.component, menu=self, app=self._app, lo_inst=self.lo_inst)
+        self._current_index = -1
 
     def __contains__(self, name) -> bool:
         """If exists name in menu"""
@@ -57,7 +59,7 @@ class Menu(LoInstPropsPartial):
                 break
         return exists
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> Menu:
         """Index access"""
         if isinstance(index, int):
             menu = mProps.Props.data_to_dict(self._current_menu[index])
@@ -67,11 +69,13 @@ class Menu(LoInstPropsPartial):
                 cmd = menu.get("CommandURL", "")
                 if cmd == index:
                     break
-        ia = menu["ItemDescriptorContainer"]
+        ia = menu.get("ItemDescriptorContainer", None)
+        # if ia is None:
+        #     ia_menu = None
         if ia is None:
-            ia_menu = None
-        else:
-            ia_menu = IndexAccessComp(ia)
+            # create an empty XIndexAccess
+            ia = IndexAccessImplement(elements=(), element_type="[]com.sun.star.beans.PropertyValue")
+        ia_menu = IndexAccessComp(ia)
         obj = Menu(
             config=self._config,
             menus=self._menus,
@@ -80,6 +84,32 @@ class Menu(LoInstPropsPartial):
             lo_inst=self.lo_inst,
         )
         return obj
+
+    def __len__(self) -> int:
+        """Length of menu"""
+        return len(self._current_menu)
+
+    def __iter__(self):
+        """Iterator"""
+        self._current_index = 0
+        return self
+
+    def __next__(self):
+        """Next"""
+        if self._current_index < len(self):
+            menu = self[self._current_index]
+            self._current_index += 1
+            return menu
+        self._current_index = -1
+        raise StopIteration
+
+    def __repr__(self) -> str:
+        """String representation"""
+        # if self._current_menu is not None and len(self._current_menu) > 0:
+
+        #     return ""
+        return object.__repr__(self)
+        # return f"{self._current_menu}"
 
     def debug(self) -> None:
         """Debug menu"""

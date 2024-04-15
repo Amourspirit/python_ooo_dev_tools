@@ -10,6 +10,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
+    from ooodev.gui.menu.menu import Menu
     from ooodev.loader.inst.lo_inst import LoInst
 
 
@@ -19,6 +20,7 @@ class MenuItemBase(LoInstPropsPartial):
     def __init__(
         self,
         *,
+        menu: Menu,
         data: Tuple[Tuple[PropertyValue, ...], ...],
         owner: IndexAccessComp,
         app: str | Service = "",
@@ -33,6 +35,7 @@ class MenuItemBase(LoInstPropsPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst)
+        self._menu = menu
         self._owner = owner
         self._data = data
         self._menu_data = mProps.Props.data_to_dict(self._data)  # type: ignore
@@ -41,7 +44,12 @@ class MenuItemBase(LoInstPropsPartial):
 
     @property
     def menu_type(self) -> int:
-        """Get menu type"""
+        """
+        Get menu type.
+
+        Returns:
+            int: Menu type. ``0`` for ``MenuItem``, ``1`` for ``MenuItemSep``.
+        """
         return self._menu_type
 
     @property
@@ -58,6 +66,11 @@ class MenuItemBase(LoInstPropsPartial):
     def app(self) -> str:
         """Get app"""
         return self._app
+
+    @property
+    def menu(self) -> Menu:
+        """Get menu that owns this item."""
+        return self._menu
 
     # @menu_type.setter
     # def menu_type(self, value: MenuTypeKind):

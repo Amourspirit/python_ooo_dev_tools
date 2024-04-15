@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
+from ooodev.adapter.container.index_access_implement import IndexAccessImplement
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
     TheModuleUIConfigurationManagerSupplierComp,
 )
@@ -98,11 +99,12 @@ class MenuApp(LoInstPropsPartial):
                 cmd = menu.get("CommandURL", "")
                 if cmd == key:
                     break
-        ia = menu["ItemDescriptorContainer"]
+        ia = menu.get("ItemDescriptorContainer", None)
         if ia is None:
-            ia_menu = None
-        else:
-            ia_menu = IndexAccessComp(ia)
+            # create an empty XIndexAccess
+            ia = IndexAccessImplement(elements=(), element_type="[]com.sun.star.beans.PropertyValue")
+
+        ia_menu = IndexAccessComp(ia)
         obj = Menu(
             config=self._config,
             menus=self._menus,

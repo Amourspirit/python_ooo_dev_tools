@@ -2,17 +2,20 @@ from __future__ import annotations
 from typing import Any, Tuple, List, TYPE_CHECKING
 import contextlib
 import uno
-from ooo.dyn.util.url import URL
-from ooodev.loader.inst.service import Service
-from ooodev.utils.kind.item_style_kind import ItemStyleKind
 from com.sun.star.beans import PropertyValue
-from ooodev.gui.menu.item.menu_item_base import MenuItemBase
+from ooo.dyn.util.url import URL
+
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
-from ooodev.macro.script.macro_script import MacroScript
-from ooodev.io.log.named_logger import NamedLogger
 from ooodev.gui.menu.comp.dispatch_comp import DispatchComp
+from ooodev.gui.menu.item.menu_item_base import MenuItemBase
+from ooodev.gui.menu.item.menu_item_kind import MenuItemKind
+from ooodev.io.log.named_logger import NamedLogger
+from ooodev.loader.inst.service import Service
+from ooodev.macro.script.macro_script import MacroScript
+from ooodev.utils.kind.item_style_kind import ItemStyleKind
 
 if TYPE_CHECKING:
+    from ooodev.gui.menu.menu import Menu
     from ooodev.loader.inst.lo_inst import LoInst
 
 
@@ -22,6 +25,7 @@ class MenuItem(MenuItemBase):
     def __init__(
         self,
         *,
+        menu: Menu,
         data: Tuple[Tuple[PropertyValue, ...], ...],
         owner: IndexAccessComp,
         app: str | Service = "",
@@ -31,9 +35,12 @@ class MenuItem(MenuItemBase):
         Constructor
 
         Args:
-            component (XIndexAccess): UNO Object containing menu item properties.
+            data (Tuple[Tuple[PropertyValue, ...], ...]): UNO Object containing menu item properties.
+            owner (IndexAccessComp): Parent menu.
+            app (str | Service, optional): Name LibreOffice module. Defaults to "".
+            lo_inst (LoInst | None, optional): Lo Instance. Defaults to Current Lo Instance.
         """
-        super().__init__(data=data, owner=owner, app=app, lo_inst=lo_inst)
+        super().__init__(data=data, menu=menu, owner=owner, app=app, lo_inst=lo_inst)
         if self.command:
             lg_name = f"{self.__class__.__name__} ({self.command})"
         else:
@@ -62,8 +69,8 @@ class MenuItem(MenuItemBase):
 
     def __repr__(self) -> str:
         if self.label:
-            return f'<MenuItem(command="{self.command}", label="{self.label}")>'
-        return f'<MenuItem(command="{self.command}")>'
+            return f'<{self.__class__.__name__}(command="{self.command}", label="{self.label}, kind={str(self.item_kind)}")>'
+        return f'<{self.__class__.__name__}(command="{self.command}", kind={str(self.item_kind)})>'
 
     def get_shortcuts(self) -> List[str]:
         """Get shortcuts"""
@@ -147,10 +154,12 @@ class MenuItem(MenuItemBase):
         """Set style"""
         self._menu_data["Style"] = int(value)
 
-    # @property
-    # def sub_menu(self) -> IndexAccessComp | None:
-    #     """Get/Set help text"""
-    #     obj = self._menu_data.get("ItemDescriptorContainer", "")
-    #     if obj is None:
-    #         return None
-    #     menu = Menu(self._config, self._menus, self._app, obj)
+    @property
+    def item_kind(self) -> MenuItemKind:
+        """
+        Get item kind.
+
+        Returns:
+            MenuItemKind: ``MenuItemKind.ITEM``.
+        """
+        return MenuItemKind.ITEM

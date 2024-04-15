@@ -127,9 +127,7 @@ class _MenuBar(ComponentProp):
                 return -1, None
             return result, submenu
 
-        result = -1
-        result = search(cmd)
-        return result
+        return search(cmd)
 
     def find_item_menu_id(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
         """
