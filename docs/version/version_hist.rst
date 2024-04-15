@@ -21,6 +21,32 @@ New ``ooodev.macro.MacroScript`` class tha can be used to invoke python or basic
 Many new enhancements to the underlying dynamic construction of components that implement services.
 Now classes can be implemented based upon the services they support at runtime.
 
+Caching
+-------
+
+Added a new caching class that can be used to cache objects.
+
+The ``ooodev.utils.lru_cache.LRUCache`` class can be used to cache objects.
+
+The an instance ``LRUCache`` is used in the ``Lo`` class and can be accessed via the ``Lo.cache`` property.
+The ``Lo.cache`` can be used to cache objects that are used often.
+
+The size of the cache can be set in the options if needed. The default size is ``200``.
+
+
+.. code-block:: python
+
+    from ooodev.loader import Lo
+    from ooodev.loader.inst import Options
+
+    loader = Lo.load_office(
+        connector=Lo.ConnectPipe(),
+        opt=Options(log_level=logging.DEBUG, lo_cache_size=400)
+    )
+    # ...
+    Lo.cache["my_key"] = "my_value"
+    assert Lo.cache["my_key"] == "my_value"
+
 Logging
 -------
 

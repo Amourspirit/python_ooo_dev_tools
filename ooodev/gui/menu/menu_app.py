@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, cast, Dict, TYPE_CHECKING
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.container.index_access_implement import IndexAccessImplement
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
@@ -13,7 +13,7 @@ from ooodev.loader.inst.service import Service
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
-
+from ooodev.utils.lru_cache import LRUCache
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
@@ -37,10 +37,15 @@ class MenuApp(LoInstPropsPartial):
         self._app = str(app)
         self._config = self._get_config()
         self._menus = self._config.get_settings(self.NODE, True)
+        self._cache = LRUCache(50)
 
     def _get_config(self) -> UIConfigurationManagerComp:
+        key = "MenuApp_get_ui_configuration_manager"
+        if key in self.lo_inst.cache:
+            return self.lo_inst.cache[key]
         supp = TheModuleUIConfigurationManagerSupplierComp.from_lo(lo_inst=self.lo_inst)
-        return supp.get_ui_configuration_manager(self._app)
+        self.lo_inst.cache[key] = supp.get_ui_configuration_manager(self._app)
+        return cast("UIConfigurationManagerComp", self.lo_inst.cache[key])
 
     def debug(self):
         """Debug menu"""
@@ -54,6 +59,9 @@ class MenuApp(LoInstPropsPartial):
         Args:
             name (str): Menu CommandURL.
         """
+        key = f"contains_{name}"
+        if key in self._cache:
+            return self._cache[key]
         exists = False
         for m in self._menus:
             menu = mProps.Props.data_to_dict(m)
@@ -61,6 +69,7 @@ class MenuApp(LoInstPropsPartial):
             if name == cmd:
                 exists = True
                 break
+        self._cache[key] = exists
         return exists
 
     def __getitem__(self, index: int | str | MenuLookupKind):
@@ -80,6 +89,9 @@ class MenuApp(LoInstPropsPartial):
         Note:
             Index can also be any object the returns a command URL when str() is called on it.
         """
+        cache_key = f"get_item_{index}"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         if isinstance(index, int):
             menu = mProps.Props.data_to_dict(self._menus[index])
         else:
@@ -112,6 +124,7 @@ class MenuApp(LoInstPropsPartial):
             menu=ia_menu,  # type: ignore
             lo_inst=self.lo_inst,
         )
+        self._cache[cache_key] = obj
         return obj
 
     def insert(self, menu: Dict[str, Any], after: int | str = "", save: bool = True):
@@ -141,4 +154,5 @@ class MenuApp(LoInstPropsPartial):
         """
         mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.remove(self._menus, menu)
+        self._cache.clear()
         return

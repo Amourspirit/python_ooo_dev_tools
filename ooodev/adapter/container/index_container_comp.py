@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.index_container_partial import IndexContainerPartial
 from ooodev.utils import gen_util as mGenUtil
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-class IndexContainerComp(ComponentBase, IndexContainerPartial[T], Generic[T]):
+class IndexContainerComp(ComponentProp, IndexContainerPartial[T], Generic[T]):
     """
     Class for managing XIndexContainer Component.
     """
@@ -26,7 +26,7 @@ class IndexContainerComp(ComponentBase, IndexContainerPartial[T], Generic[T]):
             component (XIndexContainer): UNO Component that implements ``com.sun.star.container.XIndexContainer``.
         """
 
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         IndexContainerPartial.__init__(self, component=self.component)
 
     def __getitem__(self, idx: int) -> T:
@@ -61,6 +61,7 @@ class IndexContainerComp(ComponentBase, IndexContainerPartial[T], Generic[T]):
     @property
     def component(self) -> XIndexContainer:
         """XIndexContainer Component"""
+        # overrides base property
         # pylint: disable=no-member
         return cast("XIndexContainer", self._ComponentBase__get_component())  # type: ignore
 

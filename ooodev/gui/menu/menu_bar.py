@@ -11,12 +11,14 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.adapter.awt.menu_bar_partial import MenuBarPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
+from ooodev.utils.lru_cache import LRUCache
 
 # from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.gui.menu.popup_menu import PopupMenu
 
 if TYPE_CHECKING:
     from com.sun.star.awt import MenuBar as UnoMenuBar
+    from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
     from ooodev.loader.inst.lo_inst import LoInst
 
 
@@ -28,6 +30,7 @@ class _MenuBar(ComponentProp):
     def __init__(self, component: Any) -> None:
         super().__init__(component)
         self._index = -1
+        self._cache = LRUCache(50)
 
     def __getitem__(self, index: int) -> int:
         self = cast(MenuBarPartial, self)
@@ -57,6 +60,15 @@ class _MenuBar(ComponentProp):
 
     # endregion Dunder Methods
 
+    # region cache
+    def clear_cache(self) -> None:
+        """
+        Clears internal cache.
+        """
+        self._cache.clear()
+
+    # endregion cache
+
     # region MenuPartial Overrides
     def get_popup_menu(self, menu_id: int) -> PopupMenu | None:
         """
@@ -73,6 +85,21 @@ class _MenuBar(ComponentProp):
             return None
         return PopupMenu(menu)
 
+    def clear(self) -> None:
+        """
+        Removes all items from the menu.
+        """
+        super().clear()  # type: ignore
+        self._cache.clear()
+
+    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind, item_pos: int) -> None:
+        super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=item_pos)  # type: ignore
+        self._cache.clear()
+
+    def remove_item(self, item_pos: int, count: int) -> None:
+        super().remove_item(item_pos=item_pos, count=count)  # type: ignore
+        self._cache.clear()
+
     # endregion MenuPartial Overrides
 
     # region Find methods
@@ -82,11 +109,19 @@ class _MenuBar(ComponentProp):
 
         Returns:
             int: The maximum menu id.
+
+        Note:
+            This is a cached method.
+            If the menu is modified, the cache should be cleared by calling :py:meth:`clear_cache`.
         """
+        key = "get_max_menu_id"
+        if key in self._cache:
+            return self._cache[key]
         max_id = -1
         for i in self:
             if i > max_id:
                 max_id = i
+        self._cache[key] = max_id
         return max_id
 
     def find_item_pos(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
@@ -99,9 +134,17 @@ class _MenuBar(ComponentProp):
         Returns:
             int: The position of the menu item. If not found, return -1.
 
+        Note:
+            This is a cached method.
+            If the menu is modified, the cache should be cleared by calling :py:meth:`clear_cache`.
+
         See Also:
             - :meth:`find_item_menu_id`
         """
+        key = f"find_item_pos_{cmd}_{search_sub_menu}"
+        if key in self._cache:
+            return self._cache[key]
+
         self = cast(Any, self)
 
         def search(str_cmd: str) -> Tuple[int, PopupMenu | None]:
@@ -127,7 +170,8 @@ class _MenuBar(ComponentProp):
                 return -1, None
             return result, submenu
 
-        return search(cmd)
+        self._cache[key] = search(cmd)
+        return self._cache[key]
 
     def find_item_menu_id(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
         """
@@ -139,14 +183,17 @@ class _MenuBar(ComponentProp):
         Returns:
             int: The id of the menu item. If not found, return -1.
 
+        Note:
+            This is a cached method.
+            If the menu is modified, the cache should be cleared by calling :py:meth:`clear_cache`.
+
         See Also:
             - :meth:`find_item_pos`
         """
-        self = cast(Any, self)
         result, submenu = self.find_item_pos(cmd, search_sub_menu)
         if result == -1:
             return -1, None
-        return (self.get_item_id(result), submenu)
+        return (self.get_item_id(result), submenu)  # type: ignore
 
     # endregion Find methods
 

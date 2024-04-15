@@ -68,7 +68,7 @@ class GlobalAcceleratorConfigurationComp(
         pass
 
     @classmethod
-    def from_lo(cls, lo_inst: LoInst | None = None, *args: Any) -> GlobalAcceleratorConfigurationComp:
+    def from_lo(cls, lo_inst: LoInst | None = None) -> GlobalAcceleratorConfigurationComp:
         """
         Get the singleton instance from the Lo.
 
@@ -82,12 +82,15 @@ class GlobalAcceleratorConfigurationComp(
         # pylint: disable=import-outside-toplevel
         from ooodev.loader import lo as mLo
 
-        service = "com.sun.star.ui.GlobalAcceleratorConfiguration"
-
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
+        key = "GlobalAcceleratorConfigurationComp"
+        if key in lo_inst.cache:
+            return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
+        service = "com.sun.star.ui.GlobalAcceleratorConfiguration"
         inst = lo_inst.create_instance_mcf(XAcceleratorConfiguration, service_name=service, raise_err=True)
-        return cls(inst)  # type: ignore
+        lo_inst.cache[key] = cls(inst)  # type: ignore
+        return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
 
     @property
     def component(self) -> GlobalAcceleratorConfiguration:

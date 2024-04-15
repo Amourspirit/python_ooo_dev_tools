@@ -5,11 +5,11 @@ from ooodev.utils.kind import kind_helper
 
 class MenuItemKind(IntEnum):
 
-    SEP = 0
+    SEP = 1
     """Menu Separator"""
-    ITEM = 1
+    ITEM = 2
     """Menu Item"""
-    ITEM_SUBMENU = 2
+    ITEM_SUBMENU = 3
     """Menu Item with Submenu"""
 
     @staticmethod

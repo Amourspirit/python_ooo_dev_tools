@@ -18,6 +18,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.lru_cache import LRUCache
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
@@ -82,14 +83,19 @@ class Shortcuts(LoInstPropsPartial):
         self._app = str(app)
         self._config = self._get_config()
         self._key_events = cast(Tuple[KeyEvent, ...], None)
-        self._command_dict = cast(Dict[str, List[str]], None)
         self._logger = NamedLogger(name="Shortcuts")
+        self._cache = LRUCache(50)
 
     def _get_config(self) -> Union[AcceleratorConfigurationComp, GlobalAcceleratorConfigurationComp]:
         if self._app:
+            key = f"Shortcuts_get_ui_configuration_manager_{self._app}"
+            if key in self.lo_inst.cache:
+                return self.lo_inst.cache[key]
             supp = TheModuleUIConfigurationManagerSupplierComp.from_lo(lo_inst=self.lo_inst)
+
             config = supp.get_ui_configuration_manager(self._app)
-            return config.get_short_cut_manager()
+            self.lo_inst.cache[key] = config.get_short_cut_manager()
+            return cast("AcceleratorConfigurationComp", self.lo_inst.cache[key])
         else:
             return GlobalAcceleratorConfigurationComp.from_lo(lo_inst=self.lo_inst)
 
@@ -130,7 +136,7 @@ class Shortcuts(LoInstPropsPartial):
                     continue
                 key_event.Modifiers += cls.MODIFIERS[m.lower()]
             key_event.KeyCode = getattr(Key, keys[-1].upper())
-        except Exception as e:
+        except Exception:
             logger.error("Exception occured", exc_info=True)
             key_event = None
         return key_event
@@ -188,19 +194,23 @@ class Shortcuts(LoInstPropsPartial):
     def _get_by_command_dict(self, url: str) -> List[str]:
         # for unknown reason LibreOffice does not return the command for most urls.
         # This method is a workaround to get the command by url.
-        if self._command_dict is None:
-            self._command_dict: Dict[str, List[str]] = {}
+        key = "_get_by_command_dict"
+        if key in self._cache:
+            command_dict = cast(Dict[str, List[str]], self._cache[key])
+        else:
+            command_dict: Dict[str, List[str]] = {}
             for key in self._config.get_all_key_events():
                 try:
                     cmd = self._config.get_command_by_key_event(key)
                 except Exception:
                     continue
-                if cmd in self._command_dict:
-                    self._command_dict[cmd].append(self._get_shortcut(key))
+                if cmd in command_dict:
+                    command_dict[cmd].append(self._get_shortcut(key))
                 else:
-                    self._command_dict[cmd] = [self._get_shortcut(key)]
-        if url in self._command_dict:
-            return self._command_dict[url]
+                    command_dict[cmd] = [self._get_shortcut(key)]
+            self._cache[key] = command_dict
+        if url in command_dict:
+            return command_dict[url]
         return []
 
     def get_by_command(self, command: str | Dict[str, str]) -> List[str]:
@@ -214,16 +224,23 @@ class Shortcuts(LoInstPropsPartial):
             List[str]: List of shortcuts or empty list of not found.
         """
         url = Shortcuts.get_url_script(command)
+        key = f"Shortcuts_get_by_command_{url}"
+        if key in self._cache:
+            return self._cache[key]
         try:
             key_events = self._config.get_key_events_by_command(url)
             shortcuts = [self._get_shortcut(k) for k in key_events]
         except NoSuchElementException:
             # fallback on workaround
             shortcuts = self._get_by_command_dict(url)
+        self._cache[key] = shortcuts
         return shortcuts
 
     def get_by_shortcut(self, shortcut: str) -> str:
         """Get command by shortcut"""
+        key = f"get_by_shortcut_{shortcut}"
+        if key in self._cache:
+            return self._cache[key]
         key_event = Shortcuts.to_key_event(shortcut)
         if key_event is None:
             self._logger.warning(f"get_by_shortcut() - Not exists shortcut: {shortcut}")
@@ -233,6 +250,8 @@ class Shortcuts(LoInstPropsPartial):
         except NoSuchElementException:
             self._logger.warning(f"Not exists shortcut: {shortcut}")
             command = ""
+        if command:
+            self._cache[key] = command
         return command
 
     def set(self, shortcut: str, command: str | Dict[str, str], save: bool = True) -> bool:
@@ -286,6 +305,8 @@ class Shortcuts(LoInstPropsPartial):
         except NoSuchElementException:
             self._logger.debug(f"No exists: {shortcut}")
             result = False
+        if result:
+            self._cache.clear()
         return result
 
     def remove_by_command(self, command: str | Dict[str, str], save: bool = False):
@@ -300,6 +321,7 @@ class Shortcuts(LoInstPropsPartial):
         self._config.remove_command_from_all_key_events(url)
         if save:
             self._config.store()
+        self._cache.clear()
         return
 
     def reset(self) -> None:

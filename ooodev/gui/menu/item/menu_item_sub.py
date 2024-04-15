@@ -51,5 +51,8 @@ class MenuItemSub(MenuItem):
 
         Returns:
             MenuItemKind: ``MenuItemKind.ITEM_SUBMENU``.
+
+        Hint:
+            - ``MenuItemKind`` is an enum and can be imported from ``ooodev.gui.menu.item.menu_item_kind``.
         """
         return MenuItemKind.ITEM_SUBMENU

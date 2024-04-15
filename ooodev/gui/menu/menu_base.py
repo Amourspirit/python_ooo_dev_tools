@@ -3,12 +3,12 @@ from typing import Any, Union, List, Dict, TYPE_CHECKING, Tuple, Iterable
 import uno
 from com.sun.star.beans import PropertyValue
 
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
-from ooodev.macro.script.macro_script import MacroScript
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
@@ -214,26 +214,31 @@ class MenuBase(LoInstPropsPartial):
         if submenu:
             self._insert_submenu(idc, submenu)
 
-    def remove(self, parent: Any, name: str | Dict[str, str]) -> None:
+    def remove(self, parent: Any, name: str | Dict[str, str], save: bool = False) -> None:
         """
         Remove name in parent.
 
         Args:
             parent (Any): Menu parent. UNO object.
-            name (str,  Dict[str, str]): Menu CommandURL or data
+            name (str,  Dict[str, str]): Menu ``CommandURL`` or data.
+            save (bool, optional): Save changes. Defaults to ``False``.
 
         Returns:
             None:
         """
-        if isinstance(name, dict):
-            name = MacroScript.get_url_script(**name)
+        name = Shortcuts.get_url_script(name)
+        # if isinstance(name, dict):
+        #     name = MacroScript.get_url_script(**name)
         index = self._get_index(parent, name)
         if index == -1:
             self._logger.debug(f"Not found: {name}")
             return
+        if isinstance(parent, ComponentProp):
+            parent = parent.component
         uno.invoke(parent, "removeByIndex", (index,))  # type: ignore
         self._config.replace_settings(self.NODE, self._menus.component)
-        self._config.component.store()  # type: ignore
+        if save:
+            self._config.component.store()  # type: ignore
 
     @property
     def app(self) -> str:

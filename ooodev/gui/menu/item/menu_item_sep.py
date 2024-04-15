@@ -16,5 +16,8 @@ class MenuItemSep(MenuItemBase):
 
         Returns:
             MenuItemKind: ``MenuItemKind.SEP``.
+
+        Hint:
+            - ``MenuItemKind`` is an enum and can be imported from ``ooodev.gui.menu.item.menu_item_kind``.
         """
         return MenuItemKind.SEP

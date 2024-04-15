@@ -73,7 +73,7 @@ class MenuItems(LoInstPropsPartial, IndexAccessComp[Tuple[Tuple[PropertyValue, .
                 break
         return exists
 
-    def __getitem__(self, index: int | str) -> MenuItemSep | MenuItem:
+    def __getitem__(self, index: int | str) -> MenuItemSep | MenuItem | MenuItemSub:
         """
         Index access.
 

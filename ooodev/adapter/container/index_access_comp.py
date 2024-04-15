@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 
 class IndexAccessComp(
-    ComponentBase,
+    ComponentProp,
     IndexAccessPartial[T],
     Generic[T],
 ):
@@ -29,7 +29,7 @@ class IndexAccessComp(
             component (XIndexAccess): UNO Component that implements ``com.sun.star.container.XIndexAccess``.
         """
 
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         IndexAccessPartial.__init__(self, component=self.component)
 
     # region Overrides
@@ -44,6 +44,7 @@ class IndexAccessComp(
     @property
     def component(self) -> XIndexAccess:
         """XIndexAccess Component"""
+        # overrides base property
         # pylint: disable=no-member
         return cast("XIndexAccess", self._ComponentBase__get_component())  # type: ignore
 

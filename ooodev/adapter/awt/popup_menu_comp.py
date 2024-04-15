@@ -10,7 +10,7 @@ from ooo.dyn.awt.menu_item_type import MenuItemType
 from ooodev.mock import mock_g
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.generic_args import GenericArgs
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.awt.popup_menu_partial import PopupMenuPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
+class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
     """
     Class for managing PopupMenu Component.
 
@@ -51,7 +51,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
             component (UnoControlDialog): UNO Component that supports `com.sun.star.awt.PopupMenu`` service.
         """
         # pylint: disable=no-member
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         PopupMenuPartial.__init__(self, component=component)
         generic_args = GenericArgs(menu=self)
         MenuEvents.__init__(self, trigger_args=generic_args, cb=self.__on_menu_add_remove_add_remove)
@@ -398,6 +398,7 @@ class PopupMenuComp(ComponentBase, PopupMenuPartial, MenuEvents):
     @property
     def component(self) -> PopupMenu:
         """PopupMenu Component"""
+        # overrides base class property
         # pylint: disable=no-member
         return cast("PopupMenu", self._ComponentBase__get_component())  # type: ignore
 

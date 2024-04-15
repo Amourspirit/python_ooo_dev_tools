@@ -4,7 +4,6 @@ import uno
 
 from com.sun.star.awt import XMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
-from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
@@ -12,6 +11,7 @@ from ooodev.loader import lo as mLo
 if TYPE_CHECKING:
     from com.sun.star.awt import XMenuListener
     from com.sun.star.awt import XPopupMenu
+    from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
     from ooodev.utils.type_var import UnoInterface
 
 
@@ -37,6 +37,12 @@ class MenuPartial:
 
         validate(component, interface)
         self.__component = component
+
+    def __len__(self) -> int:
+        """
+        Gets the number of items in the menu.
+        """
+        return self.get_item_count()
 
     # region XMenu
     def add_menu_listener(self, listener: XMenuListener) -> None:

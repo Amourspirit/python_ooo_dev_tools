@@ -71,6 +71,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
+from ooodev.utils.lru_cache import LRUCache
 from ooodev.io.log import logging as logger
 
 
@@ -150,7 +151,8 @@ class LoInst(EventsPartial):
         self._lo_loader: LoLoader | None = None
         self._app_font_pixel_ratio = None
         self._sys_font_pixel_ratio = None
-        self._cache = {}
+        self._cache = LRUCache(50)
+        self._shared_cache = LRUCache(self._opt.lo_cache_size)
 
         self._allow_print = self._opt.verbose
         self._set_lo_events()
@@ -2083,6 +2085,17 @@ class LoInst(EventsPartial):
                 self._sys_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from windows
         return self._sys_font_pixel_ratio
 
+    @property
+    def cache(self) -> LRUCache:
+        """
+        Gets access to the a cache for the current instance.
+
+        This is a Least Recently Used (LRU) Cache. This cache is also used within this framework.
+
+        Returns:
+            LRUCache: Cache instance.
+        """
+        return self._shared_cache
 
 __all__ = ("LoInst",)
 

@@ -30,3 +30,6 @@ class Options:
     """
     log_level: int = logging.INFO
     """Logging level. Default ``logging.INFO``"""
+
+    lo_cache_size: int = 200
+    """Lo Instance cache size. Default ``200``, ``0`` or less means no caching. Normally you should not need to change this value. If you do, it should be a power of 2."""

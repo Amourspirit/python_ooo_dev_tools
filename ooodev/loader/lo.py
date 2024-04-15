@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
     from ooodev.utils.data_type.generic_size_pos import GenericSizePos
+    from ooodev.utils.lru_cache import LRUCache
 else:
     PathOrStr = Any
     UnoInterface = Any
@@ -2372,6 +2373,18 @@ class Lo(metaclass=StaticProperty):
             GenericSizePos[float]: Ratios of how many pixels are in an system font.
         """
         return cls._lo_inst.sys_font_pixel_ratio
+
+    @classproperty
+    def cache(cls) -> LRUCache:
+        """
+        Gets access to the a cache for the current instance.
+
+        This is a Least Recently Used (LRU) Cache. This cache is also used within this framework.
+
+        Returns:
+            LRUCache: Cache instance.
+        """
+        return cls._lo_inst._shared_cache
 
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
