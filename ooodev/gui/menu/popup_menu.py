@@ -1,9 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 import uno
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
+from logging import DEBUG
+from ooodev.io.log.named_logger import NamedLogger
+from ooodev.io.log import logging as logger
 from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.utils.lru_cache import LRUCache
 
@@ -15,7 +18,13 @@ class PopupMenu(PopupMenuComp):
 
     def __init__(self, component: XPopupMenu) -> None:
         super().__init__(component)
-        self._cache = LRUCache(50)
+        log_level = logger.get_log_level()
+        if log_level == DEBUG:
+            self._logger = NamedLogger(f"{self.__class__.__name__} - {id(self)}")
+        else:
+            self._logger = NamedLogger(self.__class__.__name__)
+
+        self._cache = LRUCache(30)
 
     # region Find methods
     def get_max_menu_id(self) -> int:
@@ -35,7 +44,7 @@ class PopupMenu(PopupMenuComp):
         self._cache[key] = max_id
         return max_id
 
-    def find_item_pos(self, cmd: str, search_sub_menu: bool = False) -> int:
+    def find_item_pos(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
         """
         Find item position by command.
 
@@ -44,7 +53,7 @@ class PopupMenu(PopupMenuComp):
             search_sub_menu (bool, optional): Search in sub menus. Defaults to ``False``.
 
         Returns:
-            int: The position of the menu item. If not found, return -1.
+            Tuple[int, PopupMenu | None]: The position of the menu item and the Popup Menu that command was found in. If not found, return ``(-1, None)``.
 
         See Also:
             - :meth:`find_item_menu_id`
@@ -53,36 +62,63 @@ class PopupMenu(PopupMenuComp):
         if key in self._cache:
             return self._cache[key]
 
-        def search(pop_mnu: PopupMenu, str_cmd: str) -> int:
+        def search(pop_mnu: PopupMenu, str_cmd: str) -> Tuple[int, PopupMenu | None]:
             nonlocal search_sub_menu
             result = -1
+            submenu = None
+            if self._logger.is_debug:
+                self._logger.debug(f"Searching for command: {str_cmd}")
             cmd = str_cmd.casefold()
             for i, menu_id in enumerate(pop_mnu):
                 if search_sub_menu:
+                    if self._logger.is_debug:
+                        self._logger.debug(f"Searching {str_cmd} in sub menu: {menu_id}")
                     submenu = pop_mnu.get_popup_menu(menu_id)
-                    if submenu is not None:
-                        result = search(submenu, cmd)
+                    if submenu is not None and len(submenu) > 0:
+                        # turn of caching for sub menu when searching. No real value.
+                        submenu.cache.capacity = 0
+                        if self._logger.is_debug:
+                            self._logger.debug(f"Found a sub Menu {str_cmd}, Searching in sub menu: {menu_id}")
+                        result, sub = submenu.find_item_pos(cmd, search_sub_menu)
                         if result != -1:
-                            break
+                            if self._logger.is_debug:
+                                self._logger.debug(f"Found {str_cmd} in sub menu in position: {result}")
+                            return result, sub
+                        else:
+                            if self._logger.is_debug:
+                                self._logger.debug(f"Command {str_cmd} not found in sub menu: {menu_id}")
                 menu_type = pop_mnu.get_item_type(i)
                 if menu_type == MenuItemType.SEPARATOR:
                     continue
                 command = pop_mnu.get_command(menu_id)
-                if cmd and cmd == command.casefold():
+                if cmd == command.casefold():
+                    if self._logger.is_debug:
+                        self._logger.debug(f"Found {str_cmd} in menu: {menu_id}")
                     result = i
-                    break
-            return result
+                    submenu = pop_mnu
+                    return result, submenu
+            if result == -1:
+                if self._logger.is_debug:
+                    self._logger.debug(f"Command {str_cmd} not found.")
+                return -1, None
+            if self._logger.is_debug:
+                self._logger.debug(f"Command {str_cmd} found.")
+            return result, submenu
 
-        result = -1
         if cmd.startswith(".custom:"):
             cmd = cmd[8:]
         if not cmd:
-            return result
+            return -1, None
+        pos, found_mnu = search(self, cmd)
+        if found_mnu is not None:
+            found_mnu.cache.capacity = 30
+            if self._logger.is_debug:
+                self._logger.debug(f"Setting cache capacity back to {found_mnu.cache.capacity} for found menu")
+        srch_result = (pos, found_mnu)
+        self._cache[key] = srch_result
+        return srch_result
 
-        self._cache[key] = search(self, cmd)
-        return self._cache[key]
-
-    def find_item_menu_id(self, cmd: str, search_sub_menu: bool = False) -> int:
+    def find_item_menu_id(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
         """
         Find item menu id by command.
 
@@ -96,10 +132,18 @@ class PopupMenu(PopupMenuComp):
         See Also:
             - :meth:`find_item_pos`
         """
-        result = self.find_item_pos(cmd, search_sub_menu)
+        result, submenu = self.find_item_pos(cmd, search_sub_menu)
         if result == -1:
-            return -1
-        return self.get_item_id(result)
+            if self._logger.is_debug:
+                self._logger.debug(f"Command {cmd} not found.")
+            return -1, None
+        if submenu is not None:
+            if self._logger.is_debug:
+                self._logger.debug(f"Found {cmd} in sub menu. Menu ID: {submenu.get_item_id(result)}")
+            return (submenu.get_item_id(result), submenu)  # type: ignore
+        if self._logger.is_debug:
+            self._logger.debug(f"Found {cmd} in this menu. Menu ID: {self.get_item_id(result)}")
+        return (self.get_item_id(result), submenu)  # type: ignore
 
     # endregion Find methods
 
@@ -135,3 +179,16 @@ class PopupMenu(PopupMenuComp):
         self._cache.clear()
 
     # endregion MenuPartial Overrides
+
+    # region Properties
+    @property
+    def cache(self) -> LRUCache:
+        """
+        Gets the cache.
+
+        Returns:
+            LRUCache: Cache.
+        """
+        return self._cache
+
+    # endregion Properties

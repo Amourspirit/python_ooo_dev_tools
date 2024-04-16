@@ -115,21 +115,21 @@ class NamedLogger:
     @property
     def is_debug(self) -> bool:
         """Check if is debug"""
-        return self._logging_level >= logging.DEBUG
+        return self._logging_level == logging.DEBUG
 
     @property
     def is_info(self) -> bool:
         """Check if is info"""
-        return self._logging_level >= logging.INFO
+        return self._logging_level == logging.INFO
 
     @property
     def is_warning(self) -> bool:
         """Check if is warning"""
-        return self._logging_level >= logging.WARNING
+        return self._logging_level == logging.WARNING
 
     @property
     def is_error(self) -> bool:
         """Check if is error"""
-        return self._logging_level >= logging.ERROR
+        return self._logging_level == logging.ERROR
 
     # endregion Properties

@@ -195,13 +195,15 @@ def get_log_level() -> int:
     return log.get_effective_level()
 
 
-def save_log(path: str, data: Any) -> bool:
+def save_log(path: Any, data: Any) -> bool:
     """Save data in file, data append to end and automatic add current time.
 
-    :param path: Path to save log
-    :type path: str
-    :param data: Data to save in file log
-    :type data: Any
+    Args:
+        path (Any): PathLike path such a string or Path to save log.
+        data (Any): Data to save in file log
+
+    Returns:
+        bool: True if success, False otherwise
     """
     # DateUtil import logging
     from ooodev.utils.date_time_util import DateUtil

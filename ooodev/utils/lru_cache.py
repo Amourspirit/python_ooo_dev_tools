@@ -8,6 +8,7 @@ class LRUCache:
     Least Recently Used (LRU) Cache
     """
 
+    # region Initialization
     def __init__(self, capacity: int):
         """
         Least Recently Used (LRU) Cache
@@ -17,6 +18,10 @@ class LRUCache:
         """
         self._cache = OrderedDict()
         self._capacity = capacity
+
+    # endregion Initialization
+
+    # region Dictionary Methods
 
     def clear(self) -> None:
         """
@@ -67,6 +72,10 @@ class LRUCache:
         """
         self.__delitem__(key)
 
+    # endregion Dictionary Methods
+
+    # region Dunder Methods
+
     def __getitem__(self, key: Any) -> Any:
         if self._capacity <= 0:
             return None
@@ -95,3 +104,41 @@ class LRUCache:
 
     def __str__(self) -> str:
         return f"LRUCache({self._capacity})"
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+    # endregion Dunder Methods
+
+    # region Properties
+    @property
+    def capacity(self) -> int:
+        """
+        Gets/Sets Cache capacity.
+
+        Setting the capacity to 0 or less will clear the cache and effectively turn caching off.
+        Setting the capacity to a lower value will remove the least recently used items.
+
+        Returns:
+            int: Cache capacity.
+        """
+        return self._capacity
+
+    @capacity.setter
+    def capacity(self, value: int) -> None:
+        """
+        Cache capacity.
+
+        Args:
+            value (int): Cache capacity.
+        """
+        self._capacity = value
+        if self._capacity < 0:
+            self._capacity = 0
+        if self._capacity == 0:
+            self.clear()
+            return
+        while len(self._cache) > self._capacity:
+            self._cache.popitem(last=False)
+
+    # endregion Properties

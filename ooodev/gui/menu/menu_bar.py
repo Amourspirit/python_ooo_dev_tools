@@ -60,15 +60,6 @@ class _MenuBar(ComponentProp):
 
     # endregion Dunder Methods
 
-    # region cache
-    def clear_cache(self) -> None:
-        """
-        Clears internal cache.
-        """
-        self._cache.clear()
-
-    # endregion cache
-
     # region MenuPartial Overrides
     def get_popup_menu(self, menu_id: int) -> PopupMenu | None:
         """
@@ -90,15 +81,15 @@ class _MenuBar(ComponentProp):
         Removes all items from the menu.
         """
         super().clear()  # type: ignore
-        self._cache.clear()
+        self.cache.clear()
 
     def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind, item_pos: int) -> None:
         super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=item_pos)  # type: ignore
-        self._cache.clear()
+        self.cache.clear()
 
     def remove_item(self, item_pos: int, count: int) -> None:
         super().remove_item(item_pos=item_pos, count=count)  # type: ignore
-        self._cache.clear()
+        self.cache.clear()
 
     # endregion MenuPartial Overrides
 
@@ -132,7 +123,9 @@ class _MenuBar(ComponentProp):
             cmd (str): A menu command such as ``.uno:Copy``.
 
         Returns:
-            int: The position of the menu item. If not found, return -1.
+            Tuple[int, PopupMenu | None]: The position of the menu item and the Popup Menu that command was found in.
+                If ``search_sub_menu`` is ``False`` then the Popup Menu will be None.
+                If not found, return ``(-1, None)``.
 
         Note:
             This is a cached method.
@@ -156,8 +149,9 @@ class _MenuBar(ComponentProp):
                 if search_sub_menu:
                     submenu = self.get_popup_menu(menu_id)
                     if submenu is not None:
-                        result = submenu.find_item_pos(cmd, search_sub_menu)
+                        result, pop_menu = submenu.find_item_pos(cmd, search_sub_menu)
                         if result != -1:
+                            submenu = pop_menu
                             break
                 menu_type = self.get_item_type(i)
                 if menu_type == MenuItemType.SEPARATOR:
@@ -170,8 +164,9 @@ class _MenuBar(ComponentProp):
                 return -1, None
             return result, submenu
 
-        self._cache[key] = search(cmd)
-        return self._cache[key]
+        search_result = search(cmd)
+        self._cache[key] = search_result
+        return search_result
 
     def find_item_menu_id(self, cmd: str, search_sub_menu: bool = False) -> Tuple[int, PopupMenu | None]:
         """
@@ -193,7 +188,9 @@ class _MenuBar(ComponentProp):
         result, submenu = self.find_item_pos(cmd, search_sub_menu)
         if result == -1:
             return -1, None
-        return (self.get_item_id(result), submenu)  # type: ignore
+        if submenu is None:
+            return (self.get_item_id(result), submenu)  # type: ignore
+        return (submenu.get_item_id(result), submenu)  # type: ignore
 
     # endregion Find methods
 
@@ -309,6 +306,19 @@ class _MenuBar(ComponentProp):
         return ("com.sun.star.awt.MenuBar",)
 
     # endregion Component Base Overrides
+
+    # region Properties
+    @property
+    def cache(self) -> LRUCache:
+        """
+        Gets the cache.
+
+        Returns:
+            LRUCache: Cache.
+        """
+        return self._cache
+
+    # endregion Properties
 
 
 class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, MenuEvents):
