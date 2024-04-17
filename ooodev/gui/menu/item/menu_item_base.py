@@ -42,6 +42,9 @@ class MenuItemBase(LoInstPropsPartial):
         self._menu_type = int(self._menu_data.get("Type", 0))
         self._app = str(app)
 
+    def __bool__(self) -> bool:
+        return self._data is not None
+
     @property
     def menu_type(self) -> int:
         """

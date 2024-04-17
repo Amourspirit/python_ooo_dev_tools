@@ -44,8 +44,9 @@ class MenuApp(LoInstPropsPartial):
         if key in self.lo_inst.cache:
             return self.lo_inst.cache[key]
         supp = TheModuleUIConfigurationManagerSupplierComp.from_lo(lo_inst=self.lo_inst)
-        self.lo_inst.cache[key] = supp.get_ui_configuration_manager(self._app)
-        return cast("UIConfigurationManagerComp", self.lo_inst.cache[key])
+        cm = supp.get_ui_configuration_manager(self._app)
+        self.lo_inst.cache[key] = cm
+        return cast("UIConfigurationManagerComp", cm)
 
     def debug(self):
         """Debug menu"""
@@ -72,13 +73,17 @@ class MenuApp(LoInstPropsPartial):
         self._cache[key] = exists
         return exists
 
-    def __getitem__(self, index: int | str | MenuLookupKind):
+    def __getitem__(self, index: int | str | MenuLookupKind) -> Menu:
         """
         Index access.
 
         Args:
             index (int, str, MenuLookupKind): Index or Menu name or MenuLookupKind or CommandURL.
                 If index is a str then it can be a know menu name or a CommandURL.
+
+        Raises:
+            IndexError: Index out of range.
+            KeyError: Menu not found.
 
         Returns:
             Menu: Menu instance.
@@ -92,7 +97,10 @@ class MenuApp(LoInstPropsPartial):
         cache_key = f"get_item_{index}"
         if cache_key in self._cache:
             return self._cache[cache_key]
+        menu = None
         if isinstance(index, int):
+            if index < 0 or index >= len(self._menus):
+                raise IndexError(f"Index out of range: {index}")
             menu = mProps.Props.data_to_dict(self._menus[index])
         else:
             if isinstance(index, str):
@@ -111,6 +119,8 @@ class MenuApp(LoInstPropsPartial):
                 cmd = menu.get("CommandURL", "")
                 if cmd == key:
                     break
+        if menu is None:
+            raise KeyError(f"Menu not found: {index}")
         ia = menu.get("ItemDescriptorContainer", None)
         if ia is None:
             # create an empty XIndexAccess

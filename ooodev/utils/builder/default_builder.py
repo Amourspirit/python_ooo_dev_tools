@@ -21,16 +21,20 @@ from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.utils.builder.init_kind import InitKind
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.utils import gen_util as gUtil
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventCallback
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class DefaultBuilder(EventsPartial):
-    def __init__(self, component: Any):
+class DefaultBuilder(LoInstPropsPartial, EventsPartial):
+    def __init__(self, component: Any, lo_inst: LoInst | None = None):
         # ComponentBase.__init__(self, component)
         EventsPartial.__init__(self)
-
+        if lo_inst is None:
+            lo_inst = self._get_default_lo()
+        LoInstPropsPartial.__init__(self, lo_inst)
         self._component = component
         # _bases_partial could be classes such as property classes
         self._bases_partial: Dict[Type[Any], BuildImportArg] = {}
@@ -55,6 +59,11 @@ class DefaultBuilder(EventsPartial):
             self._logger = NamedLogger(
                 name=f"{self.__class__.__name__} - ID: {gUtil.Util.generate_random_string(6).upper()}"
             )
+
+    def _get_default_lo(self) -> LoInst:
+        from ooodev.loader.lo import Lo
+
+        return Lo.current_lo
 
     def _get_type_names_list(self) -> List[str]:
         result: List[str] = []
@@ -302,6 +311,8 @@ class DefaultBuilder(EventsPartial):
             clz.__init__(instance, self._component)  # type: ignore
         elif kind == InitKind.COMPONENT_INTERFACE:
             clz.__init__(instance, self._component, None)  # type: ignore
+        elif kind == InitKind.LO_INST:
+            clz.__init__(instance, self.lo_inst)  # type: ignore
         elif kind == InitKind.CALLBACK:
             eargs = EventArgs(source=self)
             eargs.event_data = {"class": clz, "kind": kind, "instance": instance}
@@ -351,6 +362,8 @@ class DefaultBuilder(EventsPartial):
             inst = clz(self._component)  # type: ignore
         elif kind == InitKind.COMPONENT_INTERFACE:
             inst = clz(self._component, None)  # type: ignore
+        elif kind == InitKind.LO_INST:
+            inst = clz(self.lo_inst)  # type: ignore
         elif kind == InitKind.CALLBACK:
             eargs = EventArgs(source=self)
             eargs.event_data = {"class": clz, "kind": kind}
@@ -809,6 +822,8 @@ class DefaultBuilder(EventsPartial):
             - NONE = 0
             - COMPONENT = 1
             - COMPONENT_INTERFACE = 2
+            - CALLBACK = 3
+            - LO_INST = 4
         """
         self._process_imports()
         if "." in name:
@@ -841,6 +856,8 @@ class DefaultBuilder(EventsPartial):
             - NONE = 0
             - COMPONENT = 1
             - COMPONENT_INTERFACE = 2
+            - CALLBACK = 3
+            - LO_INST = 4
         """
         clz = self.get_class_type(name=name, base_class=base_class)
         inst = self._create_class(clz, InitKind(init_kind))
@@ -927,5 +944,14 @@ class DefaultBuilder(EventsPartial):
     @property
     def omits(self) -> Set[str]:
         return self._omit
+
+    @property
+    def lo_inst(self) -> LoInst:
+        """Gets/Sets Lo Instance"""
+        return self._LoInstPropsPartial__lo_inst
+
+    @lo_inst.setter
+    def lo_inst(self, value: LoInst) -> None:
+        self._LoInstPropsPartial__lo_inst = value
 
     # endregion Properties

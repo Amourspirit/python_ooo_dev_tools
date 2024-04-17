@@ -56,8 +56,9 @@ class TheModuleUIConfigurationManagerSupplierComp(ComponentBase, ModuleUIConfigu
         factory = lo_inst.get_singleton("/singletons/com.sun.star.ui.theModuleUIConfigurationManagerSupplier")  # type: ignore
         if factory is None:
             raise ValueError("Could not get theModuleUIConfigurationManagerSupplier singleton.")
-        lo_inst.cache[key] = cls(factory)
-        return cast(TheModuleUIConfigurationManagerSupplierComp, lo_inst.cache[key])
+        class_inst = cls(factory)
+        lo_inst.cache[key] = class_inst
+        return cast(TheModuleUIConfigurationManagerSupplierComp, class_inst)
 
     # region Properties
     @property

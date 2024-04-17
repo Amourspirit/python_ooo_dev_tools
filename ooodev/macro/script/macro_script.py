@@ -20,6 +20,27 @@ class MacroScript:
     .. versionadded:: 0.40.0
     """
 
+    @classmethod
+    def call_url(cls, url: str, *args: Any, in_thread: bool = False) -> Any:
+        """
+        Call macro by url
+
+        Args:
+            args (tuple): Arguments passed to script when invoking.
+            url (str): The URL of the script to be invoked.
+            in_thread (bool, optional): If execute in thread. Defaults to ``False``.
+
+        Returns:
+            Any: The return value of the script.
+        """
+        result = None
+        if in_thread:
+            t = threading.Thread(target=cls._call_url, args=(url, *args))
+            t.start()
+        else:
+            result = cls._call_url(url, *args)
+        return result
+
     @overload
     @classmethod
     def call(
@@ -199,8 +220,12 @@ class MacroScript:
         return script_pro.getScript(script_url)
 
     @classmethod
-    def _call(cls, **kwargs):
+    def _call(cls, **kwargs) -> Any:
         url = cls.get_url_script(**kwargs)
         args = kwargs.get("args", ())
+        return cls._call_url(url, *args)
+
+    @classmethod
+    def _call_url(cls, url: str, *args: Any) -> Any:
         script = MacroScript.get_script(url)
         return script.invoke(args, None, None)[0]  # type: ignore

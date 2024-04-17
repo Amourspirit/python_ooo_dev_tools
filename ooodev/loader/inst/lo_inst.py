@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 import contextlib
+import threading
 from datetime import datetime, timezone
 import time
 from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
@@ -73,7 +74,7 @@ from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
 from ooodev.utils.lru_cache import LRUCache
 from ooodev.io.log import logging as logger
-
+from ooodev.io.log.named_logger import NamedLogger
 
 if TYPE_CHECKING:
     try:
@@ -134,6 +135,10 @@ class LoInst(EventsPartial):
         if self._singleton_instance:
             # only set the log level if thi instance is the ooodev.loader.lo.Lo instance
             logger.set_log_level(self._opt.log_level)
+        if self._singleton_instance:
+            self._logger = NamedLogger(f"{self.__class__.__name__} - Root")
+        else:
+            self._logger = NamedLogger(self.__class__.__name__)
         self._is_default = False
         self._current_doc = None
         _events = Events(source=self) if events is None else events
@@ -1465,19 +1470,60 @@ class LoInst(EventsPartial):
 
     # region dispatch_cmd()
 
-    @overload
-    def dispatch_cmd(self, cmd: str) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any: ...
 
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
+    def dispatch_cmd(
+        self,
+        cmd: str,
+        props: Iterable[PropertyValue] | None = None,
+        frame: XFrame | None = None,
+        in_thread: bool = False,
+    ) -> Any:
+        """
+        Dispatches a LibreOffice command.
+
+        Args:
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not need to start with ``.uno:`` prefix.
+            props (PropertyValue, optional): properties for dispatch.
+            frame (XFrame, optional): Frame to dispatch to.
+            in_thread (bool, optional): If ``True`` then dispatch is done in a separate thread.
+
+        Raises:
+            CancelEventError: If Dispatching is canceled via event.
+            DispatchError: If any other error occurs.
+
+        Returns:
+            Any: A possible result of the executed internal dispatch. The information behind this any depends on the dispatch!
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHED` :eventref:`src-docs-event`
+
+        Note:
+            There are many dispatch command constants that can be found in :ref:`utils_dispatch` Namespace
+
+            | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
+            | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
+
+        See Also:
+            - :ref:`ch04_dispatching`
+            - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+
+        .. versionchanged:: 0.40.0
+            Now supports ``in_thread`` parameter.
+        """
         # sourcery skip: assign-if-exp, extract-method, remove-unnecessary-cast
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
@@ -1513,14 +1559,43 @@ class LoInst(EventsPartial):
                 dispatch_cmd = str_cmd
             else:
                 dispatch_cmd = f".uno:{str_cmd}"
-            result = helper.executeDispatch(provider, dispatch_cmd, "", 0, dispatch_props)
+            if in_thread:
+
+                def worker(callback, cancel_args, helper, provider, cmd, props) -> None:
+                    result = helper.executeDispatch(provider, cmd, "", 0, props)
+                    callback(result, cancel_args)
+
+                def callback(result: Any, cancel_args: DispatchCancelArgs) -> None:
+                    # runs after the threaded dispatch is finished
+                    eargs = DispatchArgs.from_args(cancel_args)
+                    eargs.event_data = result
+                    self.on_dispatched(eargs)
+                    if self._logger.debug:
+                        self._logger.debug(f"Finished Dispatched in thread: {str_cmd}")
+
+                if self._logger.is_debug:
+                    self._logger.debug(f"Dispatching in thread: {dispatch_cmd}")
+                # t = threading.Thread(
+                #     target=helper.executeDispatch, args=(provider, dispatch_cmd, "", 0, dispatch_props)
+                # )
+                t = threading.Thread(
+                    target=worker, args=(callback, cargs, helper, provider, dispatch_cmd, dispatch_props)
+                )
+                t.start()
+                return None
+            else:
+                if self._logger.is_debug:
+                    self._logger.debug(f"Dispatching in main thread: {dispatch_cmd}")
+                result = helper.executeDispatch(provider, dispatch_cmd, "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self.on_dispatched(eargs)
             return result
         except mEx.CancelEventError:
+            self._logger.info(f'Dispatch Command "{str_cmd}" has been canceled')
             raise
         except Exception as e:
+            self._logger.error(f'Error dispatching "{cmd}"', exc_info=True)
             raise mEx.DispatchError(f'Error dispatching "{cmd}"') from e
 
     # endregion dispatch_cmd()
@@ -2096,6 +2171,7 @@ class LoInst(EventsPartial):
             LRUCache: Cache instance.
         """
         return self._shared_cache
+
 
 __all__ = ("LoInst",)
 

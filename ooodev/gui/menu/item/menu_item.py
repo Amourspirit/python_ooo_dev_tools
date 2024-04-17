@@ -47,21 +47,22 @@ class MenuItem(MenuItemBase):
             lg_name = self.__class__.__name__
         self.__logger = NamedLogger(lg_name)
 
-    def execute(self) -> bool:
+    def execute(self, in_thread: bool = False) -> bool:
         """Execute menu item"""
         cmd = self.command
         if not cmd:
             return False
         supported_prefixes = tuple(self.lo_inst.get_supported_dispatch_prefixes())
         if cmd.startswith(supported_prefixes):
-            self.lo_inst.dispatch_cmd(cmd)
+            self.lo_inst.dispatch_cmd(cmd, in_thread=in_thread)
             return True
         try:
+            _ = MacroScript.call_url(cmd, in_thread=in_thread)
             script = MacroScript.get_script(cmd)
             script.invoke((), None, None)  # type: ignore
+            return True
         except Exception as e:
             self.__logger.error(f"Error executing menu item with command value of '{cmd}': {e}")
-            return False
         return False
 
     def __str__(self) -> str:

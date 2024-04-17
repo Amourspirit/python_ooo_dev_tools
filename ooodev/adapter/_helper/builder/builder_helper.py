@@ -98,3 +98,25 @@ def builder_add_property_veto_implement(builder: DefaultBuilder) -> None:
             init_kind=InitKind.COMPONENT,
             check_kind=CheckKind.INTERFACE,
         )
+
+
+def builder_add_lo_inst_props_partial(builder: DefaultBuilder) -> None:
+    if not builder.has_import("ooodev.utils.partial.lo_inst_props_partial.LoInstPropsPartial"):
+        builder.add_import(
+            name="ooodev.utils.partial.lo_inst_props_partial.LoInstPropsPartial",
+            uno_name="",
+            optional=False,
+            init_kind=InitKind.LO_INST,
+            check_kind=CheckKind.NONE,
+        )
+
+
+def builder_add_component_prop(builder: DefaultBuilder) -> None:
+    if not builder.has_import("ooodev.adapter.component_prop.ComponentProp"):
+        builder.add_import(
+            name="ooodev.adapter.component_prop.ComponentProp",
+            uno_name="",
+            optional=False,
+            init_kind=InitKind.COMPONENT,
+            check_kind=CheckKind.NONE,
+        )

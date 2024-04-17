@@ -4,6 +4,7 @@ import uno
 from com.sun.star.awt import XMenuBar
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
+from ooodev.macro.script.macro_script import MacroScript
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
@@ -12,6 +13,9 @@ from ooodev.adapter.awt.menu_bar_partial import MenuBarPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.io.log.named_logger import NamedLogger
+from ooodev.loader import lo as mLo
 
 # from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.gui.menu.popup_menu import PopupMenu
@@ -28,9 +32,10 @@ class _MenuBar(ComponentProp):
 
     # region Dunder Methods
     def __init__(self, component: Any) -> None:
-        super().__init__(component)
+        ComponentProp.__init__(self, component)
         self._index = -1
         self._cache = LRUCache(50)
+        self._logger = NamedLogger(self.__class__.__name__)
 
     def __getitem__(self, index: int) -> int:
         self = cast(MenuBarPartial, self)
@@ -307,7 +312,36 @@ class _MenuBar(ComponentProp):
 
     # endregion Component Base Overrides
 
+    # region execute command
+    def execute_cmd(self, menu_id: int, in_thread: bool = False) -> bool:
+        """
+        Executes a command.
+
+        Args:
+            cmd (str): Command to execute.
+        """
+        cmd = self.get_command(menu_id)  # type: ignore
+        if not cmd:
+            return False
+        supported_prefixes = tuple(self.lo_inst.get_supported_dispatch_prefixes())  # type: ignore
+        if cmd.startswith(supported_prefixes):
+            self.lo_inst.dispatch_cmd(cmd, in_thread=in_thread)  # type: ignore
+            return True
+        try:
+            _ = MacroScript.call_url(cmd, in_thread=in_thread)
+            return True
+        except Exception as e:
+            self._logger.error(f"Error executing menu item with command value of '{cmd}': {e}")
+        return False
+
+    # endregion execute command
+
     # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a MenuBar class
+        return MenuBar
+
     @property
     def cache(self) -> LRUCache:
         """
@@ -321,21 +355,25 @@ class _MenuBar(ComponentProp):
     # endregion Properties
 
 
-class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, MenuEvents):
+class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, MenuEvents):
     """
     Class for managing MenuBar Component.
     """
 
     # pylint: disable=unused-argument
-    def __new__(cls, component: Any, *args, **kwargs):
+    def __new__(cls, component: Any, **kwargs):
         def on_event_init(src: Any, event: EventArgs):
             clz = event.event_data["data"]["class"]
             if clz is MenuEvents:
                 event.event_data["triggers"] = {"menu_bar": event.event_data["data"]["instance"]}
 
+        lo_inst = kwargs.get("lo_inst", None)
         builder = get_builder(component=component)
+        if lo_inst is not None:
+            builder.lo_inst = lo_inst
         builder.subscribe_class_event_init(on_event_init)
         builder_helper.builder_add_comp_defaults(builder)
+        builder_helper.builder_add_lo_inst_props_partial(builder)
 
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
@@ -348,12 +386,13 @@ class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, MenuEvents):
         )
         return inst
 
-    def __init__(self, component: XMenuBar) -> None:
+    def __init__(self, component: XMenuBar, *, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             component (UnoControlDialog): UNO Component that supports `com.sun.star.awt.MenuBar`` service.
+            lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
         """
         # this it not actually called as __new__ is overridden
         pass

@@ -5,19 +5,35 @@ from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
 from logging import DEBUG
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
 from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.macro.script.macro_script import MacroScript
+from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
     from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
-class PopupMenu(PopupMenuComp):
+class PopupMenu(LoInstPropsPartial, PopupMenuComp):
+    """Popup Menu Class."""
 
-    def __init__(self, component: XPopupMenu) -> None:
-        super().__init__(component)
+    def __init__(self, component: XPopupMenu, lo_inst: LoInst | None = None) -> None:
+        """
+        Initializes the instance.
+
+        Args:
+            component (XPopupMenu): The popup menu component.
+            lo_inst (LoInst, optional): LoInst, Defaults to ``Lo.current_lo``.
+        """
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
+        LoInstPropsPartial.__init__(self, lo_inst)
+        PopupMenuComp.__init__(self, component)
         log_level = logger.get_log_level()
         if log_level == DEBUG:
             self._logger = NamedLogger(f"{self.__class__.__name__} - {id(self)}")
@@ -178,7 +194,45 @@ class PopupMenu(PopupMenuComp):
         super().remove_item(item_pos=item_pos, count=count)  # type: ignore
         self._cache.clear()
 
+    def set_popup_menu(self, menu_id: int, popup_menu: XPopupMenu | ComponentProp) -> None:
+        """
+        Sets the popup menu for a specified menu item.
+
+        Args:
+            menu_id (int): Menu item id.
+            popup_menu (XPopupMenu | ComponentProp): Popup menu.
+        """
+        if isinstance(popup_menu, ComponentProp):
+            pm = popup_menu.component
+        else:
+            pm = popup_menu
+        self.component.setPopupMenu(menu_id, pm)
+
     # endregion MenuPartial Overrides
+
+    # region execute command
+    def execute_cmd(self, menu_id: int, in_thread: bool = False) -> bool:
+        """
+        Executes a command.
+
+        Args:
+            cmd (str): Command to execute.
+        """
+        cmd = self.get_command(menu_id)
+        if not cmd:
+            return False
+        supported_prefixes = tuple(self.lo_inst.get_supported_dispatch_prefixes())
+        if cmd.startswith(supported_prefixes):
+            self.lo_inst.dispatch_cmd(cmd, in_thread=in_thread)
+            return True
+        try:
+            _ = MacroScript.call_url(cmd, in_thread=in_thread)
+            return True
+        except Exception as e:
+            self._logger.error(f"Error executing menu item with command value of '{cmd}': {e}")
+        return False
+
+    # endregion execute command
 
     # region Properties
     @property

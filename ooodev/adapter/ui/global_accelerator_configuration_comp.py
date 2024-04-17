@@ -89,8 +89,9 @@ class GlobalAcceleratorConfigurationComp(
             return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
         service = "com.sun.star.ui.GlobalAcceleratorConfiguration"
         inst = lo_inst.create_instance_mcf(XAcceleratorConfiguration, service_name=service, raise_err=True)
-        lo_inst.cache[key] = cls(inst)  # type: ignore
-        return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
+        class_inst = cls(inst)  # type: ignore
+        lo_inst.cache[key] = class_inst
+        return cast(GlobalAcceleratorConfigurationComp, class_inst)
 
     @property
     def component(self) -> GlobalAcceleratorConfiguration:

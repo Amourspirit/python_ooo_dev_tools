@@ -11,10 +11,11 @@ from com.sun.star.frame import XModel
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 
+from ooodev.gui import gui as mGui
 from ooodev.gui.comp.frame import Frame
 from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.gui import gui as mGui
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 
 if TYPE_CHECKING:
@@ -56,6 +57,8 @@ class GuiPartial:
         frm = self.get_frame()
         if frm is None:
             return None  # type: ignore
+        if isinstance(self, LoInstPropsPartial):
+            return Frame(frm, lo_inst=self.lo_inst)
         return Frame(frm)
 
     def get_control_access(self) -> XControlAccess:

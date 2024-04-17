@@ -13,3 +13,5 @@ class InitKind(IntEnum):
     """Class constructor has a component parameter and an interface parameter."""
     CALLBACK = 3
     """Args are gotten from a callback."""
+    LO_INST = 4
+    """Class constructor has a LoInst parameter."""

@@ -1598,24 +1598,30 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.get_supported_dispatch_prefixes()
 
     # region dispatch_cmd()
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, *, frame: XFrame) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, *, frame: XFrame) -> Any: ...
 
     @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
+    def dispatch_cmd(
+        cls,
+        cmd: str,
+        props: Iterable[PropertyValue] | None = None,
+        frame: XFrame | None = None,
+        in_thread: bool = False,
+    ) -> Any:
         """
         Dispatches a LibreOffice command.
 
@@ -1625,6 +1631,7 @@ class Lo(metaclass=StaticProperty):
             cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not need to start with ``.uno:`` prefix.
             props (PropertyValue, optional): properties for dispatch.
             frame (XFrame, optional): Frame to dispatch to.
+            in_thread (bool, optional): If ``True`` then dispatch is done in a separate thread.
 
         Raises:
             CancelEventError: If Dispatching is canceled via event.
@@ -1648,8 +1655,11 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+
+        .. versionchanged:: 0.40.0
+            Now supports ``in_thread`` parameter.
         """
-        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame)  # type: ignore
+        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame, in_thread=in_thread)  # type: ignore
 
     # endregion dispatch_cmd()
 

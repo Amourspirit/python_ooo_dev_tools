@@ -5,6 +5,9 @@ from .component_base import ComponentBase
 
 class ComponentProp(ComponentBase):
 
+    def __bool__(self) -> bool:
+        return self.component is not None
+
     @property
     def component(self):
         """Gets component for this instance."""

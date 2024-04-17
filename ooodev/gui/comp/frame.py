@@ -6,9 +6,11 @@ from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPar
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.frame import frame2_partial
 from ooodev.adapter.frame.frame_action_events import FrameActionEvents
+from ooodev.gui.comp.layout_manager import LayoutManager
 from ooodev.utils import info as mInfo
 from ooodev.utils.builder.default_builder import DefaultBuilder
-from ooodev.gui.comp.layout_manager import LayoutManager
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.loader.inst.lo_inst import LoInst
 
 
 if TYPE_CHECKING:
@@ -32,78 +34,6 @@ class _Frame(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.frame.Frame",)
 
-    # region Frame2Partial Overrides
-    @property
-    def layout_manager(self) -> LayoutManager:
-        """
-        Provides access to the LayoutManager of the frame.
-
-        When setting can be instance of ``XLayoutManager2`` or ``LayoutManagerComp``.
-        """
-
-        lm = self.component.LayoutManager
-        if lm is None:
-            return None  # type: ignore
-        return LayoutManager(lm)
-
-    @layout_manager.setter
-    def layout_manager(self, value: XInterface | ComponentProp) -> None:
-        if mInfo.Info.is_instance(value, ComponentProp):
-            self.component.LayoutManager = value.component
-        else:
-            self.component.LayoutManager = value  # type: ignore
-
-    # endregion Frame2Partial Overrides
-
-
-class Frame(
-    _Frame,
-    frame2_partial.Frame2Partial,
-    FrameActionEvents,
-    CompDefaultsPartial,
-    # child_partial.ChildPartial,
-):
-    """
-    Class for managing Frame Component.
-
-    Note:
-        This is a Dynamic class that is created at runtime.
-        This means that the class is created at runtime and not defined in the source code.
-        In addition, the class may be created with additional classes implemented.
-
-        The Type hints for this class at design time may not be accurate.
-        To check if a class implements a specific interface, use the ``isinstance`` function
-        or :py:meth:`~.InterfacePartial.is_supported_interface` methods which is always available in this class.
-    """
-
-    # pylint: disable=unused-argument
-
-    def __new__(cls, component: Any, *args, **kwargs):
-        builder = get_builder(component=component)
-        builder_helper.builder_add_comp_defaults(builder)
-        builder_helper.builder_add_property_change_implement(builder)
-        builder_helper.builder_add_property_veto_implement(builder)
-
-        builder_only = kwargs.get("_builder_only", False)
-        if builder_only:
-            # cast to prevent type checker error
-            return cast(Any, builder)
-        inst = builder.build_class(
-            name="ooodev.gui.comp.frame.Frame",
-            base_class=_Frame,
-        )
-        return inst
-
-    def __init__(self, component: Any) -> None:
-        """
-        Constructor
-
-        Args:
-            component (Any): UNO Component that supports ``com.sun.star.frame.Frame`` service.
-        """
-        # this it not actually called as __new__ is overridden
-        pass
-
     # region XFramesSupplier Overrides
     def get_active_frame(self) -> Frame | None:
         """
@@ -116,7 +46,7 @@ class Frame(
         frm = self.__component.getActiveFrame()
         if frm is None:
             return None
-        return Frame(component=frm)
+        return Frame(component=frm, lo_inst=self.lo_inst)  # type: ignore
 
     def set_active_frame(self, frame: XFrame | Frame) -> None:
         """
@@ -140,6 +70,84 @@ class Frame(
             self.__component.setActiveFrame(frame)
 
     # endregion XFramesSupplier Overrides
+
+    # region Frame2Partial Overrides
+    @property
+    def layout_manager(self) -> LayoutManager:
+        """
+        Provides access to the LayoutManager of the frame.
+
+        When setting can be instance of ``XLayoutManager2`` or ``LayoutManagerComp``.
+        """
+
+        lm = self.component.LayoutManager
+        if lm is None:
+            return None  # type: ignore
+        return LayoutManager(component=lm, lo_inst=self.lo_inst)  # type: ignore
+
+    @layout_manager.setter
+    def layout_manager(self, value: XInterface | ComponentProp) -> None:
+        if mInfo.Info.is_instance(value, ComponentProp):
+            self.component.LayoutManager = value.component
+        else:
+            self.component.LayoutManager = value  # type: ignore
+
+    # endregion Frame2Partial Overrides
+
+
+class Frame(
+    _Frame,
+    frame2_partial.Frame2Partial,
+    FrameActionEvents,
+    CompDefaultsPartial,
+    LoInstPropsPartial,
+    # child_partial.ChildPartial,
+):
+    """
+    Class for managing Frame Component.
+
+    Note:
+        This is a Dynamic class that is created at runtime.
+        This means that the class is created at runtime and not defined in the source code.
+        In addition, the class may be created with additional classes implemented.
+
+        The Type hints for this class at design time may not be accurate.
+        To check if a class implements a specific interface, use the ``isinstance`` function
+        or :py:meth:`~.InterfacePartial.is_supported_interface` methods which is always available in this class.
+    """
+
+    # pylint: disable=unused-argument
+
+    def __new__(cls, component: Any, **kwargs):
+        lo_inst = kwargs.get("lo_inst", None)
+        builder = get_builder(component=component)
+        if lo_inst is not None:
+            builder.lo_inst = lo_inst
+        builder_helper.builder_add_comp_defaults(builder)
+        builder_helper.builder_add_property_change_implement(builder)
+        builder_helper.builder_add_property_veto_implement(builder)
+        builder_helper.builder_add_lo_inst_props_partial(builder)
+
+        builder_only = kwargs.get("_builder_only", False)
+        if builder_only:
+            # cast to prevent type checker error
+            return cast(Any, builder)
+        inst = builder.build_class(
+            name="ooodev.gui.comp.frame.Frame",
+            base_class=_Frame,
+        )
+        return inst
+
+    def __init__(self, component: Any, *, lo_inst: LoInst | None = None) -> None:
+        """
+        Constructor
+
+        Args:
+            component (Any): UNO Component that supports ``com.sun.star.frame.Frame`` service.
+            lo_inst (LoInst, optional): Instance of the Lo. Defaults to ``None``.
+        """
+        # this it not actually called as __new__ is overridden
+        pass
 
     # region Properties
 

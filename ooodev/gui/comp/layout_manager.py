@@ -1,34 +1,42 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.mock import mock_g
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.frame import layout_manager2_partial
+from ooodev.mock import mock_g
 from ooodev.utils import props as mProps
+from ooodev.utils.builder.default_builder import DefaultBuilder
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 
 
 if TYPE_CHECKING:
     from com.sun.star.frame import LayoutManager as UnoLayoutManager  # service
     from ooodev.gui.menu.menu_bar import MenuBar
+    from ooodev.loader.inst.lo_inst import LoInst
 
 
 class _LayoutManager(ComponentProp):
 
+    # region Dunder Methods
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
         if self is other:
             return True
-        if self.component is other.component:
+        if self.component is other.component:  # type: ignore
             return True
-        return self.component == other.component
+        return self.component == other.component  # type: ignore
 
+    # endregion Dunder Methods
+
+    # region override base methods
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.frame.LayoutManager",)
+
+    # endregion override base methods
 
     # region context manage
     def __enter__(self) -> _LayoutManager:
@@ -39,7 +47,13 @@ class _LayoutManager(ComponentProp):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.unlock()  # type: ignore
 
+    def __instancecheck__(cls, instance):
+        # Customize isinstance checks here
+        return hasattr(instance, "my_custom_attribute")
+
     # endregion context manage
+
+    # region Methods
 
     def get_menu_bar(self) -> MenuBar | None:
         """
@@ -58,13 +72,24 @@ class _LayoutManager(ComponentProp):
         mb = mProps.Props.get(mb_el, "XMenuBar", default=None)
         if mb is None:
             return None
-        return MenuBar(component=mb)
+        return MenuBar(component=mb, lo_inst=self.lo_inst)  # type: ignore
+
+    # endregion Methods
+
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a LayoutManager class
+        return LayoutManager
+
+    # endregion Properties
 
 
 class LayoutManager(
     _LayoutManager,
     layout_manager2_partial.LayoutManager2Partial,
     CompDefaultsPartial,
+    LoInstPropsPartial,
     # child_partial.ChildPartial,
 ):
     """
@@ -90,12 +115,15 @@ class LayoutManager(
     """
 
     # pylint: disable=unused-argument
-
-    def __new__(cls, component: Any, *args, **kwargs):
+    def __new__(cls, component: Any, **kwargs):
+        lo_inst = kwargs.get("lo_inst", None)
         builder = get_builder(component=component)
+        if lo_inst is not None:
+            builder.lo_inst = lo_inst
         builder_helper.builder_add_comp_defaults(builder)
         builder_helper.builder_add_property_change_implement(builder)
         builder_helper.builder_add_property_veto_implement(builder)
+        builder_helper.builder_add_lo_inst_props_partial(builder)
 
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:
@@ -107,12 +135,13 @@ class LayoutManager(
         )
         return inst
 
-    def __init__(self, component: Any) -> None:
+    def __init__(self, component: Any, *, lo_inst: LoInst | None = None) -> None:
         """
         Constructor
 
         Args:
             component (Any): UNO Component that supports ``com.sun.star.configuration.ConfigurationAccess`` service.
+            lo_inst (LoInst, optional): Instance of the Lo. Defaults to ``None``.
         """
         # this it not actually called as __new__ is overridden
         pass
@@ -138,7 +167,9 @@ def get_builder(component: Any) -> DefaultBuilder:
     Returns:
         DefaultBuilder: Builder instance.
     """
-    builder = layout_manager2_partial.get_builder(component)
+    builder = DefaultBuilder(component)
+    builder_helper.builder_add_component_prop(builder)
+    builder.merge(layout_manager2_partial.get_builder(component))
     builder.auto_add_interface("com.sun.star.awt.XWindowListener")
     builder.auto_add_interface("com.sun.star.beans.XPropertySet")
     builder.auto_add_interface("com.sun.star.beans.XMultiPropertySet")

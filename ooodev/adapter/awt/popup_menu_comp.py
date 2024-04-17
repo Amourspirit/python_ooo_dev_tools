@@ -43,6 +43,7 @@ class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
 
     # pylint: disable=unused-argument
 
+    # region Dunder Methods
     def __init__(self, component: XPopupMenu) -> None:
         """
         Constructor
@@ -56,6 +57,8 @@ class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
         generic_args = GenericArgs(menu=self)
         MenuEvents.__init__(self, trigger_args=generic_args, cb=self.__on_menu_add_remove_add_remove)
         self._index = -1
+
+    # endregion Dunder Methods
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:

@@ -49,6 +49,15 @@ class Menu(LoInstPropsPartial):
         self._items = MenuItems(component=menu.component, menu=self, app=self._app, lo_inst=self.lo_inst)
         self._current_index = -1
 
+    def __bool__(self) -> bool:
+        """
+        If menu exists.
+
+        Returns:
+            bool: ``True`` if menu exists and menu is not empty.
+        """
+        return self._current_menu is not None and len(self._current_menu) > 0
+
     def __contains__(self, name: str | Dict[str, str]) -> bool:
         """If exists name in menu"""
         name = Shortcuts.get_url_script(name)
