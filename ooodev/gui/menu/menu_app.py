@@ -21,7 +21,13 @@ if TYPE_CHECKING:
 
 
 class MenuApp(LoInstPropsPartial):
-    """Class for manager menu by LibreOffice module"""
+    """
+    Class for manager menu by LibreOffice module.
+
+    See Also:
+        - :ref:`help_creating_menu_using_menu_app`
+        - :ref:`help_working_with_menu_app`
+    """
 
     NODE = "private:resource/menubar/menubar"
     MENUS = MenuLookupKind.get_dict()

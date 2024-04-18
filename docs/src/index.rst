@@ -17,6 +17,7 @@ ooodev
    format/index
    formatters/index
    gui/index
+   io/index
    listeners/index
    loader/index
    macro/index

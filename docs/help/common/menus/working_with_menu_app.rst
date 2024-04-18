@@ -35,7 +35,7 @@ The menu can be accessed even if the menu is not visible in the LibreOffice Wind
 Menu Items
 ----------
 
-Menu items in this context are either a :py:class:`~ooodev.gui.menu.MenuItem`, :py:class:`~ooodev.gui.menu.MenuItemSub` or :py:class:`~ooodev.gui.menu.MenuItemSep` class instances.
+Menu items in this context are either a :py:class:`~ooodev.gui.menu.item.MenuItem`, :py:class:`~ooodev.gui.menu.item.MenuItemSub` or :py:class:`~ooodev.gui.menu.item.MenuItemSep` class instances.
 
 .. tabs::
 
@@ -55,7 +55,7 @@ Menu items in this context are either a :py:class:`~ooodev.gui.menu.MenuItem`, :
 MenuItemSub
 -----------
 
-:py:class:`~ooodev.gui.menu.MenuItemSub` is a child class of :py:class:`~ooodev.gui.menu.MenuItem` so:
+:py:class:`~ooodev.gui.menu.item.MenuItemSub` is a child class of :py:class:`~ooodev.gui.menu.item.MenuItem` so:
 
 Sub Menu Item
 
@@ -80,7 +80,7 @@ Sub Menu Item
 
             .. group-tab:: None
 
-:py:class:`~ooodev.gui.menu.MenuItemSub` menu items also contain a ``sub_menu`` property that get access to is sub menu as another instance of the :py:class:`~ooodev.gui.menu.Menu` class.
+:py:class:`~ooodev.gui.menu.item.MenuItemSub` menu items also contain a ``sub_menu`` property that get access to is sub menu as another instance of the :py:class:`~ooodev.gui.menu.Menu` class.
 
 MenuItem
 --------
@@ -110,7 +110,7 @@ MenuItem
 MenuItemSep
 -----------
 
-:py:class:`~ooodev.gui.menu.MenuItemSep` is a child class of :py:class:`~ooodev.gui.menu.MenuItem`.
+:py:class:`~ooodev.gui.menu.item.MenuItemSep` is a child class of :py:class:`~ooodev.gui.menu.item.MenuItem`.
 
 
 .. tabs::
@@ -266,7 +266,7 @@ In the ``menubar.xml`` file you can also see that ``.uno:BasicShapes`` has no po
 
             .. group-tab:: None
 
-The :py:class:`~ooodev.gui.menu.MenuItem`, :py:class:`~ooodev.gui.menu.MenuItemSub` and :py:class:`~ooodev.gui.menu.MenuItemSep` have a ``item_kind`` property that also can be used to check for the appropriate type before taking action.
+The :py:class:`~ooodev.gui.menu.item.MenuItem`, :py:class:`~ooodev.gui.menu.item.MenuItemSub` and :py:class:`~ooodev.gui.menu.item.MenuItemSep` have a ``item_kind`` property that also can be used to check for the appropriate type before taking action.
 
 .. tabs::
 
@@ -373,7 +373,7 @@ The ``save=True`` option means the changes will be persisted.
 Execute Menu Item
 -----------------
 
-Menu commands are mostly dispatch calls or a URL to run a macro. :py:class:`~ooodev.gui.menu.MenuItem` and :py:class:`~ooodev.gui.menu.MenuItemSub` have an execute method that will call call the dispatch or run the macro.
+Menu commands are mostly dispatch calls or a URL to run a macro. :py:class:`~ooodev.gui.menu.item.MenuItem` and :py:class:`~ooodev.gui.menu.item.MenuItemSub` have an execute method that will call call the dispatch or run the macro.
 
 .. tabs::
 
@@ -396,3 +396,4 @@ Related Topics
 --------------
 
 - :ref:`help_creating_menu_using_menu_app`
+- :ref:`help_working_with_menu_bar`
