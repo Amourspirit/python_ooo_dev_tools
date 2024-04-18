@@ -226,3 +226,4 @@ Related Topics
 
 - :ref:`help_working_with_menu_app`
 - :ref:`help_working_with_menu_bar`
+- :ref:`help_working_with_shortcuts`

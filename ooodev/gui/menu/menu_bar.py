@@ -357,6 +357,10 @@ class _MenuBar(ComponentProp):
 class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, MenuEvents):
     """
     Class for managing MenuBar Component.
+
+    See Also:
+
+        - :ref:`help_working_with_menu_bar`
     """
 
     # pylint: disable=unused-argument

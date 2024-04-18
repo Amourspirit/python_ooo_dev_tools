@@ -20,7 +20,13 @@ if TYPE_CHECKING:
 
 
 class PopupMenu(LoInstPropsPartial, PopupMenuComp):
-    """Popup Menu Class."""
+    """
+    Popup Menu Class.
+
+    See Also:
+
+        - :ref:`help_working_with_menu_bar`
+    """
 
     def __init__(self, component: XPopupMenu, lo_inst: LoInst | None = None) -> None:
         """

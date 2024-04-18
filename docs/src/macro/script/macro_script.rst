@@ -1,4 +1,4 @@
-.. _ns_macro_basic:
+.. _ns_macro_script:
 
 Class MacroScript
 =================

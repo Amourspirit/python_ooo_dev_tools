@@ -1,3 +1,5 @@
+.. _help_common_menus:
+
 Menus
 =====
 

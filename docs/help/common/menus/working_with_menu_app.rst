@@ -30,12 +30,18 @@ Working with :ref:`ooodev.gui.menu.MenuApp`.
 The menu can be accessed via the ``doc.menu`` property.
 The ``doc.menu`` is an instance of the :ref:`ooodev.gui.menu.MenuApp` and has access to all the menu items of the current menu bar.
 
+The :py:class`~ooodev.utils.kind.menu_lookup_kind.MenuLookupKind` Enum is for convenience and can be replaced with the command name of the menu.
+
+``doc.menu[MenuLookupKind.TOOLS]`` is the same as ``doc.menu[".uno:ToolsMenu"]`
+
 The menu can be accessed even if the menu is not visible in the LibreOffice Window.
 
 Menu Items
 ----------
 
 Menu items in this context are either a :py:class:`~ooodev.gui.menu.item.MenuItem`, :py:class:`~ooodev.gui.menu.item.MenuItemSub` or :py:class:`~ooodev.gui.menu.item.MenuItemSep` class instances.
+
+The :py:class:`~ooodev.gui.menu.item.MenuItemKind`` Enum is used to check the type of menu item.
 
 .. tabs::
 
@@ -110,7 +116,7 @@ MenuItem
 MenuItemSep
 -----------
 
-:py:class:`~ooodev.gui.menu.item.MenuItemSep` is a child class of :py:class:`~ooodev.gui.menu.item.MenuItem`.
+:py:class:`~ooodev.gui.menu.item.MenuItemSep` represent a separator in a menu.
 
 
 .. tabs::
@@ -397,3 +403,4 @@ Related Topics
 
 - :ref:`help_creating_menu_using_menu_app`
 - :ref:`help_working_with_menu_bar`
+- :ref:`help_working_with_shortcuts`

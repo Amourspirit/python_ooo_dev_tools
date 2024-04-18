@@ -5,6 +5,17 @@ Version History
 Version 0.40.0
 ==============
 
+Menu
+----
+
+New menu options have been added to the library for working with the menu system and menu shortcuts.
+A lot of work has been done in this area.
+
+See :ref:`help_common_menus` for more information.
+
+GUI
+---
+
 The ``gui`` module has been moved from the ``ooodev.utils`` to the ``ooodev.gui`` module.
 
 The old imports still work but are deprecated.

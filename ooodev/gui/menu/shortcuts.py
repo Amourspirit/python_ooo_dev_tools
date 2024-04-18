@@ -26,7 +26,13 @@ if TYPE_CHECKING:
 
 
 class Shortcuts(LoInstPropsPartial):
-    """Class for manager shortcuts"""
+    """
+    Class for manager shortcuts.
+
+    See Also:
+
+        - :ref:`help_working_with_shortcuts`
+    """
 
     if mock_g.DOCS_BUILDING:
         # When docs are building it may not have access to uno.
