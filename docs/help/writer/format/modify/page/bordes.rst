@@ -38,7 +38,7 @@ General function used to run these examples.
         from ooodev.format.writer.modify.page.borders import Padding, Shadow, Sides, WriterStylePageKind
         from ooodev.format.writer.modify.page.borders import BorderLineKind, LineSize, Side
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.utils.color import StandardColor
 
@@ -245,7 +245,7 @@ Related Topics
         - :ref:`help_writer_format_modify_para_borders`
         - :ref:`help_writer_format_modify_page_header_borders`
         - :ref:`help_writer_format_modify_page_footer_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.page.borders.Sides`

@@ -43,7 +43,7 @@ General function used to run these examples:
         from ooodev.format.calc.direct.cell.borders import Borders, Shadow, Side, BorderLineKind, Padding
         from ooodev.office.calc import Calc
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui.gui import GUI
         from ooodev.loader.lo import Lo
 
 

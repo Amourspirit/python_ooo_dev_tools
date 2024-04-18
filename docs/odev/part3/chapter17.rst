@@ -1232,7 +1232,7 @@ If for any reason the above ``_copy()`` method is not working correctly try the 
 
     .. code-tab:: python
 
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.draw import Draw
 
         def _copy_to(self, doc: ImpressDoc) -> None:

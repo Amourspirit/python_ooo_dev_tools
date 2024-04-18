@@ -39,7 +39,7 @@ Setup
 
         from ooodev.format import CommonColor
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
 
@@ -152,7 +152,7 @@ Setup
 
         from ooodev.format import CommonColor
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.font import FontEffects, FontLine, FontUnderlineEnum
 
@@ -259,7 +259,7 @@ Related Topics
         - :ref:`help_calc_format_direct_cell_font_only`
         - :ref:`help_calc_format_direct_cell_font`
         - :ref:`help_calc_format_modify_cell_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.direct.cell.font.FontEffects`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`

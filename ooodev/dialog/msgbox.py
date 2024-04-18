@@ -1,4 +1,3 @@
-# coding: utf-8
 from __future__ import annotations
 from typing import cast
 import uno  # pylint: disable=unused-import
@@ -68,6 +67,11 @@ class MsgBox:
             If the event is cancelled, the ``result`` value of ``event_data` if set will be returned.
             Otherwise if the event is not handled, a ``CancelEventError`` is raised.
 
+        Hint:
+            - ``MessageBoxResultsEnum`` can be imported from ``ooo.dyn.awt.message_box_results``.
+            - ``MessageBoxButtonsEnum`` can be imported from ``ooo.dyn.awt.message_box_buttons``.
+            - ``MessageBoxType`` can be imported from ``ooo.dyn.awt.message_box_type``.
+
         .. versionchanged:: 0.38.1
             Now ``boxtype`` can also be an integer value.
         """
@@ -102,7 +106,7 @@ class MsgBox:
             # this is the default behavior anyways. So assigning ok to make it official here
             _buttons = MessageBoxButtonsEnum.BUTTONS_OK.value
         else:
-            _buttons = buttons
+            _buttons = int(buttons)
 
         tk = mLo.Lo.create_instance_mcf(XToolkit2, "com.sun.star.awt.Toolkit", raise_err=True)
         parent = tk.getDesktopWindow()

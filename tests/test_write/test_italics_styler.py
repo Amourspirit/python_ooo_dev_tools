@@ -14,7 +14,7 @@ from ooo.dyn.awt.font_slant import FontSlant  # enum
 
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.props import Props
 from ooodev.utils.color import CommonColor, Color
 

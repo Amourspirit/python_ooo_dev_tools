@@ -1,5 +1,10 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Union
+import uno
+from com.sun.star.awt import Point
+
+from ooodev.units.unit_convert import UnitLength
+from ooodev.units import unit_factory
 from ooodev.units.unit_obj import UnitT
 from ooodev.utils.data_type.generic_point import GenericPoint
 
@@ -51,6 +56,27 @@ class GenericUnitPoint(Generic[_T, TNum]):
         self._y = value
 
     # endregion Properties
+
+    def convert_to(self, unit_length: UnitLength) -> GenericUnitPoint[UnitT, Union[int, float]]:
+        """
+        Converts current values to specified unit length.
+
+        Args:
+            unit_length (UnitLength): Unit length to convert to.
+
+        Returns:
+            GenericUnitSize[UnitT, Union[int, float]]: Converted Units.
+        """
+        current_unit = self.x.get_unit_length()
+        if current_unit == unit_length:
+            return GenericUnitPoint(self.x, self.y)
+        x = unit_factory.get_unit(unit_length, self.x.convert_to(unit_length))
+        y = unit_factory.get_unit(unit_length, self.y.convert_to(unit_length))
+        return GenericUnitPoint(x, y)
+
+    def get_uno_point(self) -> Point:
+        """Gets instance value as uno Point"""
+        return Point(int(self.x), int(self.y))
 
     def get_point(self) -> GenericPoint[TNum]:
         """Gets instance value as Size"""

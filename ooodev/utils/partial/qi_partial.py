@@ -1,12 +1,15 @@
 from __future__ import annotations
 from typing import Any, Type, Literal, overload, Optional, TypeVar
 from ooodev.loader.inst.lo_inst import LoInst
+from ooodev.loader import lo as mLo
 
 T = TypeVar("T")
 
 
 class QiPartial:
-    def __init__(self, component: Any, lo_inst: LoInst):
+    def __init__(self, component: Any, lo_inst: LoInst | None = None):
+        if lo_inst is None:
+            lo_inst = mLo.Lo.current_lo
         self.__lo_inst = lo_inst
         self.__component = component
 

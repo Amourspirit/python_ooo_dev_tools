@@ -5,7 +5,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.draw import Draw, DrawDoc
 from ooodev.format.draw.modify.area import Img, PresetImageKind, SizeMM

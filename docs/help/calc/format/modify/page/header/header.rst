@@ -22,7 +22,7 @@ General function used to run these examples.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.page.header import Header, CalcStylePageKind
 
@@ -145,7 +145,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_page_footer_footer`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.header.Header`
         - :py:class:`Calc.set_head_foot() <ooodev.office.calc.Calc.set_head_foot>`

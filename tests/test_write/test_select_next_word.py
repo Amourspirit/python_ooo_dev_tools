@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 
 LAST_PARA = """
 At three o'clock precisely I was at Baker Street, but Holmes had not yet returned. The landlady informed me that he had left the house shortly after eight o'clock in the morning. I sat down beside the fire, however, with the intention of awaiting him, however long he might be.

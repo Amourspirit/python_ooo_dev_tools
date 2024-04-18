@@ -15,7 +15,7 @@ from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind
 from ooodev.format.inner.direct.write.para.align.writing_mode import WritingMode
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 
 
 if TYPE_CHECKING:

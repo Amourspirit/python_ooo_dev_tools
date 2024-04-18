@@ -8,11 +8,16 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.util.cell_protection_struct_comp
+   ooodev.adapter.util.changes_batch_partial
    ooodev.adapter.util.changes_events
    ooodev.adapter.util.changes_listener
+   ooodev.adapter.util.changes_notifier_partial
    ooodev.adapter.util.cloneable_partial
    ooodev.adapter.util.close_events
    ooodev.adapter.util.close_listener
+   ooodev.adapter.util.flush_events
+   ooodev.adapter.util.flush_listener
+   ooodev.adapter.util.flushable_partial
    ooodev.adapter.util.mode_selector_partial
    ooodev.adapter.util.modify_broadcaster_partial
    ooodev.adapter.util.modify_events
@@ -22,6 +27,7 @@ Submodules
    ooodev.adapter.util.property_replace_partial
    ooodev.adapter.util.refresh_events
    ooodev.adapter.util.refresh_listener
+   ooodev.adapter.util.refreshable_partial
    ooodev.adapter.util.replace_descriptor_comp
    ooodev.adapter.util.replace_descriptor_partial
    ooodev.adapter.util.replaceable_partial
@@ -29,6 +35,9 @@ Submodules
    ooodev.adapter.util.search_descriptor_partial
    ooodev.adapter.util.search_descriptor_partial_props
    ooodev.adapter.util.searchable_partial
+   ooodev.adapter.util.string_escape_partial
+   ooodev.adapter.util.url_transformer_comp
+   ooodev.adapter.util.url_transformer_partial
 
 Module contents
 ---------------

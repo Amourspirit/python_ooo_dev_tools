@@ -17,7 +17,7 @@ except ImportError:
 from ooodev.format.chart2.direct.grid import LineProperties as GridLineProperties, BorderLineKind
 
 from ooodev.utils.color import StandardColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 

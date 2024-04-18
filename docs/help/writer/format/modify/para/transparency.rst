@@ -205,7 +205,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_transparency`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.transparency.Transparency`
         - :py:class:`ooodev.format.writer.modify.para.transparency.Gradient`

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from ooodev.utils.kind import kind_helper
 
 
 class ToolBarNameKind(str, Enum):
@@ -86,3 +87,20 @@ class ToolBarNameKind(str, Enum):
 
     def __str__(self) -> str:
         return self.value
+
+    @staticmethod
+    def from_str(s: str) -> "ToolBarNameKind":
+        """
+        Gets an ``ToolBarNameKind`` instance from string.
+
+        Args:
+            s (str): String that represents the name of an enum Name.
+
+        Raises:
+            ValueError: If input string is empty.
+            AttributeError: If unable to get ``ToolBarNameKind`` instance.
+
+        Returns:
+            ToolBarNameKind: Enum instance.
+        """
+        return kind_helper.enum_from_string(s, ToolBarNameKind)

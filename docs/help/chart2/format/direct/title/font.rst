@@ -184,6 +184,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_chart2_format_direct_title_font_only`
         - :ref:`help_chart2_format_direct_title_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Chart2.style_background() <ooodev.office.chart2.Chart2.style_background>`

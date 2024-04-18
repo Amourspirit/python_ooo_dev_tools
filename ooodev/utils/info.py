@@ -2,8 +2,10 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
+from ast import Dict
 import sys
 import contextlib
+import datetime
 from enum import Enum, IntFlag
 from pathlib import Path
 import mimetypes
@@ -1476,6 +1478,37 @@ class Info(metaclass=StaticProperty):
         for s in interfaces:
             print(f"  {s}")
 
+    @classmethod
+    def show_enum_name_values(cls, obj: Any) -> None:
+        """
+        Prints Enum Name and Values to console.
+
+        |lo_safe|
+
+        Args:
+            obj (object): Object that contains enum values.
+                Can be a Name such as ``com.sun.star.awt.MenuItemType`` or a UNO enum.
+        """
+        if not obj:
+            return
+        from ooodev.utils.kind.enum_helper import EnumHelper
+
+        try:
+            if isinstance(obj, str):
+                name = obj
+            elif hasattr(obj, "typeName"):
+                name = str(obj.typeName)
+            enum_info = EnumHelper.get_enum_info(name)
+            if not enum_info:
+                print(f"No enum values found for {name}")
+                return
+            print(f"Enum Name: {name}")
+            for k, v in enum_info.get_name_value_dict().items():
+                print(f"  {k} = {v}")
+        except Exception as e:
+            print("Could not get enumeration")
+            print(f"    {e}")
+
     @staticmethod
     def show_conversion_values(value: Any, frm: mConvert.UnitLength) -> None:
         """
@@ -2571,6 +2604,36 @@ class Info(metaclass=StaticProperty):
         return cls._language
 
     @classproperty
+    def date_offset(cls) -> int:
+        """
+        Gets the the date offset of the LibreOffice Instance.
+
+        |lo_unsafe|
+
+        Returns:
+            int: Date offset as integer.
+        """
+        # Get start date from Calc configuration
+
+        try:
+            # this value is not expected to change in multi document mode.
+            return cls._date_offset
+        except AttributeError:
+            # sourcery skip: use-or-for-fallback
+            year = 1899
+            month = 12
+            day = 30
+            with contextlib.suppress(Exception):
+                date_info = cast(
+                    Any, cls.get_config(node_str="Date", node_path="/org.openoffice.Office.Calc/Calculate/Other")
+                )
+                year = int(date_info.YY)
+                month = int(date_info.MM)
+                day = int(date_info.DD)
+            cls._date_offset = datetime.date(year, month, day).toordinal()
+        return cls._date_offset
+
+    @classproperty
     def language_locale(cls) -> Locale:
         """
         Gets the Current Language ``Locale`` of the LibreOffice Instance.
@@ -2636,7 +2699,7 @@ class Info(metaclass=StaticProperty):
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
     # clears Write Attributes that are dynamically created
-    data_attrs = ("_language", "_language_locale", "_version", "_version_info")
+    data_attrs = ("_language", "_language_locale", "_version", "_version_info", "_date_offset")
     for attr in data_attrs:
         if hasattr(Info, attr):
             delattr(Info, attr)

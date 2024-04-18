@@ -14,7 +14,7 @@ from ooodev.dialog.search.tree_search.search_tree import SearchTree
 from ooodev.events.args.event_args import EventArgs
 from ooodev.calc import CalcDoc
 from ooodev.loader import lo as mLo
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 

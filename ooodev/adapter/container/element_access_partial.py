@@ -51,3 +51,21 @@ class ElementAccessPartial:
         return self.__component.hasElements()
 
     # endregion XElementAccess
+
+
+def get_builder(component: Any) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.container.XNameAccess", False)
+    return builder

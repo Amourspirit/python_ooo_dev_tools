@@ -11,7 +11,7 @@ basic sub-package
 .. toctree::
    :titlesonly:
 
-   basic/index
+   script/index
 
 Contents
 --------

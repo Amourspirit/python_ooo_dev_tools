@@ -7,7 +7,7 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.loader.lo import Lo
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.office.write import Write
 from ooodev.format.writer.direct.char.highlight import Highlight
 from ooodev.format import CommonColor

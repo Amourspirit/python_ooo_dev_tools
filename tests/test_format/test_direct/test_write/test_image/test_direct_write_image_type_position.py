@@ -21,7 +21,7 @@ from ooodev.format.writer.direct.image.type import (
     Horizontal,
     Vertical,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.units.unit_mm100 import UnitMM100

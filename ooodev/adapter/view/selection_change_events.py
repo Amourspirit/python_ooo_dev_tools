@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 
 import uno
 from com.sun.star.view import XSelectionSupplier
@@ -121,3 +121,31 @@ class SelectionChangeEvents:
         return self.__listener
 
     # endregion Manage Events
+
+
+def on_lazy_cb(source: Any, event: ListenerEventArgs) -> None:
+    """
+    Callback that is invoked when an event is added or removed.
+
+    This method is generally used to add the listener to the component in a lazy manner.
+    This means this callback will only be called once in the lifetime of the component.
+
+    Args:
+        source (Any): Expected to be an instance of SelectionChangeEvents that is a partial class of a component based class.
+        event (ListenerEventArgs): Event arguments.
+
+    Returns:
+        None:
+
+    Warning:
+        This method is intended for internal use only.
+    """
+    # will only ever fire once
+    if not isinstance(source, SelectionChangeEvents):
+        return
+    if not hasattr(source, "component"):
+        return
+
+    comp = cast(XSelectionSupplier, source.component)  # type: ignore
+    comp.addSelectionChangeListener(source.events_listener_selection_change)
+    event.remove_callback = True

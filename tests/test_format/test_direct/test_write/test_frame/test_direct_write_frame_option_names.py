@@ -23,7 +23,7 @@ from ooodev.format.writer.direct.frame.type import (
     Anchor,
     AnchorKind,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.office.write import Write

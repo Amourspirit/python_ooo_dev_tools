@@ -1,7 +1,14 @@
 from __future__ import annotations
-from typing import Generic, TypeVar, Union
-from ooodev.utils.data_type.generic_size_pos import GenericSizePos
+from typing import Generic, TypeVar, Union, Tuple
+import uno
+from com.sun.star.awt import Point
+from com.sun.star.awt import Size
+from com.sun.star.awt import Rectangle
 
+
+from ooodev.utils.data_type.generic_size_pos import GenericSizePos
+from ooodev.units.unit_convert import UnitLength
+from ooodev.units import unit_factory
 from ooodev.units.unit_obj import UnitT
 
 _T = TypeVar("_T", bound=UnitT)
@@ -79,6 +86,53 @@ class GenericUnitSizePos(Generic[_T, TNum]):
     @height.setter
     def height(self, value: _T):
         self._height = value
+
+    def convert_to(self, unit_length: UnitLength) -> GenericUnitSizePos[UnitT, Union[int, float]]:
+        """
+        Converts current values to specified unit length.
+
+        Args:
+            unit_length (UnitLength): Unit length to convert to.
+
+        Returns:
+            GenericUnitSize[UnitT, Union[int, float]]: Converted Units.
+        """
+        current_unit = self.x.get_unit_length()
+        if current_unit == unit_length:
+            return GenericUnitSizePos(self.x, self.y, self.width, self.height)
+        x = unit_factory.get_unit(unit_length, self.x.convert_to(unit_length))
+        y = unit_factory.get_unit(unit_length, self.y.convert_to(unit_length))
+        width = unit_factory.get_unit(unit_length, self.width.convert_to(unit_length))
+        height = unit_factory.get_unit(unit_length, self.height.convert_to(unit_length))
+        return GenericUnitSizePos(x, y, width, height)
+
+    def get_uno_point_size(self) -> Tuple[Point, Size]:
+        """
+        Gets current values as Point and Size
+
+        Returns:
+            Tuple[Point, Size]: UNO Point and Size.
+        """
+        pos = Point()
+        pos.X = int(self.x)
+        pos.Y = int(self.y)
+        size = Size()
+        size.Width = int(self.width)
+        size.Height = int(self.height)
+        return pos, size
+
+    def get_uno_rectangle(self) -> Rectangle:
+        """Gets current values as Rectangle
+
+        Returns:
+            Rectangle: UNO Rectangle.
+        """
+        rect = Rectangle()
+        rect.X = int(self.x)
+        rect.Y = int(self.y)
+        rect.Width = int(self.width)
+        rect.Height = int(self.height)
+        return rect
 
     # endregion Properties
 

@@ -42,7 +42,7 @@ Note that in order to apply a style, the document footer must be turned on as se
         from ooodev.format.writer.modify.page.footer.borders import BorderLineKind, LineSize, Side
         from ooodev.format import Styler
         from ooodev.office.write import Write
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.utils.color import StandardColor
 
@@ -269,7 +269,7 @@ Related Topics
         - :ref:`help_writer_format_modify_para_borders`
         - :ref:`help_writer_format_modify_page_borders`
         - :ref:`help_writer_format_modify_page_header_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.footer.borders.Padding`
         - :py:class:`ooodev.format.writer.modify.page.footer.borders.Sides`

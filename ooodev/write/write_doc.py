@@ -37,15 +37,19 @@ from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.office import write as mWrite
-from ooodev.utils import gui as mGUI
+from ooodev.gui import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
+from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -117,6 +121,7 @@ class WriteDoc(
     """A class to represent a Write document."""
 
     DOC_TYPE: DocType = DocType.WRITER
+    DOC_CLSID: CLSID = CLSID.WRITER
 
     def __init__(self, doc: XTextDocument, lo_inst: LoInst | None = None) -> None:
         """
@@ -165,6 +170,8 @@ class WriteDoc(
         self._draw_pages = None
         self._text_frames = None
         self._tables = None
+        self._menu = None
+        self._shortcuts = None
 
     # region Lazy Listeners
 
@@ -1258,7 +1265,7 @@ class WriteDoc(
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.component, visible=visible)
+        mGui.GUI.set_visible(doc=self.component, visible=visible)
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
@@ -1273,7 +1280,7 @@ class WriteDoc(
 
         def zoom_val(value: int) -> None:
             with LoContext(self.lo_inst):
-                mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
+                mGui.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
 
         if type in (
             ZoomKind.ENTIRE_PAGE,
@@ -1282,7 +1289,7 @@ class WriteDoc(
             ZoomKind.PAGE_WIDTH_EXACT,
         ):
             with LoContext(self.lo_inst):
-                mGUI.GUI.zoom(view=type)
+                mGui.GUI.zoom(view=type)
         elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
         elif type == ZoomKind.ZOOM_150_PERCENT:
@@ -1302,7 +1309,7 @@ class WriteDoc(
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
         with LoContext(self.lo_inst):
-            mGUI.GUI.zoom_value(value=value)
+            mGui.GUI.zoom_value(value=value)
 
     # region Properties
     @property
@@ -1360,6 +1367,41 @@ class WriteDoc(
 
             self._tables = WriteTables(owner=self, component=self.component.getTextTables(), lo_inst=self.lo_inst)
         return self._tables
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Draw Menus.
+
+        Returns:
+            MenuApp: Draw Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                file_menu = doc.menu["file"]
+                file_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.DRAW]
+        return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Writer Shortcuts.
+
+        Returns:
+            Shortcuts: Writer Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.WRITER, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties
 

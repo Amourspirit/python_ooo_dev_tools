@@ -35,7 +35,7 @@ Note that in order to apply a style, the document footer must be turned on as se
         from ooodev.format import Styler
         from ooodev.office.write import Write
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
         def main() -> int:
@@ -421,7 +421,7 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_page_header_area`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.page.footer.area.Color`
         - :py:class:`ooodev.format.writer.modify.page.footer.area.Gradient`

@@ -23,15 +23,12 @@ class FrameActionListener(AdapterBase, XFrameActionListener):
         `API XFrameActionListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XFrameActionListener.html>`_
     """
 
-    def __init__(
-        self, trigger_args: GenericArgs | None = None, add_listener: bool = True, subscriber: XFrame | None = None
-    ) -> None:
+    def __init__(self, trigger_args: GenericArgs | None = None, subscriber: XFrame | None = None) -> None:
         """
         Constructor
 
         Args:
             trigger_args (GenericArgs, Optional): Args that are passed to events when they are triggered.
-            add_listener (bool, optional): If ``True`` listener is automatically added. Default ``True``.
             subscriber (XFrame, optional): An UNO object that implements the ``XFrame`` interface.
                 If passed in then this listener instance is automatically added to it.
         """

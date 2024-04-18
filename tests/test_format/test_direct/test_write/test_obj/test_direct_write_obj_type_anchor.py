@@ -22,7 +22,7 @@ from ooodev.format.writer.direct.obj.type import (
     Horizontal,
     Vertical,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.units.unit_inch import UnitInch
 from ooodev.office.write import Write

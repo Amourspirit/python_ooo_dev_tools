@@ -40,7 +40,7 @@ Setup
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.numbers import Numbers
         from ooodev.format.calc.direct.cell.numbers import NumberFormatEnum, NumberFormatIndexEnum
@@ -146,7 +146,7 @@ Setup
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.direct.cell.numbers import Numbers
 
@@ -254,7 +254,7 @@ Related Topics
         - :ref:`help_calc_format_modify_cell_numbers`
         - |num_fmt|_
         - |num_fmt_index|_
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:meth:`Calc.get_cell_range() <ooodev.office.calc.Calc.get_cell_range>`
         - :py:meth:`Calc.get_cell() <ooodev.office.calc.Calc.get_cell>`

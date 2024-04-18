@@ -17,7 +17,7 @@ try:
 except ImportError:
     Chart2 = None
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.utils.kind.zoom_kind import ZoomKind

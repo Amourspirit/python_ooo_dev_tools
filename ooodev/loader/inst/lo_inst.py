@@ -10,9 +10,10 @@
 
 from __future__ import annotations
 import contextlib
+import threading
 from datetime import datetime, timezone
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, cast, overload, Type
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
 from urllib.parse import urlparse
 import uno
 from com.sun.star.beans import XIntrospection
@@ -71,7 +72,9 @@ from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
-
+from ooodev.utils.lru_cache import LRUCache
+from ooodev.io.log import logging as logger
+from ooodev.io.log.named_logger import NamedLogger
 
 if TYPE_CHECKING:
     try:
@@ -123,8 +126,19 @@ class LoInst(EventsPartial):
         Args:
             opt (LoOptions, optional): Options
             events (EventObserver, optional): Event observer
+
+        Hint:
+            - ``LoOptions`` can be imported from ``ooodev.loader.inst.options``
         """
         self._singleton_instance = kwargs.get("is_singleton", False)
+        self._opt = LoOptions() if opt is None else opt
+        if self._singleton_instance:
+            # only set the log level if thi instance is the ooodev.loader.lo.Lo instance
+            logger.set_log_level(self._opt.log_level)
+        if self._singleton_instance:
+            self._logger = NamedLogger(f"{self.__class__.__name__} - Root")
+        else:
+            self._logger = NamedLogger(self.__class__.__name__)
         self._is_default = False
         self._current_doc = None
         _events = Events(source=self) if events is None else events
@@ -142,9 +156,9 @@ class LoInst(EventsPartial):
         self._lo_loader: LoLoader | None = None
         self._app_font_pixel_ratio = None
         self._sys_font_pixel_ratio = None
-        self._cache = {}
+        self._cache = LRUCache(50)
+        self._shared_cache = LRUCache(self._opt.lo_cache_size)
 
-        self._opt = LoOptions() if opt is None else opt
         self._allow_print = self._opt.verbose
         self._set_lo_events()
 
@@ -446,23 +460,41 @@ class LoInst(EventsPartial):
 
     @overload
     def create_instance_msf(
+        self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True], *args: Any
+    ) -> T: ...
+
+    @overload
+    def create_instance_msf(
         self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
     ) -> T | None: ...
 
+    @overload
     def create_instance_msf(
-        self, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+        self, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False], *args: Any
+    ) -> T | None: ...
+
+    def create_instance_msf(
+        self,
+        atype: Type[T],
+        service_name: str,
+        msf: XMultiServiceFactory | None = None,
+        raise_err: bool = False,
+        *args: Any,
     ) -> T | None:  # sourcery skip: raise-specific-error
         # in a multi document environment, get the multi service factory from the current document
-        doc = self.desktop.get_current_component()
-        ms_factory = self.qi(XMultiServiceFactory, doc)
+        if msf is None:
+            doc = self.desktop.get_current_component()
+            factory = self.qi(XMultiServiceFactory, doc)
+            if factory is None:
+                raise Exception("No document found")
+        else:
+            factory = msf
 
-        if ms_factory is None:
-            raise Exception("No document found")
         try:
-            if msf is None:
-                obj = ms_factory.createInstance(service_name)
+            if args:
+                obj = factory.createInstanceWithArguments(service_name, args)
             else:
-                obj = msf.createInstance(service_name)
+                obj = factory.createInstance(service_name)
             if raise_err and obj is None:
                 raise mEx.CreateInstanceMsfError(atype, service_name)
             interface_obj = self.qi(atype=atype, obj=obj)
@@ -640,10 +672,12 @@ class LoInst(EventsPartial):
         |lo_unsafe|
 
         Args:
-            loader (LoLoader): LoLoader instance
+            loader (LoLoader): LoLoader instance.
 
         Returns:
-            XComponentLoader: component loader
+            XComponentLoader: component loader.
+
+        .. versionadded:: 0.40.0
         """
         self._lo_loader = loader
         self._lo_inst = self._lo_loader.lo_inst
@@ -654,6 +688,23 @@ class LoInst(EventsPartial):
         if self._loader is None:
             raise mEx.LoadingError("Unable to access XComponentLoader")
         return self._loader
+
+    def get_singleton(self, name: str) -> Any:
+        """
+        Gets a singleton object from the office default context.
+
+        Args:
+            name (str): Singleton name such as ``/singletons/com.sun.star.frame.theDesktop``
+
+        Returns:
+            Any: Singleton object or ``None`` if not found
+        """
+        if self._mc_factory is None:
+            return None
+        result = None
+        with contextlib.suppress(Exception):
+            result = self._mc_factory.DefaultContext.getByName(name)  # type: ignore
+        return result
 
     def _load_from_context(self) -> None:
         if self._xcc is None:
@@ -1402,26 +1453,82 @@ class LoInst(EventsPartial):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
+    def get_supported_dispatch_prefixes(self) -> Tuple[str, ...]:
+        """
+        Gets the prefixes are are supported by the local ``dispatch_cmd()`` method.
+
+        Returns:
+            Tuple[str, ...]: Tuple of supported dispatch prefixes.
+
+        .. versionadded:: 0.40.0
+        """
+        return (
+            ".uno:",
+            "vnd.sun.star.",
+            "service:",
+        )
+
     # region dispatch_cmd()
 
-    @overload
-    def dispatch_cmd(self, cmd: str) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
 
-    @overload
-    def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any: ...
+    # @overload
+    # def dispatch_cmd(self, cmd: str, *, frame: XFrame) -> Any: ...
 
-    def dispatch_cmd(self, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
+    def dispatch_cmd(
+        self,
+        cmd: str,
+        props: Iterable[PropertyValue] | None = None,
+        frame: XFrame | None = None,
+        in_thread: bool = False,
+    ) -> Any:
+        """
+        Dispatches a LibreOffice command.
+
+        Args:
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not need to start with ``.uno:`` prefix.
+            props (PropertyValue, optional): properties for dispatch.
+            frame (XFrame, optional): Frame to dispatch to.
+            in_thread (bool, optional): If ``True`` then dispatch is done in a separate thread.
+
+        Raises:
+            CancelEventError: If Dispatching is canceled via event.
+            DispatchError: If any other error occurs.
+
+        Returns:
+            Any: A possible result of the executed internal dispatch. The information behind this any depends on the dispatch!
+
+        :events:
+            .. cssclass:: lo_event
+
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHING` :eventref:`src-docs-event-cancel`
+                - :py:attr:`~.events.lo_named_event.LoNamedEvent.DISPATCHED` :eventref:`src-docs-event`
+
+        Note:
+            There are many dispatch command constants that can be found in :ref:`utils_dispatch` Namespace
+
+            | ``DISPATCHING`` Event args data contains any properties passed in via ``props``.
+            | ``DISPATCHED`` Event args data contains any results from the dispatch commands.
+
+        See Also:
+            - :ref:`ch04_dispatching`
+            - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+
+        .. versionchanged:: 0.40.0
+            Now supports ``in_thread`` parameter.
+        """
         # sourcery skip: assign-if-exp, extract-method, remove-unnecessary-cast
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
         try:
-            str_cmd = str(cmd)  # make sure and enum or other lookup did not get passed by mistake
+            str_cmd = str(cmd).replace(".uno:", "")  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(self.dispatch_cmd.__qualname__, str_cmd)
             cargs.event_data = props
             self.on_dispatching(cargs)
@@ -1441,14 +1548,60 @@ class LoInst(EventsPartial):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            result = helper.executeDispatch(provider, f".uno:{str_cmd}", "", 0, dispatch_props)
+            
+            prefix_key = "dispatch_prefixes"
+            if prefix_key in self._cache:
+                prefixes = cast(Tuple[str, ...], self._cache[prefix_key])
+            else:
+                set_pre = set(self.get_supported_dispatch_prefixes())
+                set_pre.remove(".uno:")
+                prefixes =  tuple(set_pre)
+                self._cache[prefix_key] = prefixes
+            
+            supported_prefix = False
+            if str_cmd.startswith(prefixes):
+                supported_prefix = True
+            if supported_prefix:
+                dispatch_cmd = str_cmd
+            else:
+                dispatch_cmd = f".uno:{str_cmd}"
+            if in_thread:
+
+                def worker(callback, cancel_args, helper, provider, cmd, props) -> None:
+                    result = helper.executeDispatch(provider, cmd, "", 0, props)
+                    callback(result, cancel_args)
+
+                def callback(result: Any, cancel_args: DispatchCancelArgs) -> None:
+                    # runs after the threaded dispatch is finished
+                    eargs = DispatchArgs.from_args(cancel_args)
+                    eargs.event_data = result
+                    self.on_dispatched(eargs)
+                    if self._logger.debug:
+                        self._logger.debug(f"Finished Dispatched in thread: {str_cmd}")
+
+                if self._logger.is_debug:
+                    self._logger.debug(f"Dispatching in thread: {dispatch_cmd}")
+                # t = threading.Thread(
+                #     target=helper.executeDispatch, args=(provider, dispatch_cmd, "", 0, dispatch_props)
+                # )
+                t = threading.Thread(
+                    target=worker, args=(callback, cargs, helper, provider, dispatch_cmd, dispatch_props)
+                )
+                t.start()
+                return None
+            else:
+                if self._logger.is_debug:
+                    self._logger.debug(f"Dispatching in main thread: {dispatch_cmd}")
+                result = helper.executeDispatch(provider, dispatch_cmd, "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self.on_dispatched(eargs)
             return result
         except mEx.CancelEventError:
+            self._logger.info(f'Dispatch Command "{str_cmd}" has been canceled')
             raise
         except Exception as e:
+            self._logger.error(f'Error dispatching "{cmd}"', exc_info=True)
             raise mEx.DispatchError(f'Error dispatching "{cmd}"') from e
 
     # endregion dispatch_cmd()
@@ -2012,6 +2165,18 @@ class LoInst(EventsPartial):
             except Exception:
                 self._sys_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from windows
         return self._sys_font_pixel_ratio
+
+    @property
+    def cache(self) -> LRUCache:
+        """
+        Gets access to the a cache for the current instance.
+
+        This is a Least Recently Used (LRU) Cache. This cache is also used within this framework.
+
+        Returns:
+            LRUCache: Cache instance.
+        """
+        return self._shared_cache
 
 
 __all__ = ("LoInst",)

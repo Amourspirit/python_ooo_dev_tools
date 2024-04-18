@@ -9,8 +9,12 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.draw import impress_page as mImpressPage
@@ -37,6 +41,7 @@ class ImpressDoc(
     """Impress Document Class"""
 
     DOC_TYPE: DocType = DocType.IMPRESS
+    DOC_CLSID: CLSID = CLSID.IMPRESS
 
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
         """
@@ -61,6 +66,8 @@ class ImpressDoc(
         DocPartial.__init__(self, owner=self, component=doc, generic_args=generic_args, lo_inst=lo_inst)
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         self._pages = None
+        self._menu = None
+        self._shortcuts = None
 
     # region Lazy Listeners
 
@@ -372,5 +379,40 @@ class ImpressDoc(
         if self._pages is None:
             self._pages = ImpressPages(owner=self, slides=self.component.getDrawPages(), lo_inst=self.lo_inst)
         return cast("ImpressPages[ImpressDoc]", self._pages)
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Impress Menus.
+
+        Returns:
+            MenuApp: Impress Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                file_menu = doc.menu["file"]
+                file_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.IMPRESS]
+        return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Impress Shortcuts.
+
+        Returns:
+            Shortcuts: Impress Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.IMPRESS, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties

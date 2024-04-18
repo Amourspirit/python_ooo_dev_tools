@@ -136,7 +136,7 @@ class TextTablePropertiesPartial:
             GraphicLocation: Graphic Location
 
         Hint:
-            - ``GraphicLocation`` can be imported from ``ooo.dyn.style.graphic_location ``
+            - ``GraphicLocation`` can be imported from ``ooo.dyn.style.graphic_location``.
         """
         return self.__component.BackGraphicLocation  # type: ignore
 

@@ -47,7 +47,7 @@ General function used to run these examples.
         from ooodev.format.calc.modify.page.header.borders import Sides, Side
         from ooodev.office.calc import Calc
         from ooodev.utils.color import StandardColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 
@@ -274,7 +274,7 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_modify_cell_borders`
         - :ref:`help_calc_format_modify_page_footer_borders`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.header.borders.Padding`
         - :py:class:`ooodev.format.calc.modify.page.header.borders.Sides`

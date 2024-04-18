@@ -9,7 +9,7 @@ from ooodev.utils.dispatch.draw_drawing_dispatch import DrawDrawingDispatch
 from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.office.draw import Draw
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
 

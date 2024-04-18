@@ -23,7 +23,7 @@ Setup
         from ooodev.format.writer.direct.char.font import Font
         from ooodev.office.write import Write
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 
@@ -206,6 +206,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_char_font_only`
         - :ref:`help_writer_format_direct_char_font_effects`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.char.font.Font`

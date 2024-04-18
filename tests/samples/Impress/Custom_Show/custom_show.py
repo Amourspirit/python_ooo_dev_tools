@@ -5,7 +5,7 @@ from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, 
 from ooodev.office.draw import Draw
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr

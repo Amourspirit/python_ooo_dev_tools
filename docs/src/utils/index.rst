@@ -5,6 +5,7 @@ utils
     :titlesonly:
     :glob:
 
+    builder/index
     context/index
     comp/index
     data_type/index

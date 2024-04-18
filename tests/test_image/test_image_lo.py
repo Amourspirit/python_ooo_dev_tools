@@ -97,7 +97,7 @@ def _test_add_image_link(loader, fix_image_path) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
     from ooodev.utils.images_lo import ImagesLo
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
 
     visible = True
     delay = 2000

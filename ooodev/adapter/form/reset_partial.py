@@ -5,6 +5,7 @@ from com.sun.star.form import XReset
 
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 if TYPE_CHECKING:
     from com.sun.star.form import XResetListener
@@ -60,3 +61,19 @@ class ResetPartial:
         self.__component.reset()
 
     # endregion XReset
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+
+    builder.auto_add_interface("com.sun.star.form.XReset")
+    return builder

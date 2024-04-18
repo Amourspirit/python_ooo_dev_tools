@@ -46,7 +46,7 @@ General function used to run these examples:
             from ooodev.format.writer.direct.para.area import Color
             from ooodev.format.writer.direct.para.transparency import Transparency
             from ooodev.office.write import Write
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
             from ooodev.loader.lo import Lo
             from ooodev.utils.color import StandardColor
 
@@ -173,6 +173,6 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_para_transparency`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.transparency.Transparency`

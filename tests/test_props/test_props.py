@@ -10,7 +10,7 @@ def test_show_indexed_props(loader, capsys: pytest.CaptureFixture) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)
@@ -34,7 +34,7 @@ def test_prop_value_to_string(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
-    # from ooodev.utils.gui import GUI
+    # from ooodev.gui.gui import GUI
 
     assert loader is not None
     doc = Calc.create_doc(loader)

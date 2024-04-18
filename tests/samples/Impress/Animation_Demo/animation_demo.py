@@ -5,7 +5,7 @@ import uno
 from ooodev.office.draw import Draw
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 

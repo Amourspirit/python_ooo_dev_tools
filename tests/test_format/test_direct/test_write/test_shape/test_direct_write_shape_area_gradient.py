@@ -21,7 +21,7 @@ from ooodev.format.writer.direct.shape.area import (
     ColorRange,
     IntensityRange,
 )
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.office.draw import Draw

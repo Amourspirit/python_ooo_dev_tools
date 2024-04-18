@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs
@@ -8,6 +8,7 @@ from ooodev.adapter.awt.grid.grid_data_listener import GridDataListener
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+    from com.sun.star.awt.grid import XMutableGridDataModel
 
 
 class GridDataEvents:
@@ -180,3 +181,31 @@ class GridDataEvents:
         return self.__listener
 
     # endregion Manage Events
+
+
+def on_lazy_cb(source: Any, event: ListenerEventArgs) -> None:
+    """
+    Callback that is invoked when an event is added or removed.
+
+    This method is generally used to add the listener to the component in a lazy manner.
+    This means this callback will only be called once in the lifetime of the component.
+
+    Args:
+        source (Any): Expected to be an instance of GridDataEvents that is a partial class of a component based class.
+        event (ListenerEventArgs): Event arguments.
+
+    Returns:
+        None:
+
+    Warning:
+        This method is intended for internal use only.
+    """
+    # will only ever fire once
+    if not isinstance(source, GridDataEvents):
+        return
+    if not hasattr(source, "component"):
+        return
+
+    comp = cast("XMutableGridDataModel", source.component)  # type: ignore
+    comp.addGridDataListener(source.events_listener_grid_data)
+    event.remove_callback = True

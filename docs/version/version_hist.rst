@@ -2,6 +2,163 @@
 Version History
 ***************
 
+Version 0.40.0
+==============
+
+Menu
+----
+
+New menu options have been added to the library for working with the menu system and menu shortcuts.
+A lot of work has been done in this area.
+
+See :ref:`help_common_menus` for more information.
+
+GUI
+---
+
+The ``gui`` module has been moved from the ``ooodev.utils`` to the ``ooodev.gui`` module.
+
+The old imports still work but are deprecated.
+
+New proper usage:
+
+.. code-block:: python
+
+    from ooodev.gui import Gui
+    # ...
+
+New ``ooodev.macro.MacroScript`` class tha can be used to invoke python or basic macro scripts.
+
+Many new enhancements to the underlying dynamic construction of components that implement services.
+Now classes can be implemented based upon the services they support at runtime.
+
+Caching
+-------
+
+Added a new caching class that can be used to cache objects.
+
+The ``ooodev.utils.lru_cache.LRUCache`` class can be used to cache objects.
+
+The an instance ``LRUCache`` is used in the ``Lo`` class and can be accessed via the ``Lo.cache`` property.
+The ``Lo.cache`` can be used to cache objects that are used often.
+
+The size of the cache can be set in the options if needed. The default size is ``200``.
+
+
+.. code-block:: python
+
+    from ooodev.loader import Lo
+    from ooodev.loader.inst import Options
+
+    loader = Lo.load_office(
+        connector=Lo.ConnectPipe(),
+        opt=Options(log_level=logging.DEBUG, lo_cache_size=400)
+    )
+    # ...
+    Lo.cache["my_key"] = "my_value"
+    assert Lo.cache["my_key"] == "my_value"
+
+Logging
+-------
+
+A new logger has been added to the library.
+
+The default logging level is ``logging.INFO``.
+
+Currently there is only logging to the console.
+
+The |odev| Library uses is currently using this logging in a limited way.
+This will change in subsequent versions.
+
+Logging Module
+^^^^^^^^^^^^^^
+
+This logger is a singleton and can be accessed via the ``ooodev.logger`` module.
+
+To use the logger simply import the module and use th logging methods:
+
+Logging Date format is in the format ``"%d/%m/%Y %H:%M:%S"`` (Day, Month, Year, Hour, Minute, Second).
+
+.. code-block:: python
+
+    from ooodev.io.log import logging as logger
+    logger.info("Hello World")
+    logger.error("Error has occured")
+
+Named Logger
+^^^^^^^^^^^^
+
+For convenience a named logger has been added to the library.
+It is a wrapper around the logger that allows for a name to be added to the log output.
+
+.. code-block:: python
+
+    from ooodev.io.log import NamedLogger
+
+    class MyClass:
+        def __init__(self):
+            # ...
+            self._logger = NamedLogger(name=f"{self.__class__.__name__} - {self._implementation_name}")
+
+        def _process_import(self, arg) -> None:
+            # ...
+            clz = self._get_class(arg)
+            self._add_base(clz, arg)
+            self._logger.debug(f"Added: {arg.ooodev_name}")
+            # ...
+
+The log output might look like this:
+
+.. code-block::
+
+    09/04/2024 10:15:45 - DEBUG - MyClass - ScTabViewObj: Added: ooodev.utils.partial.service_partial.ServicePartial
+
+Logging Options
+^^^^^^^^^^^^^^^
+
+``Options`` now has a new ``log_level`` property that can be set to control the logging level of the library.
+
+.. code-block:: python
+
+    import logging
+    from ooodev.loader.inst.options import Options
+
+    loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+    # ...
+
+Also the log level can be set via the logging module.
+
+.. code-block:: python
+
+    import logging
+    from ooodev.io.log import logging as logger
+
+    logger.set_log_level(logging.DEBUG)
+    assert logger.get_log_level() == logging.DEBUG
+
+Bug Fixes
+---------
+
+Fixed bug in ``ooodev.units.UnitMM10.from_unit_val()`` that was not converting the value correctly.
+
+Version 0.39.1
+==============
+
+Update Form Controls to allow for better access to the control properties.
+Form controls are now also context managers.
+
+Using ``ctl.set_property()`` will automatically toggle control design  mode if needed.
+
+Example of using a control as a context manager:
+
+The width block will toggle design mode on and off.
+
+.. code-block:: python
+
+    with ctl:
+        ctl.model.Width = 200   
+
+
 Version 0.39.0
 ==============
 

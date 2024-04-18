@@ -16,7 +16,7 @@ from ooodev.format.writer.direct.table.borders import (
     LineSize,
 )
 from ooodev.format import StandardColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.table_helper import TableHelper

@@ -10,7 +10,7 @@ import uno
 from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.office.write import Write
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.selection import WordTypeEnum
 
 from com.sun.star.text import XTextDocument

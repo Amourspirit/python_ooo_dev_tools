@@ -20,7 +20,7 @@ from ooodev.utils.props import Props
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.utils.color import CommonColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.proto.size_obj import SizeObj
 
 from ooo.dyn.drawing.line_cap import LineCap

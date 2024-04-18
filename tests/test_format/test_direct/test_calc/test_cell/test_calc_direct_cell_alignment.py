@@ -11,7 +11,7 @@ from ooo.dyn.table.cell_hori_justify import CellHoriJustify
 
 from ooodev.format.calc.direct.cell.alignment import TextAlign, HoriAlignKind, VertAlignKind
 from ooodev.format import Styler
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.units.unit_mm100 import UnitMM100
 

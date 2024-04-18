@@ -40,7 +40,7 @@ General function used to run these examples.
             from ooodev.office.write import Write
             from ooodev.units import UnitMM
             from ooodev.utils.color import StandardColor
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
             from ooodev.loader.lo import Lo
 
 
@@ -243,7 +243,7 @@ Related Topics
         - |story_creator|_
         - :py:class:`~ooodev.units.UnitMM`
         - :py:mod:`ooodev.utils.color`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.style.Para`
 

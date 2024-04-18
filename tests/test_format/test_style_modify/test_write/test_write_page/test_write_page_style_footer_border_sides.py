@@ -14,7 +14,7 @@ from ooodev.format.writer.modify.page.footer.borders import (
     BorderLineKind,
 )
 from ooodev.format import Styler
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write

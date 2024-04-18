@@ -80,7 +80,7 @@ from ooodev.units.unit_mm import UnitMM
 from ooodev.utils import color as mColor
 from ooodev.utils import file_io as mFileIO
 from ooodev.utils import gen_util as gUtil
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils import images_lo as mImgLo
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
