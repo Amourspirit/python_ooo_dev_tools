@@ -46,7 +46,7 @@ General function used to run these examples:
             from typing import TYPE_CHECKING, cast
             from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
             from ooodev.office.write import Write
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
             from ooodev.loader.lo import Lo
             
             if TYPE_CHECKING:
@@ -156,6 +156,6 @@ Related Topics
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_para_gradient`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.area.Gradient`

@@ -8,6 +8,8 @@ from ooo.dyn.util.date_time import DateTime as UnoDateTime
 from ooo.dyn.util.date import Date as UnoDate
 from ooo.dyn.util.time import Time as UnoTime
 from ooodev.loader import lo as mLo
+from ooodev.meta.static_meta import classproperty
+from ooodev.io.log.logging import info
 
 
 class DateUtil:
@@ -332,5 +334,142 @@ class DateUtil:
         """
         dt = cls.uno_dt_to_dt(uno_dt)
         return "" if dt == mLo.Lo.null_date else cls.date_time_str(dt)
+
+    @classmethod
+    def date(cls, year: int, month: int, day: int) -> datetime.date:
+        """Get date from year, month, day
+
+        Args:
+            year (int): Year
+            month (int): Month
+            day (int): Day
+
+        Returns:
+            datetime.date: date object
+
+        See Also:
+            `See Python date <https://docs.python.org/3/library/datetime.html#date-objects>`__
+        """
+        d = datetime.date(year, month, day)
+        return d
+
+    @classmethod
+    def time(cls, hours: int, minutes: int, seconds: int) -> datetime.time:
+        """Get time from hour, minutes, seconds
+
+        Args:
+            hours (int): Hours
+            minutes (int): Minutes
+            seconds (int): Seconds
+
+        Returns:
+            datetime.time: Time object
+        """
+        t = datetime.time(hours, minutes, seconds)
+        return t
+
+    @classmethod
+    def datetime(cls, year: int, month: int, day: int, hours: int, minutes: int, seconds: int) -> datetime.datetime:
+        """Get datetime from year, month, day, hours, minutes and seconds
+
+        Args:
+            year (int): Year
+            month (int): Month
+            day (int): Day
+            hours (int): Hours
+            minutes (int): Minutes
+            seconds (int): Seconds
+
+        Returns:
+            datetime.datetime: Datetime object
+        """
+        dt = datetime.datetime(year, month, day, hours, minutes, seconds)
+        return dt
+
+    @classmethod
+    def calc_to_date(cls, value: float):
+        """
+        Get date from calc value
+
+        Args:
+            value (float): Float value from cell
+
+        Returns:
+            datetime.date: Date object, the current local date.
+
+        See Also:
+            `See Python fromordinal <https://docs.python.org/3/library/datetime.html#datetime.datetime.fromordinal>`__
+        """
+        from ooodev.utils.info import Info
+
+        d = datetime.date.fromordinal(int(value) + Info.date_offset)
+        return d
+
+    @classmethod
+    def start(cls):
+        """Start counter"""
+        cls._start = cls.now
+        info("Start: ", cls._start)
+        return
+
+    @classmethod
+    def end(cls, get_seconds: bool = True):
+        """End counter
+
+        Args:
+            get_seconds (bool): If return value in total seconds.
+
+        Returns:
+            timedelta | int: Return the timedelta or total seconds.
+        """
+        e = cls.now
+        td = e - cls._start
+        result = str(td)
+        if get_seconds:
+            result = td.total_seconds()
+        info("End: ", e)
+        return result
+
+    @classproperty
+    def now(cls) -> datetime.datetime:
+        """
+        Current local date and time
+
+        Returns:
+            datetime: Return the current local date and time, remove microseconds.
+        """
+        return datetime.datetime.now().replace(microsecond=0)
+
+    @classproperty
+    def now_time(cls) -> datetime.time:
+        """Current local time
+
+        Returns:
+            datetime.time: Return the current local time
+        """
+        return cls.now.time()
+
+    @classproperty
+    def today(cls) -> datetime.date:
+        """Current local date
+
+        Returns:
+            datetime.date: Return the current local date
+        """
+        return datetime.date.today()
+
+    @classproperty
+    def epoch(cls):
+        """Get unix time
+
+        Returns:
+            int: Unix time.
+
+        See Also:
+            `See Unix Time <https://en.wikipedia.org/wiki/Unix_time>`__
+        """
+        n = cls.now
+        e = int(time.mktime(n.timetuple()))
+        return e
 
     # endregion ------------ convert methods ---------------------------

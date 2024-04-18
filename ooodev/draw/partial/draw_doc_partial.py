@@ -9,7 +9,7 @@ from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.draw import draw_pages as mDrawPages
 from ooodev.office import draw as mDraw
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils import gui as mGUI
+from ooodev.gui import gui as mGui
 from ooodev.loader import lo as mLo
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.loader.inst.lo_inst import LoInst

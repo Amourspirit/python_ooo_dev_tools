@@ -57,3 +57,26 @@ class ContainerPartial:
         self.__component.removeContainerListener(listener)
 
     # endregion XContainer
+
+
+def get_builder(component: Any) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.add_import(
+        name="ooodev.adapter.container.container_partial.ContainerPartial",
+        uno_name="com.sun.star.container.XContainer",
+        optional=False,
+        init_kind=2,
+    )
+    return builder

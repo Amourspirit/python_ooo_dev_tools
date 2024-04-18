@@ -11,6 +11,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XDispatch
     from com.sun.star.util import URL  # Struct
     from com.sun.star.frame import DispatchDescriptor  # Struct
@@ -76,3 +77,21 @@ class DispatchProviderPartial:
         return self.__component.queryDispatches(requests)
 
     # endregion XDispatchProvider
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XDispatchProvider", False)
+    return builder

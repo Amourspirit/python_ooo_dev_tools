@@ -12,7 +12,7 @@ from com.sun.star.lang import XComponent
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, ShapeCombKind, DrawingShapeKind, GluePointsKind, GraphicStyleKind, mEx
 from ooodev.utils.color import CommonColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props

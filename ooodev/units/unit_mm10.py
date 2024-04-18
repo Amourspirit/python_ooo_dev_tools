@@ -509,4 +509,4 @@ class UnitMM10(BaseFloatValue):
             unit_val = value.get_value_mm()  # type: ignore
             return cls.from_mm(unit_val)
         except AttributeError:
-            return cls.from_mm(float(value))  # type: ignore
+            return cls.from_mm10(float(value))  # type: ignore

@@ -29,7 +29,7 @@ General function used to run these examples.
             import uno
             from ooodev.format.writer.style import Page, WriterStylePageKind
             from ooodev.format.writer.modify.page.area import Color as PageAreaColor
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
             from ooodev.loader.lo import Lo
             from ooodev.office.write import Write
             from ooodev.utils.color import StandardColor
@@ -147,6 +147,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_modify_page_area`
         - :py:class:`~ooodev.office.write.Write`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.style.Page`

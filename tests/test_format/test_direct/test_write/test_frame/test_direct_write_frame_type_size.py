@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.direct.frame.type import Size, RelativeKind, RelativeSize, AbsoluteSize
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write

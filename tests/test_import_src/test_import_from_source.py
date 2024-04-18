@@ -14,5 +14,5 @@ def test_ooodev_modules(module):
 
 def test_ooodev_imports_single():
     # this method can be use for specific debugging.
-    # _test_imports_from_source("ooodev.utils.gui")
+    # _test_imports_from_source("ooodev.adapter.configuration.configuration_access_comp")
     _test_imports_from_source("")

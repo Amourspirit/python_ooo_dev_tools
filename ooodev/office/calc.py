@@ -82,7 +82,7 @@ from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ooodev.exceptions import ex as mEx
 from ooodev.formatters.formatter_table import FormatterTable
 from ooodev.units.unit_convert import UnitConvert
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils import info as mInfo
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps

@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.writer.direct.char.highlight import Highlight
 from ooodev.format import CommonColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.format.writer.direct.char.font import (

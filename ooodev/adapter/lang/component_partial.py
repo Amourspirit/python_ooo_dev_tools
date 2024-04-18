@@ -61,3 +61,21 @@ class ComponentPartial:
         self.__component.dispose()
 
     # endregion XComponent
+
+
+def get_builder(component: Any) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.lang.XComponent", False)
+    return builder

@@ -7,7 +7,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.calc.modify.page.header import Header, CalcStylePageKind
 from ooodev.format.calc.modify.page.header.borders import Padding
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.format import Styler
 from ooodev.office.calc import Calc

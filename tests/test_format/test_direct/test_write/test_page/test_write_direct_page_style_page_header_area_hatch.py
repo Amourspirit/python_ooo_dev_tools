@@ -9,7 +9,7 @@ import uno
 from ooodev.format.writer.direct.page.header import Header
 from ooodev.format.writer.direct.page.header.area import Hatch, PresetHatchKind
 from ooodev.format.writer.direct.char.font import Font
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.color import StandardColor

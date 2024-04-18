@@ -699,6 +699,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_calc_format_direct_cell_borders`
         - :py:meth:`Write.add_table() <ooodev.office.write.Write.add_table>`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.table.borders.Borders`

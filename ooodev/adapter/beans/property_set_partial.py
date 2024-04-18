@@ -24,7 +24,7 @@ class PropertySetPartial:
         Constructor
 
         Args:
-            component (XPropertySet): UNO Component that implements ``com.sun.star.container.XPropertySet`` interface.
+            component (XPropertySet): UNO Component that implements ``com.sun.star.beans.XPropertySet`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XPropertySet``.
         """
 
@@ -111,3 +111,26 @@ class PropertySetPartial:
         self.__component.setPropertyValue(name, value)
 
     # endregion XPropertySet
+
+
+def get_builder(component: Any) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.add_import(
+        name="ooodev.adapter.beans.property_set_partial.PropertySetPartial",
+        uno_name="com.sun.star.beans.XPropertySet",
+        optional=False,
+        init_kind=2,
+    )
+    return builder

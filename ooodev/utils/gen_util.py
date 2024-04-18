@@ -148,6 +148,28 @@ class Util:
         return True if isclass(arg) and issubclass(arg, ex_types) else arg in ex_types
 
     @staticmethod
+    def camel_to_snake(name: str) -> str:
+        """Converts CamelCase to snake_case
+
+        Args:
+            name (str): CamelCase string
+
+        Returns:
+            str: snake_case string
+
+        Note:
+            This method is preferred over the `to_snake_case` method when converting CamelCase strings.
+            It does a better job of handling leading caps. ``UICamelCase`` will be converted to ``ui_camel_case`` and not ``u_i_camel_case``.
+        """
+        # This function uses regular expressions to insert underscores between the lowercase and uppercase letters, then converts the entire string to lowercase.
+
+        # The first `re.sub` call inserts an underscore before any uppercase letter that is preceded by a lowercase letter or a number.
+        # The second `re.sub` call inserts an underscore before any uppercase letter that is followed by a lowercase letter.
+        # The `lower` method then converts the entire string to lowercase.
+        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
+
+    @staticmethod
     def to_camel_case(s: str) -> str:
         """
         Converts string to ``CamelCase``

@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 import uno
 from ooodev.format.writer.direct.shape.shadow import Shadow, ShadowLocationKind
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.office.draw import Draw

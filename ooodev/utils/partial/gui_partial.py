@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 import contextlib
 import uno
 from com.sun.star.awt import XTopWindow2
@@ -11,9 +11,15 @@ from com.sun.star.frame import XModel
 from com.sun.star.view import XControlAccess
 from com.sun.star.view import XSelectionSupplier
 
+from ooodev.gui import gui as mGui
+from ooodev.gui.comp.frame import Frame
 from ooodev.loader.inst.lo_inst import LoInst
-from ooodev.utils import gui as mGui
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+
+
+if TYPE_CHECKING:
+    from com.sun.star.awt import XTopWindow
 
 
 class GuiPartial:
@@ -40,6 +46,20 @@ class GuiPartial:
         """
         controller = self.get_current_controller()
         return controller.getFrame()
+
+    def get_frame_comp(self) -> Frame:
+        """
+        Gets frame from doc as a FrameComp.
+
+        Returns:
+            FrameComp: document frame.
+        """
+        frm = self.get_frame()
+        if frm is None:
+            return None  # type: ignore
+        if isinstance(self, LoInstPropsPartial):
+            return Frame(frm, lo_inst=self.lo_inst)
+        return Frame(frm)
 
     def get_control_access(self) -> XControlAccess:
         """
@@ -80,6 +100,19 @@ class GuiPartial:
         """
         frame = self.get_frame()
         return self.__lo_inst.qi(XDispatchProviderInterception, frame, True)
+
+    def get_top_window(self) -> XTopWindow | None:
+        """
+        Gets top window.
+
+        Returns:
+            XTopWindow | None: Top window or None if there is no Active Top Window.
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.adapter.awt.toolkit_comp import ToolkitComp
+
+        tk = ToolkitComp.from_lo(self.__lo_inst)
+        return tk.get_active_top_window()
 
     def activate(self) -> None:
         """

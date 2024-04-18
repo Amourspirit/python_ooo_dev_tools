@@ -1,0 +1,8 @@
+log
+===
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

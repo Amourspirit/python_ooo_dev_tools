@@ -1,12 +1,14 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 import uno
 from com.sun.star.frame import XFramesSupplier
 
+
 from ooodev.adapter.frame.frame_partial import FramePartial
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XFrame
     from com.sun.star.frame import XFrames
     from ooodev.utils.type_var import UnoInterface
@@ -64,3 +66,23 @@ class FramesSupplierPartial(FramePartial):
         self.__component.setActiveFrame(frame)
 
     # endregion XFramesSupplier
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XFrame", False)
+    builder.auto_add_interface("com.sun.star.frame.XFramesSupplier", False)
+    builder.set_omit("com.sun.star.lang.XComponent")
+    return builder

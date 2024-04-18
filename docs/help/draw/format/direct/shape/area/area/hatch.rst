@@ -22,7 +22,7 @@ Setup
         from ooodev.format.draw.direct.area import Hatch as ShapeHatch
         from ooodev.format.draw.direct.area import PresetHatchKind
         from ooodev.office.draw import Draw
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 

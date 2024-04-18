@@ -15,6 +15,7 @@ Submodules
    ooodev.adapter.view.screen_cursor_partial
    ooodev.adapter.view.selection_change_events
    ooodev.adapter.view.selection_change_listener
+   ooodev.adapter.view.selection_supplier_comp
    ooodev.adapter.view.selection_supplier_partial
 
 Module contents

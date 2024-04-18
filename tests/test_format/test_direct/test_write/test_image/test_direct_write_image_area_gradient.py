@@ -16,7 +16,7 @@ from ooodev.format.writer.direct.image.area import (
     IntensityRange,
 )
 from ooodev.format.writer.direct.image.options import Names
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.utils.images_lo import ImagesLo

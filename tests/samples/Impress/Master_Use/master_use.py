@@ -10,7 +10,7 @@ from __future__ import annotations
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.props import Props
 from ooodev.utils.color import CommonColor
 

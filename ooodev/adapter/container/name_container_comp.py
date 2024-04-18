@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.name_container_partial import NameContainerPartial
 
 if TYPE_CHECKING:
     from com.sun.star.container import XNameContainer
 
 
-class NameContainerComp(ComponentBase, NameContainerPartial):
+class NameContainerComp(ComponentProp, NameContainerPartial):
     """
     Class for managing XNameContainer Component.
     """
@@ -23,7 +23,7 @@ class NameContainerComp(ComponentBase, NameContainerPartial):
             component (XNameContainer): UNO Component that implements ``com.sun.star.container.XNameContainer``.
         """
 
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         NameContainerPartial.__init__(self, component=self.component)
 
     # region Overrides
@@ -38,6 +38,7 @@ class NameContainerComp(ComponentBase, NameContainerPartial):
     @property
     def component(self) -> XNameContainer:
         """XNameContainer Component"""
+        # overrides base property
         # pylint: disable=no-member
         return cast("XNameContainer", self._ComponentBase__get_component())  # type: ignore
 

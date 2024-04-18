@@ -9,7 +9,7 @@ from ooodev.office.chart2 import Chart2, Angle
 from ooodev.office.write import Write
 from ooodev.utils.dispatch.global_edit_dispatch import GlobalEditDispatch
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr

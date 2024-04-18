@@ -67,7 +67,7 @@ For example |exmonitor|_ uses |terminate_events| and |event_events|.
                     import unohelper
 
                     from ooodev.office.write import Write
-                    from ooodev.utils.gui import GUI
+                    from ooodev.gui import GUI
                     from ooodev.loader.lo import Lo
 
                     from com.sun.star.awt import XExtendedToolkit
@@ -138,7 +138,7 @@ For example |exmonitor|_ uses |terminate_events| and |event_events|.
                     from ooodev.events.args.event_args import EventArgs
                     from ooodev.adapter.awt.top_window_events import TopWindowEvents
                     from ooodev.office.write import Write
-                    from ooodev.utils.gui import GUI
+                    from ooodev.gui import GUI
                     from ooodev.loader.lo import Lo
 
                     from com.sun.star.awt import XWindow
@@ -644,7 +644,7 @@ The code is wrapped up in :py:meth:`.Lo.dispatch_cmd`, which is called twice in 
             import sys
 
             from ooodev.loader.lo import Lo
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
 
             # endregion Imports
 
@@ -742,7 +742,7 @@ See :ref:`events_lo_events_Events`.
             from typing import Any
 
             from ooodev.loader.lo import Lo
-            from ooodev.utils.gui import GUI
+            from ooodev.gui import GUI
             from ooodev.events.lo_events import Events
             from ooodev.events.lo_named_event import LoNamedEvent
             from ooodev.events.args.dispatch_args import DispatchArgs

@@ -35,7 +35,7 @@ class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPar
             tbl_data = read_table(fnm) # get the table data from a file.
             cursor = doc.get_cursor()
             cursor.append_para("Table of Bond Movies")
-            cursor.append_para('The following table comes form "bondMovies.txt"\n')
+            cursor.append_para('The following table comes form "bondMovies.txt"\\n')
 
             # with doc locks the controllers while the table is being added to the document.
             with doc:

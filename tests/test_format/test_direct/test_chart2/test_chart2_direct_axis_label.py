@@ -19,7 +19,7 @@ from ooodev.format.chart2.direct.axis.label import Show as AxisShow
 from ooodev.format.chart2.direct.axis.label import Order as AxisOrder, ChartAxisArrangeOrderType
 from ooodev.format.chart2.direct.axis.label import TextFlow as AxisTextFlow
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 

@@ -3,7 +3,7 @@ import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc
 from ooodev.listeners.x_selection_change_adapter import XSelectionChangeAdapter

@@ -11,6 +11,11 @@ from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
 
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
+from ooodev.calc import calc_sheet as mCalcSheet
+from ooodev.calc import calc_sheet_view as mCalcSheetView
+from ooodev.calc import calc_sheets as mCalcSheets
+from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
+from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
 from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 from ooodev.events.args.calc.sheet_args import SheetArgs
 from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
@@ -22,16 +27,21 @@ from ooodev.events.lo_events import observe_events
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.style_partial import StylePartial
+from ooodev.gui import gui as mGui
+from ooodev.gui.menu.menu_app import MenuApp
+from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
+from ooodev.loader import lo as mLo
+from ooodev.loader.inst.clsid import CLSID
+from ooodev.loader.inst.doc_type import DocType
+from ooodev.loader.inst.service import Service as LoService
 from ooodev.office import calc as mCalc
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils import gui as mGUI
 from ooodev.utils import info as mInfo
-from ooodev.loader import lo as mLo
 from ooodev.utils import view_state as mViewState
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.loader.inst.doc_type import DocType
-from ooodev.loader.inst.service import Service as LoService
+from ooodev.utils.data_type.rng.range_converter import RangeConverter
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
@@ -40,12 +50,6 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-from ooodev.calc import calc_sheet as mCalcSheet
-from ooodev.calc import calc_sheets as mCalcSheets
-from ooodev.calc import calc_sheet_view as mCalcSheetView
-from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
-from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages
-from ooodev.utils.data_type.rng.range_converter import RangeConverter
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -79,6 +83,7 @@ class CalcDoc(
     """Defines a Calc Document"""
 
     DOC_TYPE: DocType = DocType.CALC
+    DOC_CLSID: CLSID = CLSID.CALC
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
         """
@@ -114,6 +119,9 @@ class CalcDoc(
         self._draw_pages = None
         self._current_controller = None
         self._range_converter = None
+        self._menu = None
+        self._menu_bar = None
+        self._shortcuts = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -936,7 +944,7 @@ class CalcDoc(
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.component, visible=visible)
+        mGui.GUI.set_visible(doc=self.component, visible=visible)
 
     def unfreeze(self) -> None:
         """
@@ -1134,5 +1142,40 @@ class CalcDoc(
         if self._range_converter is None:
             self._range_converter = RangeConverter(lo_inst=self.lo_inst)
         return self._range_converter
+
+    @property
+    def menu(self) -> MenuApp:
+        """
+        Gets access to Calc Menus.
+
+        Returns:
+            MenuApp: Calc Menu
+
+        Example:
+            .. code-block:: python
+
+                # Example of getting the Calc Menus
+                tools_menu = doc.menu["tools"]
+                tools_menu[3].execute()
+
+        .. versionadded:: 0.40.0
+        """
+        if self._menu is None:
+            self._menu = Menus(lo_inst=self.lo_inst)[LoService.CALC]
+        return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Calc Shortcuts.
+
+        Returns:
+            Shortcuts: Calc Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.CALC, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties

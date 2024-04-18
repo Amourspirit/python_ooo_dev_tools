@@ -25,7 +25,7 @@ General function used to run these examples.
 
         import uno
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.calc.modify.page.area import Color as PageStyleColor, CalcStylePageKind
         from ooodev.format.calc.modify.page.area import Img as PageStyleImg, PresetImageKind
@@ -157,7 +157,7 @@ Related Topics
 
         - :ref:`help_format_format_kinds`
         - :ref:`help_format_coding_style`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.calc.modify.page.area.Color`
         - :py:class:`ooodev.format.calc.modify.page.area.Img`

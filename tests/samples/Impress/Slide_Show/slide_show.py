@@ -4,7 +4,7 @@ import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, FadeEffect, AnimationSpeed, DrawingGradientKind, DrawingSlideShowKind
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 

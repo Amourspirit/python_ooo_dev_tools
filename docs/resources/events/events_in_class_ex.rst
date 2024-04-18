@@ -13,7 +13,7 @@
         from ooodev.events.lo_events import Events
         from ooodev.events.lo_named_event import LoNamedEvent
         from ooodev.office.calc import Calc
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
 
 

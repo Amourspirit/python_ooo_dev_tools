@@ -25,7 +25,7 @@ General function used to run these examples.
         import sys
         from ooodev.office.write import Write
         from ooodev.utils.color import CommonColor
-        from ooodev.utils.gui import GUI
+        from ooodev.gui import GUI
         from ooodev.loader.lo import Lo
         from ooodev.format.writer.direct.para.area import Color as ParaBgColor
 
@@ -171,6 +171,6 @@ Related Topics
 
         - :ref:`help_writer_format_style_para_reset_default`
         - :ref:`help_writer_format_modify_para_color`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.direct.para.area.Color`

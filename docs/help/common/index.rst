@@ -7,5 +7,6 @@ Common Help Topics
     :glob:
 
     format/index
+    menus/index
     modules/index
     ranges/index

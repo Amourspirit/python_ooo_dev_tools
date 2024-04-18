@@ -10,7 +10,7 @@ from ooodev.format.writer.modify.page.footer.area import Color
 from ooodev.format.writer.modify.page.footer.transparency import Gradient, GradientStyle, Angle, IntensityRange
 from ooodev.format import Styler
 from ooodev.utils.color import StandardColor
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 

@@ -10,7 +10,7 @@ from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, 
 from ooodev.office.calc import Calc
 from ooodev.office.chart import Chart, ChartDiagramKind, ChartDataCaptionEnum, Intensity
 from ooodev.utils.file_io import FileIO
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
 

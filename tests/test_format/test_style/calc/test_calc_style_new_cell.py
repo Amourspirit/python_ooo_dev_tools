@@ -12,7 +12,7 @@ from ooodev.format.calc.style import Cell, StyleCellKind
 from ooodev.format.calc.modify.cell.background import Color as BgColor
 from ooodev.format.calc.modify.cell.font import FontEffects
 from ooodev.office.calc import Calc
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.color import CommonColor
 

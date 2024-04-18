@@ -10,7 +10,7 @@ if __name__ == "__main__":
 def test_highlight_range(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.utils.color import CommonColor
     from ooodev.events.lo_events import event_ctx, EventArg
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -67,7 +67,7 @@ def test_highlight_range(loader) -> None:
 def test_highlight_range_cancel(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.events.lo_events import event_ctx, EventArg
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
@@ -107,7 +107,7 @@ def test_highlight_range_cancel(loader) -> None:
 def test_highlight_local_events(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.utils.color import CommonColor
     from ooodev.events.lo_events import Events, LoEvents
     from ooodev.events.calc_named_event import CalcNamedEvent
@@ -175,7 +175,7 @@ def test_highlight_local_events(loader) -> None:
 def test_highlight_events_destroy(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.utils.gui import GUI
+    from ooodev.gui.gui import GUI
     from ooodev.utils.color import CommonColor
     from ooodev.events.lo_events import Events, LoEvents
     from ooodev.events.calc_named_event import CalcNamedEvent

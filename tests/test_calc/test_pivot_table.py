@@ -5,7 +5,7 @@ from typing import cast, TYPE_CHECKING
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.uno_enum import UnoEnum

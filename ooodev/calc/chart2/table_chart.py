@@ -10,7 +10,7 @@ from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.office import chart2 as mChart2
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial

@@ -5,7 +5,7 @@ from com.sun.star.view import XSelectionSupplier
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.utils import info as mInfo
-from ooodev.utils import gui as mGui
+from ooodev.gui import gui as mGui
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.adapter.drawing.shapes_partial import ShapesPartial

@@ -47,3 +47,26 @@ class ChildPartial:
         self.__component.setParent(parent)
 
     # endregion XChild
+
+
+def get_builder(component: Any) -> Any:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.add_import(
+        name="ooodev.adapter.container.child_partial.ChildPartial",
+        uno_name="com.sun.star.container.XChild",
+        optional=False,
+        init_kind=2,
+    )
+    return builder

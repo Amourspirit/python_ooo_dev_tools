@@ -16,7 +16,7 @@ except ImportError:
 
 from ooodev.format.chart2.direct.axis.numbers import Numbers, NumberFormatIndexEnum
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 from ooodev.utils.kind.zoom_kind import ZoomKind

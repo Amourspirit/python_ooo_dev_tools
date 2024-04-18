@@ -18,9 +18,7 @@ class RotationDescriptorPropertiesPartial:
 
     This service is deprecated, instead please use the Transformation property of the service Shape.
 
-    .. deprecated::
-
-        Class is deprecated.
+    **Deprecated::**  Class is deprecated.
 
     See Also:
         `API RotationDescriptor <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1drawing_1_1RotationDescriptor.html>`_

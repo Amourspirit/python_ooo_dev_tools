@@ -135,6 +135,6 @@ Related Topics
         - :ref:`help_format_coding_style`
         - :ref:`help_writer_format_direct_para_area_pattern`
         - :ref:`help_writer_format_modify_page_area`
-        - :py:class:`~ooodev.utils.gui.GUI`
+        - :py:class:`~ooodev.gui.GUI`
         - :py:class:`~ooodev.loader.Lo`
         - :py:class:`ooodev.format.writer.modify.para.area.Pattern`

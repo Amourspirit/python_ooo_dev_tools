@@ -9,7 +9,7 @@ import uno
 
 # from ooodev.format.inner.direct.write.para.indent_space.spacing import Spacing
 from ooodev.format.writer.direct.para.indent_space import Spacing
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 

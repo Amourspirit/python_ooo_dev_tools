@@ -31,16 +31,19 @@ Submodules
    ooodev.adapter.awt.control_model_partial
    ooodev.adapter.awt.control_partial
    ooodev.adapter.awt.currency_field_partial
+   ooodev.adapter.awt.data_transfer_provider_access_partial
    ooodev.adapter.awt.date_field_partial
    ooodev.adapter.awt.dialog2_partial
    ooodev.adapter.awt.dialog_partial
    ooodev.adapter.awt.enhanced_mouse_click_events
    ooodev.adapter.awt.enhanced_mouse_click_handler
+   ooodev.adapter.awt.extended_toolkit_partial
    ooodev.adapter.awt.fixed_hyperlink_partial
    ooodev.adapter.awt.fixed_text_partial
    ooodev.adapter.awt.focus_events
    ooodev.adapter.awt.focus_listener
    ooodev.adapter.awt.font_descriptor_struct_comp
+   ooodev.adapter.awt.font_mapping_use_partial
    ooodev.adapter.awt.gradient_struct_comp
    ooodev.adapter.awt.item_events
    ooodev.adapter.awt.item_list_events
@@ -52,6 +55,12 @@ Submodules
    ooodev.adapter.awt.key_listener
    ooodev.adapter.awt.layout_constrains_partial
    ooodev.adapter.awt.list_box_partial
+   ooodev.adapter.awt.menu_bar_comp
+   ooodev.adapter.awt.menu_bar_partial
+   ooodev.adapter.awt.menu_events
+   ooodev.adapter.awt.menu_listener
+   ooodev.adapter.awt.menu_partial
+   ooodev.adapter.awt.message_box_factory_partial
    ooodev.adapter.awt.mouse_click_events
    ooodev.adapter.awt.mouse_click_handler
    ooodev.adapter.awt.mouse_events
@@ -64,6 +73,8 @@ Submodules
    ooodev.adapter.awt.pattern_field_partial
    ooodev.adapter.awt.point_struct_comp
    ooodev.adapter.awt.point_struct_generic_comp
+   ooodev.adapter.awt.popup_menu_comp
+   ooodev.adapter.awt.popup_menu_partial
    ooodev.adapter.awt.progress_bar_partial
    ooodev.adapter.awt.radio_button_partial
    ooodev.adapter.awt.rectangle_struct_comp
@@ -74,6 +85,7 @@ Submodules
    ooodev.adapter.awt.spin_field_partial
    ooodev.adapter.awt.spin_listener
    ooodev.adapter.awt.spin_value_partial
+   ooodev.adapter.awt.system_child_factory_partial
    ooodev.adapter.awt.tab_controller_comp
    ooodev.adapter.awt.tab_controller_model_comp
    ooodev.adapter.awt.tab_controller_model_partial
@@ -83,6 +95,10 @@ Submodules
    ooodev.adapter.awt.text_layout_constrains_partial
    ooodev.adapter.awt.text_listener
    ooodev.adapter.awt.time_field_partial
+   ooodev.adapter.awt.toolkit2_partial
+   ooodev.adapter.awt.toolkit3_partial
+   ooodev.adapter.awt.toolkit_comp
+   ooodev.adapter.awt.toolkit_partial
    ooodev.adapter.awt.top_window_events
    ooodev.adapter.awt.top_window_listener
    ooodev.adapter.awt.top_window_partial
@@ -141,6 +157,7 @@ Submodules
    ooodev.adapter.awt.uno_control_time_field_model_partial
    ooodev.adapter.awt.user_input_interception_partial
    ooodev.adapter.awt.view_partial
+   ooodev.adapter.awt.window_comp
    ooodev.adapter.awt.window_events
    ooodev.adapter.awt.window_listener
    ooodev.adapter.awt.window_partial

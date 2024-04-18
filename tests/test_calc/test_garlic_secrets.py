@@ -6,7 +6,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.color import CommonColor
 from ooodev.utils.props import Props

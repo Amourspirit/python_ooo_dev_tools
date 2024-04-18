@@ -8,7 +8,7 @@ if __name__ == "__main__":
 import uno
 from ooodev.format.inner.preset import preset_gradient as mPreset
 from ooodev.format.writer.direct.para.area import Gradient, PresetGradientKind
-from ooodev.utils.gui import GUI
+from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 

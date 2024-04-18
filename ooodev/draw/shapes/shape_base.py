@@ -37,15 +37,16 @@ if TYPE_CHECKING:
     from com.sun.star.graphic import XGraphic
     from com.sun.star.awt import Size as UnoSize
     from ooo.dyn.drawing.line_style import LineStyle
-    from ooodev.proto.component_proto import ComponentT
-    from ooodev.events.lo_events import Events
+    from ooodev.draw.shapes.shape_text_cursor import ShapeTextCursor
     from ooodev.events.args.key_val_args import KeyValArgs
+    from ooodev.events.lo_events import Events
+    from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.proto.component_proto import ComponentT
     from ooodev.proto.size_obj import SizeObj
     from ooodev.units.unit_obj import UnitT
     from ooodev.utils import color as mColor
     from ooodev.utils.data_type.intensity import Intensity
     from ooodev.utils.data_type.size import Size
-    from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind
     from ooodev.utils.type_var import PathOrStr
 

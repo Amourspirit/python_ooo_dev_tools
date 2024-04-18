@@ -4,11 +4,13 @@ import uno
 
 from com.sun.star.frame import XDispatchProviderInterception
 
+
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils.type_var import UnoInterface
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from com.sun.star.frame import XDispatchProviderInterceptor
 
 
@@ -46,10 +48,28 @@ class DispatchProviderInterceptionPartial:
 
     def release_dispatch_provider_interceptor(self, interceptor: XDispatchProviderInterceptor) -> None:
         """
-        removes an ``XDispatchProviderInterceptor`` which was previously registered
+        Removes an ``XDispatchProviderInterceptor`` which was previously registered
 
         The order of removals is arbitrary. It is not necessary to remove the last registered interceptor first.
         """
         self.__component.releaseDispatchProviderInterceptor(interceptor)
 
     # endregion XDispatchProviderInterception
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    # pylint: disable=import-outside-toplevel
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.frame.XDispatchProviderInterception", False)
+    return builder

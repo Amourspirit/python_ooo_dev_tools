@@ -7,7 +7,7 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import TYPE_CHECKING, Any, Iterable, Optional, List, Sequence, Tuple, overload, Type, cast
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
 
 import uno  # pylint: disable=W0611
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
     from ooodev.utils.data_type.generic_size_pos import GenericSizePos
+    from ooodev.utils.lru_cache import LRUCache
 else:
     PathOrStr = Any
     UnoInterface = Any
@@ -183,7 +184,7 @@ class Lo(metaclass=StaticProperty):
             self,
             connector: connectors.ConnectPipe | connectors.ConnectSocket | None,
             cache_obj: mCache.Cache | None = None,
-            opt: Lo.Options | None = None,
+            opt: LoOptions | None = None,
         ):
             """
             Create a connection to office
@@ -197,6 +198,9 @@ class Lo(metaclass=StaticProperty):
             .. versionchanged:: 0.6.10
 
                 Added ``opt`` parameter.
+
+            Hint:
+            - ``Options`` can be imported from ``ooodev.loader.inst.options``
             """
             self.loader = Lo.load_office(connector=connector, cache_obj=cache_obj, opt=opt)
 
@@ -414,12 +418,29 @@ class Lo(metaclass=StaticProperty):
     @overload
     @classmethod
     def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[True], *args: Any
+    ) -> T: ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
         cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False]
+    ) -> T | None: ...
+
+    @overload
+    @classmethod
+    def create_instance_msf(
+        cls, atype: Type[T], service_name: str, msf: Any | None, raise_err: Literal[False], *args: Any
     ) -> T | None: ...
 
     @classmethod
     def create_instance_msf(
-        cls, atype: Type[T], service_name: str, msf: XMultiServiceFactory | None = None, raise_err: bool = False
+        cls,
+        atype: Type[T],
+        service_name: str,
+        msf: XMultiServiceFactory | None = None,
+        raise_err: bool = False,
+        *args: Any,
     ) -> T | None:
         """
         Creates an instance classified by the specified service name and
@@ -435,6 +456,7 @@ class Lo(metaclass=StaticProperty):
             service_name (str): Service name
             msf (XMultiServiceFactory, optional): Multi service factory used to create instance
             raise_err (bool, optional): If ``True`` then can raise CreateInstanceMsfError or MissingInterfaceError. Default is ``False``
+            args (Any, optional): Arguments to pass to instance
 
         Raises:
             CreateInstanceMsfError: If ``raise_err`` is ``True`` and no instance was created
@@ -455,11 +477,13 @@ class Lo(metaclass=StaticProperty):
                 from com.sun.star.sheet import XSheetCellRangeContainer
                 src_con = Lo.create_instance_msf(XSheetCellRangeContainer, "com.sun.star.sheet.SheetCellRanges")
 
+        .. versionchanged:: 0.40.0
+            Added args parameter
         """
         if raise_err:
-            return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err)
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf, raise_err, *args)
         else:
-            return cls._lo_inst.create_instance_msf(atype, service_name, msf)
+            return cls._lo_inst.create_instance_msf(atype, service_name, msf, False, *args)
 
     # endregion create_instance_msf()
 
@@ -539,6 +563,21 @@ class Lo(metaclass=StaticProperty):
     # endregion create_instance_mcf()
 
     # endregion interface object creation
+
+    @classmethod
+    def get_singleton(cls, name: str) -> Any:
+        """
+        Gets a singleton object from the office default context.
+
+        Args:
+            name (str): Singleton name such as ``/singletons/com.sun.star.frame.theDesktop``.
+
+        Returns:
+            Any: Singleton object or ``None`` if not found.
+
+        .. versionadded:: 0.40.0
+        """
+        return cls._lo_inst.get_singleton(name)
 
     @staticmethod
     def get_parent(a_component: XChild) -> XInterface:
@@ -1544,34 +1583,55 @@ class Lo(metaclass=StaticProperty):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
+    @classmethod
+    def get_supported_dispatch_prefixes(cls) -> Tuple[str, ...]:
+        """
+        Get supported dispatch prefixes  by the ``dispatch_cmd()`` method.
+
+        |lo_safe|
+
+        Returns:
+            Tuple[str, ...]: Tuple of supported dispatch prefixes.
+
+        .. versionadded:: 0.40.0
+        """
+        return cls._lo_inst.get_supported_dispatch_prefixes()
+
     # region dispatch_cmd()
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue]) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue], frame: XFrame) -> Any: ...
 
-    @overload
-    @classmethod
-    def dispatch_cmd(cls, cmd: str, *, frame: XFrame) -> Any: ...
+    # @overload
+    # @classmethod
+    # def dispatch_cmd(cls, cmd: str, *, frame: XFrame) -> Any: ...
 
     @classmethod
-    def dispatch_cmd(cls, cmd: str, props: Iterable[PropertyValue] | None = None, frame: XFrame | None = None) -> Any:
+    def dispatch_cmd(
+        cls,
+        cmd: str,
+        props: Iterable[PropertyValue] | None = None,
+        frame: XFrame | None = None,
+        in_thread: bool = False,
+    ) -> Any:
         """
         Dispatches a LibreOffice command.
 
         |lo_unsafe|
 
         Args:
-            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not contain ``.uno:`` prefix.
+            cmd (str): Command to dispatch such as ``GoToCell``. Note: cmd does not need to start with ``.uno:`` prefix.
             props (PropertyValue, optional): properties for dispatch.
             frame (XFrame, optional): Frame to dispatch to.
+            in_thread (bool, optional): If ``True`` then dispatch is done in a separate thread.
 
         Raises:
             CancelEventError: If Dispatching is canceled via event.
@@ -1595,8 +1655,11 @@ class Lo(metaclass=StaticProperty):
         See Also:
             - :ref:`ch04_dispatching`
             - `LibreOffice Dispatch Commands <https://wiki.documentfoundation.org/Development/DispatchCommands>`_
+
+        .. versionchanged:: 0.40.0
+            Now supports ``in_thread`` parameter.
         """
-        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame)  # type: ignore
+        return cls._lo_inst.dispatch_cmd(cmd=cmd, props=props, frame=frame, in_thread=in_thread)  # type: ignore
 
     # endregion dispatch_cmd()
 
@@ -2320,6 +2383,18 @@ class Lo(metaclass=StaticProperty):
             GenericSizePos[float]: Ratios of how many pixels are in an system font.
         """
         return cls._lo_inst.sys_font_pixel_ratio
+
+    @classproperty
+    def cache(cls) -> LRUCache:
+        """
+        Gets access to the a cache for the current instance.
+
+        This is a Least Recently Used (LRU) Cache. This cache is also used within this framework.
+
+        Returns:
+            LRUCache: Cache instance.
+        """
+        return cls._lo_inst._shared_cache
 
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
