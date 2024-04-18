@@ -1,3 +1,5 @@
+.. _help_working_with_menu_app:
+
 Working with MenuApp
 ====================
 
@@ -19,6 +21,11 @@ Working with :ref:`ooodev.gui.menu.MenuApp`.
         menu = doc.menu[MenuLookupKind.TOOLS] # or .menu[".uno:ToolsMenu"]
         itm = menu.items[".uno:AutoComplete"] # or .items[6]
 
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 The menu can be accessed via the ``doc.menu`` property.
 The ``doc.menu`` is an instance of the :ref:`ooodev.gui.menu.MenuApp` and has access to all the menu items of the current menu bar.
@@ -28,7 +35,7 @@ The menu can be accessed even if the menu is not visible in the LibreOffice Wind
 Menu Items
 ----------
 
-Menu items in this context are either a |MenuItem|_, |MenuItemSub|_ or |MenuItemSep|_ class instances.
+Menu items in this context are either a :py:class:`~ooodev.gui.menu.MenuItem`, :py:class:`~ooodev.gui.menu.MenuItemSub` or :py:class:`~ooodev.gui.menu.MenuItemSep` class instances.
 
 .. tabs::
 
@@ -48,7 +55,7 @@ Menu items in this context are either a |MenuItem|_, |MenuItemSub|_ or |MenuItem
 MenuItemSub
 -----------
 
-|MenuItemSub|_ is a child class of |MenuItem|_ so:
+:py:class:`~ooodev.gui.menu.MenuItemSub` is a child class of :py:class:`~ooodev.gui.menu.MenuItem` so:
 
 Sub Menu Item
 
@@ -73,12 +80,12 @@ Sub Menu Item
 
             .. group-tab:: None
 
-|MenuItemSub|_ menu items also contain a ``sub_menu`` property that get access to is sub menu as another instance of the |Menu|_ class.
+:py:class:`~ooodev.gui.menu.MenuItemSub` menu items also contain a ``sub_menu`` property that get access to is sub menu as another instance of the :py:class:`~ooodev.gui.menu.Menu` class.
 
 MenuItem
 --------
 
-|Menu|_ Item.
+:py:class:`~ooodev.gui.menu.Menu` Item.
 
 .. tabs::
 
@@ -103,7 +110,7 @@ MenuItem
 MenuItemSep
 -----------
 
-|MenuItemSep|_ is a child class of |MenuItem|_.
+:py:class:`~ooodev.gui.menu.MenuItemSep` is a child class of :py:class:`~ooodev.gui.menu.MenuItem`.
 
 
 .. tabs::
@@ -151,7 +158,7 @@ Accessing a menu is simple when working with a doc.
 
             .. group-tab:: None
 
-The |MenuLookupKind|_ is for convenience and in this case returns ``.uno:ToolsMenu``.
+The :py:class:`~ooodev.utils.kind.menu_lookup_kind.MenuLookupKind` is for convenience and in this case returns ``.uno:ToolsMenu``.
 
 Index Access
 ------------
@@ -159,11 +166,11 @@ Index Access
 The ``doc.menu[]`` index access can take a string or a zero-based index number.
 ``doc.menu[0]`` would give access to the first menu, most likely the ``File`` menu.
 
-There is no recursive search in the |MenuApp|_ or ``MenuItem*`` classes. There is index access via menu position and menu command name.
+There is no recursive search in the :py:class:`~ooodev.gui.menu.MenuApp` or ``MenuItem*`` classes. There is index access via menu position and menu command name.
 
 Usually using the name is more practical as it will find the menu even if the user has reorder it in a different place.
 
-The |MenuLookupKind|_ Enum is for convenience and can be replaced with the command name of the menu.
+The :py:class:`~ooodev.utils.kind.menu_lookup_kind.MenuLookupKind` Enum is for convenience and can be replaced with the command name of the menu.
 
 ``doc.menu[MenuLookupKind.TOOLS]`` is the same as ``doc.menu[".uno:ToolsMenu"]``.
 
@@ -259,7 +266,7 @@ In the ``menubar.xml`` file you can also see that ``.uno:BasicShapes`` has no po
 
             .. group-tab:: None
 
-The |MenuItem|_, |MenuItemSub|_ and |MenuItemSep| have a ``item_kind`` property that also can be used to check for the appropriate type before taking action.
+The :py:class:`~ooodev.gui.menu.MenuItem`, :py:class:`~ooodev.gui.menu.MenuItemSub` and :py:class:`~ooodev.gui.menu.MenuItemSep` have a ``item_kind`` property that also can be used to check for the appropriate type before taking action.
 
 .. tabs::
 
@@ -366,7 +373,7 @@ The ``save=True`` option means the changes will be persisted.
 Execute Menu Item
 -----------------
 
-Menu commands are mostly dispatch calls or a URL to run a macro. |MenuItem|_ and |MenuItemSub|_ have an execute method that will call call the dispatch or run the macro.
+Menu commands are mostly dispatch calls or a URL to run a macro. :py:class:`~ooodev.gui.menu.MenuItem` and :py:class:`~ooodev.gui.menu.MenuItemSub` have an execute method that will call call the dispatch or run the macro.
 
 .. tabs::
 
@@ -385,23 +392,7 @@ Menu commands are mostly dispatch calls or a URL to run a macro. |MenuItem|_ and
 
             .. group-tab:: None
 
-.. |MenuItem| replace:: MenuItem
-.. _MenuItem: :py:class:`ooodev.gui.menu.MenuItem`
+Related Topics
+--------------
 
-.. |MenuItemSub| replace:: MenuItemSub
-.. _MenuItemSub: :py:class:`ooodev.gui.menu.MenuItemSub`
-
-.. |MenuItemSep| replace:: MenuItemSep
-.. _MenuItemSep: :py:class:`ooodev.gui.menu.MenuItemSep`
-
-.. |MenuItemKind| replace:: MenuItemKind
-.. _MenuItemKind: :py:class:`ooodev.gui.menu.item.MenuItemKind`
-
-.. |Menu| replace:: Menu
-.. _Menu: :py:class:`ooodev.gui.menu.Menu`
-
-.. |MenuLookupKind| replace:: MenuLookupKind
-.. _MenuLookupKind: :py:class:`ooodev.utils.kind.menu_lookup_kind.MenuLookupKind`
-
-.. |MenuApp| replace:: MenuApp
-.. _MenuApp: :py:class:`ooodev.gui.menu.MenuApp`
+- :ref:`help_creating_menu_using_menu_app`
