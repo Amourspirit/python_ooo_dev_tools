@@ -29,6 +29,14 @@ class _SetElementComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.SetElement",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SetElementComp class
+        return SetElementComp
+
+    # endregion Properties
+
 
 class SetElementComp(
     _SetElementComp,

@@ -30,6 +30,14 @@ class _PropertyHierarchyComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.PropertyHierarchy",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a PropertyHierarchyComp class
+        return PropertyHierarchyComp
+
+    # endregion Properties
+
 
 class PropertyHierarchyComp(
     _PropertyHierarchyComp,

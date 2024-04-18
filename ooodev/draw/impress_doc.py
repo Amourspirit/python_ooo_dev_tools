@@ -14,6 +14,7 @@ from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.gui.menu.menu_app import MenuApp
 from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.office import draw as mDraw
 from ooodev.utils import info as mInfo
 from ooodev.draw import impress_page as mImpressPage
@@ -66,6 +67,7 @@ class ImpressDoc(
         ModifyEvents.__init__(self, trigger_args=generic_args, cb=self._on_modify_events_add_remove)
         self._pages = None
         self._menu = None
+        self._shortcuts = None
 
     # region Lazy Listeners
 
@@ -398,5 +400,19 @@ class ImpressDoc(
         if self._menu is None:
             self._menu = Menus(lo_inst=self.lo_inst)[LoService.IMPRESS]
         return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Impress Shortcuts.
+
+        Returns:
+            Shortcuts: Impress Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.IMPRESS, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties

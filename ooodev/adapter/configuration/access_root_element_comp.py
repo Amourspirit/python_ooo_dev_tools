@@ -30,6 +30,14 @@ class _AccessRootElementComp(hierarchy_element_comp._HierarchyElementComp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.AccessRootElement",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a AccessRootElementComp class
+        return AccessRootElementComp
+
+    # endregion Properties
+
 
 class AccessRootElementComp(
     _AccessRootElementComp,

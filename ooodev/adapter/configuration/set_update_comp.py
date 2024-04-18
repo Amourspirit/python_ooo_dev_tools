@@ -27,6 +27,14 @@ class _SetUpdateComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.SetUpdate",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SetUpdateComp class
+        return SetUpdateComp
+
+    # endregion Properties
+
 
 class SetUpdateComp(
     _SetUpdateComp,

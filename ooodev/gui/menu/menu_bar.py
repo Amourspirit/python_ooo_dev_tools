@@ -15,7 +15,6 @@ from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.utils.lru_cache import LRUCache
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.io.log.named_logger import NamedLogger
-from ooodev.loader import lo as mLo
 
 # from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.gui.menu.popup_menu import PopupMenu

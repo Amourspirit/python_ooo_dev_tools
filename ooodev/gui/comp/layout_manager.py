@@ -120,6 +120,7 @@ class LayoutManager(
         builder = get_builder(component=component)
         if lo_inst is not None:
             builder.lo_inst = lo_inst
+        # builder.add_class_property("__class__", LayoutManager)
         builder_helper.builder_add_comp_defaults(builder)
         builder_helper.builder_add_property_change_implement(builder)
         builder_helper.builder_add_property_veto_implement(builder)

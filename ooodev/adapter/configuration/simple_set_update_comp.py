@@ -29,6 +29,14 @@ class _SimpleSetUpdateComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.SimpleSetUpdate",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SimpleSetUpdateComp class
+        return SimpleSetUpdateComp
+
+    # endregion Properties
+
 
 class SimpleSetUpdateComp(
     _SimpleSetUpdateComp, simple_set_access_comp.SimpleSetAccessComp, name_container_partial.NameContainerPartial

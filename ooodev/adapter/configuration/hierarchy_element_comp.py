@@ -26,6 +26,14 @@ class _HierarchyElementComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.HierarchyElement",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a HierarchyElementComp class
+        return HierarchyElementComp
+
+    # endregion Properties
+
 
 class HierarchyElementComp(
     _HierarchyElementComp,

@@ -32,6 +32,14 @@ class _ConfigurationUpdateAccessComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.ConfigurationUpdateAccess",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a ConfigurationUpdateAccessComp class
+        return ConfigurationUpdateAccessComp
+
+    # endregion Properties
+
 
 class ConfigurationUpdateAccessComp(
     _ConfigurationUpdateAccessComp,

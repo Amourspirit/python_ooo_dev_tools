@@ -27,6 +27,14 @@ class _SetAccessComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.SetAccess",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SetAccessComp class
+        return SetAccessComp
+
+    # endregion Properties
+
 
 class SetAccessComp(
     _SetAccessComp,

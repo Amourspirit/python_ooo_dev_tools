@@ -1,6 +1,6 @@
 Class MenuItemBase
 ==================
 
-.. autoclass:: ooodev.gui.menu.item.menu_item_base.MenuItemBase
+.. autoclass:: ooodev.gui.menu.item.MenuItemBase
     :members:
     :undoc-members:

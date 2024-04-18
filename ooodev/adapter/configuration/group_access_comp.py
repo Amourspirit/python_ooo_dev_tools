@@ -30,6 +30,14 @@ class _GroupAccessComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.GroupAccess",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a GroupAccessComp class
+        return GroupAccessComp
+
+    # endregion Properties
+
 
 class GroupAccessComp(
     _GroupAccessComp,

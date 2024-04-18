@@ -26,6 +26,14 @@ class _GroupElementComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.GroupElement",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a GroupElementComp class
+        return GroupElementComp
+
+    # endregion Properties
+
 
 class GroupElementComp(
     _GroupElementComp,

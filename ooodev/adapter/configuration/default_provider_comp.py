@@ -31,6 +31,14 @@ class _DefaultProviderComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.DefaultProvider",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a DefaultProviderComp class
+        return DefaultProviderComp
+
+    # endregion Properties
+
 
 class DefaultProviderComp(
     _DefaultProviderComp,

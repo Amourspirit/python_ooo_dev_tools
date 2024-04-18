@@ -140,6 +140,14 @@ class _CalcSheetView(ComponentProp):
         """
         return self.component.getSelection()
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a CalcSheetView class
+        return CalcSheetView
+
+    # endregion Properties
+
 
 class CalcSheetView(
     _CalcSheetView,
@@ -253,30 +261,6 @@ def get_builder(component: Any, **kwargs: Any) -> DefaultBuilder:
     #     optional=True,
     # )
 
-    builder.add_event(
-        module_name="ooodev.adapter.awt.enhanced_mouse_click_events",
-        class_name="EnhancedMouseClickEvents",
-        uno_name="com.sun.star.sheet.XEnhancedMouseClickBroadcaster",
-        optional=True,
-    )
-    builder.add_event(
-        module_name="ooodev.adapter.awt.key_events",
-        class_name="KeyEvents",
-        uno_name="com.sun.star.awt.XWindow",
-        optional=True,
-    )
-    builder.add_event(
-        module_name="ooodev.adapter.awt.mouse_click_events",
-        class_name="MouseClickEvents",
-        uno_name="com.sun.star.awt.XUserInputInterception",
-        optional=True,
-    )
-    builder.add_event(
-        module_name="ooodev.adapter.sheet.range_selection_change_events",
-        class_name="RangeSelectionChangeEvents",
-        uno_name="com.sun.star.sheet.XRangeSelection",
-        optional=True,
-    )
     builder.add_event(
         module_name="ooodev.adapter.view.selection_change_events",
         class_name="SelectionChangeEvents",

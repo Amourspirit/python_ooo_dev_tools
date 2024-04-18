@@ -1,7 +1,7 @@
-Class MenuItemSep
+Class MenuItemSub
 =================
 
-.. autoclass:: ooodev.gui.menu.item.MenuItemSep
+.. autoclass:: ooodev.gui.menu.item.MenuItemSub
     :members:
     :undoc-members:
     :show-inheritance:

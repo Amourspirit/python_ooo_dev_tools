@@ -27,6 +27,14 @@ class _SimpleSetAccessComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.SimpleSetAccess",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SimpleSetAccessComp class
+        return SimpleSetAccessComp
+
+    # endregion Properties
+
 
 class SimpleSetAccessComp(ComponentBase, name_access_partial.NameAccessPartial, CompDefaultsPartial):
     """

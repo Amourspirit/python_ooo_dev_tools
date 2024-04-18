@@ -1453,20 +1453,20 @@ class LoInst(EventsPartial):
     # ==================== dispatch ===============================
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
-    def get_supported_dispatch_prefixes(self) -> Set[str]:
+    def get_supported_dispatch_prefixes(self) -> Tuple[str, ...]:
         """
         Gets the prefixes are are supported by the local ``dispatch_cmd()`` method.
 
         Returns:
-            Set[str]: Set of prefixes
+            Tuple[str, ...]: Tuple of supported dispatch prefixes.
 
         .. versionadded:: 0.40.0
         """
-        return {
+        return (
             ".uno:",
             "vnd.sun.star.",
             "service:",
-        }
+        )
 
     # region dispatch_cmd()
 
@@ -1548,13 +1548,19 @@ class LoInst(EventsPartial):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            prefixes = self.get_supported_dispatch_prefixes()
-            prefixes.remove(".uno:")
+            
+            prefix_key = "dispatch_prefixes"
+            if prefix_key in self._cache:
+                prefixes = cast(Tuple[str, ...], self._cache[prefix_key])
+            else:
+                set_pre = set(self.get_supported_dispatch_prefixes())
+                set_pre.remove(".uno:")
+                prefixes =  tuple(set_pre)
+                self._cache[prefix_key] = prefixes
+            
             supported_prefix = False
-            for prefix in prefixes:
-                if str_cmd.startswith(prefix):
-                    supported_prefix = True
-                    break
+            if str_cmd.startswith(prefixes):
+                supported_prefix = True
             if supported_prefix:
                 dispatch_cmd = str_cmd
             else:

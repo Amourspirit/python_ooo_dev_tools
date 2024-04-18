@@ -49,6 +49,7 @@ from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.gui.menu.menu_app import MenuApp
 from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.utils.kind.zoom_kind import ZoomKind
 from ooodev.utils.partial.doc_io_partial import DocIoPartial
 from ooodev.utils.partial.gui_partial import GuiPartial
@@ -170,6 +171,7 @@ class WriteDoc(
         self._text_frames = None
         self._tables = None
         self._menu = None
+        self._shortcuts = None
 
     # region Lazy Listeners
 
@@ -1386,6 +1388,20 @@ class WriteDoc(
         if self._menu is None:
             self._menu = Menus(lo_inst=self.lo_inst)[LoService.DRAW]
         return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Writer Shortcuts.
+
+        Returns:
+            Shortcuts: Writer Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.WRITER, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties
 

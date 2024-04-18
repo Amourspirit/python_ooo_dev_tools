@@ -1,7 +1,7 @@
 Class MenuItem
 ==============
 
-.. autoclass:: ooodev.gui.menu.item.menu_item.MenuItem
+.. autoclass:: ooodev.gui.menu.item.MenuItem
     :members:
     :undoc-members:
     :show-inheritance:

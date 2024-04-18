@@ -28,6 +28,14 @@ class _GroupUpdateComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.GroupUpdate",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a GroupUpdateComp class
+        return GroupUpdateComp
+
+    # endregion Properties
+
 
 class GroupUpdateComp(
     _GroupUpdateComp,

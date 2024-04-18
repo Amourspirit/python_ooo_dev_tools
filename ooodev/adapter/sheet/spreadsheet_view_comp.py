@@ -24,6 +24,7 @@ from ooodev.adapter.sheet.view_freezable_partial import ViewFreezablePartial
 from ooodev.adapter.sheet.view_splitable_partial import ViewSplitablePartial
 from ooodev.adapter.view.form_layer_access_partial import FormLayerAccessPartial
 from ooodev.adapter.sheet import spreadsheet_view_pane_comp
+from ooodev.adapter.awt.key_handler_events import KeyHandlerEvents
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
@@ -38,6 +39,14 @@ class _SpreadsheetViewComp(spreadsheet_view_pane_comp._SpreadsheetViewPaneComp):
         return ("com.sun.star.sheet.SpreadsheetView",)
 
     # endregion Overrides
+
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a SpreadsheetViewComp class
+        return SpreadsheetViewComp
+
+    # endregion Properties
 
 
 class SpreadsheetViewComp(
@@ -54,7 +63,7 @@ class SpreadsheetViewComp(
     ViewFreezablePartial,
     ViewSplitablePartial,
     EnhancedMouseClickEvents,
-    KeyEvents,
+    KeyHandlerEvents,
     MouseClickEvents,
     RangeSelectionChangeEvents,
     SelectionChangeEvents,
@@ -135,9 +144,9 @@ def get_builder(component: Any, **kwargs: Any) -> DefaultBuilder:
         optional=True,
     )
     builder.add_event(
-        module_name="ooodev.adapter.awt.key_events",
-        class_name="KeyEvents",
-        uno_name="com.sun.star.awt.XWindow",
+        module_name="ooodev.adapter.awt.key_handler_events",
+        class_name="KeyHandlerEvents",
+        uno_name=("com.sun.star.awt.XUserInputInterception", "com.sun.star.awt.XExtendedToolkit"),
         optional=True,
     )
     builder.add_event(

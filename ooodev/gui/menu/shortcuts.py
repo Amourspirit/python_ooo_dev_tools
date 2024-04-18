@@ -169,8 +169,16 @@ class Shortcuts(LoInstPropsPartial):
             url = MacroScript.get_url_script(**url)
         return url
 
-    def _get_shortcut(self, key: KeyEvent):
-        """Get shortcut for key event"""
+    def get_shortcut(self, key: KeyEvent) -> str:
+        """
+        Get shortcut for key event.
+
+        Args:
+            key (KeyEvent): Key event
+
+        Returns:
+            str: Shortcut like Shift+Ctrl+Alt+LETTER
+        """
         # print(k.KeyCode, str(k.KeyChar), k.KeyFunc, k.Modifiers)
         shortcut = f"{self.COMBINATIONS[key.Modifiers]}+{self.KEYS[key.KeyCode]}"
         return shortcut
@@ -178,7 +186,7 @@ class Shortcuts(LoInstPropsPartial):
     def _get_info(self, key: KeyEvent) -> Tuple[str, str]:
         """Get shortcut and command"""
         cmd = self._config.get_command_by_key_event(key)
-        shortcut = self._get_shortcut(key)
+        shortcut = self.get_shortcut(key)
         return shortcut, cmd
 
     def get_all(self) -> List[Tuple[str, str]]:
@@ -205,9 +213,9 @@ class Shortcuts(LoInstPropsPartial):
                 except Exception:
                     continue
                 if cmd in command_dict:
-                    command_dict[cmd].append(self._get_shortcut(key))
+                    command_dict[cmd].append(self.get_shortcut(key))
                 else:
-                    command_dict[cmd] = [self._get_shortcut(key)]
+                    command_dict[cmd] = [self.get_shortcut(key)]
             self._cache[key] = command_dict
         if url in command_dict:
             return command_dict[url]
@@ -229,7 +237,7 @@ class Shortcuts(LoInstPropsPartial):
             return self._cache[key]
         try:
             key_events = self._config.get_key_events_by_command(url)
-            shortcuts = [self._get_shortcut(k) for k in key_events]
+            shortcuts = [self.get_shortcut(k) for k in key_events]
         except NoSuchElementException:
             # fallback on workaround
             shortcuts = self._get_by_command_dict(url)
@@ -253,6 +261,11 @@ class Shortcuts(LoInstPropsPartial):
         if command:
             self._cache[key] = command
         return command
+
+    def get_by_key_event(self, key_event: KeyEvent) -> str:
+        """Get command by key event"""
+        sc = self.get_shortcut(key_event)
+        return self.get_by_shortcut(sc)
 
     def set(self, shortcut: str, command: str | Dict[str, str], save: bool = True) -> bool:
         """

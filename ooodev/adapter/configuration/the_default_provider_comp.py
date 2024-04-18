@@ -31,6 +31,14 @@ class _TheDefaultProviderComp(ComponentProp):
             "com.sun.star.configuration.theDefaultProvider",
         )
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a TheDefaultProviderComp class
+        return TheDefaultProviderComp
+
+    # endregion Properties
+
 
 class TheDefaultProviderComp(_TheDefaultProviderComp, MultiServiceFactoryPartial, CompDefaultsPartial):
     """

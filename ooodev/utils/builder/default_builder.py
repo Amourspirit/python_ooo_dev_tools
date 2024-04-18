@@ -4,12 +4,12 @@ from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import importlib
 import types
 
-from hypothesis import event
 import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 
 from ooodev.events.args.event_args import EventArgs
+from ooodev.events.lo_events import EventArg
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.events.args.generic_args import GenericArgs
 
@@ -37,6 +37,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         LoInstPropsPartial.__init__(self, lo_inst)
         self._component = component
         # _bases_partial could be classes such as property classes
+        self._class_props: Dict[str, Any] = {}
         self._bases_partial: Dict[Type[Any], BuildImportArg] = {}
         # _bases_interfaces could be interfaces such as ComponentPartial
         self._bases_interfaces: Dict[Type[Any], BuildImportArg] = {}
@@ -719,7 +720,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         class_name: str,
         *,
         callback_name: str = "on_lazy_cb",
-        uno_name: str | Tuple[str] = "",
+        uno_name: str | Tuple[str, ...] = "",
         optional: bool = False,
         check_kind: CheckKind | int = CheckKind.INTERFACE,
     ) -> BuildEventArg:
@@ -756,7 +757,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         class_name: str,
         *,
         callback_name: str = "on_lazy_cb",
-        uno_name: str | Tuple[str] = "",
+        uno_name: str | Tuple[str, ...] = "",
         optional: bool = False,
         check_kind: CheckKind | int = CheckKind.INTERFACE,
     ) -> BuildEventArg:
@@ -860,6 +861,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
             - LO_INST = 4
         """
         clz = self.get_class_type(name=name, base_class=base_class)
+        self.init_class_properties(clz)
         inst = self._create_class(clz, InitKind(init_kind))
         self.init_classes(inst)
         return inst
@@ -885,7 +887,75 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         """Get the list of import names that have been added to the current instance."""
         return [arg.ooodev_name for arg in self._build_args.keys()]
 
+    # region Class Properties
+    def add_class_property(self, name: str, value: Any) -> None:
+        """
+        Set a property.
+
+        Args:
+            name (str): Property name.
+            value (Any): Property value.
+        """
+        self._class_props[name] = value
+
+    def remove_class_property(self, name: str) -> bool:
+        """
+        Remove a property.
+
+        Args:
+            name (str): Property name.
+
+        Returns:
+            bool: True if the property was removed; otherwise, False.
+        """
+        if name in self._class_props:
+            del self._class_props[name]
+            return True
+        return False
+
+    def get_class_property(self, name: str, default: Any = None) -> Any:
+        """
+        Get a property.
+
+        Args:
+            name (str): Property name.
+            default (Any, optional): Default value if the property is not found. Defaults to ``None``.
+
+        Returns:
+            Any: Property value.
+        """
+        return self._class_props.get(name, default)
+
+    def init_class_properties(self, clz: Type[Any]) -> None:
+        """Initialize the class properties."""
+        if not self._class_props:
+            return
+        for name, value in self._class_props.items():
+            eargs = EventArgs(self)
+            eargs.event_data = {"name": name, "value": value}
+            self.trigger_event("class_property_init", eargs)
+            if eargs.event_data:
+                name = eargs.event_data.get("name", name)
+                value = eargs.event_data.get("value", value)
+            setattr(clz, name, property(lambda self: value))
+
+    # endregion Class Properties
+
     # region Events
+    def subscribe_class_properties_init(self, cb: EventCallback) -> None:
+        """
+        Subscribe to the class init properties event.
+
+        Args:
+            cb (EventCallback): Callback function.
+
+        Note:
+            This event is triggered for each class property that is set.
+            The event data is a dictionary with keys ``name``, ``value``.
+            After the event is triggered, if the event data ``name`` or ``value`` is set then they will be used.
+        """
+        self.subscribe_event("class_property_init", cb)
+
     def subscribe_class_init(self, cb: EventCallback) -> None:
         """
         Subscribe to the class init event.

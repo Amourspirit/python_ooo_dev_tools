@@ -30,6 +30,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.gui import gui as mGui
 from ooodev.gui.menu.menu_app import MenuApp
 from ooodev.gui.menu.menus import Menus
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
@@ -120,6 +121,7 @@ class CalcDoc(
         self._range_converter = None
         self._menu = None
         self._menu_bar = None
+        self._shortcuts = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -1161,5 +1163,19 @@ class CalcDoc(
         if self._menu is None:
             self._menu = Menus(lo_inst=self.lo_inst)[LoService.CALC]
         return self._menu  # type: ignore
+
+    @property
+    def shortcuts(self) -> Shortcuts:
+        """
+        Gets access to Calc Shortcuts.
+
+        Returns:
+            Shortcuts: Calc Shortcuts
+
+        .. versionadded:: 0.40.0
+        """
+        if self._shortcuts is None:
+            self._shortcuts = Shortcuts(app=LoService.CALC, lo_inst=self.lo_inst)
+        return self._shortcuts
 
     # endregion Properties

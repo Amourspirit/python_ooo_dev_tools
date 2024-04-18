@@ -1584,14 +1584,14 @@ class Lo(metaclass=StaticProperty):
     # see https://wiki.documentfoundation.org/Development/DispatchCommands
 
     @classmethod
-    def get_supported_dispatch_prefixes(cls) -> Set[str]:
+    def get_supported_dispatch_prefixes(cls) -> Tuple[str, ...]:
         """
         Get supported dispatch prefixes  by the ``dispatch_cmd()`` method.
 
         |lo_safe|
 
         Returns:
-            Set[str]: Set of supported dispatch prefixes.
+            Tuple[str, ...]: Tuple of supported dispatch prefixes.
 
         .. versionadded:: 0.40.0
         """

@@ -26,6 +26,14 @@ class _UpdateRootElementComp(ComponentProp):
         """Returns a tuple of supported service names."""
         return ("com.sun.star.configuration.UpdateRootElement",)
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a UpdateRootElementComp class
+        return UpdateRootElementComp
+
+    # endregion Properties
+
 
 class UpdateRootElementComp(
     _UpdateRootElementComp,
