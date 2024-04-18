@@ -8,14 +8,16 @@ Working with MenuApp
 
 Working with :ref:`ooodev.gui.menu.MenuApp`.
 
-.. code-block:: python
+.. tabs::
 
-    from ooodev.calc import CalcDoc
-    from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
+    .. code-tab:: python
 
-    doc = CalcDoc.create_doc(loader=loader, visible=True)
-    menu = doc.menu[MenuLookupKind.TOOLS] # or .menu[".uno:ToolsMenu"]
-    itm = menu.items[".uno:AutoComplete"] # or .items[6]
+        from ooodev.calc import CalcDoc
+        from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
+
+        doc = CalcDoc.create_doc(loader=loader, visible=True)
+        menu = doc.menu[MenuLookupKind.TOOLS] # or .menu[".uno:ToolsMenu"]
+        itm = menu.items[".uno:AutoComplete"] # or .items[6]
 
 
 The menu can be accessed via the ``doc.menu`` property.
@@ -28,12 +30,20 @@ Menu Items
 
 Menu items in this context are either a |MenuItem|_, |MenuItemSub|_ or |MenuItemSep|_ class instances.
 
-.. code-block:: python
+.. tabs::
 
-    from ooodev.gui.menu.item import MenuItem
-    from ooodev.gui.menu.item import MenuItemSep
-    from ooodev.gui.menu.item import MenuItemSub
-    from ooodev.gui.menu.item import MenuItemKind
+    .. code-tab:: python
+
+        from ooodev.gui.menu.item import MenuItem
+        from ooodev.gui.menu.item import MenuItemSep
+        from ooodev.gui.menu.item import MenuItemSub
+        from ooodev.gui.menu.item import MenuItemKind
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 MenuItemSub
 -----------
@@ -44,7 +54,7 @@ Sub Menu Item
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         menu = doc.menu[MenuLookupKind.TOOLS]
         itm = menu.items['.uno:LanguageMenu']
@@ -70,17 +80,25 @@ MenuItem
 
 |Menu|_ Item.
 
-.. code-block:: python
+.. tabs::
 
-    itm = menu.items[".uno:AutoComplete"]
-    assert itm.item_kind < MenuItemKind.ITEM_SUBMENU
-    assert itm.item_kind == MenuItemKind.ITEM
-    assert itm.item_kind != MenuItemKind.SEP
-    assert itm.item_kind > MenuItemKind.SEP
+    .. code-tab:: python
 
-    assert isinstance(itm, MenuItem)
-    assert not isinstance(itm, MenuItemSub)
-    assert not isinstance(itm, MenuItemSep)
+        itm = menu.items[".uno:AutoComplete"]
+        assert itm.item_kind < MenuItemKind.ITEM_SUBMENU
+        assert itm.item_kind == MenuItemKind.ITEM
+        assert itm.item_kind != MenuItemKind.SEP
+        assert itm.item_kind > MenuItemKind.SEP
+
+        assert isinstance(itm, MenuItem)
+        assert not isinstance(itm, MenuItemSub)
+        assert not isinstance(itm, MenuItemSep)
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
 
 MenuItemSep
 -----------
@@ -90,7 +108,7 @@ MenuItemSep
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         itm = menu.items[4]
         assert itm.item_kind == MenuItemKind.SEP
@@ -156,7 +174,7 @@ For instance the menu ``Insert -> Shapes -> Basic Shapes`` corresponds to the fo
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         >>> itm = (
         >>> 	doc.menu[".uno:InsertMenu"]
@@ -181,7 +199,7 @@ Alternatively the ``Basic Shapes`` menu can be access in the following way:
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         basic_shapes = doc.menu[".uno:InsertMenu"][".uno:ShapesMenu"][".uno:BasicShapes"]
 
@@ -195,7 +213,7 @@ However, like the previous method the sub menu is still not available.
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         >>> basic_shapes.items[".uno:BasicShapes.circle"]
         KeyError: "Menu item '.uno:BasicShapes.circle' not found"
@@ -210,7 +228,7 @@ In the ``menubar.xml`` file you can also see that ``.uno:BasicShapes`` has no po
 
 .. tabs::
 
-    .. code-block:: xml
+    .. code-tab:: xml
 
         <menu menu:id=".uno:ShapesMenu">
             <menupopup>
@@ -245,7 +263,7 @@ The |MenuItem|_, |MenuItemSub|_ and |MenuItemSep| have a ``item_kind`` property 
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         from ooodev.gui.menu.item import MenuItemKind
         # ...
@@ -265,7 +283,7 @@ Add Menu
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         from ooodev.calc import CalcDoc
         from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
@@ -313,7 +331,7 @@ If you only wanted the menu to be available for the current instance then ``save
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         if not menu_name in menu:
             # only add the menu if it does not already exist
@@ -333,7 +351,7 @@ The ``save=True`` option means the changes will be persisted.
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         menu_name = ".custom:my.custom_menu" # or can just be "my.custom_menu"
         if menu_name in menu:
@@ -352,7 +370,7 @@ Menu commands are mostly dispatch calls or a URL to run a macro. |MenuItem|_ and
 
 .. tabs::
 
-    .. code-block:: python
+    .. code-tab:: python
 
         from ooodev.gui.menu.item import MenuItemKind
         # ...
