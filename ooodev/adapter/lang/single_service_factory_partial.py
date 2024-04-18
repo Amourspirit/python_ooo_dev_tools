@@ -25,8 +25,8 @@ class SingleServiceFactoryPartial:
         Constructor
 
         Args:
-            component (XSingleServiceFactory  ): UNO Component that implements ``com.sun.star.lang.XSingleServiceFactory  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XSingleServiceFactory  ``.
+            component (XSingleServiceFactory): UNO Component that implements ``com.sun.star.lang.XSingleServiceFactory`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XSingleServiceFactory``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

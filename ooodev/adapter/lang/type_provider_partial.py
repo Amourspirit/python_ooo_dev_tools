@@ -21,8 +21,8 @@ class TypeProviderPartial:
         Constructor
 
         Args:
-            component (XTypeProvider  ): UNO Component that implements ``com.sun.star.lang.XTypeProvider  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTypeProvider  ``.
+            component (XTypeProvider): UNO Component that implements ``com.sun.star.lang.XTypeProvider`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XTypeProvider``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

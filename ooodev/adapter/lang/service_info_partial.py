@@ -21,8 +21,8 @@ class ServiceInfoPartial:
         Constructor
 
         Args:
-            component (XServiceInfo  ): UNO Component that implements ``com.sun.star.lang.XServiceInfo  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XServiceInfo  ``.
+            component (XServiceInfo): UNO Component that implements ``com.sun.star.lang.XServiceInfo`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XServiceInfo``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

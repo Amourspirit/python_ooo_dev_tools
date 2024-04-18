@@ -45,6 +45,7 @@ class InterfacePartial:
         Example:
 
         .. code-block:: python
+
             from ooodev.adapter.beans.property_set_info_partial import PropertySetInfoPartial
 
             if instance(my_instance, PropertySetInfoPartial):
@@ -54,6 +55,7 @@ class InterfacePartial:
         is functionally the same as:
 
         .. code-block:: python
+
             if instance.is_supported_interface("com.sun.star.beans.XPropertySetInfo"):
                 prop = instance.get_property_by_name()
                 # do something
@@ -61,6 +63,7 @@ class InterfacePartial:
         Short forms are also acceptable such as:
 
         .. code-block:: python
+
             if instance.is_supported_interface("XPropertySetInfo"):
                 prop = instance.get_property_by_name()
                 # do something
@@ -68,6 +71,7 @@ class InterfacePartial:
         or
 
         .. code-block:: python
+
             if instance.is_supported_interface("PropertySetInfoPartial"):
                 prop = instance.get_property_by_name()
                 # do something

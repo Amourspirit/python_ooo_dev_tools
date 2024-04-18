@@ -98,10 +98,10 @@ Searching for a Popup Menu
 --------------------------
 
 Recursively search
-""""""""""""""""""
+^^^^^^^^^^^^^^^^^^
 
 Recursively search MenuBar
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 
 A :ref:`ooodev.gui.menu.MenuBar` instance can be recursively searched by setting ``search_sub_menu=True``
 In this can we are finding ``Tools -> Forms -> Design Mode`` command.
@@ -125,7 +125,7 @@ In this can we are finding ``Tools -> Forms -> Design Mode`` command.
             .. group-tab:: None
 
 Recursively search PopupMenu
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""""
 
 A :ref:`ooodev.gui.menu.PopupMenu` instance can be recursively searched by setting ``search_sub_menu=True``
 
@@ -187,10 +187,10 @@ Turn cache off can be done by setting ``capacity=0``.
 
     .. code-tab:: python
 
-    i, command_menu = mb.find_item_menu_id("MyCommand", True)
-    if command_menu:
-        # turn cache off ofr menu
-        command_menu.cache.capacity = 0
+        i, command_menu = mb.find_item_menu_id("MyCommand", True)
+        if command_menu:
+            # turn cache off ofr menu
+            command_menu.cache.capacity = 0
 
     .. only:: html
 
@@ -213,7 +213,7 @@ All ``add_event_*`` and ``remove_*``  methods  work on the current ``PopupMenu``
 All ``subscribe_*``  and ``unsubscribe_*`` methods work on the current ``PopupMenu`` and any child ``PopupMenu`` recursively.
 
 General Example
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -501,8 +501,8 @@ And ``_exec_menu_ids`` is checked in the event callback.
 
             .. group-tab:: None
 
-Incept Menus
-^^^^^^^^^^^^
+Intercept Menus
+^^^^^^^^^^^^^^^
 
 For Context menus there is a `XContextMenuInterceptor <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1ui_1_1XContextMenuInterceptor.html>`__ that can be used to incept menus and change them.
 There does not seem to be an equivalent for Menu Bar Popup Menus.

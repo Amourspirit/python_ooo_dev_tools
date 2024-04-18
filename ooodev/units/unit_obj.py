@@ -16,12 +16,6 @@ if TYPE_CHECKING or DOCS_BUILDING:
         .. seealso::
 
             :ref:`ns_units`
-
-        .. _proto_unit_obj:
-
-        UnitT
-        =====
-
         """
 
         # if value is a attribute and not a property then value: Union[float, int] will not work.

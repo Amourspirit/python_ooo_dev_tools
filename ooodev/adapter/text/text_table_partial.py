@@ -45,7 +45,9 @@ class TextTablePartial(TextContentPartial):
         """
         Example: The cell in the 4th column and third row has the name ``D3``.
 
-        In cells that are split, the naming convention is more complex. In this case the name is a concatenation of the former cell name (i.e. \"D3\") and the number of the new column and row index inside of the original table cell separated by dots.
+        In cells that are split, the naming convention is more complex.
+        In this case the name is a concatenation of the former cell name (i.e. ``D3``) and
+        the number of the new column and row index inside of the original table cell separated by dots.
         This is done recursively.
 
         Args:

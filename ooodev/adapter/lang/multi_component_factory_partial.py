@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class MultiComponentFactoryPartial:
     """
-    Partial class for XMultiComponentFactory .
+    Partial class for XMultiComponentFactory.
     """
 
     def __init__(
@@ -26,8 +26,8 @@ class MultiComponentFactoryPartial:
         Constructor
 
         Args:
-            component (XMultiComponentFactory ): UNO Component that implements ``com.sun.star.lang.XMultiComponentFactory `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XMultiComponentFactory ``.
+            component (XMultiComponentFactory ): UNO Component that implements ``com.sun.star.lang.XMultiComponentFactory`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XMultiComponentFactory``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

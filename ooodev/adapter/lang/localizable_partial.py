@@ -22,8 +22,8 @@ class LocalizablePartial:
         Constructor
 
         Args:
-            component (XLocalizable  ): UNO Component that implements ``com.sun.star.lang.XLocalizable  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XLocalizable  ``.
+            component (XLocalizable): UNO Component that implements ``com.sun.star.lang.XLocalizable`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XLocalizable``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

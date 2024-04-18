@@ -23,8 +23,8 @@ class MultiServiceFactoryPartial:
         Constructor
 
         Args:
-            component (XMultiServiceFactory  ): UNO Component that implements ``com.sun.star.lang.XMultiServiceFactory  `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XMultiServiceFactory  ``.
+            component (XMultiServiceFactory): UNO Component that implements ``com.sun.star.lang.XMultiServiceFactory`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XMultiServiceFactory``.
         """
 
         def validate(comp: Any, obj_type: Any) -> None:

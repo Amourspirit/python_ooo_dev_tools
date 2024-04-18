@@ -40,8 +40,8 @@ class ClosedBezierShape(
         ShapePartialProps.__init__(self, component=component)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         DrawShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())

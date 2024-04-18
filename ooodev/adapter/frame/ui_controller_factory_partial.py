@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class UIControllerFactoryPartial(MultiComponentFactoryPartial, UIControllerRegistrationPartial):
     """
-    Partial class for XUIControllerFactory .
+    Partial class for XUIControllerFactory.
     """
 
     # pylint: disable=unused-argument
@@ -23,8 +23,8 @@ class UIControllerFactoryPartial(MultiComponentFactoryPartial, UIControllerRegis
         Constructor
 
         Args:
-            component (XUIControllerFactory  ): UNO Component that implements ``com.sun.star.frame.XUIControllerFactory `` interface.
-            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XUIControllerFactory ``.
+            component (XUIControllerFactory  ): UNO Component that implements ``com.sun.star.frame.XUIControllerFactory`` interface.
+            interface (UnoInterface, optional): The interface to be validated. Defaults to ``XUIControllerFactory``.
         """
 
         MultiComponentFactoryPartial.__init__(self, component=component, interface=interface)
