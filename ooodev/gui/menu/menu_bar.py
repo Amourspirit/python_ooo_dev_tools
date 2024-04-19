@@ -12,7 +12,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.adapter.awt.menu_bar_partial import MenuBarPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
-from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.io.log.named_logger import NamedLogger
 

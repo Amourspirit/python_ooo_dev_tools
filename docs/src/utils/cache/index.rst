@@ -1,0 +1,8 @@
+cache
+=====
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

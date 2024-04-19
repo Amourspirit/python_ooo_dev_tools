@@ -13,7 +13,7 @@ from ooodev.loader.inst.service import Service
 from ooodev.utils import props as mProps
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
-from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
