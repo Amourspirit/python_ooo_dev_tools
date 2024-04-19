@@ -7,7 +7,7 @@
 from __future__ import annotations
 from datetime import datetime
 import time
-from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Tuple, TYPE_CHECKING, Type
 
 import uno  # pylint: disable=W0611
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
     from ooodev.utils.data_type.generic_size_pos import GenericSizePos
-    from ooodev.utils.lru_cache import LRUCache
+    from ooodev.utils.cache.lru_cache import LRUCache
 else:
     PathOrStr = Any
     UnoInterface = Any

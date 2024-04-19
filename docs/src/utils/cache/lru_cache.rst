@@ -1,6 +1,6 @@
 Class LRUCache
 ==============
 
-.. autoclass:: ooodev.utils.lru_cache.LRUCache
+.. autoclass:: ooodev.utils.cache.LRUCache
     :members:
     :undoc-members:

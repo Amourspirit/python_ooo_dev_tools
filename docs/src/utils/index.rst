@@ -6,6 +6,7 @@ utils
     :glob:
 
     builder/index
+    cache/index
     context/index
     comp/index
     data_type/index
