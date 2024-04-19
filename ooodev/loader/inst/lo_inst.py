@@ -13,7 +13,7 @@ import contextlib
 import threading
 from datetime import datetime, timezone
 import time
-from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Set, Tuple, TYPE_CHECKING, Type
+from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Tuple, TYPE_CHECKING, Type
 from urllib.parse import urlparse
 import uno
 from com.sun.star.beans import XIntrospection
@@ -72,7 +72,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
 from ooodev.utils.factory.doc_factory import doc_factory
-from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.io.log import logging as logger
 from ooodev.io.log.named_logger import NamedLogger
 
@@ -1548,16 +1548,16 @@ class LoInst(EventsPartial):
                     XDispatchHelper, f"Could not create dispatch helper for command {str_cmd}"
                 )
             provider = self.qi(XDispatchProvider, frame, True)
-            
+
             prefix_key = "dispatch_prefixes"
             if prefix_key in self._cache:
                 prefixes = cast(Tuple[str, ...], self._cache[prefix_key])
             else:
                 set_pre = set(self.get_supported_dispatch_prefixes())
                 set_pre.remove(".uno:")
-                prefixes =  tuple(set_pre)
+                prefixes = tuple(set_pre)
                 self._cache[prefix_key] = prefixes
-            
+
             supported_prefix = False
             if str_cmd.startswith(prefixes):
                 supported_prefix = True
@@ -2142,7 +2142,7 @@ class LoInst(EventsPartial):
         if self._app_font_pixel_ratio is None:
             # 17 is AppFont
             try:
-                self._app_font_pixel_ratio = self._get_font_ratio()(17)
+                self._app_font_pixel_ratio = self._get_font_ratio()(17)  # type: ignore
             except Exception:
                 self._app_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from window
         return self._app_font_pixel_ratio
@@ -2161,7 +2161,7 @@ class LoInst(EventsPartial):
         if self._sys_font_pixel_ratio is None:
             # 18 is SysFont
             try:
-                self._sys_font_pixel_ratio = self._get_font_ratio()(18)
+                self._sys_font_pixel_ratio = self._get_font_ratio()(18)  # type: ignore
             except Exception:
                 self._sys_font_pixel_ratio = GenericSizePos(0.5, 0.5, 0.5, 0.5)  # best guess from windows
         return self._sys_font_pixel_ratio

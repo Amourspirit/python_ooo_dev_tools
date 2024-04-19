@@ -189,7 +189,7 @@ Turn cache off can be done by setting ``capacity=0``.
 
         i, command_menu = mb.find_item_menu_id("MyCommand", True)
         if command_menu:
-            # turn cache off ofr menu
+            # turn cache off for menu
             command_menu.cache.capacity = 0
 
     .. only:: html

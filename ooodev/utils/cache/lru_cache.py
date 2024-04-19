@@ -17,7 +17,7 @@ class LRUCache:
             capacity (int): Cache capacity.
         """
         self._cache = OrderedDict()
-        self._capacity = capacity
+        self._capacity = max(capacity, 0)
 
     # endregion Initialization
 
@@ -43,7 +43,7 @@ class LRUCache:
             The ``get`` method is an alias for the ``__getitem__`` method.
             So you can use ``cache_inst.get(key)`` or ``cache_inst[key]`` interchangeably.
         """
-        return self.__getitem__(key)
+        return self[key]
 
     def put(self, key: Any, value: Any) -> None:
         """
@@ -57,7 +57,7 @@ class LRUCache:
             The ``put`` method is an alias for the ``__setitem__`` method.
             So you can use ``cache_inst.put(key, value)`` or ``cache_inst[key] = value`` interchangeably.
         """
-        self.__setitem__(key, value)
+        self[key] = value
 
     def remove(self, key: Any) -> None:
         """
@@ -70,22 +70,25 @@ class LRUCache:
             The ``remove`` method is an alias for the ``__delitem__`` method.
             So you can use ``cache_inst.remove(key)`` or ``del cache_inst[key]`` interchangeably.
         """
-        self.__delitem__(key)
+        del self[key]
 
     # endregion Dictionary Methods
 
     # region Dunder Methods
 
     def __getitem__(self, key: Any) -> Any:
+        if key is None:
+            raise TypeError("Key must not be None.")
         if self._capacity <= 0:
             return None
         if key not in self._cache:
             return None
-        else:
-            self._cache.move_to_end(key)
-            return self._cache[key]
+        self._cache.move_to_end(key)
+        return self._cache[key]
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        if key is None or value is None:
+            raise TypeError("Key and value must not be None.")
         if self._capacity <= 0:
             return
         self._cache[key] = value
@@ -93,9 +96,11 @@ class LRUCache:
             self._cache.popitem(last=False)
 
     def __contains__(self, key: Any) -> bool:
-        return key in self._cache
+        return False if key is None else key in self._cache
 
     def __delitem__(self, key: Any) -> None:
+        if key is None:
+            raise TypeError("Key must not be None.")
         if key in self._cache:
             del self._cache[key]
 
@@ -133,8 +138,7 @@ class LRUCache:
             value (int): Cache capacity.
         """
         self._capacity = value
-        if self._capacity < 0:
-            self._capacity = 0
+        self._capacity = max(self._capacity, 0)
         if self._capacity == 0:
             self.clear()
             return

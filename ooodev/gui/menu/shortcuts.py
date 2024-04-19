@@ -18,7 +18,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
-from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp

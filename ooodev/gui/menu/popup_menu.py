@@ -1,15 +1,15 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
+from logging import DEBUG
 import uno
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
-from logging import DEBUG
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
 from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
-from ooodev.utils.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.loader import lo as mLo
