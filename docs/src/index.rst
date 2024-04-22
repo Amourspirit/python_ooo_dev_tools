@@ -21,6 +21,7 @@ ooodev
    listeners/index
    loader/index
    macro/index
+   meta/index
    office/index
    proto/index
    theme/index

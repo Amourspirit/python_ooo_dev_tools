@@ -29,6 +29,8 @@ from ooodev.exceptions import ex as mEx
 
 
 class DeletedUnoEnumMeta(UnoEnumMeta):
+    """Descriptor to raise an exception when an UNO Enum attribute is accessed after deletion."""
+
     def __getattr__(cls, __name: str) -> uno.Enum | Any:
         if __name in cls._get_deleted_attribs():  # type: ignore
             cls_name = cls.__name__
@@ -39,6 +41,8 @@ class DeletedUnoEnumMeta(UnoEnumMeta):
 
 
 class DeletedUnoConstEnumMeta(ConstEnumMeta):
+    """Descriptor to raise an exception when an attribute UNO Const is accessed after deletion."""
+
     def __getattr__(cls, __name: str) -> uno.Enum | Any:
         if __name in cls._get_deleted_attribs():  # type: ignore
             cls_name = cls.__name__

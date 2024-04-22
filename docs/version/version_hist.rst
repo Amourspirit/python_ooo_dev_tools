@@ -2,6 +2,36 @@
 Version History
 ***************
 
+Version 0.41.0
+==============
+
+Caching
+-------
+
+Added ``ooodev.utils.cache.file_cache.PickleCache`` and ``ooodev.utils.cache.file_cache.TextCache`` cache classes.
+These classes can be used to cache objects to disk in the LibreOffice Temp folder.
+Optionally an expire time can be set for the cache.
+
+ThePathSettingsComp
+-------------------
+
+Added ``ooodev.adapter.util.the_path_settings_comp.ThePathSettingsComp`` class.
+This class gets access to the LibreOffice paths such as the Temp folder and the User folder.
+
+.. code-block:: python
+
+    >>> from ooodev.adapter.util.the_path_settings_comp import ThePathSettingsComp
+    >>> path_settings = ThePathSettingsComp.from_lo()
+    >>> print(str(path_settings.temp))
+    file:///tmp
+
+Version 0.40.1
+==============
+
+``LRUCache`` moved to ``ooodev.utils.cache`` module.
+
+Added ``TimeCache`` and ``TLRUCache`` (Time and Least Recently used) to ``ooodev.utils.cache`` module.
+
 Version 0.40.0
 ==============
 

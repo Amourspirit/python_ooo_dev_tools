@@ -2,7 +2,6 @@
 # Python conversion of Info.java by Andrew Davison, ad@fivedots.coe.psu.ac.th
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
-from ast import Dict
 import sys
 import contextlib
 import datetime

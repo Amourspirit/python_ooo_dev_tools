@@ -23,6 +23,7 @@ from ooodev.utils.cache.lru_cache import LRUCache
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.gui.menu.common.command_dict import CommandDict
 
 
 class Shortcuts(LoInstPropsPartial):
@@ -131,7 +132,7 @@ class Shortcuts(LoInstPropsPartial):
         return event
 
     @classmethod
-    def to_key_event(cls, shortcut: str):
+    def to_key_event(cls, shortcut: str) -> KeyEvent | None:
         """Convert from string shortcut (Shift+Ctrl+Alt+LETTER) to KeyEvent"""
         key_event = KeyEvent()
         keys = shortcut.split("+")
@@ -148,12 +149,12 @@ class Shortcuts(LoInstPropsPartial):
         return key_event
 
     @classmethod
-    def get_url_script(cls, command: str | Dict[str, str]) -> str:
+    def get_url_script(cls, command: Union[str, CommandDict]) -> str:
         """
         Get uno command or url for macro.
 
         Args:
-            command (str | dict): Command to search, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to search, 'UNOCOMMAND' or dict with macro info.
 
         Returns:
             str: Url for macro or uno command or custom command.
@@ -227,7 +228,7 @@ class Shortcuts(LoInstPropsPartial):
             return command_dict[url]
         return []
 
-    def get_by_command(self, command: str | Dict[str, str]) -> List[str]:
+    def get_by_command(self, command: Union[str, CommandDict]) -> List[str]:
         """
         Get shortcuts by command.
 
@@ -273,13 +274,13 @@ class Shortcuts(LoInstPropsPartial):
         sc = self.get_shortcut(key_event)
         return self.get_by_shortcut(sc)
 
-    def set(self, shortcut: str, command: str | Dict[str, str], save: bool = True) -> bool:
+    def set(self, shortcut: str, command: Union[str, CommandDict], save: bool = True) -> bool:
         """
         Set shortcut to command
 
         Args:
             shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
-            command (str | dict): Command to assign, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to assign, 'UNOCOMMAND' or dict with macro info.
             save (bool, optional): Save configuration causing it to persist. Defaults to ``True``.
 
         Returns:
@@ -328,12 +329,12 @@ class Shortcuts(LoInstPropsPartial):
             self._cache.clear()
         return result
 
-    def remove_by_command(self, command: str | Dict[str, str], save: bool = False):
+    def remove_by_command(self, command: Union[str, CommandDict], save: bool = False):
         """
         Remove by shortcut.
 
         Args:
-            command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to remove, 'UNOCOMMAND' or dict with macro info.
             save (bool, optional): Save configuration causing it to persist. Defaults to ``False``.
         """
         url = Shortcuts.get_url_script(command)

@@ -1,14 +1,14 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 from enum import Enum
-from ooodev.adapter.component_base import ComponentBase
+from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.reflection.enum_type_description_partial import EnumTypeDescriptionPartial
 
 if TYPE_CHECKING:
     from com.sun.star.reflection import XEnumTypeDescription
 
 
-class EnumTypeDescriptionComp(ComponentBase, EnumTypeDescriptionPartial):
+class EnumTypeDescriptionComp(ComponentProp, EnumTypeDescriptionPartial):
     """
     Class for managing XEnumTypeDescription.
     """
@@ -22,7 +22,7 @@ class EnumTypeDescriptionComp(ComponentBase, EnumTypeDescriptionPartial):
         Args:
             component (XEnumTypeDescription): UNO Component that implements ``com.sun.star.reflection.XEnumTypeDescription`` interface.
         """
-        ComponentBase.__init__(self, component)
+        ComponentProp.__init__(self, component)
         EnumTypeDescriptionPartial.__init__(self, component=component)
 
     # region Overrides

@@ -49,7 +49,7 @@ class TheModuleUIConfigurationManagerSupplierComp(ComponentBase, ModuleUIConfigu
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        key = "TheModuleUIConfigurationManagerSupplierComp"
+        key = "com.sun.star.ui.theModuleUIConfigurationManagerSupplier"
         if key in lo_inst.cache:
             return cast(TheModuleUIConfigurationManagerSupplierComp, lo_inst.cache[key])
 

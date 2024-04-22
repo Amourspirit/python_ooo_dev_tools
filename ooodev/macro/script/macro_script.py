@@ -133,7 +133,7 @@ class MacroScript:
             library (str, optional): Macro Library. Defaults to ``Standard``.
             language (str, optional): Language ``Basic`` or ``Python``. Defaults to ``Basic``.
             location (str, optional): Location ``user`` or ``application``. Defaults to "user".
-            module (str, optional): Module portion. Only Applies if ``language` is not ``Basic`` or ``Python``. Defaults to ".".
+            module (str, optional): Module portion. Only Applies if ``language`` is not ``Basic`` or ``Python``. Defaults to ".".
 
         Returns:
             str: Macro Url such as ``vnd.sun.star.script:myLibrary.myModule.myMacro?language=Basic&location=application``.

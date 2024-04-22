@@ -37,6 +37,14 @@ class _LayoutManagerComp(ComponentProp):
 
     # endregion context manage
 
+    # region Properties
+    @property
+    def __class__(self):
+        # pretend to be a LayoutManagerComp class
+        return LayoutManagerComp
+
+    # endregion Properties
+
 
 class LayoutManagerComp(
     _LayoutManagerComp,

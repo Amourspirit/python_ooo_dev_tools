@@ -3,6 +3,7 @@ from typing import Any, TYPE_CHECKING
 
 from com.sun.star.container import XSet
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
+from ooodev.utils.builder.default_builder import DefaultBuilder
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
@@ -54,3 +55,23 @@ class SetPartial(EnumerationAccessPartial):
         self.__component.remove(element)
 
     # endregion XSet
+
+
+def get_builder(component: Any) -> DefaultBuilder:
+    """
+    Get the builder for the component.
+
+    Args:
+        component (Any): The component.
+
+    Returns:
+        DefaultBuilder: Builder instance.
+    """
+    builder = DefaultBuilder(component)
+    builder.auto_add_interface("com.sun.star.container.XSet")
+    builder.set_omit(
+        "com.sun.star.container.XEnumeration",
+        "com.sun.star.container.XElementAccess",
+    )
+
+    return builder

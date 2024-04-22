@@ -181,9 +181,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
             PopupMenu: ``PopupMenu`` instance if found, otherwise ``None``.
         """
         menu = self.component.getPopupMenu(menu_id)
-        if menu is None:
-            return None
-        return PopupMenu(menu)
+        return None if menu is None else PopupMenu(menu)
 
     def clear(self) -> None:
         """
@@ -217,17 +215,35 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
     # endregion MenuPartial Overrides
 
     # region execute command
-    def execute_cmd(self, menu_id: int, in_thread: bool = False) -> bool:
+    def is_dispatch_cmd(self, cmd: str | int) -> bool:
+        """
+        Check if a command is a dispatch command.
+
+        Args:
+            cmd (str, int): Command or the Menu id to get the command from that is to be checked.
+
+        Returns:
+            bool: ``True`` if it is a dispatch command; Otherwise, ``False``.
+        """
+        if isinstance(cmd, int):
+            cmd = self.get_command(cmd)
+        if not cmd:
+            return False
+        supported_prefixes = self.lo_inst.get_supported_dispatch_prefixes()
+        return cmd.startswith(supported_prefixes)
+
+    def execute_cmd(self, cmd: str | int, in_thread: bool = False) -> bool:
         """
         Executes a command.
 
         Args:
-            cmd (str): Command to execute.
+            cmd (str, int): Command or the Menu id to get the command from that is to be executed.
         """
-        cmd = self.get_command(menu_id)
+        if isinstance(cmd, int):
+            cmd = self.get_command(cmd)
         if not cmd:
             return False
-        supported_prefixes = tuple(self.lo_inst.get_supported_dispatch_prefixes())
+        supported_prefixes = self.lo_inst.get_supported_dispatch_prefixes()
         if cmd.startswith(supported_prefixes):
             self.lo_inst.dispatch_cmd(cmd, in_thread=in_thread)
             return True

@@ -26,21 +26,15 @@ class FlushablePartial:
             component (XFlushable): UNO Component that implements ``com.sun.star.util.XFlushable`` interface.
             interface (UnoInterface, optional): The interface to be validated. Defaults to ``XFlushable``.
         """
-        self.__interface = interface
-        self.__validate(component)
+
+        def validate(component: Any, interface: Any) -> None:
+            if interface is None:
+                return
+            if not mLo.Lo.is_uno_interfaces(component, interface):
+                raise mEx.MissingInterfaceError(interface)
+
+        validate(component, interface)
         self.__component = component
-
-    def __validate(self, component: Any) -> None:
-        """
-        Validates the component.
-
-        Args:
-            component (Any): The component to be validated.
-        """
-        if self.__interface is None:
-            return
-        if not mLo.Lo.is_uno_interfaces(component, self.__interface):
-            raise mEx.MissingInterfaceError(self.__interface)
 
     # region XFlushable
     def add_flush_listener(self, listener: XFlushListener) -> None:

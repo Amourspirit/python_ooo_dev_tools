@@ -16,17 +16,18 @@ if TYPE_CHECKING:
     from com.sun.star.container import XIndexContainer
     from ooodev.adapter.ui.ui_configuration_manager_comp import UIConfigurationManagerComp
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.gui.menu.common.command_dict import CommandDict
 
 
 class MenuBase(LoInstPropsPartial):
     """Class Base for menus"""
 
-    NODE = "private:resource/menubar/menubar"
     VALID_KEYS = {"Label", "CommandURL", "ShortCut", "Style", "Type", "ItemDescriptorContainer"}
 
     def __init__(
         self,
         *,
+        node: str,
         config: UIConfigurationManagerComp,
         menus: IndexAccessComp[Tuple[PropertyValue, ...]],
         app: str | Service = "",
@@ -36,14 +37,19 @@ class MenuBase(LoInstPropsPartial):
         Constructor
 
         Args:
+            node (str): Menu Node such as ``private:resource/menubar/menubar``.
+            config (UIConfigurationManagerComp): Configuration Manager.
+            menus (IndexAccessComp[Tuple[PropertyValue, ...]]): Menus.
             app (str | Service, optional): App Name such as ``Service.CALC``. Defaults to "".
                 If no app is provided, the global shortcuts will be used.
+            lo_inst (LoInst, optional): LibreOffice Instance. Defaults to None.
 
         Hint:
             - ``Service`` is an enum and can be imported from ``ooodev.loader.inst.service``
         """
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
+        self._node = node
         LoInstPropsPartial.__init__(self, lo_inst)
         self._app = str(app)
         self._config = config
@@ -114,7 +120,7 @@ class MenuBase(LoInstPropsPartial):
         Returns:
             bool: True if all keys are valid.
         """
-        return all(key in valid_keys for key in dictionary.keys())
+        return all(key in valid_keys for key in dictionary)
 
     def _process_menu(self, menu: Dict[str, Any]):
         """
@@ -149,12 +155,9 @@ class MenuBase(LoInstPropsPartial):
         # for calc that would be ..\AppData\Roaming\LibreOffice\4\user\config\soffice.cfg\modules\scalc\menubar
         mnu = self._process_menu(menu)
         properties = mProps.Props.make_props_any(**mnu)
-        if hasattr(parent, "component"):
-            obj = parent.component
-        else:
-            obj = parent
+        obj = parent.component if hasattr(parent, "component") else parent
         uno.invoke(obj, "insertByIndex", (index, properties))  # type: ignore
-        self._config.replace_settings(self.NODE, self._menus.component)
+        self._config.replace_settings(self._node, self._menus.component)
         return
 
     def _insert_submenu(self, parent: XIndexContainer, menus: List[Dict[str, Any]]) -> None:
@@ -179,7 +182,7 @@ class MenuBase(LoInstPropsPartial):
             if submenu:
                 self._insert_submenu(idc, submenu)
 
-    def _get_first_command(self, command: str | Dict[str, str]):
+    def _get_first_command(self, command: Union[str, CommandDict]):
         return Shortcuts.get_url_script(command)
         # url = command
         # if isinstance(command, dict):
@@ -214,7 +217,7 @@ class MenuBase(LoInstPropsPartial):
         if submenu:
             self._insert_submenu(idc, submenu)
 
-    def remove(self, parent: Any, name: str | Dict[str, str], save: bool = False) -> None:
+    def remove(self, parent: Any, name: Union[str, CommandDict], save: bool = False) -> None:
         """
         Remove name in parent.
 
@@ -236,7 +239,7 @@ class MenuBase(LoInstPropsPartial):
         if isinstance(parent, ComponentProp):
             parent = parent.component
         uno.invoke(parent, "removeByIndex", (index,))  # type: ignore
-        self._config.replace_settings(self.NODE, self._menus.component)
+        self._config.replace_settings(self._node, self._menus.component)
         if save:
             self._config.component.store()  # type: ignore
 

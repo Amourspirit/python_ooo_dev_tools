@@ -18,7 +18,7 @@ class TLRUCache:
         """
         self._cache = LRUCache(capacity)
         self._ttl_cache = TimeCache(seconds)
-        self._dummy = "x"
+        self._dummy = object()
 
     def clear(self):
         """
