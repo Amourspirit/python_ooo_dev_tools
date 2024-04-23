@@ -1,0 +1,8 @@
+popup
+=====
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

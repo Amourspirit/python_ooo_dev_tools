@@ -1,7 +1,7 @@
 # coding: utf-8
 import os
 from pathlib import Path
-from typing import Union
+from typing import Any, Union
 import uno
 from abc import abstractmethod
 
@@ -27,6 +27,7 @@ class CacheBase(metaclass=ConstructorSingleton):
         uno.fileUrlToSystemPath
         self._ps = ThePathSettingsComp.from_lo()
         t_path = Path(uno.fileUrlToSystemPath(self._ps.temp[0]))
+        self._tmp_dir = tmp_dir
         if tmp_dir:
             self._cache_path = t_path / tmp_dir
             self._cache_path.mkdir(parents=True, exist_ok=True)
@@ -37,7 +38,7 @@ class CacheBase(metaclass=ConstructorSingleton):
         self._logger = NamedLogger(self.__class__.__name__)
 
     @abstractmethod
-    def fetch_from_cache(self, filename: Union[str, Path]):
+    def get(self, filename: Union[str, Path]):
         """
         Fetches file contents from cache if it exist and is not expired
 
@@ -49,16 +50,16 @@ class CacheBase(metaclass=ConstructorSingleton):
         """
 
     @abstractmethod
-    def save_in_cache(self, filename: Union[str, Path], content):
+    def put(self, filename: Union[str, Path], content: Any):
         """
         Saves file contents into cache
 
         Args:
             filename (Union[str, Path]): filename to write.
-            content (any): Contents to write into file.
+            content (Any): Contents to write into file.
         """
 
-    def del_from_cache(self, filename: Union[str, Path]) -> None:
+    def remove(self, filename: Union[str, Path]) -> None:
         """
         Deletes a file from cache if it exist
 
@@ -71,6 +72,24 @@ class CacheBase(metaclass=ConstructorSingleton):
                 os.remove(f)
         except Exception as e:
             self.logger.warning(f"Not able to delete file: {filename}, error: {e}")
+
+    # region Dunder Methods
+    def __contains__(self, key: Any) -> bool:
+        return self.get(key) is not None
+
+    def __getitem__(self, key: Any) -> Any:
+        return self.get(key)
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        self.put(key, value)
+
+    def __delitem__(self, key: Any) -> None:
+        self.remove(key)
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}(tmp_dir={self._tmp_dir},  lifetime={self._lifetime})>"
+
+    # endregion Dunder Methods
 
     @property
     def seconds(self) -> float:

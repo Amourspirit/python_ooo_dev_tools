@@ -6,8 +6,23 @@ from enum import Enum
 class ModuleNamesKind(Enum):
     """
     Enum for looking up module names.
+
+    Support conversion from int, str, and tuple.
+
+    Example:
+        .. code-block:: python
+
+            >>> from ooodev.utils.kind.module_names_kind import ModuleNamesKind
+            # ...
+            >>> val1 = ModuleNamesKind.SPREADSHEET_DOCUMENT
+            >>> val2 = ModuleNamesKind(20)
+            >>> val3 = ModuleNamesKind("com.sun.star.sheet.SpreadsheetDocument")
+            >>> val4 = ModuleNamesKind((20, "com.sun.star.sheet.SpreadsheetDocument"))
+            >>> val1 == val2 == val3 == val4
+            True
     """
 
+    NONE = (0, "unknown")
     FORM_DESIGN = (1, "com.sun.star.sdb.FormDesign")
     VIEW_DESIGN = (2, "com.sun.star.sdb.ViewDesign")
     BASIC_IDE = (3, "com.sun.star.script.BasicIDE")
@@ -32,9 +47,15 @@ class ModuleNamesKind(Enum):
     PRESENTATION_DOCUMENT = (22, "com.sun.star.presentation.PresentationDocument")
 
     def __str__(self) -> str:
+        """Gets the string portion of the enum tuple value."""
         return self.value[1]
 
     def __int__(self) -> int:
+        """Gets the int portion of the enum tuple value."""
+        return self.value[0]
+
+    def to_json(self) -> Any:
+        """Gets the JSON representation of the enum."""
         return self.value[0]
 
 
@@ -48,6 +69,10 @@ def _new_module_names_kind(cls, val: Any) -> ModuleNamesKind:
     elif isinstance(val, int):
         for item in ModuleNamesKind:
             if val == item.value[0]:
+                return item
+    elif isinstance(val, tuple):
+        for item in ModuleNamesKind:
+            if val == item.value:
                 return item
     raise ValueError(f"Invalid value for ModuleNamesKind: {val}")
 

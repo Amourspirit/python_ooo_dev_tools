@@ -13,7 +13,7 @@ class PickleCache(CacheBase):
     Cached file are in a subfolder of system tmp dir.
     """
 
-    def fetch_from_cache(self, filename: Union[str, Path]) -> Any:
+    def get(self, filename: Union[str, Path]) -> Any:
         """
         Fetches file contents from cache if it exist and is not expired
 
@@ -31,7 +31,7 @@ class PickleCache(CacheBase):
             if f_stat.st_size == 0:
                 # should not be zero byte file.
                 try:
-                    self.del_from_cache(f)
+                    self.remove(f)
                 except Exception as e:
                     self.logger.warning(f"Not able to delete 0 byte file: {filename} error: {e}")
                 return None
@@ -52,7 +52,7 @@ class PickleCache(CacheBase):
             self.logger.error(e, exc_info=True)
             raise e
 
-    def save_in_cache(self, filename: Union[str, Path], content: Any):
+    def put(self, filename: Union[str, Path], content: Any):
         """
         Saves file contents into cache
 

@@ -13,3 +13,5 @@ class CmdData(NamedTuple):
     tooltip_label: str
     target_url: str
     is_experimental: bool
+    module_hotkey: str
+    global_hotkey: str

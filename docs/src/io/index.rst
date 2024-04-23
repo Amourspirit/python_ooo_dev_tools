@@ -7,3 +7,4 @@ io
     :titlesonly:
 
     log/index
+    json/index

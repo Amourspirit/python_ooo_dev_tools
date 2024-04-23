@@ -1,28 +1,35 @@
 from __future__ import annotations
 from datetime import timedelta
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
-from ooodev.utils.cache.file_cache.pickle_cache import PickleCache
 from ooodev.adapter.frame.module_manager_comp import ModuleManagerComp
+from ooodev.adapter.frame.the_ui_command_description_comp import TheUICommandDescriptionComp
+from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
+from ooodev.adapter.ui.global_accelerator_configuration_comp import GlobalAcceleratorConfigurationComp
 from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import (
     TheModuleUIConfigurationManagerSupplierComp,
 )
-from ooodev.adapter.frame.the_ui_command_description_comp import TheUICommandDescriptionComp
+from ooodev.events.args.cancel_event_args import CancelEventArgs
+from ooodev.events.args.event_args import EventArgs
+from ooodev.events.partial.events_partial import EventsPartial
+from ooodev.gui.commands.cmd_data import CmdData
+from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.utils import props as mProps
+from ooodev.utils.cache.file_cache.pickle_cache import PickleCache
 from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
+from ooodev.utils.string.str_list import StrList
 
-from ooodev.gui.commands.cmd_data import CmdData
 
-
-class CmdInfo:
+class CmdInfo(EventsPartial):
     """
     Gets Information about commands.
 
     Processing all the commands in all the modules takes some time.
     The first time the command data is retrieved, it is cached.
     The next time the command data is retrieved, it is retrieved from the cache.
-    The cache valid for 5 days. The ``clear_cache()`` method can be used to clear the cache sooner.
+    The cache valid for 5 days (may be cleared sooner, depending on system).
+    The ``clear_cache()`` method can be used to clear the cache sooner.
 
     Example:
         .. code-block:: python
@@ -31,16 +38,17 @@ class CmdInfo:
             >>> from ooodev.gui.commands.cmd_info import CmdInfo
 
             >>> inst = CmdInfo()
-            >>> cmd_data = inst.get_cmd_data(ModuleNamesKind.SPREADSHEET_DOCUMENT, ".uno:DuplicateSheet")
+            >>> cmd_data = inst.get_cmd_data(ModuleNamesKind.SPREADSHEET_DOCUMENT, ".uno:Copy")
             >>> if cmd_data:
             ...     print(cmd_data)
-            CmdData(command='.uno:DuplicateSheet', label='Duplicate Sheet', name='Duplicate Sheet', popup=False, properties=1, popup_label='', tooltip_label='', target_url='', is_experimental=False)
+            CmdData(command='.uno:Copy', label='Cop~y', name='Copy', popup=False, properties=1, popup_label='', tooltip_label='', target_url='', is_experimental=False, module_hotkey='', global_hotkey='Ctrl+C')
 
     """
 
     # see https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/UI/
     def __init__(self) -> None:
         """Constructor."""
+        EventsPartial.__init__(self)
         self._cmf = TheModuleUIConfigurationManagerSupplierComp.from_lo()
         self._ui_cmd_desc = TheUICommandDescriptionComp.from_lo()
         delta = timedelta(days=5)
@@ -48,6 +56,7 @@ class CmdInfo:
         # using LRU cache is many times faster than using file cache alone.
         self._lru_cache = LRUCache(capacity=100)
         self._file_prefix = "uurt54_cmds_"
+        self._global_shortcuts = Shortcuts()
 
     def get_module_names(self) -> Tuple[str, ...]:
         """
@@ -67,7 +76,7 @@ class CmdInfo:
         names = self.get_module_names()
         for name in names:
             key = f"{self._file_prefix}{name.replace('.', '_')}.pkl"
-            self._file_cache.del_from_cache(key)
+            self._file_cache.remove(key)
         self._lru_cache.clear()
 
     def find_command(self, command: str) -> Dict[str, List[CmdData]]:
@@ -79,11 +88,24 @@ class CmdInfo:
 
         Returns:
             dict: A dictionary of module names and command rows.
+
+        Note:
+            Triggers the ``CmdInfo_command_found`` event. If the event is canceled the command is not added to the result.
+            See :py:meth:`~.CmdInfo.subscribe_on_command_found`.
+
+            The ``event_data`` has the following event data:
+            - ``module_name``: The module name.
+            - ``cmd_data``: Instance of :py:class:`~ooodev.gui.commands.CmdData` The command data.
         """
         results = {}
         for name in self.get_module_names():
             cmd_data = self.get_cmd_data(name, command)
             if cmd_data:
+                cargs = CancelEventArgs(self)
+                cargs.event_data = {"module_name": name, "cmd_data": cmd_data}
+                self.trigger_event("CmdInfo_command_found", cargs)
+                if cargs.cancel:
+                    continue
                 if name not in results:
                     results[name] = [cmd_data]
                 else:
@@ -144,13 +166,15 @@ class CmdInfo:
         key = f"{self._file_prefix}{mod_name.replace('.', '_')}.pkl"
         if key in self._lru_cache:
             return self._lru_cache[key]
-        val = self._file_cache.fetch_from_cache(key)
+        val = self._file_cache[key]
         if val:
             self._lru_cache[key] = val
             return val
 
         # config = self._cmf.get_ui_configuration_manager(mod_name)
-        def build_row(cmd: str, el: Any) -> tuple:
+        def build_row(
+            cmd: str, el: Any, local_sc: AcceleratorConfigurationComp, global_sc: GlobalAcceleratorConfigurationComp
+        ) -> tuple:
             el_dict = mProps.Props.data_to_dict(el)
             label = el_dict.get("Label", "")
             name = el_dict.get("Name", "")
@@ -160,18 +184,63 @@ class CmdInfo:
             tooltip_label = el_dict.get("TooltipLabel", "")
             target_url = el_dict.get("TargetURL", "")
             is_experimental = el_dict.get("IsExperimental", False)
+            local_keys = local_sc.get_preferred_key_events_for_command_list(cmd)
+            global_keys = global_sc.get_preferred_key_events_for_command_list(cmd)
+            if local_keys:
+                sl = StrList()
+                for key in local_keys:
+                    sl.append(Shortcuts.from_key_event(key))
+                module_hotkey = str(sl)
+            else:
+                module_hotkey = ""
+            if global_keys:
+                sl = StrList()
+                for key in global_keys:
+                    sl.append(Shortcuts.from_key_event(key))
+                global_hotkey = str(sl)
+            else:
+                global_hotkey = ""
 
             return CmdData(
-                cmd, label, name, popup, properties, popup_label, tooltip_label, target_url, is_experimental
+                cmd,
+                label,
+                name,
+                popup,
+                properties,
+                popup_label,
+                tooltip_label,
+                target_url,
+                is_experimental,
+                module_hotkey,
+                global_hotkey,
             )
 
         result = {}
         desc = self._ui_cmd_desc.get_by_name(mod_name)
         commands = desc.get_element_names()
+        mod_ui_config = self._cmf.get_ui_configuration_manager(mod_name)
+        local_short_cut_mgr = mod_ui_config.get_short_cut_manager()
+        global_short_cut_mgr = GlobalAcceleratorConfigurationComp.from_lo()
+
         for name in commands:
             el = desc.get_by_name(name)
-            row = build_row(name, el)
+            row = build_row(name, el, local_short_cut_mgr, global_short_cut_mgr)
             result[name] = row
-        self._file_cache.save_in_cache(key, result)
+        self._file_cache[key] = result
         self._lru_cache[key] = result
         return result
+
+    def subscribe_on_command_found(self, cb: Callable[[Any, CancelEventArgs], None]) -> None:
+        """
+        Subscribe on command found event.
+
+        The callback ``event_data`` is a dictionary with keys:
+
+        - ``module_name``: The module name.
+        - ``cmd_data``: Instance of :py:class:`~ooodev.gui.commands.CmdData` The command data.
+        """
+        self.subscribe_event("CmdInfo_command_found", cb)
+
+    def unsubscribe_on_command_found(self, cb: Callable[[Any, CancelEventArgs], None]) -> None:
+        """Unsubscribe on command found event."""
+        self.unsubscribe_event("CmdInfo_command_found", cb)

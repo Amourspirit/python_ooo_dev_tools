@@ -18,6 +18,7 @@ Submodules
    ooodev.adapter.ui.document_accelerator_configuration_comp
    ooodev.adapter.ui.global_accelerator_configuration_comp
    ooodev.adapter.ui.module_accelerator_configuration_comp
+   ooodev.adapter.ui.module_ui_command_description_comp
    ooodev.adapter.ui.module_ui_configuration_manager2_partial
    ooodev.adapter.ui.module_ui_configuration_manager_comp
    ooodev.adapter.ui.module_ui_configuration_manager_partial

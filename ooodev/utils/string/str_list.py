@@ -25,7 +25,7 @@ class StrList:
         self._sep = sep
 
     # region Methods
-    def add(self, value: str) -> StrList:
+    def append(self, value: str) -> StrList:
         """
         Add a string to the list
 

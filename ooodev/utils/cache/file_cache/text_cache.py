@@ -11,7 +11,7 @@ class TextCache(CacheBase):
     Cached file are in a subfolder of system tmp dir.
     """
 
-    def fetch_from_cache(self, filename: Union[str, Path]) -> Union[str, None]:
+    def get(self, filename: Union[str, Path]) -> Union[str, None]:
         """
         Fetches file contents from cache if it exist and is not expired
 
@@ -32,7 +32,7 @@ class TextCache(CacheBase):
             if f_stat.st_size == 0:
                 # should not be zero byte file.
                 try:
-                    self.del_from_cache(f)
+                    self.remove(f)
                 except Exception as e:
                     self.logger.warning(f"Not able to delete 0 byte file: {filename}, error: {e}")
                 return None
@@ -51,7 +51,7 @@ class TextCache(CacheBase):
         except IOError:
             return None
 
-    def save_in_cache(self, filename: Union[str, Path], content: str):
+    def put(self, filename: Union[str, Path], content: str):
         """
         Saves file contents into cache
 

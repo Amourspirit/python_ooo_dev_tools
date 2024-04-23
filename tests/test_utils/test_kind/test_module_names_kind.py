@@ -13,5 +13,6 @@ def test_new():
 
     for item in ModuleNamesKind:
         assert item == ModuleNamesKind(item)
+        assert item == ModuleNamesKind(item.value)
         assert item == ModuleNamesKind(item.value[0])
         assert item == ModuleNamesKind(item.value[1])

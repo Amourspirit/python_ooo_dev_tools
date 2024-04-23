@@ -18,7 +18,7 @@ _DOCS_PATH = Path(__file__).parent
 _ROOT_PATH = _DOCS_PATH.parent
 
 sys.path.insert(0, str(_ROOT_PATH))
-from ooodev import __version__
+import ooodev
 
 os.environ["DOCS_BUILDING"] = "True"
 os.environ["ooouno_ignore_runtime"] = "True"
@@ -34,7 +34,7 @@ author = ":Barry-Thomas-Paul: Moss"
 odevgui_win_url = "https://ooo-dev-tools-gui-win.readthedocs.io/en/latest/"
 
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = ooodev.get_version()
 
 # region Configuration methods
 

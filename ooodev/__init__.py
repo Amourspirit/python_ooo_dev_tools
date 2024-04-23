@@ -5,3 +5,7 @@
 #     version = f.read().strip()
 
 __version__ = "0.41.0"
+
+
+def get_version() -> str:
+    return __version__
