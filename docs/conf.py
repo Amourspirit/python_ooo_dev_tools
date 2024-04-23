@@ -271,7 +271,7 @@ rst_prolog_lst = [
     f".. _odevgui_win: {odevgui_win_url}",
     "",
 ]
-rst_prolog_lst.append(f".. |app_ver| replace:: {__version__}\n")
+rst_prolog_lst.append(f".. |app_ver| replace:: {release}\n")
 
 # add extra roles for custom theme colors.
 # unlike the colors style_custom.css, these colors can be change by

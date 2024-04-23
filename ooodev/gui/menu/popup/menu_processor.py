@@ -8,6 +8,7 @@ from ooodev.gui.commands.cmd_info import CmdInfo
 from ooodev.gui.menu.popup_menu import PopupMenu
 from ooodev.gui.menu.popup.popup_item import PopupItem
 from ooodev.gui.menu.shortcuts import Shortcuts
+from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
 from ooodev.utils.string.str_list import StrList
 
@@ -126,12 +127,13 @@ class MenuProcessor(EventsPartial):
                 # no valid menu text found
                 # raise an event to allow the caller to provide a valid menu text
                 cargs = CancelEventArgs(self)
-                cargs.event_data = cast(dict, {"module_kind": module_kind, "cmd": cmd, "index": index, "menu": menu})
+                event_data = DotDict(module_kind=module_kind, cmd=cmd, index=index, menu=menu)
+                cargs.event_data = event_data
                 self.trigger_event("popup_module_no_text_found", cargs)
                 if cargs.cancel:
                     return None
-                if "text" in cargs.event_data["menu"]:
-                    cmd_text = cargs.event_data["menu"]["text"]
+                if "text" in cargs.event_data.menu:
+                    cmd_text = cargs.event_data.menu["text"]
 
         if not cmd_text:
             raise ValueError(f"No text for command: {module_kind} {cmd}")
@@ -155,11 +157,11 @@ class MenuProcessor(EventsPartial):
         """Get popup item data"""
         eargs = EventArgs(self)
 
-        eargs.event_data = {**menu}
-        eargs.event_data["index"] = index
+        eargs.event_data = DotDict(**menu)
+        eargs.event_data.index = index
         self.trigger_event("before_get_popup_item", eargs)
-        menu_data = cast(dict, eargs.event_data)
-        text = menu_data["text"]
+        menu_data = cast(DotDict, eargs.event_data)
+        text = menu_data.text
         command = cast(Union[str, "CommandDict"], menu_data.get("command", ""))
         style = int(menu_data.get("style", 0))
         checked = bool(menu_data.get("checked", False))
@@ -201,7 +203,7 @@ class MenuProcessor(EventsPartial):
         if pop is None:
             return None
         cargs = CancelEventArgs(source=self)
-        cargs.event_data = {"popup_menu": self._popup, "popup_item": pop}
+        cargs.event_data = DotDict(popup_menu=self._popup, popup_item=pop)
         self.trigger_event("before_process", cargs)
         if cargs.cancel:
             return pop

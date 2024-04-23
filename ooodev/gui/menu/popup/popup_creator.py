@@ -14,6 +14,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.gui.menu.popup.menu_processor import MenuProcessor
 from ooodev.gui.commands.cmd_info import CmdInfo
 from ooodev.io.json.json_encoder import JsonEncoder
+from ooodev.utils.helper.dot_dict import DotDict
 
 
 if TYPE_CHECKING:
@@ -108,7 +109,7 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """Insert submenu"""
         pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
         eargs = EventArgs(self)
-        eargs.event_data = {"popup_menu": pm}
+        eargs.event_data = DotDict(popup_menu=pm)
         self.trigger_event("popup_created", eargs)
 
         for index, menu in enumerate(menus):
@@ -131,7 +132,7 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
         eargs = EventArgs(self)
-        eargs.event_data = {"popup_menu": pm}
+        eargs.event_data = DotDict(popup_menu=pm)
         self.trigger_event("popup_created", eargs)
         for index, menu in enumerate(menus):
             submenu = menu.pop("submenu", False)

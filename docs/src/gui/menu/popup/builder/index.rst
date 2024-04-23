@@ -1,9 +1,8 @@
-popup
-=====
+builder
+=======
 
 .. toctree::
     :titlesonly:
     :glob:
 
-    builder/index
     *

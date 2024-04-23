@@ -3,9 +3,9 @@ from typing import Any, TYPE_CHECKING
 
 from com.sun.star.container import XSet
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
-from ooodev.utils.builder.default_builder import DefaultBuilder
 
 if TYPE_CHECKING:
+    from ooodev.utils.builder.default_builder import DefaultBuilder
     from ooodev.utils.type_var import UnoInterface
 
 
@@ -67,6 +67,10 @@ def get_builder(component: Any) -> DefaultBuilder:
     Returns:
         DefaultBuilder: Builder instance.
     """
+    # pylint: disable=import-outside-toplevel
+    # pylint: disable=redefined-outer-name
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
     builder = DefaultBuilder(component)
     builder.auto_add_interface("com.sun.star.container.XSet")
     builder.set_omit(

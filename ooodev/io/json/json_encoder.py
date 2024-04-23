@@ -4,6 +4,7 @@ import json
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.gen_util import NULL_OBJ
+from ooodev.utils.helper.dot_dict import DotDict
 
 
 class JsonEncoder(json.JSONEncoder):
@@ -48,7 +49,7 @@ class JsonEncoder(json.JSONEncoder):
         """
         if isinstance(self, EventsPartial):
             eargs = EventArgs(self)
-            eargs.event_data = {"obj": obj}
+            eargs.event_data = DotDict(obj=obj)
             self.trigger_event("json_encoding", eargs)
             if "result" in eargs.event_data:
                 return eargs.event_data["result"]
