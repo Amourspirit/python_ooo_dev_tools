@@ -48,7 +48,7 @@ class ThePathSettingsComp(ComponentBase, PathSettingsPartial):
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        key = "ThePathSettingsComp"
+        key = "com.sun.star.util.thePathSettings"
         if key in lo_inst.cache:
             return cast(ThePathSettingsComp, lo_inst.cache[key])
 

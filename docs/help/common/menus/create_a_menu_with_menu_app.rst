@@ -170,7 +170,7 @@ As a Dictionary ``CommandURL`` can accept to following values.
 - ``name`` (str): Macro Name.
 - ``language`` (str, optional): Language ``Basic`` or ``Python``. Defaults to ``Basic``.
 - ``location`` (str, optional): Location ``user`` or ``application``. Defaults to "user".
-- ``module`` (str, optional): Module portion. Only Applies if ``language` is not ``Basic`` or ``Python``. Defaults to ".".
+- ``module`` (str, optional): Module portion. Only Applies if ``language`` is not ``Basic`` or ``Python``. Defaults to ".".
 
 These are the exact same parameters that are accepted by :py:meth:`ooodev.macro.script.MacroScript.get_url_script()` method.
 

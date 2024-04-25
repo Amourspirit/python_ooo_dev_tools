@@ -85,7 +85,7 @@ class GlobalAcceleratorConfigurationComp(
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        key = "GlobalAcceleratorConfigurationComp"
+        key = "com.sun.star.ui.GlobalAcceleratorConfiguration"
         if key in lo_inst.cache:
             return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
         service = "com.sun.star.ui.GlobalAcceleratorConfiguration"
