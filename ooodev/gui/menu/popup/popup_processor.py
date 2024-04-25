@@ -16,10 +16,10 @@ if TYPE_CHECKING:
     from ooodev.gui.menu.common.command_dict import CommandDict
 
 
-class MenuProcessor(EventsPartial):
+class PopupProcessor(EventsPartial):
     """Class for processing menus. Does not process submenus"""
 
-    def __init__(self, popup: PopupMenu, cmd_info: CmdInfo) -> None:
+    def __init__(self, popup: PopupMenu) -> None:
         """
         Constructor
 
@@ -29,7 +29,7 @@ class MenuProcessor(EventsPartial):
         EventsPartial.__init__(self)
         self._init_events()
         self._popup = popup
-        self._cmd_info = cmd_info
+        self._cmd_info = CmdInfo()
         self._cmd_info.subscribe_on_command_found(self._fn_on_command_found)
 
     def _init_events(self) -> None:

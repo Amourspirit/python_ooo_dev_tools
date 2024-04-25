@@ -1,5 +1,6 @@
 from __future__ import annotations
 import pytest
+import os
 
 if __name__ == "__main__":
     pytest.main([__file__])
@@ -12,12 +13,20 @@ from ooodev.utils.string.str_list import StrList
 def test_path_settings(loader) -> None:
     obj = AutoAttribute()
     ps = PathSettingsPropertiesPartial(obj)
-    first = "/home/user/me/.config/LibreOffice/4/value1"
-    second = "/home/user/me/.config/LibreOffice/4/value2"
-    expected1 = StrList.from_str("file:///home/user/me/.config/LibreOffice/4/value1")
-    expected2 = StrList.from_str(
-        "file:///home/user/me/.config/LibreOffice/4/value1;file:///home/user/me/.config/LibreOffice/4/value2"
-    )
+    if os.name == "nt":
+        first = "c:\\home\\user\\me\\.config\\LibreOffice\\4\\value1"
+        second = "c:\\home\\user\\me\\.config\\LibreOffice\\4\\value2"
+        expected1 = StrList.from_str("file:///c:/home/user/me/.config/LibreOffice/4/value1")
+        expected2 = StrList.from_str(
+            "file:///c:/home/user/me/.config/LibreOffice/4/value1;file:///c:/home/user/me/.config/LibreOffice/4/value2"
+        )
+    else:
+        first = "/home/user/me/.config/LibreOffice/4/value1"
+        second = "/home/user/me/.config/LibreOffice/4/value2"
+        expected1 = StrList.from_str("file:///home/user/me/.config/LibreOffice/4/value1")
+        expected2 = StrList.from_str(
+            "file:///home/user/me/.config/LibreOffice/4/value1;file:///home/user/me/.config/LibreOffice/4/value2"
+        )
 
     p1 = Path(first)
     p2 = Path(second)

@@ -1,9 +1,6 @@
 from __future__ import annotations
-from typing import Any, Union, TYPE_CHECKING
+from typing import Any
 from dataclasses import dataclass
-
-if TYPE_CHECKING:
-    from ooodev.gui.menu.common.command_dict import CommandDict
 
 
 @dataclass

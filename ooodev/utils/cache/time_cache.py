@@ -1,31 +1,70 @@
 from __future__ import annotations
+import threading
 from typing import Any
 from datetime import datetime, timedelta, timezone
+from ooodev.events.args.event_args import EventArgs
+from ooodev.utils.helper.dot_dict import DotDict
+from ooodev.events.partial.events_partial import EventsPartial
 
 
-class TimeCache:
+class TimeCache(EventsPartial):
     """
     Time based Cache.
 
-    Cached items expire after a specified time.
+    Cached items expire after a specified time. If ``cleanup_interval`` is set, then the cache is cleaned up at regular intervals;
+    Otherwise, the cache is only cleaned up when an item is accessed.
+
+    When an item expires, the event ``time_cache_items_expired`` is triggered.
+    This event is called on a separate thread. for this reason it is important to make sure that the event handler is thread safe.
+
+    Example:
+        ```python
+        import threading
+        from ooodev.utils.cache.time_cache import TimeCache
+
+        LOCK = threading.Lock()
+
+        def on_items_expired(source, event):
+            with LOCK:
+                keys = event.event_data.keys
+                for key in keys:
+                    print(f"Expired: {key}")
+
+        cache = TimeCache(60.0)  # 60 seconds
+        cache.subscribe_event("time_cache_items_expired", on_items_expired)
+        cache["key"] = "value"
+        value = cache["key"]
+        ```
     """
 
-    def __init__(self, seconds: float):
+    def __init__(self, seconds: float, cleanup_interval: float = 60.0) -> None:
         """
         Time based Cache.
 
         Args:
             seconds (float): Cache expiration time in seconds.
+            cleanup_interval (float, optional): Cache cleanup interval in seconds.
+                If set to ``0`` then the cleanup is disabled. Defaults to ``60.0``.
         """
+        EventsPartial.__init__(self)
+        self._lock = threading.Lock()
         self._delta = timedelta(seconds=max(seconds, 0))
+        self._seconds = self._delta.total_seconds()
+        self._timeout = max(cleanup_interval, 0)
         self._expiration_time = datetime.now(timezone.utc) + self._delta
         self._cache = {}
+        self._timer = None
+        self._fn_clear_expired = self.clear_expired
+        self._fn_trigger_event = self.trigger_event
+        self.start_timer()
 
     def clear(self) -> None:
         """
         Clear cache.
         """
+        self.stop_timer()
         self._cache.clear()
+        self.stop_timer()
 
     def get(self, key: Any) -> Any:
         """
@@ -70,18 +109,77 @@ class TimeCache:
         """
         del self[key]
 
+    def start_timer(self) -> bool:
+        """
+        Start the timer.
+
+        This only applies if the cleanup interval is set.
+
+        Returns:
+            bool: ``True`` if the timer is started, ``False`` if the timer is already running.
+
+        Note:
+            Triggers the event ``time_cache_timer_started``.
+        """
+        if self.seconds > 0 and self._timeout > 0 and self._timer is None:
+            self._timer = threading.Timer(self._timeout, self._fn_clear_expired)
+            self._timer.daemon = True  # important for the timer to stop when the main thread exits
+            self._timer.start()
+            eargs = EventArgs(self)
+            eargs.event_data = DotDict(timer=self._timer)
+            self.trigger_event("time_cache_timer_started", eargs)
+            return True
+        return False
+
+    def stop_timer(self) -> bool:
+        """
+        Stop the timer.
+
+        This only applies if the cleanup interval is set.
+
+        Returns:
+            bool: ``True`` if the timer is stopped, ``False`` if the timer was not running.
+
+        Note:
+            Triggers the event ``time_cache_timer_stopped``.
+        """
+        if self._timer is not None:
+            self._timer.cancel()
+            self._timer = None
+            eargs = EventArgs(self)
+            self.trigger_event("time_cache_timer_stopped", eargs)
+            return True
+        return False
+
     def clear_expired(self) -> None:
         """
         Clear expired items from the cache.
         """
-        seconds = self.seconds
-        del_keys = [
-            key
-            for key, (_, timestamp) in self._cache.items()
-            if (datetime.now(timezone.utc) - timestamp).total_seconds() >= seconds
-        ]
-        for key in del_keys:
-            del self._cache[key]
+
+        self.stop_timer()
+        with self._lock:
+            if not self._cache:
+                self.start_timer()
+                return
+
+            seconds = self.seconds
+            del_keys = [
+                key
+                for key, (_, timestamp) in self._cache.items()
+                if (datetime.now(timezone.utc) - timestamp).total_seconds() >= seconds
+            ]
+            for key in del_keys:
+                del self._cache[key]
+        if del_keys:
+            eargs = EventArgs(self)
+            eargs.event_data = DotDict(keys=del_keys)
+
+            thread = threading.Thread(
+                target=self._fn_trigger_event, args=("time_cache_items_expired", eargs), daemon=True
+            )
+            thread.start()
+            thread.join()  # wait for the thread to finish before starting timer again.
+        self.start_timer()
 
     # region Dunder Methods
     def __getitem__(self, key: Any) -> Any:
@@ -111,13 +209,17 @@ class TimeCache:
             del self._cache[key]
 
     def __repr__(self) -> str:
-        return f"TimeBasedCache({self._delta.seconds})"
+        return f"TimeBasedCache({self.seconds})"
 
     def __str__(self) -> str:
-        return f"TimeBasedCache({self._delta.seconds})"
+        return f"TimeBasedCache({self.seconds})"
 
     def __len__(self) -> int:
         return len(self._cache)
+
+    def __del__(self):
+        # not reliable but better than nothing
+        self.stop_timer()
 
     # endregion Dunder Methods
 
@@ -127,12 +229,28 @@ class TimeCache:
         """
         Gets/Sets Cache expiration time in seconds.
         """
-        return self._delta.total_seconds()
+        return self._seconds
 
     @seconds.setter
     def seconds(self, value: float) -> None:
         self._delta = timedelta(seconds=value)
+        self._seconds = self._delta.total_seconds()
         self._expiration_time = datetime.now(timezone.utc) + self._delta
         self.clear_expired()
+
+    @property
+    def cleanup_interval(self) -> float:
+        """
+        Gets/Sets Cache cleanup interval in seconds.
+        """
+        return self._timeout
+
+    @cleanup_interval.setter
+    def cleanup_interval(self, value: float) -> None:
+        self._timeout = max(value, 0)
+        if self._timeout > 0:
+            self.start_timer()
+        else:
+            self.stop_timer()
 
     # endregion Properties

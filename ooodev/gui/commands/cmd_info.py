@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import timedelta
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, TYPE_CHECKING
 
 from ooodev.adapter.frame.module_manager_comp import ModuleManagerComp
 from ooodev.adapter.frame.the_ui_command_description_comp import TheUICommandDescriptionComp
@@ -10,20 +10,21 @@ from ooodev.adapter.ui.the_module_ui_configuration_manager_supplier_comp import 
     TheModuleUIConfigurationManagerSupplierComp,
 )
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.events.args.event_args import EventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.gui.commands.cmd_data import CmdData
-from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.utils import props as mProps
 from ooodev.utils.cache.file_cache.pickle_cache import PickleCache
-from ooodev.utils.cache.lru_cache import LRUCache
+from ooodev.utils.cache.time_cache import TimeCache
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
 from ooodev.utils.string.str_list import StrList
+
+if TYPE_CHECKING:
+    from ooodev.gui.menu.shortcuts import Shortcuts
 
 
 class CmdInfo(EventsPartial):
     """
-    Gets Information about commands.
+    Singleton Class. Gets Information about commands.
 
     Processing all the commands in all the modules takes some time.
     The first time the command data is retrieved, it is cached.
@@ -45,39 +46,55 @@ class CmdInfo(EventsPartial):
 
     """
 
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            # avoid circular import
+            # pylint: disable=import-outside-toplevel
+            from ooodev.gui.menu.shortcuts import Shortcuts
+
+            cls._instance = super(CmdInfo, cls).__new__(cls, *args, **kwargs)
+            cls._instance._initialized = False
+            cls._instance._global_shortcuts = Shortcuts()
+        return cls._instance
+
     # see https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/UI/
     def __init__(self) -> None:
         """Constructor."""
+        if self._initialized:
+            return
         EventsPartial.__init__(self)
         self._cmf = TheModuleUIConfigurationManagerSupplierComp.from_lo()
         self._ui_cmd_desc = TheUICommandDescriptionComp.from_lo()
         delta = timedelta(days=5)
         self._file_cache = PickleCache(tmp_dir="ooodev/gui/commands_cmd_info", lifetime=delta.total_seconds())
-        # using LRU cache is many times faster than using file cache alone.
-        self._lru_cache = LRUCache(capacity=100)
+        # using mem cache is many times faster than using file cache alone.
+        self._mem_cache = TimeCache(300, 300)
         self._file_prefix = "uurt54_cmds_"
-        self._global_shortcuts = Shortcuts()
+        self._global_shortcuts: Shortcuts
+        self._initialized = True
 
     def get_module_names(self) -> Tuple[str, ...]:
         """
         Get a list of module names such as ``com.sun.star.presentation.PresentationDocument``.
         """
         key = "get_module_names"
-        if key in self._lru_cache:
-            return self._lru_cache[key]
+        if key in self._mem_cache:
+            return self._mem_cache[key]
         mm = ModuleManagerComp.from_lo()
         names = mm.get_element_names()
-        self._lru_cache[key] = names
+        self._mem_cache[key] = names
         return names
 
     def clear_cache(self) -> None:
         """Clear the cache."""
-        self._lru_cache.clear()
+        self._mem_cache.clear()
         names = self.get_module_names()
         for name in names:
             key = f"{self._file_prefix}{name.replace('.', '_')}.pkl"
             self._file_cache.remove(key)
-        self._lru_cache.clear()
+        self._mem_cache.clear()
 
     def find_command(self, command: str) -> Dict[str, List[CmdData]]:
         """
@@ -164,11 +181,11 @@ class CmdInfo(EventsPartial):
         # names = self.get_module_names()
         mod_name = str(mod_name)
         key = f"{self._file_prefix}{mod_name.replace('.', '_')}.pkl"
-        if key in self._lru_cache:
-            return self._lru_cache[key]
+        if key in self._mem_cache:
+            return self._mem_cache[key]
         val = self._file_cache[key]
         if val:
-            self._lru_cache[key] = val
+            self._mem_cache[key] = val
             return val
 
         # config = self._cmf.get_ui_configuration_manager(mod_name)
@@ -189,14 +206,14 @@ class CmdInfo(EventsPartial):
             if local_keys:
                 sl = StrList()
                 for key in local_keys:
-                    sl.append(Shortcuts.from_key_event(key))
+                    sl.append(self._global_shortcuts.from_key_event(key))
                 module_hotkey = str(sl)
             else:
                 module_hotkey = ""
             if global_keys:
                 sl = StrList()
                 for key in global_keys:
-                    sl.append(Shortcuts.from_key_event(key))
+                    sl.append(self._global_shortcuts.from_key_event(key))
                 global_hotkey = str(sl)
             else:
                 global_hotkey = ""
@@ -227,7 +244,7 @@ class CmdInfo(EventsPartial):
             row = build_row(name, el, local_short_cut_mgr, global_short_cut_mgr)
             result[name] = row
         self._file_cache[key] = result
-        self._lru_cache[key] = result
+        self._mem_cache[key] = result
         return result
 
     def subscribe_on_command_found(self, cb: Callable[[Any, CancelEventArgs], None]) -> None:

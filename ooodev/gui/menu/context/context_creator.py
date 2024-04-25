@@ -4,25 +4,25 @@ import json
 from enum import Enum
 from typing import Any, Dict, List, Callable, TYPE_CHECKING
 import ooodev
-from ooodev.gui.menu.popup.popup_item import PopupItem
-from ooodev.gui.menu.popup_menu import PopupMenu
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.loader import lo as mLo
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
-from ooodev.gui.menu.popup.popup_processor import PopupProcessor
 from ooodev.io.json.json_encoder import JsonEncoder
 from ooodev.utils.helper.dot_dict import DotDict
-
+from ooodev.gui.menu.context.context_processor import ContextProcessor
+from ooodev.gui.menu.context.action_trigger_item import ActionTriggerItem
+from ooodev.gui.menu.context.action_trigger_sep import ActionTriggerSep
+from ooodev.gui.menu.context.action_trigger_container import ActionTriggerContainer
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
+class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
     """
-    Class for creating popup menu.
+    Class for creating context action menu.
 
     This class can also be used to convert menu data to a format that can be used with JSON.
 
@@ -30,9 +30,9 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         .. code-block:: python
 
             # ...
-            menus = get_popup_menu()
-            json_str = json.dumps(menus, cls=PopupCreator, indent=4)
-            with open("popup_menu.json", "w") as f:
+            menus = get_action_menu()
+            json_str = json.dumps(menus, cls=ContextCreator, indent=4)
+            with open("action_menu.json", "w") as f:
                 f.write(json_str)
     """
 
@@ -65,34 +65,25 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             return int(obj)  # type: ignore
         return super().on_json_encode(obj)
 
-    def _set_dict_from_popup_item(self, menu: dict[str, Any], pop: PopupItem) -> None:
+    def _set_dict_from_popup_item(self, menu: dict[str, Any], pop: ActionTriggerItem | ActionTriggerSep) -> None:
         """Set dictionary from popup item"""
-        if pop.is_separator():
+        if isinstance(pop, ActionTriggerSep):
             menu["text"] = "-"
+            menu["separator_type"] = pop.SeparatorType
             return
-        menu["text"] = pop.text
-        menu["command"] = pop.command
-        menu["style"] = pop.style
-        menu["checked"] = pop.checked
-        menu["enabled"] = pop.enabled
-        menu["default"] = pop.default
-        menu["help_command"] = pop.help_command
-        menu["help_text"] = pop.help_text
-        menu["tip_help_text"] = pop.tip_help_text
-        menu["shortcut"] = pop.shortcut
+        menu["text"] = pop.Text
+        menu["command"] = pop.CommandURL
+        menu["help_command"] = pop.HelpURL
 
     def _process_sub_menu(self, menus: list[dict[str, Any]]) -> None:
         """Insert submenu"""
-        pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
-        # eargs = EventArgs(self)
-        # eargs.event_data = {"popup_menu": parent_dict}
-        # self.trigger_event("popup_created", eargs)
+        pm = ActionTriggerContainer()
 
         for index, menu in enumerate(menus):
             submenu = menu.pop("submenu", False)
-            mp = PopupProcessor(pm)
+            mp = ContextProcessor(pm)
             mp.add_event_observers(self.event_observer)
-            pop = mp.get_popup_item(menu, index)
+            pop = mp.get_action_item(menu, index)
             if pop is None:
                 continue
             menu.clear()
@@ -102,25 +93,25 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
                 self._process_sub_menu(submenu)
                 menu["submenu"] = submenu
 
-    def _insert_sub_menu(self, parent: PopupMenu, parent_menu_id: int, menus: list[dict[str, Any]]) -> None:
+    def _insert_sub_menu(self, parent: ActionTriggerItem, menus: list[dict[str, Any]]) -> None:
         """Insert submenu"""
-        pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
+        pm = ActionTriggerContainer()
         eargs = EventArgs(self)
-        eargs.event_data = DotDict(popup_menu=pm)
-        self.trigger_event("popup_created", eargs)
+        eargs.event_data = DotDict(container=pm)
+        self.trigger_event("action_container_created", eargs)
 
         for index, menu in enumerate(menus):
             submenu = menu.pop("submenu", False)
-            mp = PopupProcessor(pm)
+            mp = ContextProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.process(menu, index)
             if pop is None:
                 continue
-            if submenu:
-                self._insert_sub_menu(pm, pop.menu_id, submenu)
-        parent.set_popup_menu(parent_menu_id, pm)
+            if submenu and isinstance(pop, ActionTriggerItem):
+                self._insert_sub_menu(pop, submenu)
+        parent.SubContainer = pm
 
-    def create(self, menus: List[Dict[str, Any]]) -> PopupMenu:
+    def create(self, menus: List[Dict[str, Any]]) -> ActionTriggerContainer:
         """
         Create popup menu.
 
@@ -128,19 +119,19 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             menus (List[Dict[str, Any]]): Menu Data.
         """
         cpy = copy.deepcopy(menus)
-        pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
+        pm = ActionTriggerContainer()
         eargs = EventArgs(self)
-        eargs.event_data = DotDict(popup_menu=pm)
-        self.trigger_event("popup_created", eargs)
+        eargs.event_data = DotDict(container=pm)
+        self.trigger_event("action_container_created", eargs)
         for index, menu in enumerate(cpy):
             submenu = menu.pop("submenu", False)
-            mp = PopupProcessor(pm)
+            mp = ContextProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.process(menu, index)
             if pop is None:
                 continue
-            if submenu:
-                self._insert_sub_menu(pm, pop.menu_id, submenu)
+            if submenu and isinstance(pop, ActionTriggerItem):
+                self._insert_sub_menu(pop, submenu)
 
         return pm
 
@@ -149,61 +140,61 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         Gets a dictionary that can be converted to JSON.
         This is an alternative to created json data. This is a more standard way that would not require this library to decode.
 
-        The dictionary created by this method can also be used with the ``create`` method to create a popup menu.
+        The dictionary created by this method can also be used with the ``create`` method to create an Action Item menu.
 
         The menu dictionaries can have data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}``.
         For json this sort of data does not work, this this method converts all menu data to a standard format that can be used with json.
 
         Args:
-            menus (List[Dict[str, Any]]): Menu Data. This is can be the same data used to create a popup menu.
+            menus (List[Dict[str, Any]]): Action Item Menu Data. This is can be the same data used to create an Action Item menu.
 
         Note:
             Even though menu data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}`` is not valid for json.
-            It can still be encoded using this ``PopupCreator`` class.
+            It can still be encoded using this ``ContextCreator`` class.
 
             Example:
                 .. code-block:: python
 
                     # ...
-                    menus = get_popup_menu()
-                    json_str = json.dumps(menus, cls=PopupCreator, indent=4)
-                    with open("popup_menu.json", "w") as f:
+                    menus = get_action_menu()
+                    json_str = json.dumps(menus, cls=ContextCreator, indent=4)
+                    with open("action_menu.json", "w") as f:
                         f.write(json_str)
         """
         result = []
-        pm = PopupMenu.from_lo(lo_inst=self.lo_inst)
+        pm = ActionTriggerContainer()
         for index, menu in enumerate(menus):
             cpy = copy.deepcopy(menu)
             submenu = cpy.pop("submenu", False)
 
-            mp = PopupProcessor(pm)
+            mp = ContextProcessor(pm)
             mp.add_event_observers(self.event_observer)
-            pop = mp.get_popup_item(cpy, index)
+            pop = mp.get_action_item(cpy, index)
             if pop is None:
                 continue
             cpy.clear()
             self._set_dict_from_popup_item(cpy, pop)
-            if submenu:
+            if submenu and isinstance(pop, ActionTriggerItem):
                 self._process_sub_menu(submenu)
                 cpy["submenu"] = submenu
             result.append(cpy)
         return result
 
-    def subscribe_popup_created(self, callback: Callable[[Any, EventArgs], None]) -> None:
+    def subscribe_action_container_created(self, callback: Callable[[Any, EventArgs], None]) -> None:
         """
-        Subscribe on popup created event.
+        Subscribe on Action Container created event.
 
         The callback ``event_data`` is a dictionary with keys:
 
-        - ``popup_menu``: PopupMenu instance
+        - ``container``: ActionTriggerContainer instance
         """
-        self.subscribe_event("popup_created", callback)
+        self.subscribe_event("action_container_created", callback)
 
-    def unsubscribe_popup_created(self, callback: Callable[[Any, EventArgs], None]) -> None:
+    def unsubscribe_action_container_created(self, callback: Callable[[Any, EventArgs], None]) -> None:
         """
         Unsubscribe on popup created event.
         """
-        self.unsubscribe_event("popup_created", callback)
+        self.unsubscribe_event("action_container_created", callback)
 
     def subscribe_before_process(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
@@ -211,8 +202,8 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
         The callback ``event_data`` is a dictionary with keys:
 
-        - ``popup_menu``: PopupMenu instance
-        - ``popup_item``: PopupItem instance
+        - ``container``: ActionTriggerContainer instance
+        - ``action_item``: Action Item instance
         """
         self.subscribe_event("before_process", callback)
 
@@ -222,8 +213,8 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
         The callback ``event_data`` is a dictionary with keys:
 
-        - ``popup_menu``: PopupMenu instance
-        - ``popup_item``: PopupItem instance
+        - ``container``: ActionTriggerContainer instance
+        - ``action_item``: Action Item instance
         """
         self.subscribe_event("after_process", callback)
 
@@ -257,13 +248,13 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         The caller can set ``menu["text"]`` to provide a valid menu text.
         If the caller cancels the event then the menu item is not created.
         """
-        self.subscribe_event("popup_module_no_text_found", callback)
+        self.subscribe_event("action_item_module_no_text_found", callback)
 
     def unsubscribe_popup_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
         Unsubscribe on no text found for module menu entry.
         """
-        self.unsubscribe_event("popup_module_no_text_found", callback)
+        self.unsubscribe_event("action_item_module_no_text_found", callback)
 
     def json_dumps(self, menus: List[Dict[str, Any]], dynamic: bool = False) -> str:
         """
@@ -280,9 +271,9 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             menu_data = menus
         else:
             menu_data = self.get_json_dict(menus)
-        data = {"id": "ooodev.popup_menu", "version": version, "dynamic": dynamic, "menus": menu_data}
+        data = {"id": "ooodev.context_action_menu", "version": version, "dynamic": dynamic, "menus": menu_data}
         if dynamic:
-            return json.dumps(data, cls=PopupCreator, indent=4)
+            return json.dumps(data, cls=ContextCreator, indent=4)
         return json.dumps(data, indent=4)
 
     @staticmethod
@@ -297,7 +288,8 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             List[Dict[str, Any]]: Menu Data.
         """
         data = json.loads(json_str, **kwargs)
-        if data["id"] != "ooodev.popup_menu":
+        allowed = {"ooodev.popup_menu", "ooodev.context_action_menu"}
+        if data["id"] not in allowed:
             raise ValueError("Invalid JSON data")
         return data["menus"]
 
@@ -314,6 +306,7 @@ class PopupCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         with open(json_file, "r") as f:
             data = json.load(f, **kwargs)
-        if data["id"] != "ooodev.popup_menu":
+        allowed = {"ooodev.popup_menu", "ooodev.context_action_menu"}
+        if data["id"] not in allowed:
             raise ValueError("Invalid JSON data")
         return data["menus"]

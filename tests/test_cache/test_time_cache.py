@@ -175,3 +175,14 @@ def test_lru_cache_error_cases(seconds, action, key, value, expected_exception):
             cache.get(key)
         elif action == "remove":
             cache.remove(key)
+
+
+def test_thread():
+    # test that the cache is cleared internally when the time is up.
+    # This is a multi-threaded test.
+    cache = TimeCache(2, 2)
+    cache.put("key1", "value1")
+    time.sleep(1)
+    assert "key1" in cache
+    time.sleep(2)
+    assert "key1" not in cache._cache
