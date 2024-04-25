@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 # https://opengrok.libreoffice.org/xref/core/officecfg/registry/data/org/openoffice/Office/UI/
 
 
-class MenuAppPopup(LoInstPropsPartial):
+class MAPopup(LoInstPropsPartial):
     """
     Class for manager menu by LibreOffice module.
 

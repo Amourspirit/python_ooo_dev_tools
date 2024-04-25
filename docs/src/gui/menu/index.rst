@@ -7,6 +7,7 @@ menu
 
     comp/index
     common/index
+    context/index
     item/index
     popup/index
     *

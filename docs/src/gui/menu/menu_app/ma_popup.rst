@@ -1,7 +1,7 @@
-Class MenuAppPopup
+Class MenuApp
 ==================
 
-.. autoclass:: ooodev.gui.menu.popup.MenuAppPopup
+.. autoclass:: ooodev.gui.menu.menu_app.MenuApp
     :members:
     :undoc-members:
     :show-inheritance:

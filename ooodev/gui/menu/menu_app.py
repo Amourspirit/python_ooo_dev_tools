@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.gui.menu.menu import Menu
-from ooodev.gui.menu.popup.menu_app_popup import MenuAppPopup
+from ooodev.gui.menu.ma.ma_popup import MAPopup
 from ooodev.loader.inst.service import Service
 from ooodev.utils import props as mProps
 from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class MenuApp(MenuAppPopup):
+class MenuApp(MAPopup):
     """
     Class for manager menu by LibreOffice module.
 

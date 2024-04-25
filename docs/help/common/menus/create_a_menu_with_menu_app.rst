@@ -32,7 +32,7 @@ Creating a menu using MenuApp
                 {
                     "Label": "My macro",
                     "CommandURL": {"library": "test", "name": "hello"},
-                    "ShortCut": {"Key": "Shift+Ctrl+Alt+F", "Save": True},
+                    "ShortCut": {"key": "Shift+Ctrl+Alt+F", "save": True},
                 },
             ],
         }

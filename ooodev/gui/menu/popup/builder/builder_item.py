@@ -7,7 +7,7 @@ from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
 from ooodev.gui.menu.popup.builder.item import Item
 from ooodev.gui.menu.popup.builder.sep_item import SepItem
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
-from ooodev.gui.menu.popup.builder.command import Command
+from ooodev.gui.menu.common.command import Command
 
 
 class BuilderItem(Item):
@@ -49,7 +49,7 @@ class BuilderItem(Item):
         Hint:
             - ``MenuItemStyleEnum`` is an enum and can be imported from ``ooo.dyn.awt.menu_item_style``.
             - ``ModuleNamesKind`` is an enum and can be imported from ``ooodev.utils.kind.module_names_kind``.
-            - ``Command`` can be imported from ``ooodev.gui.menu.popup.builder.command``.
+            - ``Command`` can be imported from ``ooodev.gui.menu.common.command``.
         """
         super().__init__()
         self._text = text
@@ -183,7 +183,7 @@ class BuilderItem(Item):
         Hint:
             - ``MenuItemStyleEnum`` is an enum and can be imported from ``ooo.dyn.awt.menu_item_style``.
             - ``ModuleNamesKind`` is an enum and can be imported from ``ooodev.utils.kind.module_names_kind``.
-            - ``Command`` can be imported from ``ooodev.gui.menu.popup.builder.command``.
+            - ``Command`` can be imported from ``ooodev.gui.menu.common.command``.
         """
         popup = self._create_popup(
             text=text,
@@ -238,7 +238,7 @@ class BuilderItem(Item):
         Hint:
             - ``MenuItemStyleEnum`` is an enum and can be imported from ``ooo.dyn.awt.menu_item_style``.
             - ``ModuleNamesKind`` is an enum and can be imported from ``ooodev.utils.kind.module_names_kind``.
-            - ``Command`` can be imported from ``ooodev.gui.menu.popup.builder.command``.
+            - ``Command`` can be imported from ``ooodev.gui.menu.common.command``.
         """
         popup = self._create_popup(
             text=text,

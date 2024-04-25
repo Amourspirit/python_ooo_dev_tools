@@ -3,12 +3,12 @@ from dataclasses import dataclass, asdict
 
 
 @dataclass
-class Command:
-    name: str
-    language: str = "Basic"
-    location: str = "user"
-    library: str = "standard"
-    module: str = "."
+class Shortcut:
+    key: str
+    save: bool = True
 
     def to_dict(self) -> dict:
         return asdict(self)
+
+    def __bool__(self) -> bool:
+        return bool(self.key)

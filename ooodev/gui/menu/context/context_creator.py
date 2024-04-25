@@ -49,6 +49,13 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         LoInstPropsPartial.__init__(self, lo_inst)
         EventsPartial.__init__(self)
         JsonEncoder.__init__(self, **kwargs)
+        self._lookups = {
+            "text": "text",
+            "separator_type": "separator_type",
+            "command": "command",
+            "help_command": "help_command",
+            "submenu": "submenu",
+        }
 
     def on_json_encode(self, obj: Any) -> Any:
         """
@@ -68,12 +75,16 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
     def _set_dict_from_popup_item(self, menu: dict[str, Any], pop: ActionTriggerItem | ActionTriggerSep) -> None:
         """Set dictionary from popup item"""
         if isinstance(pop, ActionTriggerSep):
-            menu["text"] = "-"
-            menu["separator_type"] = pop.SeparatorType
+            menu[self.key_lookups["text"]] = "-"
+            if "separator_type" in self.key_lookups:
+                menu[self.key_lookups["separator_type"]] = pop.SeparatorType
             return
-        menu["text"] = pop.Text
-        menu["command"] = pop.CommandURL
-        menu["help_command"] = pop.HelpURL
+        menu[self.key_lookups["text"]] = pop.Text
+        if pop.CommandURL:
+            menu[self.key_lookups["command"]] = pop.CommandURL
+        if pop.HelpURL:
+            if "help_command" in self.key_lookups:
+                menu[self.key_lookups["help_command"]] = pop.HelpURL
 
     def _process_sub_menu(self, menus: list[dict[str, Any]]) -> None:
         """Insert submenu"""
@@ -91,9 +102,9 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
             if submenu:
                 self._process_sub_menu(submenu)
-                menu["submenu"] = submenu
+                menu[self.key_lookups["submenu"]] = submenu
 
-    def _insert_sub_menu(self, parent: ActionTriggerItem, menus: list[dict[str, Any]]) -> None:
+    def _insert_sub_menu(self, parent: ActionTriggerItem, menus: List[dict[str, Any]]) -> None:
         """Insert submenu"""
         pm = ActionTriggerContainer()
         eargs = EventArgs(self)
@@ -135,50 +146,7 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
         return pm
 
-    def get_json_dict(self, menus: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Gets a dictionary that can be converted to JSON.
-        This is an alternative to created json data. This is a more standard way that would not require this library to decode.
-
-        The dictionary created by this method can also be used with the ``create`` method to create an Action Item menu.
-
-        The menu dictionaries can have data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}``.
-        For json this sort of data does not work, this this method converts all menu data to a standard format that can be used with json.
-
-        Args:
-            menus (List[Dict[str, Any]]): Action Item Menu Data. This is can be the same data used to create an Action Item menu.
-
-        Note:
-            Even though menu data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}`` is not valid for json.
-            It can still be encoded using this ``ContextCreator`` class.
-
-            Example:
-                .. code-block:: python
-
-                    # ...
-                    menus = get_action_menu()
-                    json_str = json.dumps(menus, cls=ContextCreator, indent=4)
-                    with open("action_menu.json", "w") as f:
-                        f.write(json_str)
-        """
-        result = []
-        pm = ActionTriggerContainer()
-        for index, menu in enumerate(menus):
-            cpy = copy.deepcopy(menu)
-            submenu = cpy.pop("submenu", False)
-
-            mp = ContextProcessor(pm)
-            mp.add_event_observers(self.event_observer)
-            pop = mp.get_action_item(cpy, index)
-            if pop is None:
-                continue
-            cpy.clear()
-            self._set_dict_from_popup_item(cpy, pop)
-            if submenu and isinstance(pop, ActionTriggerItem):
-                self._process_sub_menu(submenu)
-                cpy["submenu"] = submenu
-            result.append(cpy)
-        return result
+    # region subscribe
 
     def subscribe_action_container_created(self, callback: Callable[[Any, EventArgs], None]) -> None:
         """
@@ -256,6 +224,55 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         self.unsubscribe_event("action_item_module_no_text_found", callback)
 
+    # endregion subscribe
+
+    # region JSON
+
+    def get_json_dict(self, menus: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Gets a dictionary that can be converted to JSON.
+        This is an alternative to created json data. This is a more standard way that would not require this library to decode.
+
+        The dictionary created by this method can also be used with the ``create`` method to create an Action Item menu.
+
+        The menu dictionaries can have data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}``.
+        For json this sort of data does not work, this this method converts all menu data to a standard format that can be used with json.
+
+        Args:
+            menus (List[Dict[str, Any]]): Action Item Menu Data. This is can be the same data used to create an Action Item menu.
+
+        Note:
+            Even though menu data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}`` is not valid for json.
+            It can still be encoded using this ``ContextCreator`` class.
+
+            Example:
+                .. code-block:: python
+
+                    # ...
+                    menus = get_action_menu()
+                    json_str = json.dumps(menus, cls=ContextCreator, indent=4)
+                    with open("action_menu.json", "w") as f:
+                        f.write(json_str)
+        """
+        result = []
+        pm = ActionTriggerContainer()
+        for index, menu in enumerate(menus):
+            cpy = copy.deepcopy(menu)
+            submenu = cpy.pop("submenu", False)
+
+            mp = ContextProcessor(pm)
+            mp.add_event_observers(self.event_observer)
+            pop = mp.get_action_item(cpy, index)
+            if pop is None:
+                continue
+            cpy.clear()
+            self._set_dict_from_popup_item(cpy, pop)
+            if submenu and isinstance(pop, ActionTriggerItem):
+                self._process_sub_menu(submenu)
+                cpy[self.key_lookups["submenu"]] = submenu
+            result.append(cpy)
+        return result
+
     def json_dumps(self, menus: List[Dict[str, Any]], dynamic: bool = False) -> str:
         """
         Get JSON data.
@@ -310,3 +327,28 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         if data["id"] not in allowed:
             raise ValueError("Invalid JSON data")
         return data["menus"]
+
+    # endregion JSON
+
+    # region Properties
+    @property
+    def key_lookups(self) -> Dict[str, str]:
+        """
+        Get key lookups.
+
+        Returns:
+            Dict[str, Any]: Key lookups.
+        """
+        return self._lookups
+
+    @key_lookups.setter
+    def key_lookups(self, value: Dict[str, str]) -> None:
+        """
+        Set key lookups.
+
+        Args:
+            value (Dict[str, str]): Key lookups.
+        """
+        self._lookups = value
+
+    # endregion Properties
