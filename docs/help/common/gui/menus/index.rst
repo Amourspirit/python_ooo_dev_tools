@@ -8,4 +8,6 @@ Menus
     :maxdepth: 4
     :glob:
 
+    app_menu/index
+    popup/index
     *

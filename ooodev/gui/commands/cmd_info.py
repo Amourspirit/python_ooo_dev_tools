@@ -44,6 +44,8 @@ class CmdInfo(EventsPartial):
             ...     print(cmd_data)
             CmdData(command='.uno:Copy', label='Cop~y', name='Copy', popup=False, properties=1, popup_label='', tooltip_label='', target_url='', is_experimental=False, module_hotkey='', global_hotkey='Ctrl+C')
 
+    See Also:
+        - :ref:`help_getting_info_on_commands`
     """
 
     _instance = None

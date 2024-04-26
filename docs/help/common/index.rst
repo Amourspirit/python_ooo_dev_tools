@@ -6,6 +6,7 @@ Common Help Topics
     :maxdepth: 6
     :glob:
 
+    gui/index
     format/index
     menus/index
     modules/index
