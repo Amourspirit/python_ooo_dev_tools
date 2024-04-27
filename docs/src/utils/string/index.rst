@@ -1,6 +1,6 @@
-.. _utils_partial:
+.. _utils_string:
 
-partial
+string
 =======
 
 .. toctree::

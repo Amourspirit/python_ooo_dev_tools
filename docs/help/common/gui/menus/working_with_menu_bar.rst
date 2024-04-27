@@ -5,8 +5,8 @@ Working with MenuBar
 
 .. contents:: Table of Contents
     :local:
-    :backlinks: none
-    :depth: 1
+    :backlinks: top
+    :depth: 2   
 
 Working with :ref:`ooodev.gui.menu.MenuBar`.
 
@@ -154,7 +154,7 @@ Caching
 -------
 
 Both :ref:`ooodev.gui.menu.MenuBar` and :ref:`ooodev.gui.menu.PopupMenu` have a built in caching.
-The caching is provided by the :py:class:`ooodev.utils.lru_cache.LRUCache` class.
+The caching is provided by the :py:class:`~ooodev.utils.cache.LRUCache` class.
 Both have a ``cache`` property that allow for cache to be modified.
 The caching speed up searching by caching found result.
 The is means with the same object is search more the once then after the first search the result is pulled from the cache.
@@ -214,6 +214,9 @@ All ``subscribe_*``  and ``unsubscribe_*`` methods work on the current ``PopupMe
 
 General Example
 ^^^^^^^^^^^^^^^
+
+Note that there are more dynamic ways to create popup menus.
+See :ref:`help_popup_from_dict_or_json` and :ref:`help_popup_via_builder_item`.
 
 .. tabs::
 
@@ -513,6 +516,8 @@ This seems to be complex approach and I have not seen any clear solution for int
 
 The work around for this seems to be either set a custom command that is not a ``.uno:some_cmd`` dispatch command and
 then listen to your custom event as done in the example above or set the menu command to a macro and handle the rest in the macro.
+
+See Also: :ref:`help_common_gui_menus_context`.
 
 Other Notes
 -----------

@@ -30,6 +30,10 @@ class ActionTriggerSep(BasePropertySet, BaseServiceInfo):
             - ``ActionTriggerSeparatorTypeEnum`` is an enum and can be imported from ``ooo.dyn.ui.action_trigger_separator_type``.
 
             ``separator_type`` can be one of the following:
+
+            - ``0``: Line
+            - ``1``: Space
+            - ``2``: LineBreak
         """
         self._separator_type = int(separator_type)
         self._logger = NamedLogger(self.__class__.__name__)

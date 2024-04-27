@@ -17,7 +17,13 @@ if TYPE_CHECKING:
 
 
 class ContextProcessor(EventsPartial):
-    """Class for processing context menus for interception. Does not process submenus"""
+    """
+    Class for processing context menus for interception. Does not process submenus.
+
+    See Also:
+        - :ref:`help_menu_context_incept`
+        - :ref:`help_menu_context_incept_class_ex`
+    """
 
     def __init__(self, container: ActionTriggerContainer) -> None:
         """

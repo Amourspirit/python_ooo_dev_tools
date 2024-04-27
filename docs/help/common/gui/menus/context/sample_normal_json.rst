@@ -1,51 +1,50 @@
-.. _help_sample_popup_menu_json_dynamic_data:
+.. _help_sample_context_menu_json_normal_data:
 
-Sample Popup Menu JSON Dynamic Data
-===================================
+Sample Context Menu JSON Normal Data
+====================================
 
-Sample JSON data for a popup menu. This data was outputted as dynamic.
+Sample JSON data for a Context menu. This data was outputted as normal format.
 
 Mimics the popup menu in Calc when right-clicking on a cell.
 
 .. seealso::
 
-    - :ref:`help_popup_from_dict_or_json`
-    - :ref:`help_sample_popup_menu_json_normal_data`
+    - :ref:`help_menu_context_incept`
 
 .. code-block:: json
 
     {
-        "id": "ooodev.popup_menu",
+        "id": "ooodev.context_action_menu",
         "version": "0.41.0",
-        "dynamic": true,
+        "dynamic": false,
         "menus": [
             {
-                "command": ".uno:Cut",
-                "module": 20
+                "text": "~Cut",
+                "command": ".uno:Cut"
             },
             {
-                "command": ".uno:Copy",
-                "module": 20
+                "text": "Cop~y",
+                "command": ".uno:Copy"
             },
             {
-                "command": ".uno:Paste",
-                "module": 20
+                "text": "~Paste",
+                "command": ".uno:Paste"
             },
             {
                 "text": "Paste Special",
                 "command": ".uno:PasteSpecialMenu",
                 "submenu": [
                     {
-                        "command": ".uno:PasteUnformatted",
-                        "module": 20
+                        "text": "Paste Unformatted Text",
+                        "command": ".uno:PasteUnformatted"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
                         "text": "My Paste Only Text",
-                        "command": ".uno:PasteOnlyText",
-                        "module": 0
+                        "command": ".uno:PasteOnlyText"
                     },
                     {
                         "text": "Paste Only Text",
@@ -56,23 +55,26 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                         "command": ".uno:PasteOnlyFormula"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
                         "text": "Paste Transposed",
                         "command": ".uno:PasteTransposed"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
-                        "command": ".uno:PasteSpecial",
-                        "module": 20
+                        "text": "Paste ~Special...",
+                        "command": ".uno:PasteSpecial"
                     }
                 ]
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
                 "text": "Data Select",
@@ -87,14 +89,15 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                 "command": ".uno:DefineCurrentName"
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
-                "text": "Insert ~Cells...",
+                "text": "Insert cells",
                 "command": ".uno:InsertCell"
             },
             {
-                "text": "Delete C~ells...",
+                "text": "Del cells",
                 "command": ".uno:DeleteCell"
             },
             {
@@ -110,7 +113,8 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                 "command": ".uno:SplitCell"
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
                 "text": "Format Paintbrush",
@@ -129,72 +133,66 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                         "command": ".uno:EditStyle"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
                         "text": "Default Cell Styles",
-                        "command": ".uno:DefaultCellStylesmenu",
-                        "style": 2
+                        "command": ".uno:DefaultCellStylesmenu"
                     },
                     {
                         "text": "Accent1 Cell Styles",
-                        "command": ".uno:Accent1CellStyles",
-                        "style": 2
+                        "command": ".uno:Accent1CellStyles"
                     },
                     {
                         "text": "Accent2 Cell Styles",
-                        "style": 2
+                        "command": ".uno:"
                     },
                     {
                         "text": "Accent 3 Cell Styles",
-                        "command": ".uno:Accent3CellStyles",
-                        "style": 2
+                        "command": ".uno:Accent3CellStyles"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
                         "text": "Bad Cell Styles",
-                        "command": ".uno:BadCellStyles",
-                        "style": 2
+                        "command": ".uno:BadCellStyles"
                     },
                     {
                         "text": "Error Cell Styles",
-                        "command": ".uno:ErrorCellStyles",
-                        "style": 2
+                        "command": ".uno:ErrorCellStyles"
                     },
                     {
                         "text": "Good Cell Styles",
-                        "command": ".uno:GoodCellStyles",
-                        "style": 2
+                        "command": ".uno:GoodCellStyles"
                     },
                     {
                         "text": "Neutral Cell Styles",
-                        "command": ".uno:NeutralCellStyles",
-                        "style": 2
+                        "command": ".uno:NeutralCellStyles"
                     },
                     {
                         "text": "Warning Cell Styles",
-                        "command": ".uno:WarningCellStyles",
-                        "style": 2
+                        "command": ".uno:WarningCellStyles"
                     },
                     {
-                        "text": "-"
+                        "text": "-",
+                        "separator_type": 0
                     },
                     {
                         "text": "Footnote Cell Styles",
-                        "command": ".uno:FootnoteCellStyles",
-                        "style": 2
+                        "command": ".uno:FootnoteCellStyles"
                     },
                     {
                         "text": "Note Cell Styles",
-                        "command": ".uno:NoteCellStyles",
-                        "style": 2
+                        "command": ".uno:NoteCellStyles"
                     }
                 ]
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
                 "text": "Insert Annotation",
@@ -217,18 +215,20 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                 "command": ".uno:HideNote"
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
                 "text": "Format Sparkline",
                 "command": ".uno:FormatSparklineMenu"
             },
             {
-                "text": "-"
+                "text": "-",
+                "separator_type": 0
             },
             {
-                "command": ".uno:CurrentConditionalFormatDialog",
-                "module": 20
+                "text": "Conditional Formatting...",
+                "command": ".uno:CurrentConditionalFormatDialog"
             },
             {
                 "text": "Current Conditional Format Manager Dialog ...",

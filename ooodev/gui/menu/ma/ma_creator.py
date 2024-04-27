@@ -196,7 +196,7 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         self.unsubscribe_event("after_process", callback)
 
-    def subscribe_popup_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
+    def subscribe_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
         Subscribe on no text found for module menu entry.
 
@@ -214,13 +214,13 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         The caller can set ``menu["text"]`` to provide a valid menu text.
         If the caller cancels the event then the menu item is not created.
         """
-        self.subscribe_event("action_item_module_no_text_found", callback)
+        self.subscribe_event("ma_item_module_no_text_found", callback)
 
-    def unsubscribe_popup_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
+    def unsubscribe_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
         Unsubscribe on no text found for module menu entry.
         """
-        self.unsubscribe_event("action_item_module_no_text_found", callback)
+        self.unsubscribe_event("ma_item_module_no_text_found", callback)
 
     # endregion subscribe
 
@@ -290,6 +290,18 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         if dynamic:
             return json.dumps(data, cls=MACreator, indent=4)
         return json.dumps(data, indent=4)
+
+    def json_dump(self, file: Any, menus: List[Dict[str, Any]], dynamic: bool = False) -> None:
+        """
+        Dump JSON data to file.
+
+        Args:
+            file (Any): File path.
+            menus (List[Dict[str, Any]]): Menu Data.
+            dynamic (bool, optional): Dynamic data. Defaults to ``False``.
+        """
+        with open(file, "w") as f:
+            f.write(self.json_dumps(menus, dynamic=dynamic))
 
     @staticmethod
     def json_loads(json_str: str, **kwargs) -> List[Dict[str, Any]]:

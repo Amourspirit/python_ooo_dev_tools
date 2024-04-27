@@ -1,5 +1,5 @@
-commands
-========
+base_class
+==========
 
 .. toctree::
     :titlesonly:

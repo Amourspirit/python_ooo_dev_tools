@@ -7,6 +7,11 @@ Sample JSON data for a popup menu. This data was outputted as normal format.
 
 Mimics the popup menu in Calc when right-clicking on a cell.
 
+.. seealso::
+
+    - :ref:`help_popup_from_dict_or_json`
+    - :ref:`help_sample_popup_menu_json_dynamic_data`
+
 .. code-block:: json
 
     {

@@ -2,6 +2,7 @@ from __future__ import annotations
 import threading
 from typing import Any
 from datetime import datetime, timedelta, timezone
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.events.partial.events_partial import EventsPartial
@@ -14,27 +15,30 @@ class TimeCache(EventsPartial):
     Cached items expire after a specified time. If ``cleanup_interval`` is set, then the cache is cleaned up at regular intervals;
     Otherwise, the cache is only cleaned up when an item is accessed.
 
+    Each time an element is accessed, the timestamp is updated. If the element has expired, it is removed from the cache.
+
     When an item expires, the event ``time_cache_items_expired`` is triggered.
     This event is called on a separate thread. for this reason it is important to make sure that the event handler is thread safe.
 
     Example:
-        ```python
-        import threading
-        from ooodev.utils.cache.time_cache import TimeCache
 
-        LOCK = threading.Lock()
+        .. code-block:: python
 
-        def on_items_expired(source, event):
-            with LOCK:
-                keys = event.event_data.keys
-                for key in keys:
-                    print(f"Expired: {key}")
+            import threading
+            from ooodev.utils.cache.time_cache import TimeCache
 
-        cache = TimeCache(60.0)  # 60 seconds
-        cache.subscribe_event("time_cache_items_expired", on_items_expired)
-        cache["key"] = "value"
-        value = cache["key"]
-        ```
+            LOCK = threading.Lock()
+
+            def on_items_expired(source, event):
+                with LOCK:
+                    keys = event.event_data.keys
+                    for key in keys:
+                        print(f"Expired: {key}")
+
+            cache = TimeCache(60.0)  # 60 seconds
+            cache.subscribe_event("time_cache_items_expired", on_items_expired)
+            cache["key"] = "value"
+            value = cache["key"]
     """
 
     def __init__(self, seconds: float, cleanup_interval: float = 60.0) -> None:
@@ -154,6 +158,11 @@ class TimeCache(EventsPartial):
     def clear_expired(self) -> None:
         """
         Clear expired items from the cache.
+
+        Note:
+            Triggers the event ``cache_items_expired``, on a new thread.
+
+            The event args ``event_data`` is a ``DotDict`` instance that contains the ``keys`` as a list of the items that were removed.
         """
 
         self.stop_timer()
@@ -174,9 +183,7 @@ class TimeCache(EventsPartial):
             eargs = EventArgs(self)
             eargs.event_data = DotDict(keys=del_keys)
 
-            thread = threading.Thread(
-                target=self._fn_trigger_event, args=("time_cache_items_expired", eargs), daemon=True
-            )
+            thread = threading.Thread(target=self._fn_trigger_event, args=("cache_items_expired", eargs), daemon=True)
             thread.start()
             thread.join()  # wait for the thread to finish before starting timer again.
         self.start_timer()
@@ -187,26 +194,98 @@ class TimeCache(EventsPartial):
             raise TypeError("Key must not be None.")
         if key in self._cache:
             value, timestamp = self._cache[key]
-            if (datetime.now(timezone.utc) - timestamp).total_seconds() < self.seconds:
+            now_dt = datetime.now(timezone.utc)
+            if (now_dt - timestamp).total_seconds() < self.seconds:
+                # update timestamp
+                self._cache[key] = (value, now_dt)
                 return value
             else:
                 del self._cache[key]  # remove expired item
         return None
 
     def __setitem__(self, key: Any, value: Any) -> None:
+        """
+        Set value by key.
+
+        Args:
+            key (Any): Any Hashable object.
+            value (Any): Any object.
+
+        Raises:
+            TypeError: If key or value is ``None``.
+
+        Note:
+            Triggers the event ``cache_item_adding`` before adding the item.
+            The Event is a ``CancelEventArgs`` and can be canceled.
+
+            Triggers the event ``cache_item_added`` after adding the item.
+            The Event is a ``EventArgs``.
+
+            Triggers the event ``cache_item_updating`` before updating the item.
+            The Event is a ``CancelEventArgs`` and can be canceled.
+
+            Triggers the event ``cache_item_updated`` after updating the item.
+            The Event is a ``EventArgs``.
+
+            The event args ``event_data`` is a ``DotDict`` instance that contains the ``key``, ``value`` and ``is_new`` of the item being added or updated.
+        """
         if key is None or value is None:
             raise TypeError("Key and value must not be None.")
-        current_time = datetime.now(timezone.utc)
-        self._cache[key] = (value, current_time)
+        is_new = self[key] is None
+        if is_new:
+            cargs = CancelEventArgs(self)
+            cargs.event_data = DotDict(key=key, value=value, is_new=is_new)
+            self.trigger_event("cache_item_adding", cargs)
+            if cargs.cancel:
+                return
+            eargs = EventArgs.from_args(cargs)
+        else:
+            cargs = CancelEventArgs(self)
+            cargs.event_data = DotDict(key=key, value=value, is_new=is_new)
+            self.trigger_event("cache_item_updating", cargs)
+            if cargs.cancel:
+                return
+            eargs = EventArgs.from_args(cargs)
+        self._cache[key] = (value, datetime.now(timezone.utc))
+
+        if is_new:
+            self.trigger_event("cache_item_added", eargs)
+        else:
+            self.trigger_event("cache_item_updated", eargs)
 
     def __contains__(self, key: Any) -> bool:
         return False if key is None else self[key] is not None
 
     def __delitem__(self, key: Any) -> None:
+        """
+        Remove key.
+
+        Args:
+            key (Any): Any Hashable object.
+
+        Raises:
+            TypeError: If key is ``None``.
+
+        Note:
+            Triggers the event ``cache_item_removing`` before removing the item.
+            The Event is a ``CancelEventArgs`` and can be canceled.
+
+            Triggers the event ``cache_item_removed`` after removing the item.
+            The Event is a ``EventArgs``.
+
+            The event args ``event_data`` is a ``DotDict`` instance that contains the key of the item being removed.
+        """
         if key is None:
             raise TypeError("Key must not be None.")
         if key in self:
+            cargs = CancelEventArgs(self)
+            cargs.event_data = DotDict(key=key)
+            self.trigger_event("cache_item_removing", cargs)
+            if cargs.cancel:
+                return
             del self._cache[key]
+            eargs = EventArgs.from_args(cargs)
+            self.trigger_event("cache_item_removed", eargs)
 
     def __repr__(self) -> str:
         return f"TimeBasedCache({self.seconds})"

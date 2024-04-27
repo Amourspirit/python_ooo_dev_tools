@@ -34,6 +34,10 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             json_str = json.dumps(menus, cls=ContextCreator, indent=4)
             with open("action_menu.json", "w") as f:
                 f.write(json_str)
+
+    See Also:
+        - :ref:`help_menu_context_incept`
+        - :ref:`help_menu_context_incept_class_ex`
     """
 
     def __init__(self, lo_inst: LoInst | None = None, **kwargs) -> None:
@@ -198,7 +202,7 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         self.unsubscribe_event("after_process", callback)
 
-    def subscribe_popup_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
+    def subscribe_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
         Subscribe on no text found for module menu entry.
 
@@ -218,7 +222,7 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         """
         self.subscribe_event("action_item_module_no_text_found", callback)
 
-    def unsubscribe_popup_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
+    def unsubscribe_module_no_text(self, callback: Callable[[Any, CancelEventArgs], None]) -> None:
         """
         Unsubscribe on no text found for module menu entry.
         """
@@ -292,6 +296,18 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         if dynamic:
             return json.dumps(data, cls=ContextCreator, indent=4)
         return json.dumps(data, indent=4)
+
+    def json_dump(self, file: Any, menus: List[Dict[str, Any]], dynamic: bool = False) -> None:
+        """
+        Dump JSON data to file.
+
+        Args:
+            file (Any): File path.
+            menus (List[Dict[str, Any]]): Menu Data.
+            dynamic (bool, optional): Dynamic data. Defaults to ``False``.
+        """
+        with open(file, "w") as f:
+            f.write(self.json_dumps(menus, dynamic=dynamic))
 
     @staticmethod
     def json_loads(json_str: str, **kwargs) -> List[Dict[str, Any]]:

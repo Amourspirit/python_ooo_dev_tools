@@ -17,7 +17,13 @@ if TYPE_CHECKING:
 
 
 class PopupProcessor(EventsPartial):
-    """Class for processing menus. Does not process submenus"""
+    """
+    Class for processing menus. Does not process submenus.
+
+    See Also:
+        - :ref:`help_popup_from_dict_or_json`
+        - :ref:`help_popup_via_builder_item`
+    """
 
     def __init__(self, popup: PopupMenu) -> None:
         """

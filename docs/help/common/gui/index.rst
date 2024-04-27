@@ -1,5 +1,5 @@
-gui Help topics
-===============
+GUI topics
+==========
 
 .. toctree::
     :titlesonly:

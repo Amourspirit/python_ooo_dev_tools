@@ -1,21 +1,20 @@
-.. _help_sample_popup_menu_json_dynamic_data:
+.. _help_sample_context_menu_json_dynamic_data:
 
-Sample Popup Menu JSON Dynamic Data
-===================================
+Sample Context Menu JSON Dynamic Data
+=====================================
 
-Sample JSON data for a popup menu. This data was outputted as dynamic.
+Sample JSON data for a Context menu. This data was outputted as dynamic.
 
 Mimics the popup menu in Calc when right-clicking on a cell.
 
 .. seealso::
 
-    - :ref:`help_popup_from_dict_or_json`
-    - :ref:`help_sample_popup_menu_json_normal_data`
+    - :ref:`help_menu_context_incept`
 
 .. code-block:: json
 
     {
-        "id": "ooodev.popup_menu",
+        "id": "ooodev.context_action_menu",
         "version": "0.41.0",
         "dynamic": true,
         "menus": [
@@ -90,11 +89,11 @@ Mimics the popup menu in Calc when right-clicking on a cell.
                 "text": "-"
             },
             {
-                "text": "Insert ~Cells...",
+                "text": "Insert cells",
                 "command": ".uno:InsertCell"
             },
             {
-                "text": "Delete C~ells...",
+                "text": "Del cells",
                 "command": ".uno:DeleteCell"
             },
             {

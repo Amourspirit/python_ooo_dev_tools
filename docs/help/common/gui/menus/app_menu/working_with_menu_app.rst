@@ -32,7 +32,7 @@ The ``doc.menu`` is an instance of the :ref:`ooodev.gui.menu.MenuApp` and has ac
 
 The :py:class`~ooodev.utils.kind.menu_lookup_kind.MenuLookupKind` Enum is for convenience and can be replaced with the command name of the menu.
 
-``doc.menu[MenuLookupKind.TOOLS]`` is the same as ``doc.menu[".uno:ToolsMenu"]`
+``doc.menu[MenuLookupKind.TOOLS]`` is the same as ``doc.menu[".uno:ToolsMenu"]``.
 
 The menu can be accessed even if the menu is not visible in the LibreOffice Window.
 

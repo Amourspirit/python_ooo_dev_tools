@@ -1,5 +1,7 @@
-commands
-========
+.. _ns_globals:
+
+Globals
+=======
 
 .. toctree::
     :titlesonly:

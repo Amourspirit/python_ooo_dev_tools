@@ -7,6 +7,7 @@
 from __future__ import annotations
 from datetime import datetime
 import time
+from pathlib import Path
 from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Tuple, TYPE_CHECKING, Type
 
 import uno  # pylint: disable=W0611
@@ -2395,6 +2396,18 @@ class Lo(metaclass=StaticProperty):
             LRUCache: Cache instance.
         """
         return cls._lo_inst._shared_cache
+
+    @classproperty
+    def tmp_dir(cls) -> Path:
+        """
+        Gets the LibreOffice temporary directory.
+
+        Returns:
+            Path: Temporary directory.
+
+        .. versionadded:: 0.41.0
+        """
+        return cls._lo_inst.tmp_dir
 
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument

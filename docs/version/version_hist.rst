@@ -5,6 +5,15 @@ Version History
 Version 0.41.0
 ==============
 
+Global
+------
+
+Added ``ooodev.global`` module that contains global classes for the library.
+
+The ``ooodev.global.GTC`` class is a global timed cache that can be used to cache objects for a set amount of time.
+
+The ``ooodev.global.GblEvents`` class is a global event broadcaster that can be used to broadcast events to all listeners.
+
 Caching
 -------
 

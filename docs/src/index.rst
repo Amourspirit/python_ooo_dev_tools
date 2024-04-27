@@ -16,6 +16,7 @@ ooodev
    form/index
    format/index
    formatters/index
+   globals/index
    gui/index
    io/index
    listeners/index
@@ -26,6 +27,7 @@ ooodev
    proto/index
    theme/index
    units/index
+   uno_helper/index
    utils/index
    wrapper/index
    write/index

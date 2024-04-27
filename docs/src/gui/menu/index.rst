@@ -10,5 +10,6 @@ menu
     context/index
     convert/index
     item/index
+    menu_app/index
     popup/index
     *

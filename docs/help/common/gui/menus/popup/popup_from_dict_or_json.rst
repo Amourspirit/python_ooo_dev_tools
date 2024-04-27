@@ -6,7 +6,7 @@ Popup from Dictionary or JSON
 .. contents:: Table of Contents
     :local:
     :backlinks: top
-    :depth: 1
+    :depth: 3
 
 
 Demonstrates creating a popup menu using a dictionary.
@@ -297,6 +297,8 @@ Entries in the menu can now use the ``get_calc_command_text()`` method to lookup
 
             .. group-tab:: None
 
+.. _help_popup_from_dict_or_json_events:
+
 Events
 ------
 
@@ -526,6 +528,8 @@ Popup with sub menu
             .. group-tab:: None
 
 
+.. _help_popup_from_dict_or_json_import_export:
+
 Export/Import Json
 ------------------
 
@@ -573,7 +577,7 @@ Save the JSON see in :ref:`help_sample_popup_menu_json_normal_data`.
             # ...
             creator = PopupCreator()
             menus = get_popup_menu()
-            json_str = creator.json_dumps(menus, dynamic=True)
+            json_str = creator.json_dumps(menus, dynamic=False)
             with open("popup_menu.json", "w") as f:
                 f.write(json_str)
 

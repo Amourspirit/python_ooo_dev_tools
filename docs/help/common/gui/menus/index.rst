@@ -9,5 +9,6 @@ Menus
     :glob:
 
     app_menu/index
+    context/index
     popup/index
     *

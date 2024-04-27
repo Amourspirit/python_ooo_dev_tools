@@ -8,6 +8,5 @@ Common Help Topics
 
     gui/index
     format/index
-    menus/index
     modules/index
     ranges/index

@@ -67,7 +67,7 @@ class MaProcessor(EventsPartial):
             MAItem | None: Action Item if found, otherwise None
 
         Note:
-            If the menu text is not found then the event ``action_item_module_no_text_found`` is raised.
+            If the menu text is not found then the event ``ma_item_module_no_text_found`` is raised.
             The event data is a dictionary with keys:
             - ``module_kind``: ModuleNamesKind
             - ``cmd``: Command as a string.
@@ -111,7 +111,7 @@ class MaProcessor(EventsPartial):
                 cargs = CancelEventArgs(self)
                 event_data = DotDict(module_kind=module_kind, cmd=cmd, index=index, menu=menu)
                 cargs.event_data = event_data
-                self.trigger_event("action_item_module_no_text_found", cargs)
+                self.trigger_event("ma_item_module_no_text_found", cargs)
                 if cargs.cancel:
                     return None
                 if "Label" in cargs.event_data.menu:

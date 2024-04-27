@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 import contextlib
+from pathlib import Path
 import threading
 from datetime import datetime, timezone
 import time
@@ -2178,8 +2179,30 @@ class LoInst(EventsPartial):
         """
         return self._shared_cache
 
+    @property
+    def tmp_dir(self) -> Path:
+        """
+        Gets the LibreOffice temporary directory.
+
+        Returns:
+            Path: Temporary directory.
+
+        .. versionadded:: 0.41.0
+        """
+        key = "tmp_dir"
+        if key in self._cache:
+            return self._cache[key]
+        # pylint: disable=import-outside-toplevel
+        from ooodev.adapter.util.the_path_settings_comp import ThePathSettingsComp
+
+        ps = ThePathSettingsComp.from_lo(lo_inst=self)
+        tmp_dir = Path(uno.fileUrlToSystemPath(ps.temp[0]))
+        self._cache[key] = tmp_dir
+        return tmp_dir
+
 
 __all__ = ("LoInst",)
 
 if mock_g.FULL_IMPORT:
     from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
+    from ooodev.adapter.util.the_path_settings_comp import ThePathSettingsComp
