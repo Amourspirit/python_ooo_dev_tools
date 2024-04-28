@@ -10,7 +10,7 @@ Menus
 
 Many updates for working with menus. Now menus can be created and modified in a much easier way including importing an exporting json files.
 
-See :ref:`help_common_gui_menus_app_menu`.
+See :ref:`help_common_menus`.
 
 Global
 ------
