@@ -61,6 +61,9 @@ class _LayoutManager(ComponentProp):
 
         Returns:
             MenuBar: MenuBar component.
+
+        See Also:
+            - :ref:`help_common_gui_menus_menu_bar`
         """
         # pylint: disable=import-outside-toplevel
         # pylint: disable=redefined-outer-name

@@ -5,4 +5,5 @@ cache
     :titlesonly:
     :glob:
 
+    file_cache/index
     *

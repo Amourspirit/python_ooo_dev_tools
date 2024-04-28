@@ -19,10 +19,12 @@ from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.cache.lru_cache import LRUCache
+from ooodev.utils.string.str_list import StrList
 
 if TYPE_CHECKING:
     from ooodev.adapter.ui.accelerator_configuration_comp import AcceleratorConfigurationComp
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.gui.menu.common.command_dict import CommandDict
 
 
 class Shortcuts(LoInstPropsPartial):
@@ -105,6 +107,14 @@ class Shortcuts(LoInstPropsPartial):
         else:
             return GlobalAcceleratorConfigurationComp.from_lo(lo_inst=self.lo_inst)
 
+    def _get_all_key_events(self) -> Tuple[KeyEvent, ...]:
+        key = "_get_all_key_events"
+        if key in self._cache:
+            return self._cache[key]
+        key_events = self._config.get_all_key_events()
+        self._cache[key] = key_events
+        return key_events
+
     def __getitem__(self, app: str | Service):
         return Shortcuts(app)
 
@@ -114,7 +124,7 @@ class Shortcuts(LoInstPropsPartial):
 
     def __iter__(self):
         self._i = -1
-        self._key_events = self._config.get_all_key_events()
+        self._key_events = self._get_all_key_events()
         return self
 
     def __next__(self):
@@ -131,7 +141,7 @@ class Shortcuts(LoInstPropsPartial):
         return event
 
     @classmethod
-    def to_key_event(cls, shortcut: str):
+    def to_key_event(cls, shortcut: str) -> KeyEvent | None:
         """Convert from string shortcut (Shift+Ctrl+Alt+LETTER) to KeyEvent"""
         key_event = KeyEvent()
         keys = shortcut.split("+")
@@ -148,12 +158,22 @@ class Shortcuts(LoInstPropsPartial):
         return key_event
 
     @classmethod
-    def get_url_script(cls, command: str | Dict[str, str]) -> str:
+    def from_key_event(cls, key_event: KeyEvent) -> str:
+        """Convert from KeyEvent to string shortcut"""
+        shortcut = ""
+        for m in cls.MODIFIERS:
+            if key_event.Modifiers & cls.MODIFIERS[m]:
+                shortcut += f"{m.capitalize()}+"
+        shortcut += cls.KEYS[key_event.KeyCode]
+        return shortcut
+
+    @classmethod
+    def get_url_script(cls, command: Union[str, CommandDict]) -> str:
         """
         Get uno command or url for macro.
 
         Args:
-            command (str | dict): Command to search, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to search, 'UNOCOMMAND' or dict with macro info.
 
         Returns:
             str: Url for macro or uno command or custom command.
@@ -202,10 +222,10 @@ class Shortcuts(LoInstPropsPartial):
         Returns:
             List[Tuple[str, str]]: List of tuples with shortcut and command.
         """
-        events = [(self._get_info(k)) for k in self._config.get_all_key_events()]
+        events = [(self._get_info(k)) for k in self._get_all_key_events()]
         return events
 
-    def _get_by_command_dict(self, url: str) -> List[str]:
+    def _get_by_command_dict(self, url: str) -> StrList:
         # for unknown reason LibreOffice does not return the command for most urls.
         # This method is a workaround to get the command by url.
         key = "_get_by_command_dict"
@@ -213,7 +233,7 @@ class Shortcuts(LoInstPropsPartial):
             command_dict = cast(Dict[str, List[str]], self._cache[key])
         else:
             command_dict: Dict[str, List[str]] = {}
-            for key in self._config.get_all_key_events():
+            for key in self._get_all_key_events():
                 try:
                     cmd = self._config.get_command_by_key_event(key)
                 except Exception:
@@ -224,10 +244,10 @@ class Shortcuts(LoInstPropsPartial):
                     command_dict[cmd] = [self.get_shortcut(key)]
             self._cache[key] = command_dict
         if url in command_dict:
-            return command_dict[url]
-        return []
+            return StrList(command_dict[url])
+        return StrList()
 
-    def get_by_command(self, command: str | Dict[str, str]) -> List[str]:
+    def get_by_command(self, command: Union[str, CommandDict]) -> StrList:
         """
         Get shortcuts by command.
 
@@ -243,7 +263,7 @@ class Shortcuts(LoInstPropsPartial):
             return self._cache[key]
         try:
             key_events = self._config.get_key_events_by_command(url)
-            shortcuts = [self.get_shortcut(k) for k in key_events]
+            shortcuts = StrList([self.get_shortcut(k) for k in key_events])
         except NoSuchElementException:
             # fallback on workaround
             shortcuts = self._get_by_command_dict(url)
@@ -273,13 +293,13 @@ class Shortcuts(LoInstPropsPartial):
         sc = self.get_shortcut(key_event)
         return self.get_by_shortcut(sc)
 
-    def set(self, shortcut: str, command: str | Dict[str, str], save: bool = True) -> bool:
+    def set(self, shortcut: str, command: Union[str, CommandDict], save: bool = True) -> bool:
         """
         Set shortcut to command
 
         Args:
             shortcut (str): Shortcut like Shift+Ctrl+Alt+LETTER
-            command (str | dict): Command to assign, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to assign, 'UNOCOMMAND' or dict with macro info.
             save (bool, optional): Save configuration causing it to persist. Defaults to ``True``.
 
         Returns:
@@ -328,12 +348,12 @@ class Shortcuts(LoInstPropsPartial):
             self._cache.clear()
         return result
 
-    def remove_by_command(self, command: str | Dict[str, str], save: bool = False):
+    def remove_by_command(self, command: Union[str, CommandDict], save: bool = False):
         """
         Remove by shortcut.
 
         Args:
-            command (str | dict): Command to remove, 'UNOCOMMAND' or dict with macro info.
+            command (str | CommandDict): Command to remove, 'UNOCOMMAND' or dict with macro info.
             save (bool, optional): Save configuration causing it to persist. Defaults to ``False``.
         """
         url = Shortcuts.get_url_script(command)

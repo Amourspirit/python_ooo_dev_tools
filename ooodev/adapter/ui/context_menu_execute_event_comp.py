@@ -1,10 +1,7 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-from ooodev.adapter._helper.builder import builder_helper
-from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
-from ooodev.utils.builder.default_builder import DefaultBuilder
 from com.sun.star.container import XEnumerationAccess
 from com.sun.star.container import XContainer
 from ooodev.adapter.awt.window_comp import WindowComp
@@ -17,9 +14,28 @@ from ooodev.loader import lo as mLo
 if TYPE_CHECKING:
     from com.sun.star.awt import Point  # struct
     from com.sun.star.ui import ContextMenuExecuteEvent  # struct
+    from ooodev.utils.builder.default_builder import DefaultBuilder
 
 
-class _ContextMenuExecuteEventComp(ComponentProp):
+class ContextMenuExecuteEventComp(ComponentProp):
+    """
+    Class for managing ContextMenuExecuteEvent Component.
+    """
+
+    # pylint: disable=unused-argument
+    # def __new__(cls, component: Any, *args, **kwargs):
+    #     builder = get_builder(component=component)
+    #     builder_helper.builder_add_comp_defaults(builder)
+
+    #     builder_only = kwargs.get("_builder_only", False)
+    #     if builder_only:
+    #         # cast to prevent type checker error
+    #         return cast(Any, builder)
+    #     inst = builder.build_class(
+    #         name="ooodev.adapter.ui.context_menu_execute_event_comp.ContextMenuExecuteEventComp",
+    #         base_class=_ContextMenuExecuteEventComp,
+    #     )
+    #     return inst
 
     def __init__(self, component: ContextMenuExecuteEvent) -> None:
         """
@@ -28,7 +44,6 @@ class _ContextMenuExecuteEventComp(ComponentProp):
         Args:
             component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.ui.ContextMenuExecuteEvent`` service.
         """
-        # component is a struct
         ComponentProp.__init__(self, component)
         self.__action_trigger_container = None
 
@@ -97,38 +112,12 @@ class _ContextMenuExecuteEventComp(ComponentProp):
         """SelectionSupplier Component"""
         return SelectionSupplierComp(self.component.Selection)
 
+    @property
+    def __class__(self):
+        # pretend to be a ContextMenuExecuteEventComp class
+        return ContextMenuExecuteEventComp
+
     # endregion Properties
-
-
-class ContextMenuExecuteEventComp(_ContextMenuExecuteEventComp, CompDefaultsPartial):
-    """
-    Class for managing ContextMenuExecuteEvent Component.
-    """
-
-    # pylint: disable=unused-argument
-    def __new__(cls, component: Any, *args, **kwargs):
-        builder = get_builder(component=component)
-        builder_helper.builder_add_comp_defaults(builder)
-
-        builder_only = kwargs.get("_builder_only", False)
-        if builder_only:
-            # cast to prevent type checker error
-            return cast(Any, builder)
-        inst = builder.build_class(
-            name="ooodev.adapter.ui.context_menu_execute_event_comp.ContextMenuExecuteEventComp",
-            base_class=_ContextMenuExecuteEventComp,
-        )
-        return inst
-
-    def __init__(self, component: ContextMenuExecuteEvent) -> None:
-        """
-        Constructor
-
-        Args:
-            component (ContextMenuExecuteEvent): UNO ContextMenuExecuteEvent Component that supports ``com.sun.star.ui.ContextMenuExecuteEvent`` service.
-        """
-        # this it not actually called as __new__ is overridden
-        pass
 
 
 def get_builder(component: Any) -> DefaultBuilder:
@@ -141,7 +130,16 @@ def get_builder(component: Any) -> DefaultBuilder:
     Returns:
         DefaultBuilder: Builder instance.
     """
+    # pylint: disable=import-outside-toplevel
+    # pylint: disable=redefined-outer-name
+    from ooodev.utils.builder.default_builder import DefaultBuilder
+
     builder = DefaultBuilder(component)
 
-    builder.auto_interface()
+    builder.add_import(
+        "ooodev.adapter.ui.context_menu_execute_event_comp.ContextMenuExecuteEventComp",
+        optional=False,
+        init_kind=1,
+        check_kind=0,
+    )
     return builder

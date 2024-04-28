@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 import time
 
 if __name__ == "__main__":
@@ -125,3 +126,35 @@ def test_remove(key_to_remove, initial_items, expected_items):
     for key, _ in expected_items:
         assert cache.get(key) is not None, "Expected item was not found after removal."
     assert len(cache) == len(expected_items), "Cache size does not match expected after removal."
+
+
+def test_thread():
+
+    class TestTLRUCache(TLRUCache):
+        def _get_ttl_seconds(self) -> float:
+            return 1.0
+
+    cache = TestTLRUCache(10, 2)
+    cache.put("key1", "value1")
+    # time.sleep(1)
+    assert "key1" in cache._ttl_cache._cache
+    assert "key1" in cache._lru_cache._cache
+    time.sleep(3)
+    assert "key1" not in cache._ttl_cache._cache
+    assert "key1" not in cache._lru_cache._cache
+
+
+def test_clear_expired():
+    class TestTLRUCache(TLRUCache):
+        def _get_ttl_seconds(self) -> float:
+            return 0.0
+
+    cache = TestTLRUCache(10, 1)
+    cache.put("key1", "value1")
+    cache.clear_expired()
+    assert "key1" in cache._lru_cache._cache
+    assert "key1" in cache._ttl_cache._cache
+    time.sleep(2)
+    cache.clear_expired()
+    assert "key1" not in cache._lru_cache._cache
+    assert "key1" not in cache._ttl_cache._cache

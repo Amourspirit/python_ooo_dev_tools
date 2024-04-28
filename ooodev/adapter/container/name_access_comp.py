@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
@@ -7,8 +7,10 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 if TYPE_CHECKING:
     from com.sun.star.container import XNameAccess
 
+T = TypeVar("T")
 
-class NameAccessComp(ComponentProp, NameAccessPartial):
+
+class NameAccessComp(ComponentProp, NameAccessPartial[T], Generic[T]):
     """
     Class for managing XNameAccess Component.
     """

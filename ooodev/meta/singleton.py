@@ -1,5 +1,6 @@
-# coding: utf-8
 class Singleton(type):
+    """Meta class for creating singleton classes."""
+
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

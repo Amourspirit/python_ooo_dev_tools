@@ -7,6 +7,8 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.frame.app_dispatch_provider_comp
+   ooodev.adapter.frame.app_dispatch_provider_partial
    ooodev.adapter.frame.border_resize_events
    ooodev.adapter.frame.border_resize_listener
    ooodev.adapter.frame.component_loader_partial
@@ -38,6 +40,9 @@ Submodules
    ooodev.adapter.frame.layout_manager_partial
    ooodev.adapter.frame.menu_bar_merging_acceptor_partial
    ooodev.adapter.frame.model_partial
+   ooodev.adapter.frame.module_manager2_partial
+   ooodev.adapter.frame.module_manager_comp
+   ooodev.adapter.frame.module_manager_partial
    ooodev.adapter.frame.notifying_dispatch_partial
    ooodev.adapter.frame.status_events
    ooodev.adapter.frame.status_listener
@@ -48,6 +53,7 @@ Submodules
    ooodev.adapter.frame.the_desktop_comp
    ooodev.adapter.frame.the_global_event_broadcaster_comp
    ooodev.adapter.frame.the_popup_menu_controller_factory_comp
+   ooodev.adapter.frame.the_ui_command_description_comp
    ooodev.adapter.frame.title_change_broadcaster_partial
    ooodev.adapter.frame.title_change_events
    ooodev.adapter.frame.title_change_listener

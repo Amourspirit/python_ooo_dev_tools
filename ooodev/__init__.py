@@ -4,4 +4,8 @@
 # with open(os.path.join(os.path.dirname(__file__), "VERSION"), "r", encoding="utf-8") as f:
 #     version = f.read().strip()
 
-__version__ = "0.40.1"
+__version__ = "0.41.0"
+
+
+def get_version() -> str:
+    return __version__

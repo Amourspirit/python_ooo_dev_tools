@@ -13,6 +13,7 @@ from ooodev.io.log.named_logger import NamedLogger
 from ooodev.loader.inst.service import Service
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.utils.kind.item_style_kind import ItemStyleKind
+from ooodev.utils.string.str_list import StrList
 
 if TYPE_CHECKING:
     from ooodev.gui.menu.menu import Menu
@@ -73,7 +74,7 @@ class MenuItem(MenuItemBase):
             return f'<{self.__class__.__name__}(command="{self.command}", label="{self.label}, kind={str(self.item_kind)}")>'
         return f'<{self.__class__.__name__}(command="{self.command}", kind={str(self.item_kind)})>'
 
-    def get_shortcuts(self) -> List[str]:
+    def get_shortcuts(self) -> StrList:
         """Get shortcuts"""
         from ooodev.gui.menu.shortcuts import Shortcuts
 

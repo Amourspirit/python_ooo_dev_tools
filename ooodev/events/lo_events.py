@@ -75,6 +75,37 @@ class _event_base(object):
                 result = True
         return result
 
+    def has_event_name(self, event_name: str) -> bool:
+        """
+        Gets if event exists.
+
+        Args:
+            event_name (str): Event name
+
+        Returns:
+            bool: True if event exists; Otherwise, False
+        """
+        return False if self._callbacks is None else event_name in self._callbacks
+
+    def has_event(self, event_name: str, callback: EventCallback) -> bool:
+        """
+        Gets if event exists.
+
+        Args:
+            event_name (str): Event name
+            callback (EventCallback): Callback function
+
+        Returns:
+            bool: True if event exists; Otherwise, False
+        """
+        if self._callbacks is None:
+            return False
+        if callback is None:
+            return False
+        if event_name not in self._callbacks:
+            return False
+        return ref(callback) in self._callbacks[event_name]
+
     def _clear(self) -> None:
         if self._callbacks is not None:
             self._callbacks.clear()

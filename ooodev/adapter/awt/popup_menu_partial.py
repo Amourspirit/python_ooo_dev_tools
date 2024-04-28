@@ -36,15 +36,15 @@ class PopupMenuPartial(MenuPartial):
         self.__component = component
 
     # region XPopupMenu
-    def check_item(self, item_id: int, check: bool = True) -> None:
+    def check_item(self, menu_id: int, check: bool = True) -> None:
         """
         Sets the state of the item to be checked or unchecked.
 
         Args:
-            item_id (int): The item identifier.
+            menu_id (int): The item identifier.
             check (bool, optional): The state of the item. Defaults to ``True``.
         """
-        self.__component.checkItem(item_id, check)
+        self.__component.checkItem(menu_id, check)
 
     def end_execute(self) -> None:
         """
@@ -80,13 +80,13 @@ class PopupMenuPartial(MenuPartial):
         """
         return self.__component.execute(parent, position, int(direction))
 
-    def get_accelerator_key_event(self, item_id: int) -> KeyEvent:
+    def get_accelerator_key_event(self, menu_id: int) -> KeyEvent:
         """
         Gets the KeyEvent for the menu item.
 
         The KeyEvent is only used as a container to transport the shortcut information, so that in this case ``com.sun.star.lang.EventObject.Source`` is ``None``.
         """
-        return self.__component.getAcceleratorKeyEvent(item_id)
+        return self.__component.getAcceleratorKeyEvent(menu_id)
 
     def get_default_item(self) -> int:
         """
@@ -94,11 +94,11 @@ class PopupMenuPartial(MenuPartial):
         """
         return self.__component.getDefaultItem()
 
-    def get_item_image(self, item_id: int) -> XGraphic:
+    def get_item_image(self, menu_id: int) -> XGraphic:
         """
         Gets the image for the menu item.
         """
-        return self.__component.getItemImage(item_id)
+        return self.__component.getItemImage(menu_id)
 
     def insert_separator(self, item_pos: int) -> None:
         """
@@ -115,31 +115,31 @@ class PopupMenuPartial(MenuPartial):
         """
         return self.__component.isInExecute()
 
-    def is_item_checked(self, item_id: int) -> bool:
+    def is_item_checked(self, menu_id: int) -> bool:
         """
         Gets whether the item is checked or unchecked.
         """
-        return self.__component.isItemChecked(item_id)
+        return self.__component.isItemChecked(menu_id)
 
-    def set_accelerator_key_event(self, item_id: int, key_event: KeyEvent) -> None:
+    def set_accelerator_key_event(self, menu_id: int, key_event: KeyEvent) -> None:
         """
         Sets the KeyEvent for the menu item.
 
         The KeyEvent is only used as a container to transport the shortcut information, this methods only draws the text corresponding to this keyboard shortcut.
         The client code is responsible for listening to keyboard events (typically done via ``XUserInputInterception``), and dispatch the respective command.
         """
-        self.__component.setAcceleratorKeyEvent(item_id, key_event)
+        self.__component.setAcceleratorKeyEvent(menu_id, key_event)
 
-    def set_default_item(self, item_id: int) -> None:
+    def set_default_item(self, menu_id: int) -> None:
         """
         Sets the menu default item.
         """
-        self.__component.setDefaultItem(item_id)
+        self.__component.setDefaultItem(menu_id)
 
-    def set_item_image(self, item_id: int, xGraphic: XGraphic, scale: bool) -> None:
+    def set_item_image(self, menu_id: int, graphic: XGraphic, scale: bool) -> None:
         """
         Sets the image for the menu item.
         """
-        self.__component.setItemImage(item_id, xGraphic, scale)
+        self.__component.setItemImage(menu_id, graphic, scale)
 
     # endregion XPopupMenu

@@ -23,6 +23,8 @@ Submodules
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener
    ooodev.adapter.util.number_formats_supplier_partial
+   ooodev.adapter.util.path_settings_partial
+   ooodev.adapter.util.path_settings_properties_partial
    ooodev.adapter.util.property_replace_comp
    ooodev.adapter.util.property_replace_partial
    ooodev.adapter.util.refresh_events
@@ -36,6 +38,7 @@ Submodules
    ooodev.adapter.util.search_descriptor_partial_props
    ooodev.adapter.util.searchable_partial
    ooodev.adapter.util.string_escape_partial
+   ooodev.adapter.util.the_path_settings_comp
    ooodev.adapter.util.url_transformer_comp
    ooodev.adapter.util.url_transformer_partial
 

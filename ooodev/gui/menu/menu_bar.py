@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt import MenuBar as UnoMenuBar
     from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
     from ooodev.loader.inst.lo_inst import LoInst
+    from ooodev.gui.comp.layout_manager import LayoutManager
 
 
 class _MenuBar(ComponentProp):
@@ -37,14 +38,15 @@ class _MenuBar(ComponentProp):
         self._logger = NamedLogger(self.__class__.__name__)
 
     def __getitem__(self, index: int) -> int:
-        self = cast(MenuBarPartial, self)
-        return self.get_item_id(index)
+        # pylint: disable=no-member
+        return self.get_item_id(index)  # type: ignore
 
     def __iter__(self) -> _MenuBar:
         self._index = 0
         return self
 
     def __next__(self) -> int:
+        # pylint: disable=no-member
         self = cast(Any, self)
         if self._index >= self.get_item_count():
             self._index = -1
@@ -76,22 +78,23 @@ class _MenuBar(ComponentProp):
             PopupMenu: ``PopupMenu`` instance if found, otherwise ``None``.
         """
         menu = self.component.getPopupMenu(menu_id)
-        if menu is None:
-            return None
-        return PopupMenu(menu)
+        return None if menu is None else PopupMenu(menu)
 
     def clear(self) -> None:
         """
         Removes all items from the menu.
         """
+        # pylint: disable=no-member
         super().clear()  # type: ignore
         self.cache.clear()
 
     def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind, item_pos: int) -> None:
+        # pylint: disable=no-member
         super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=item_pos)  # type: ignore
         self.cache.clear()
 
     def remove_item(self, item_pos: int, count: int) -> None:
+        # pylint: disable=no-member
         super().remove_item(item_pos=item_pos, count=count)  # type: ignore
         self.cache.clear()
 
@@ -319,6 +322,7 @@ class _MenuBar(ComponentProp):
         Args:
             cmd (str): Command to execute.
         """
+        # pylint: disable=no-member
         cmd = self.get_command(menu_id)  # type: ignore
         if not cmd:
             return False
@@ -334,6 +338,49 @@ class _MenuBar(ComponentProp):
         return False
 
     # endregion execute command
+
+    # region other methods
+    def _get_layout_manager(self) -> LayoutManager | None:
+        key = "layout_manager"
+        if key in self._cache:
+            return self._cache[key]
+        result = None
+        try:
+            # pylint: disable=no-member
+            doc = self.lo_inst.current_doc  # type: ignore
+            doc.activate()
+            comp = doc.get_frame_comp()
+            if comp is None:
+                raise ValueError("No frame component found")
+            result = comp.layout_manager
+        except Exception:
+            self._logger.error("Error getting layout manager.", exc_info=True)
+            return None
+        self._cache[key] = result
+        return result
+
+    def set_visible(self, visible=True) -> None:
+        """
+        Sets the visibility of the menu bar.
+
+        Args:
+            visible (bool, optional): Visibility. Defaults to ``True``.
+        """
+        if lm := self._get_layout_manager():
+            if visible:
+                lm.show_element(self.NODE)
+            else:
+                lm.hide_element(self.NODE)
+
+    def toggle_visible(self) -> None:
+        """
+        Toggles the visibility of the menu bar using a dispatch command.
+        """
+        # pylint: disable=no-member
+        lo_inst = cast("LoInst", self.lo_inst)  # type: ignore
+        lo_inst.dispatch_cmd("Menubar")
+
+    # endregion other methods
 
     # region Properties
     @property
@@ -361,6 +408,7 @@ class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, 
     See Also:
 
         - :ref:`help_working_with_menu_bar`
+        - :ref:`help_common_gui_menus_menu_bar`
     """
 
     # pylint: disable=unused-argument

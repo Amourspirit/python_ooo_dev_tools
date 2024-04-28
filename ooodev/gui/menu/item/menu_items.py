@@ -36,9 +36,7 @@ class MenuItems(LoInstPropsPartial, IndexAccessComp[Tuple[Tuple[PropertyValue, .
         self._menu = menu
 
     def _get_name(self, name: str) -> str:
-        if name.startswith(".custom:"):
-            return name[8:]
-        return name
+        return name[8:] if name.startswith(".custom:") else name
 
     def _get_by_cmd(self, name: str) -> Tuple[Tuple[PropertyValue, ...], ...] | None:
         """Get menu by command value"""

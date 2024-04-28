@@ -6,8 +6,8 @@ from com.sun.star.beans import PropertyValue
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.container.index_access_implement import IndexAccessImplement
 from ooodev.gui.menu.item.menu_items import MenuItems
-from ooodev.gui.menu.menu_base import MenuBase
-from ooodev.gui.menu.menu_debug import MenuDebug
+from ooodev.gui.menu.common.menu_base import MenuBase
+from ooodev.gui.menu.common.menu_debug import MenuDebug
 from ooodev.gui.menu.shortcuts import Shortcuts
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service
@@ -24,6 +24,8 @@ class Menu(LoInstPropsPartial):
 
     def __init__(
         self,
+        *,
+        node: str,
         config: UIConfigurationManagerComp,
         menus: IndexAccessComp[Tuple[PropertyValue, ...]],
         app: str | Service,
@@ -42,6 +44,7 @@ class Menu(LoInstPropsPartial):
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst)
+        self._node = node
         self._config = config
         self._menus = menus
         self._app = str(app)
@@ -106,14 +109,14 @@ class Menu(LoInstPropsPartial):
             # create an empty XIndexAccess
             ia = IndexAccessImplement(elements=(), element_type="[]com.sun.star.beans.PropertyValue")
         ia_menu = IndexAccessComp(ia)
-        obj = Menu(
+        return Menu(
+            node=self._node,
             config=self._config,
             menus=self._menus,
             app=self._app,
             menu=ia_menu,  # type: ignore
             lo_inst=self.lo_inst,
         )
-        return obj
 
     def __len__(self) -> int:
         """Length of menu"""
@@ -154,7 +157,7 @@ class Menu(LoInstPropsPartial):
             after (int | str, optional): Insert in after menu. Defaults to "".
             save (bool, optional): For persistent save. Defaults to True.
         """
-        mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
+        mb = MenuBase(node=self._node, config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.insert(self._current_menu, menu, after)
         if save:
             self._config.component.store()  # type: ignore
@@ -167,7 +170,7 @@ class Menu(LoInstPropsPartial):
             menu (str): Menu name.
             save (bool, optional): Save changes. Defaults to ``False``.
         """
-        mb = MenuBase(config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
+        mb = MenuBase(node=self._node, config=self._config, menus=self._menus, app=self._app, lo_inst=self.lo_inst)
         mb.remove(self._current_menu, menu, save)
 
     @property

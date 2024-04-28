@@ -1,3 +1,5 @@
+.. _ooodev.gui.menu.Shortcuts:
+
 Class Shortcuts
 ===============
 

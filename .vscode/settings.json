@@ -188,6 +188,6 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
     "[xml]": {
-        "editor.defaultFormatter": "fabianlauer.vs-code-xml-format"
+        "editor.defaultFormatter": "redhat.vscode-xml"
     }
 }

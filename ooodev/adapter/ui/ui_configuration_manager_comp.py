@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import cast, TYPE_CHECKING
+import contextlib
 import uno
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
@@ -34,6 +35,18 @@ class UIConfigurationManagerComp(ComponentBase, UIConfigurationManagerPartial):
         return ()
 
     # endregion Overrides
+
+    # region UIConfigurationManagerPartial overrides
+
+    def has_settings(self, resource_url: str) -> bool:
+        """
+        Determines if the settings of a user interface element is part the user interface configuration manager.
+        """
+        with contextlib.suppress(Exception):
+            return self.component.hasSettings(resource_url)
+        return False
+
+    # endregion UIConfigurationManagerPartial overrides
 
     @property
     def component(self) -> XUIConfigurationManager:
