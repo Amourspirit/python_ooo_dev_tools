@@ -408,6 +408,7 @@ class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, 
     See Also:
 
         - :ref:`help_working_with_menu_bar`
+        - :ref:`help_common_gui_menus_menu_bar`
     """
 
     # pylint: disable=unused-argument

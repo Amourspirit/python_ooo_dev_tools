@@ -5,6 +5,13 @@ Version History
 Version 0.41.0
 ==============
 
+Menus
+-----
+
+Many updates for working with menus. Now menus can be created and modified in a much easier way including importing an exporting json files.
+
+See :ref:`help_common_gui_menus_app_menu`.
+
 Global
 ------
 
@@ -33,6 +40,18 @@ This class gets access to the LibreOffice paths such as the Temp folder and the 
     >>> path_settings = ThePathSettingsComp.from_lo()
     >>> print(str(path_settings.temp))
     file:///tmp
+
+Lo Updates
+----------
+
+Now the ``Lo`` class not has a ``tmp_dir`` property that returns a python ``pathlib.Path`` object of the LibreOffice Temp folder.
+
+.. code-block:: python
+
+    >>> from ooodev.loader import Lo
+    >>> print(Lo.tmp_dir)
+    /tmp/
+
 
 Version 0.40.1
 ==============

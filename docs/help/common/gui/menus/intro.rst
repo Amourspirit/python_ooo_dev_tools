@@ -18,6 +18,10 @@ App Menu
 App menus are generally used when there is a need to persist the menu into LibreOffice.
 Although there are times that using App Menu with Popup menu will make sense.
 
+App Menus are used to add, remove, and modify menus in the LibreOffice on both a Global and Document level.
+
+:ref:`More Information <help_common_gui_menus_app_menu>`.
+
 Quick Start
 ^^^^^^^^^^^
 
@@ -28,6 +32,8 @@ Popup Menu
 
 Popup Menus are not persisted after a restart.
 Popup menus can be used to add additional menus to the menu bar or to create a new popup menu base upon some other action.
+
+:ref:`More Information <help_common_gui_menus_popup_menu>`.
 
 Quick Start
 ^^^^^^^^^^^
@@ -40,7 +46,7 @@ Menu Bar Menu
 Menu Bar menus are menus that are added to the main menu bar at the top of the application.
 Menus are added by creating a new Popup Menu and then adding it to the menu bar.
 For this reason working with Menu Bar is much like working with Popup Menus.
-See :ref:`help_working_with_menu_bar` for more information.
+:ref:`More Information <help_common_gui_menus_menu_bar>`.
 
 Quick Start
 ^^^^^^^^^^^
@@ -51,7 +57,7 @@ Context Action Menu
 -------------------
 
 Context Action Menu are menus are are inserted into existing context menus by incepting the menu and modifying it.
-See :ref:`help_menu_context_incept` for more information.
+:ref:`More Information <help_common_gui_menus_context>`.
 
 Quick Start
 ^^^^^^^^^^^

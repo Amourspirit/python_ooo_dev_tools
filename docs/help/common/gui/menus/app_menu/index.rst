@@ -1,3 +1,5 @@
+.. _help_common_gui_menus_app_menu:
+
 App Menu
 ========
 

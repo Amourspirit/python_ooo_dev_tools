@@ -325,13 +325,11 @@ Example of capturing menu id's and taking action based on menu id in a menu even
 
         from __future__ import annotations
         from typing import Any, cast, TYPE_CHECKING
-        import logging
         from ooodev.calc import CalcDoc
         from ooodev.events.args.event_args import EventArgs
         from ooodev.gui.menu.menu_bar import MenuBar
         from ooodev.gui.menu.popup_menu import PopupMenu
         from ooodev.loader import Lo
-        from ooodev.loader.inst.options import Options
         from ooodev.macro.script.macro_script import MacroScript
         from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
         from ooodev.utils.kind.menu_lookup_kind import MenuLookupKind
@@ -432,7 +430,7 @@ Example of capturing menu id's and taking action based on menu id in a menu even
 
         def main():
             global MY_MENU
-            loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG, lo_cache_size=400))
+            loader = Lo.load_office(connector=Lo.ConnectPipe())
             doc = CalcDoc.create_doc(loader=loader, visible=True)
             try:
 
@@ -457,6 +455,19 @@ Example of capturing menu id's and taking action based on menu id in a menu even
             .. group-tab:: None
 
 The above class example shows one way of capturing Menu id's and then taking action when the menu item is clicked.
+
+The results of the above code would can be seen in :numref:`6b177362-59b1-4b51-a719-3c8b575dbbd8`.
+
+.. cssclass:: screen_shot
+
+    .. _6b177362-59b1-4b51-a719-3c8b575dbbd8:
+
+    .. figure:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/6b177362-59b1-4b51-a719-3c8b575dbbd8
+        :alt: Menu Bar Tools Entry Result
+        :figclass: align-center
+        :width: 550
+
+        Menu Bar Tools Entry Result
 
 .. note::
 
@@ -557,3 +568,4 @@ Related Topics
 - :ref:`help_creating_menu_using_menu_app`
 - :ref:`help_working_with_menu_app`
 - :ref:`help_working_with_shortcuts`
+- :ref:`help_common_gui_menus_context`

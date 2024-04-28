@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
+import contextlib
 from logging import DEBUG
 import uno
 from com.sun.star.awt import XPopupMenu
@@ -9,6 +10,7 @@ from ooodev.adapter.component_prop import ComponentProp
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
 from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
+from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.macro.script.macro_script import MacroScript
@@ -26,6 +28,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
     See Also:
 
         - :ref:`help_working_with_menu_bar`
+        - :ref:`help_common_gui_menus_menu_bar`
     """
 
     def __init__(self, component: XPopupMenu, lo_inst: LoInst | None = None) -> None:
@@ -47,6 +50,45 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
             self._logger = NamedLogger(self.__class__.__name__)
 
         self._cache = LRUCache(30)
+
+    # region Protected Methods
+
+    def _get_index(self, idx: int, allow_greater: bool = False) -> int:
+        """
+        Gets the index.
+
+        Args:
+            idx (int): Index of sheet. Can be a negative value to index from the end of the list.
+            allow_greater (bool, optional): If True and index is greater then the number of
+                sheets then the index becomes the next index if sheet were appended. Defaults to False.
+
+        Returns:
+            int: Index value.
+        """
+        count = len(self)
+        return mGenUtil.Util.get_index(idx, count, allow_greater)
+
+    def _get_existing_index(self, itm: int | str) -> int:
+        """
+        Gets the position from the index or command.
+
+        Args:
+            item_pos (int | str): Index or command.
+
+        Returns:
+            int: Position.
+        """
+        result = -1
+        if isinstance(itm, str):
+            if itm == "":
+                return result
+            result, _ = self.find_item_pos(itm)
+        else:
+            with contextlib.suppress(ValueError):
+                result = self._get_index(itm)
+        return result
+
+    # endregion Protected Methods
 
     # region Find methods
     def get_max_menu_id(self) -> int:
@@ -190,9 +232,52 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         super().clear()  # type: ignore
         self._cache.clear()
 
-    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind, item_pos: int) -> None:
-        super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=item_pos)  # type: ignore
+    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind = 0, item_pos: int = -1) -> int:
+        """
+        Insert an item into the menu.
+
+        Args:
+            menu_id (int): Menu item id. If set to ``-1``, it will be set to the maximum menu id + 1.
+            text (str): Text of the menu item.
+            item_style (int | MenuItemStyleKind): Style Kind. Defaults to ``0`` (none).
+            item_pos (int): Index position of the new item. Can be a negative value to index from the end of the list. Defaults to ``-1``.
+
+        Returns:
+            int: Menu item id.
+        """
+        if menu_id == -1:
+            menu_id = self.get_max_menu_id() + 1
+        idx = self._get_index(item_pos, allow_greater=True)
+        super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=idx)  # type: ignore
         self._cache.clear()
+        return menu_id
+
+    def insert_item_after(
+        self, menu_id: int, text: str, item_style: int | MenuItemStyleKind = 0, after: str | int = -1
+    ) -> int:
+        """
+        Insert an item into the menu.
+
+        Args:
+            menu_id (int): Menu item id. If set to ``-1``, it will be set to the maximum menu id + 1.
+            text (str): Text of the menu item.
+            item_style (int | MenuItemStyleKind): Style Kind. Defaults to ``0`` (none).
+            after (str | int): Index of existing item or command to insert after. Can be a negative value to index from the end of the list. Defaults to ``-1``.
+
+        Raises:
+            ValueError: ValueError if ``after`` Item not found.
+
+        Returns:
+            int: Menu item id.
+        """
+        if menu_id == -1:
+            menu_id = self.get_max_menu_id() + 1
+        item_pos = self._get_existing_index(after)
+        if item_pos == -1:
+            raise ValueError(f"Item not found: {after}")
+        super().insert_item(menu_id=menu_id, text=text, item_style=item_style, item_pos=item_pos + 1)  # type: ignore
+        self._cache.clear()
+        return menu_id
 
     def remove_item(self, item_pos: int, count: int) -> None:
         super().remove_item(item_pos=item_pos, count=count)  # type: ignore
