@@ -54,7 +54,7 @@ class ModuleNamesKind(Enum):
         """Gets the int portion of the enum tuple value."""
         return self.value[0]
 
-    def to_json(self) -> Any:
+    def to_json(self) -> int:
         """Gets the JSON representation of the enum."""
         return self.value[0]
 

@@ -12,7 +12,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.io.json.json_encoder import JsonEncoder
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.gui.menu.ma.ma_item import MAItem
-from ooodev.gui.menu.ma.ma_processor import MaProcessor
+from ooodev.gui.menu.ma.ma_processor import MAProcessor
 
 if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
@@ -88,7 +88,7 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
         for index, menu in enumerate(menus):
             submenu = menu.pop("Submenu", False)
-            mp = MaProcessor(pm)
+            mp = MAProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.get_action_item(menu, index)
             if pop is None:
@@ -109,7 +109,7 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
 
         for index, menu in enumerate(menus):
             submenu = menu.pop("Submenu", False)
-            mp = MaProcessor(pm)
+            mp = MAProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.process(menu, index)
             if pop is None:
@@ -132,7 +132,7 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
         self.trigger_event("action_container_created", eargs)
         for index, menu in enumerate(cpy):
             submenu = menu.pop("Submenu", False)
-            mp = MaProcessor(pm)
+            mp = MAProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.process(menu, index)
             if pop is None:
@@ -258,7 +258,7 @@ class MACreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             cpy = copy.deepcopy(menu)
             submenu = cpy.pop("Submenu", False)
 
-            mp = MaProcessor(pm)
+            mp = MAProcessor(pm)
             mp.add_event_observers(self.event_observer)
             pop = mp.get_action_item(cpy, index)
             if pop is None:

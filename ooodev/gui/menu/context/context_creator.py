@@ -249,7 +249,7 @@ class ContextCreator(LoInstPropsPartial, EventsPartial, JsonEncoder):
             Even though menu data such as ``{"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT}`` is not valid for json.
             It can still be encoded using this ``ContextCreator`` class.
 
-            Example:
+            Example
                 .. code-block:: python
 
                     # ...

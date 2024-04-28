@@ -6,6 +6,8 @@ from ooodev.utils.kind.item_style_kind import ItemStyleKind
 
 
 class MAItem:
+    """Class for menu item data."""
+
     def __init__(
         self,
         *,

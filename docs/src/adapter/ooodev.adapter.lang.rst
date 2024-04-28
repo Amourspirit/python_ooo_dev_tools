@@ -17,8 +17,10 @@ Submodules
    ooodev.adapter.lang.multi_component_factory_partial
    ooodev.adapter.lang.multi_service_factory_partial
    ooodev.adapter.lang.service_info_partial
+   ooodev.adapter.lang.service_info_t
    ooodev.adapter.lang.single_service_factory_partial
    ooodev.adapter.lang.type_provider_partial
+   ooodev.adapter.lang.type_provider_t
    ooodev.adapter.lang.uno_tunnel_partial
 
 Module contents

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ooodev.gui.menu.common.command_dict import CommandDict
 
 
-class MaProcessor(EventsPartial):
+class MAProcessor(EventsPartial):
     """Class for processing App menus. Does not process submenus"""
 
     def __init__(self, container: List[MAItem]) -> None:

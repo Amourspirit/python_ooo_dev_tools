@@ -15,7 +15,7 @@ In this example, we will create a class that intercepts a context menu in a Calc
 The class will add a new menu item to the sheet tab context menu.
 The new menu item will be inserted after the "Insert" menu item.
 This is not a practical example, but it demonstrates how to intercept a context menu.
-Also demonstrates creating a new menu and saving it to a json file.
+Also demonstrates creating a new menu and saving and loading to and from a json file.
 
 Logging is used to show the flow of the program.
 

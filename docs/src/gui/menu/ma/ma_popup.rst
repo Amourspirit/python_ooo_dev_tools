@@ -1,7 +1,7 @@
-Class MenuApp
-==================
+Class MAPopup
+=============
 
-.. autoclass:: ooodev.gui.menu.menu_app.MenuApp
+.. autoclass:: ooodev.gui.menu.ma.MAPopup
     :members:
     :undoc-members:
     :show-inheritance:

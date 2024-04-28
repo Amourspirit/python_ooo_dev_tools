@@ -1,5 +1,5 @@
-menu_app
-========
+ma
+===
 
 .. toctree::
     :titlesonly:

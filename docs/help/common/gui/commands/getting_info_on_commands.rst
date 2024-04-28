@@ -1,13 +1,15 @@
 .. _help_getting_info_on_commands:
 
-Getting Info on Commands
-=========================
+Getting Info UNO on Commands
+============================
 
-LibreOffice has Thousands of Dispatch Commands, many can bee seen on The `Wiki <https://wiki.documentfoundation.org/Development/DispatchCommands>`__.
+LibreOffice has Thousands of Dispatch Commands, such as ``.uno:Copy``, many can bee seen on The `Wiki <https://wiki.documentfoundation.org/Development/DispatchCommands>`__.
 
 Getting information on a command is relatively easy using the :py:class:`~ooodev.gui.commands.CmdInfo` class.
 
 The Commands are split into categories. The :py:class:`~ooodev.utils.kind.module_names_kind.ModuleNamesKind` enum can be used to access the different categories.
+
+Can also be useful when building menus. See :ref:`help_common_menus`.
 
 .. tabs::
 

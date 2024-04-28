@@ -10,5 +10,6 @@ Menus
 
     app_menu/index
     context/index
+    menu_bar/index
     popup/index
     *

@@ -20,178 +20,180 @@ The :py:class:`~ooodev.utils.kind.module_names_kind.ModuleNamesKind` is used to 
 Example
 -------
 
+.. collapse:: Example code
+    :open:
 
-.. tabs::
+    .. tabs::
 
-    .. code-tab:: python
+        .. code-tab:: python
 
-        from __future__ import annotations
-        from typing import Any, cast, TYPE_CHECKING
-        import uno
-        from com.sun.star.awt import Rectangle
-        from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
+            from __future__ import annotations
+            from typing import Any, cast, TYPE_CHECKING
+            import uno
+            from com.sun.star.awt import Rectangle
+            from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
 
-        from ooodev.calc import CalcDoc
-        from ooodev.loader import Lo
-        from ooodev.events.args.event_args import EventArgs
-        from ooodev.gui.menu.popup.popup_creator import PopupCreator
-        from ooodev.utils.kind.module_names_kind import ModuleNamesKind
+            from ooodev.calc import CalcDoc
+            from ooodev.loader import Lo
+            from ooodev.events.args.event_args import EventArgs
+            from ooodev.gui.menu.popup.popup_creator import PopupCreator
+            from ooodev.utils.kind.module_names_kind import ModuleNamesKind
 
-        if TYPE_CHECKING:
-            from com.sun.star.awt import MenuEvent
-            from ooodev.gui.menu.popup_menu import PopupMenu
-
-
-        def on_menu_select(src: Any, event: EventArgs, menu: PopupMenu) -> None:
-            print("Menu Selected")
-            me = cast("MenuEvent", event.event_data)
-            print("MenuId", me.MenuId)
-            command = menu.get_command(me.MenuId)
-            if command:
-                print("Command", command)
-                # check if command is a dispatch command
-                if menu.is_dispatch_cmd(command):
-                    menu.execute_cmd(command)
-
-        def get_popup_menu() -> list:
-
-            new_menu = [
-                {"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
-                {"command": ".uno:Copy", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
-                {"command": ".uno:Paste", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
-                {
-                    "text": "Paste Special",
-                    "command": ".uno:PasteSpecialMenu",
-                    "submenu": [
-                        {
-                            # "text": "Paste Unformatted",
-                            "command": ".uno:PasteUnformatted",
-                            "module": ModuleNamesKind.SPREADSHEET_DOCUMENT,
-                        },
-                        {"text": "-"},
-                        {"text": "My Paste Only Text", "command": ".uno:PasteOnlyText", "module": ModuleNamesKind.NONE},
-                        {"text": "Paste Only Text", "command": ".uno:PasteOnlyValue"},
-                        {"text": "Paste Only Formula", "command": ".uno:PasteOnlyFormula"},
-                        {"text": "-"},
-                        {"text": "Paste Transposed", "command": ".uno:PasteTransposed"},
-                        {"text": "-"},
-                        {
-                            "command": ".uno:PasteSpecial",
-                            "module": ModuleNamesKind.SPREADSHEET_DOCUMENT,
-                        },
-                    ],
-                },
-                {"text": "-"},
-                {"text": "Data Select", "command": ".uno:DataSelect"},
-                {"text": "Current Validation", "command": ".uno:CurrentValidation"},
-                {"text": "Define Current Name", "command": ".uno:DefineCurrentName"},
-                {"text": "-"},
-                {"text": "Insert cells", "command": ".uno:InsertCell"},
-                {"text": "Del cells", "command": ".uno:DeleteCell"},
-                {"text": "Delete", "command": ".uno:Delete"},
-                {"text": "Merge Cells", "command": ".uno:MergeCells"},
-                {"text": "Split Cell", "command": ".uno:SplitCell"},
-                {"text": "-"},
-                {"text": "Format Paintbrush", "command": ".uno:FormatPaintbrush"},
-                {"text": "Reset Attributes", "command": ".uno:ResetAttributes"},
-                {
-                    "text": "Format Styles Menu",
-                    "command": ".uno:FormatStylesMenu",
-                    "submenu": [
-                        {"text": "Edit Style", "command": ".uno:EditStyle"},
-                        {"text": "-"},
-                        {
-                            "text": "Default Cell Styles",
-                            "command": ".uno:DefaultCellStylesmenu",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {
-                            "text": "Accent1 Cell Styles",
-                            "command": ".uno:Accent1CellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {
-                            "text": "Accent2 Cell Styles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {
-                            "text": "Accent 3 Cell Styles",
-                            "command": ".uno:Accent3CellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {"text": "-"},
-                        {"text": "Bad Cell Styles", "command": ".uno:BadCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
-                        {
-                            "text": "Error Cell Styles",
-                            "command": ".uno:ErrorCellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {"text": "Good Cell Styles", "command": ".uno:GoodCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
-                        {
-                            "text": "Neutral Cell Styles",
-                            "command": ".uno:NeutralCellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {
-                            "text": "Warning Cell Styles",
-                            "command": ".uno:WarningCellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {
-                            "text": "-",
-                        },
-                        {
-                            "text": "Footnote Cell Styles",
-                            "command": ".uno:FootnoteCellStyles",
-                            "style": MenuItemStyleEnum.RADIOCHECK,
-                        },
-                        {"text": "Note Cell Styles", "command": ".uno:NoteCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
-                    ],
-                },
-                {"text": "-"},
-                {"text": "Insert Annotation", "command": ".uno:InsertAnnotation"},
-                {"text": "Edit Annotation", "command": ".uno:EditAnnotation"},
-                {"text": "Delete Note", "command": ".uno:DeleteNote"},
-                {"text": "Show Note", "command": ".uno:ShowNote"},
-                {"text": "Hide Note", "command": ".uno:HideNote"},
-                {"text": "-"},
-                {"text": "Format Sparkline", "command": ".uno:FormatSparklineMenu"},
-                {"text": "-"},
-                {"command": ".uno:CurrentConditionalFormatDialog", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
-                {
-                    "text": "Current Conditional Format Manager Dialog ...",
-                    "command": ".uno:CurrentConditionalFormatManagerDialog",
-                },
-                {"text": "Format Cell Dialog ...", "command": ".uno:FormatCellDialog"},
-            ]
-            return new_menu
-
-        def main():
-            loader = Lo.load_office(connector=Lo.ConnectPipe())
-            doc = CalcDoc.create_doc(loader=loader, visible=True)
-            try:
-                creator = PopupCreator()
-                menus = get_popup_menu()
-                pm = creator.create(menus)
-                pm.subscribe_all_item_selected(on_menu_select)
-                rect = Rectangle(100, 100, 100, 100)
-                doc.activate()
-                pm.execute(doc.get_frame().ComponentWindow, rect, 0)
-                # place a breakpoint here to inspect the menu
-                assert pm
-            finally:
-                doc.close()
-                Lo.close_office()
+            if TYPE_CHECKING:
+                from com.sun.star.awt import MenuEvent
+                from ooodev.gui.menu.popup_menu import PopupMenu
 
 
-        if __name__ == "__main__":
-            main()
+            def on_menu_select(src: Any, event: EventArgs, menu: PopupMenu) -> None:
+                print("Menu Selected")
+                me = cast("MenuEvent", event.event_data)
+                print("MenuId", me.MenuId)
+                command = menu.get_command(me.MenuId)
+                if command:
+                    print("Command", command)
+                    # check if command is a dispatch command
+                    if menu.is_dispatch_cmd(command):
+                        menu.execute_cmd(command)
 
-    .. only:: html
+            def get_popup_menu() -> list:
 
-        .. cssclass:: tab-none
+                new_menu = [
+                    {"command": ".uno:Cut", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
+                    {"command": ".uno:Copy", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
+                    {"command": ".uno:Paste", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
+                    {
+                        "text": "Paste Special",
+                        "command": ".uno:PasteSpecialMenu",
+                        "submenu": [
+                            {
+                                # "text": "Paste Unformatted",
+                                "command": ".uno:PasteUnformatted",
+                                "module": ModuleNamesKind.SPREADSHEET_DOCUMENT,
+                            },
+                            {"text": "-"},
+                            {"text": "My Paste Only Text", "command": ".uno:PasteOnlyText", "module": ModuleNamesKind.NONE},
+                            {"text": "Paste Only Text", "command": ".uno:PasteOnlyValue"},
+                            {"text": "Paste Only Formula", "command": ".uno:PasteOnlyFormula"},
+                            {"text": "-"},
+                            {"text": "Paste Transposed", "command": ".uno:PasteTransposed"},
+                            {"text": "-"},
+                            {
+                                "command": ".uno:PasteSpecial",
+                                "module": ModuleNamesKind.SPREADSHEET_DOCUMENT,
+                            },
+                        ],
+                    },
+                    {"text": "-"},
+                    {"text": "Data Select", "command": ".uno:DataSelect"},
+                    {"text": "Current Validation", "command": ".uno:CurrentValidation"},
+                    {"text": "Define Current Name", "command": ".uno:DefineCurrentName"},
+                    {"text": "-"},
+                    {"text": "Insert cells", "command": ".uno:InsertCell"},
+                    {"text": "Del cells", "command": ".uno:DeleteCell"},
+                    {"text": "Delete", "command": ".uno:Delete"},
+                    {"text": "Merge Cells", "command": ".uno:MergeCells"},
+                    {"text": "Split Cell", "command": ".uno:SplitCell"},
+                    {"text": "-"},
+                    {"text": "Format Paintbrush", "command": ".uno:FormatPaintbrush"},
+                    {"text": "Reset Attributes", "command": ".uno:ResetAttributes"},
+                    {
+                        "text": "Format Styles Menu",
+                        "command": ".uno:FormatStylesMenu",
+                        "submenu": [
+                            {"text": "Edit Style", "command": ".uno:EditStyle"},
+                            {"text": "-"},
+                            {
+                                "text": "Default Cell Styles",
+                                "command": ".uno:DefaultCellStylesmenu",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {
+                                "text": "Accent1 Cell Styles",
+                                "command": ".uno:Accent1CellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {
+                                "text": "Accent2 Cell Styles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {
+                                "text": "Accent 3 Cell Styles",
+                                "command": ".uno:Accent3CellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {"text": "-"},
+                            {"text": "Bad Cell Styles", "command": ".uno:BadCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
+                            {
+                                "text": "Error Cell Styles",
+                                "command": ".uno:ErrorCellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {"text": "Good Cell Styles", "command": ".uno:GoodCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
+                            {
+                                "text": "Neutral Cell Styles",
+                                "command": ".uno:NeutralCellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {
+                                "text": "Warning Cell Styles",
+                                "command": ".uno:WarningCellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {
+                                "text": "-",
+                            },
+                            {
+                                "text": "Footnote Cell Styles",
+                                "command": ".uno:FootnoteCellStyles",
+                                "style": MenuItemStyleEnum.RADIOCHECK,
+                            },
+                            {"text": "Note Cell Styles", "command": ".uno:NoteCellStyles", "style": MenuItemStyleEnum.RADIOCHECK},
+                        ],
+                    },
+                    {"text": "-"},
+                    {"text": "Insert Annotation", "command": ".uno:InsertAnnotation"},
+                    {"text": "Edit Annotation", "command": ".uno:EditAnnotation"},
+                    {"text": "Delete Note", "command": ".uno:DeleteNote"},
+                    {"text": "Show Note", "command": ".uno:ShowNote"},
+                    {"text": "Hide Note", "command": ".uno:HideNote"},
+                    {"text": "-"},
+                    {"text": "Format Sparkline", "command": ".uno:FormatSparklineMenu"},
+                    {"text": "-"},
+                    {"command": ".uno:CurrentConditionalFormatDialog", "module": ModuleNamesKind.SPREADSHEET_DOCUMENT},
+                    {
+                        "text": "Current Conditional Format Manager Dialog ...",
+                        "command": ".uno:CurrentConditionalFormatManagerDialog",
+                    },
+                    {"text": "Format Cell Dialog ...", "command": ".uno:FormatCellDialog"},
+                ]
+                return new_menu
 
-            .. group-tab:: None
+            def main():
+                loader = Lo.load_office(connector=Lo.ConnectPipe())
+                doc = CalcDoc.create_doc(loader=loader, visible=True)
+                try:
+                    creator = PopupCreator()
+                    menus = get_popup_menu()
+                    pm = creator.create(menus)
+                    pm.subscribe_all_item_selected(on_menu_select)
+                    rect = Rectangle(100, 100, 100, 100)
+                    doc.activate()
+                    pm.execute(doc.get_frame().ComponentWindow, rect, 0)
+                    # place a breakpoint here to inspect the menu
+                    assert pm
+                finally:
+                    doc.close()
+                    Lo.close_office()
+
+
+            if __name__ == "__main__":
+                main()
+
+        .. only:: html
+
+            .. cssclass:: tab-none
+
+                .. group-tab:: None
 
 Command Values
 --------------
@@ -407,7 +409,7 @@ The callback ``event_data`` is a dictionary with keys:
             doc = CalcDoc.create_doc(loader=loader, visible=True)
             try:
                 creator = PopupCreator()
-                creator.subscribe_popup_module_no_text(on_no_module_text)
+                creator.subscribe_module_no_text(on_no_module_text)
 
                 menus = get_popup_menu()
                 pm = creator.create(menus)

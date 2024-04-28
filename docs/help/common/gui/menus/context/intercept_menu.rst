@@ -17,7 +17,7 @@ This example demonstrates how to intercept the context menu and add or modify me
 Incepting a Context Menu is a somewhat involved process. |odev| provides a much simpler way to intercept the context menu and add or modify menu items.
 
 By subscribing to the notify context menu execute of the document view via  ``add_event_notify_context_menu_execute()`` method, you can intercept the context menu and add or modify menu items.
-No need to implement the ``XContextMenuInterception`` interface and register the interceptor. This is all done for you.
+No need to implement the XContextMenuInterception_ interface and register the interceptor. This is all done for you.
 
 The ``add_event_notify_context_menu_execute()`` method takes a callback function that is called when the context menu is about to be displayed.
 
@@ -158,3 +158,5 @@ Related Topics
 - :ref:`help_menu_context_incept_class_ex`
 - :ref:`help_sample_context_menu_json_normal_data`
 - :ref:`help_sample_context_menu_json_dynamic_data`
+
+.. _XContextMenuInterception: https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1ui_1_1XContextMenuInterception.html

@@ -7,10 +7,12 @@ from ooodev.adapter.lang.multi_service_factory_partial import MultiServiceFactor
 
 if TYPE_CHECKING:
     from com.sun.star.ui import ActionTriggerContainer  # service
-    from com.sun.star.ui import ActionTrigger
+
+    # from com.sun.star.ui import ActionTrigger
+    from ooodev.gui.menu.context.action_t import ActionT
 
 
-class ActionTriggerContainerComp(IndexContainerComp["ActionTrigger"], MultiServiceFactoryPartial):
+class ActionTriggerContainerComp(IndexContainerComp["ActionT"], MultiServiceFactoryPartial):
     """
     Class for managing Action Trigger Container Component.
     """
@@ -35,9 +37,37 @@ class ActionTriggerContainerComp(IndexContainerComp["ActionTrigger"], MultiServi
 
     # endregion Overrides
 
-    # region XEnumerationAccess
+    # region Methods
+    def get_command_index(self, command_url: str) -> int:
+        """
+        Gets the index of the action trigger with the specified command URL.
 
-    # endregion XEnumerationAccess
+        Args:
+            command_url (str): Command URL
+
+        Returns:
+            int: Index of the action trigger with the specified command URL or ``-1`` if not found.
+        """
+        for i, itm in enumerate(self):
+            if self.is_separator(itm):
+                continue
+            if itm.CommandURL == command_url:  # type: ignore
+                return i
+        return -1
+
+    def is_separator(self, itm: ActionT) -> bool:
+        """
+        Determines if the specified action trigger is a separator.
+
+        Args:
+            itm (ActionT): Action Trigger
+
+        Returns:
+            bool: ``True`` if the specified action trigger is a separator, ``False`` otherwise.
+        """
+        return itm.supportsService("com.sun.star.ui.ActionTriggerSeparator")
+
+    # endregion Methods
 
     # region Properties
     @property
