@@ -38,6 +38,7 @@ Contents
 
    src_docs/event/index
    version/version_hist
+   misc/credits
 
 
 .. toctree::
