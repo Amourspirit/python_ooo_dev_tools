@@ -1,0 +1,8 @@
+ma
+===
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

@@ -1,0 +1,8 @@
+common
+======
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

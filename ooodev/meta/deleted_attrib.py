@@ -5,6 +5,8 @@ from ooodev.exceptions import ex as mEx
 
 
 class DeletedAttrib:
+    """Descriptor to raise an exception when an attribute is accessed after deletion."""
+
     def __set_name__(self, owner, name):
         self.name = name
 

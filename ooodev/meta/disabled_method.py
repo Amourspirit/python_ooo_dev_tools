@@ -29,6 +29,8 @@ from ooodev.exceptions import ex as mEx
 
 
 class DisabledMethod:
+    """Descriptor to raise an exception when a method is accessed when disabled."""
+
     def __set_name__(self, owner, name):
         self.name = name
 

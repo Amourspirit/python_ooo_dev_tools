@@ -16,4 +16,5 @@ utils
     partial/index
     kind/index
     reflection/index
+    string/index
     *

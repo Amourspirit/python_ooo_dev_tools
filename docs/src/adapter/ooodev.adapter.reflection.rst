@@ -7,6 +7,9 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   ooodev.adapter.reflection.constant_type_description_comp
+   ooodev.adapter.reflection.constant_type_description_partial
+   ooodev.adapter.reflection.constants_type_description_partial
    ooodev.adapter.reflection.enum_type_description_comp
    ooodev.adapter.reflection.enum_type_description_partial
    ooodev.adapter.reflection.the_type_description_manager_comp

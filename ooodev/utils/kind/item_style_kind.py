@@ -132,3 +132,6 @@ class ItemStyleKind(IntFlag):
     
         LibreOffice 6.1
     """
+
+    def to_json(self) -> int:
+        return int(self)

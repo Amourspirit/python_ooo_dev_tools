@@ -97,10 +97,15 @@ class TheDefaultProviderComp(_TheDefaultProviderComp, MultiServiceFactoryPartial
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
+        key = "com.sun.star.configuration.theDefaultProvider"
+        if key in lo_inst.cache:
+            return cast(TheDefaultProviderComp, lo_inst.cache[key])
         factory = lo_inst.get_singleton("/singletons/com.sun.star.configuration.theDefaultProvider")  # type: ignore
         if factory is None:
             raise ValueError("Could not get theDefaultProvider singleton.")
-        return cls(factory)
+        inst = cls(factory)
+        lo_inst.cache[key] = inst
+        return inst
 
     # region Properties
     @property

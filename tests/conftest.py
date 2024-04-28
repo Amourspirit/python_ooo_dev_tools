@@ -467,3 +467,8 @@ def fix_almost_equal():
         return abs(val1 - val2) < epsilon
 
     return almost_equal
+
+
+@pytest.fixture(scope="function")
+def fix_lo_inst(loader):
+    return Lo.create_lo_instance()

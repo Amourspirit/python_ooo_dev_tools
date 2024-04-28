@@ -71,10 +71,15 @@ class TheDesktopComp(
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
+        key = "com.sun.star.frame.theDesktop"
+        if key in lo_inst.cache:
+            return cast(TheDesktopComp, lo_inst.cache[key])
         factory = lo_inst.get_singleton("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
         if factory is None:
             raise ValueError("Could not get theDesktop singleton.")
-        return cls(factory)
+        inst = cls(factory)
+        lo_inst.cache[key] = inst
+        return cast(TheDesktopComp, inst)
 
     # region Properties
     @property

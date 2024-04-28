@@ -81,7 +81,7 @@ class AcceleratorConfigurationPartial(
         """
         return self.__component.getKeyEventsByCommand(cmd)
 
-    def get_preferred_key_events_for_command_list(self, *cmd_args: str) -> Tuple[Any, ...]:
+    def get_preferred_key_events_for_command_list(self, *cmd_args: str) -> Tuple[KeyEvent, ...]:
         """
         Optimized function to map a list of commands to a corresponding list of key events.
 
@@ -96,7 +96,11 @@ class AcceleratorConfigurationPartial(
             com.sun.star.lang.IllegalArgumentException: ``IllegalArgumentException``
             com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
         """
-        return self.__component.getPreferredKeyEventsForCommandList(cmd_args)
+        # getPreferredKeyEventsForCommandList() can return a result of (None,)
+        results = self.__component.getPreferredKeyEventsForCommandList(cmd_args)
+        if not results:
+            return ()
+        return tuple([val for val in results if val is not None])  # type: ignore
 
     def remove_command_from_all_key_events(self, cmd: str) -> None:
         """

@@ -20,6 +20,6 @@ Contents
    :undoc-members:
    :inherited-members:
 
-.. automodule:: ooodev.units.unit_factory.
+.. automodule:: ooodev.units.unit_factory
    :members:
 

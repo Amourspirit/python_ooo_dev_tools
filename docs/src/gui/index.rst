@@ -7,5 +7,6 @@ gui
     :titlesonly:
     :glob:
 
+    commands/index
     menu/index
     *

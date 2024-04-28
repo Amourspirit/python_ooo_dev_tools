@@ -67,6 +67,7 @@ class GlobalAcceleratorConfigurationComp(
         # this it not actually called as __new__ is overridden
         pass
 
+    # region Class Methods
     @classmethod
     def from_lo(cls, lo_inst: LoInst | None = None) -> GlobalAcceleratorConfigurationComp:
         """
@@ -84,7 +85,7 @@ class GlobalAcceleratorConfigurationComp(
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        key = "GlobalAcceleratorConfigurationComp"
+        key = "com.sun.star.ui.GlobalAcceleratorConfiguration"
         if key in lo_inst.cache:
             return cast(GlobalAcceleratorConfigurationComp, lo_inst.cache[key])
         service = "com.sun.star.ui.GlobalAcceleratorConfiguration"
@@ -93,11 +94,16 @@ class GlobalAcceleratorConfigurationComp(
         lo_inst.cache[key] = class_inst
         return cast(GlobalAcceleratorConfigurationComp, class_inst)
 
+    # endregion Class Methods
+
+    # region Properties
     @property
     def component(self) -> GlobalAcceleratorConfiguration:
         """GlobalAcceleratorConfiguration Component"""
         # pylint: disable=no-member
         return cast("GlobalAcceleratorConfiguration", self._ComponentBase__get_component())  # type: ignore
+
+    # endregion Properties
 
 
 def get_builder(component: Any) -> DefaultBuilder:

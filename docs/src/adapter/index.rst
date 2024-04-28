@@ -40,6 +40,7 @@ Subpackages
    ooodev.adapter.uno
    ooodev.adapter.util
    ooodev.adapter.view
+   ooodev.adapter.xml
 
 Submodules
 ----------
