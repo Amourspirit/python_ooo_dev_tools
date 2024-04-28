@@ -27,9 +27,8 @@ class TLRUCache:
         self._seconds = seconds
 
         self._ttl_cache = TimeCache(seconds, self._get_ttl_seconds())
-        self._ttl_cache = TimeCache(seconds, seconds)
         self._dummy = object()
-        self._ttl_cache.subscribe_event("time_cache_items_expired", self._fn_on_ttl_expired)
+        self._ttl_cache.subscribe_event("cache_items_expired", self._fn_on_ttl_expired)
 
     def _get_ttl_seconds(self) -> float:
         # set seconds to a minimum of 10 seconds

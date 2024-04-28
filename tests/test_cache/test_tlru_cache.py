@@ -132,14 +132,14 @@ def test_thread():
 
     class TestTLRUCache(TLRUCache):
         def _get_ttl_seconds(self) -> float:
-            return 2.0
+            return 1.0
 
     cache = TestTLRUCache(10, 2)
     cache.put("key1", "value1")
-    time.sleep(1)
+    # time.sleep(1)
     assert "key1" in cache._ttl_cache._cache
     assert "key1" in cache._lru_cache._cache
-    time.sleep(2)
+    time.sleep(3)
     assert "key1" not in cache._ttl_cache._cache
     assert "key1" not in cache._lru_cache._cache
 
@@ -149,9 +149,8 @@ def test_clear_expired():
         def _get_ttl_seconds(self) -> float:
             return 0.0
 
-    cache = TestTLRUCache(10, 2)
+    cache = TestTLRUCache(10, 1)
     cache.put("key1", "value1")
-    time.sleep(1)
     cache.clear_expired()
     assert "key1" in cache._lru_cache._cache
     assert "key1" in cache._ttl_cache._cache

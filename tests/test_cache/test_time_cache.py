@@ -180,9 +180,10 @@ def test_lru_cache_error_cases(seconds, action, key, value, expected_exception):
 def test_thread():
     # test that the cache is cleared internally when the time is up.
     # This is a multi-threaded test.
-    cache = TimeCache(2, 2)
+    cache = TimeCache(2, 1)
     cache.put("key1", "value1")
     time.sleep(1)
+    # reading the cache should reset the time stamp of the entry.
     assert "key1" in cache
-    time.sleep(2)
+    time.sleep(3)
     assert "key1" not in cache._cache
