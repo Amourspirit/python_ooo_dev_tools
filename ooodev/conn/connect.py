@@ -290,7 +290,7 @@ class LoBridgeCommon(ConnectBase):
                 self._soffice_process = subprocess.Popen(
                     cmd_str,
                     env=self._environment,
-                    # preexec_fn=os.setsid,  # type: ignore
+                    preexec_fn=os.setsid,  # this is needed for linux, else the process is not properly killed.
                     shell=True,
                 )
 
@@ -310,19 +310,6 @@ class LoBridgeCommon(ConnectBase):
             int: of pid if found; Otherwise, None
         """
         return self._soffice_process.pid if self._soffice_process else None
-        # if self._platform == SysInfo.PlatformEnum.WINDOWS:
-        #     if self._soffice_process:
-        #         return self._soffice_process.pid
-        #     return None
-        # else:
-        #     pid = None
-        #     try:
-        #         with open(self._pid_file, "r") as f:
-        #             pid = f.read()
-        #             pid = int(pid)
-        #     except Exception:
-        #         pid = None
-        #     return pid
 
     def _check_pid(self, pid: int) -> bool:
         """
@@ -344,6 +331,9 @@ class LoBridgeCommon(ConnectBase):
         """
         Attempts to kill instance of soffice created by this instance
         """
+        # this works cross platform.
+        # When tested on Ubuntu using docker, the process was not killed.
+        # This seems to be docker specific which only show when running this project in development container.
         try:
             if self._soffice_process:
                 self._soffice_process.kill()
@@ -356,10 +346,12 @@ class LoBridgeCommon(ConnectBase):
             pid = self.get_soffice_pid()
             if pid is None:
                 return None
-            # print("pid:", pid)
             if self._check_pid(pid=pid):
                 # no SIGLILL on windows.
-                os.kill(pid, signal.SIGKILL)  # type: ignore
+                # because process is started including; preexec_fn=os.setsid
+                # we can use the os.killpg to kill the process group which include libreOffice.
+                os.killpg(self._soffice_process.pid, signal.SIGKILL)
+                # os.kill(pid, signal.SIGKILL)  # type: ignore
         except Exception as e:  # pylint: disable=invalid-name
             # print(e)
             raise e
