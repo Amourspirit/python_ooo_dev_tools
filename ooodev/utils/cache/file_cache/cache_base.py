@@ -48,6 +48,7 @@ class CacheBase(metaclass=ConstructorSingleton):
         Returns:
             Union[str, None]: File contents if retrieved; Otherwise, ``None``
         """
+        ...
 
     @abstractmethod
     def put(self, filename: Union[str, Path], content: Any):
@@ -58,6 +59,7 @@ class CacheBase(metaclass=ConstructorSingleton):
             filename (Union[str, Path]): filename to write.
             content (Any): Contents to write into file.
         """
+        ...
 
     def remove(self, filename: Union[str, Path]) -> None:
         """

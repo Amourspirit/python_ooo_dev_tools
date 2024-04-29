@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.41.1
+==============
+
+Minor fix for embedding into a oooscript file.
+
 Version 0.41.0
 ==============
 
@@ -49,7 +54,7 @@ Now the ``Lo`` class not has a ``tmp_dir`` property that returns a python ``path
 .. code-block:: python
 
     >>> from ooodev.loader import Lo
-    >>> print(Lo.tmp_dir)
+    >>> print(str(Lo.tmp_dir))
     /tmp/
 
 
