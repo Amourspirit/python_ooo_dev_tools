@@ -54,7 +54,7 @@ Now the ``Lo`` class not has a ``tmp_dir`` property that returns a python ``path
 .. code-block:: python
 
     >>> from ooodev.loader import Lo
-    >>> print(Lo.tmp_dir)
+    >>> print(str(Lo.tmp_dir))
     /tmp/
 
 
