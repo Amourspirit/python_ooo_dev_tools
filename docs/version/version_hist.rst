@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.41.2
+==============
+
+Fix for ``Lo.kill_office()`` method. Was not closing Office on Linux and Mac. Note ``Lo.kill_office()`` forces close without saving.
+Normally ``doc.close()`` with ``Lo.close_office()`` would be used.
+
 Version 0.41.1
 ==============
 
