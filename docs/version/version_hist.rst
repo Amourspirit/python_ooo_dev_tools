@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.41.1
+==============
+
+Minor fix for embedding into a oooscript file.
+
 Version 0.41.0
 ==============
 
