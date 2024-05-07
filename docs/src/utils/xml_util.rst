@@ -1,7 +1,10 @@
 XML
 ===
 
-The ``ooodev.utils.xml_util.XML`` as been moved into a separate package.
+For light weight XML parsing, the class :ref:`ooodev.io.xml.XML` can be used.
+The class provides a simple interface to parse and manipulate XML files using LibreOffice XML utils.
+
+The Original ``ooodev.utils.xml_util.XML`` as been moved into a separate package.
 The package can be found on `PYPI`_.
 
 The documentation of the class can be found on `Read the docs <https://ooo-dev-xml.readthedocs.io/en/latest/>`__:

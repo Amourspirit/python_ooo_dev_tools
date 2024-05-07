@@ -1,0 +1,8 @@
+xml
+===
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *
