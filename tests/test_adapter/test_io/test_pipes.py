@@ -7,7 +7,8 @@ if __name__ == "__main__":
 
 if TYPE_CHECKING:
     from com.sun.star.io import XDataOutputStream
-    from com.sun.star.io import XDataInputStream
+
+    # from com.sun.star.io import XDataInputStream
 
 
 def test_pipes(loader) -> None:
@@ -21,20 +22,24 @@ def test_pipes(loader) -> None:
     input.set_input_stream(pipe.component)
     output.set_output_stream(pipe.component)
 
-    # First, write a series of bytes that represents 3.14159
+    # no need to cast pipe.Predecessor or pipe.Successor they are the equal to output and input
+
     out_stream = DataOutputStreamComp(cast("XDataOutputStream", pipe.Predecessor))
-    out_stream.write_bytes(64, 9, 33, -7, -16, 27, -122, 110)
+    assert out_stream == output
+
+    # First, write a series of bytes that represents 3.14159
+    output.write_bytes(64, 9, 33, -7, -16, 27, -122, 110)
     d = 2.6
-    out_stream.write_double(d)
+    output.write_double(d)
 
     # Now, read the pipe.
-    in_stream = DataInputStreamComp(cast("XDataInputStream", pipe.Successor))
-    d = in_stream.read_double()
+    # in_stream = DataInputStreamComp(cast("XDataInputStream", pipe.Successor))
+    d = input.read_double()
 
     # Now read the double that was written as a series of bytes.
     s = "2.6 = "
-    while in_stream.available() > 0:
-        i = in_stream.read_byte()
+    while input.available() > 0:
+        i = input.read_byte()
         # In case the byte was negative, convert it to a positive integer.
         i = i & 255
 
@@ -42,7 +47,7 @@ def test_pipes(loader) -> None:
 
     assert s == "2.6 = 4004cccccccccccd"
 
-    in_stream.close_input()
-    out_stream.close_output()
+    input.close_input()
+    output.close_output()
     pipe.close_input()
     pipe.close_output()

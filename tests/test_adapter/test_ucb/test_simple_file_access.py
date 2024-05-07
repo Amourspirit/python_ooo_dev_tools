@@ -51,6 +51,7 @@ def test_simple_file_access(loader, tmp_path_session: Path) -> None:
 
     in_stream = TextInputStreamComp.from_lo()
     stream = comp.open_file_read(uri)
+
     in_stream.set_input_stream(stream)
 
     try:

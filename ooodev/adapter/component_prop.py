@@ -1,12 +1,22 @@
 from __future__ import annotations
 
-from .component_base import ComponentBase
+from ooodev.adapter.component_base import ComponentBase
 
 
 class ComponentProp(ComponentBase):
 
     def __bool__(self) -> bool:
         return self.component is not None
+
+    def __eq__(self, value: object) -> bool:
+        if value is self:
+            return True
+        try:
+            if not isinstance(value, ComponentProp):
+                return NotImplemented
+        except TypeError:
+            return False
+        return self.component == value.component
 
     @property
     def component(self):

@@ -39,7 +39,7 @@ class SimpleFileAccess2Partial(SimpleFileAccessPartial):
         self.__component = component
 
     # region XSimpleFileAccess2
-    def write_file(self, FileURL: str, data: XInputStream) -> None:
+    def write_file(self, file_url: str, data: XInputStream) -> None:
         """
         Overwrites the file content with the given data.
 
@@ -48,6 +48,6 @@ class SimpleFileAccess2Partial(SimpleFileAccessPartial):
         Raises:
             com.sun.star.uno.Exception: ``Exception``
         """
-        ...
+        return self.__component.writeFile(file_url, data)
 
     # endregion XSimpleFileAccess2

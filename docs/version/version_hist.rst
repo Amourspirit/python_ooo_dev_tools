@@ -2,6 +2,32 @@
 Version History
 ***************
 
+Version 0.42.0
+==============
+
+Added ``ooodev.utils.string.text_steam.TextStream`` class for working Text Streams.
+
+Add classes to ``ooodev.adapter.io`` module for working with Streams.
+
+Added classes to ``ooodev.adapter.ucb`` module for working with Files.
+
+Added classes to ``ooodev.adapter.packages.zip`` for working with zip files.
+
+Global events
+-------------
+
+Global document events can be temporarily disabled via built in context manager.
+
+.. code-block:: python
+
+    from ooodev.write import WriteDoc
+
+    doc = WriteDoc.from_current_doc()
+    with doc.lo_inst.global_event_broadcaster:
+        # do work. Global document events are disabled here.
+        pass
+    # global events are working again
+
 Version 0.41.2
 ==============
 

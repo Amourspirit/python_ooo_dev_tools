@@ -1,5 +1,5 @@
-ooodev.adapter.xml package
-==========================
+ooodev.adapter.packages package
+===============================
 
 Subpackages
 -----------
@@ -7,13 +7,12 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   ooodev.adapter.xml.dom
-   ooodev.adapter.xml.xpath
+   ooodev.adapter.packages.zip
 
 Module contents
 ---------------
 
-.. automodule:: ooodev.adapter.xml
+.. automodule:: ooodev.adapter.packages
    :members:
    :undoc-members:
    :show-inheritance:

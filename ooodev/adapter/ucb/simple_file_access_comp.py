@@ -5,7 +5,7 @@ from com.sun.star.ucb import XSimpleFileAccess3
 
 from ooodev.adapter.component_prop import ComponentProp
 
-from .simple_file_access3_partial import SimpleFileAccess3Partial
+from ooodev.adapter.ucb.simple_file_access3_partial import SimpleFileAccess3Partial
 
 if TYPE_CHECKING:
     from com.sun.star.ucb import SimpleFileAccess  # service
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class SimpleFileAccessComp(ComponentProp, SimpleFileAccess3Partial):
     """
-    Class for managing DataInputStream Component.
+    Class for managing SimpleFileAccess Component.
     """
 
     # pylint: disable=unused-argument

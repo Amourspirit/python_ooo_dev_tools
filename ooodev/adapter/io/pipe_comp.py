@@ -29,7 +29,7 @@ class PipeComp(ComponentProp, PipePartial, ConnectablePartial):
         # pylint: disable=no-member
         ComponentProp.__init__(self, component)
         PipePartial.__init__(self, component=component, interface=None)
-        ConnectablePartial.__init__(self, component=component, interface=None)
+        ConnectablePartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
