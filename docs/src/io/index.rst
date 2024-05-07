@@ -9,3 +9,4 @@ io
     log/index
     json/index
     xml/index
+    zip/index

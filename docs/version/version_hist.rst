@@ -2,8 +2,15 @@
 Version History
 ***************
 
+Version 0.42.1
+==============
+
+Added ``ooodev.io.zip.ZIP`` class for working with zip files.
+
 Version 0.42.0
 ==============
+
+Added :ref:`ooodev.io.xml.XML` for working with XML files.
 
 Added ``ooodev.utils.string.text_steam.TextStream`` class for working Text Streams.
 
