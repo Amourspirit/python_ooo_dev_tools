@@ -7,7 +7,6 @@ if __name__ == "__main__":
 from ooodev.loader.lo import Lo
 from ooodev.write import Write
 from ooodev.write import WriteDoc
-from ooodev.gui.gui import GUI
 
 
 def test_num_style(loader):
