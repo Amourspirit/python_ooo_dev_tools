@@ -157,3 +157,14 @@ class StrList:
         return StrList(strings=value.split(sep), sep=sep)
 
     # endregion Static Methods
+
+    # region Properties
+    @property
+    def separator(self) -> str:
+        """Gets/Sets the separator."""
+        return self._sep
+
+    @separator.setter
+    def separator(self, value: str):
+        """Set the separator."""
+        self._sep = value

@@ -24,6 +24,7 @@ Subpackages
    ooodev.adapter.graphic
    ooodev.adapter.io
    ooodev.adapter.lang
+   ooodev.adapter.packages
    ooodev.adapter.presentation
    ooodev.adapter.reflection
    ooodev.adapter.script
@@ -36,6 +37,7 @@ Subpackages
    ooodev.adapter.task
    ooodev.adapter.text
    ooodev.adapter.tree
+   ooodev.adapter.ucb
    ooodev.adapter.ui
    ooodev.adapter.uno
    ooodev.adapter.util

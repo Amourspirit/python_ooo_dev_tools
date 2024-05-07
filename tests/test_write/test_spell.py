@@ -8,7 +8,7 @@ if __name__ == "__main__":
 def _test_spell_failing(loader):
     """
     This test Fails on:
-         alts = speller.spell(word, loc, ())
+        alts = speller.spell(word, loc, ())
 
         Errors with: CannotConvertException: TYPE is not supported! ./stoc/source/typeconv/convert.cxx:362
 

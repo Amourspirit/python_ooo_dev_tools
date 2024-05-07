@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    ooodev.adapter.xml.dom
+   ooodev.adapter.xml.xpath
 
 Module contents
 ---------------
