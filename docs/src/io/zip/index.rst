@@ -1,0 +1,8 @@
+zip
+===
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *
