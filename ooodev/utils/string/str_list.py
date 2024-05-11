@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable
+from typing import Any, Iterable, overload
 
 
 class StrList:
@@ -23,6 +23,7 @@ class StrList:
             strings = list(strings)
         self._strings = strings
         self._sep = sep
+        self._iter_index = 0
 
     # region Methods
     def append(self, value: str) -> StrList:
@@ -124,7 +125,18 @@ class StrList:
 
     def __iter__(self):
         """Iterator for the list."""
-        return iter(self._strings)
+        self._iter_index = 0
+        length = len(self)
+        while self._iter_index < length:
+            yield self._strings[self._iter_index]
+            self._iter_index += 1
+
+    def __reversed__(self):
+        """Reverse iterator for the list."""
+        self._iter_index = len(self) - 1
+        while self._iter_index >= 0:
+            yield self._strings[self._iter_index]
+            self._iter_index -= 1
 
     def __str__(self):
         """Convert list to string."""
@@ -140,9 +152,26 @@ class StrList:
         """Delete an item from the list."""
         del self._strings[index]
 
-    def __getitem__(self, index: int):
-        """Get an item from the list."""
-        return self._strings[index]
+    # region __getitem__
+    @overload
+    def __getitem__(self, index: int) -> str: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> StrList: ...
+
+    def __getitem__(self, index: int | slice) -> Any:
+        """
+        Get an item from the list.
+
+        Supports slicing. When sliced a new StrList is returned.
+        """
+
+        if isinstance(index, slice):
+            return type(self)(self._strings[index], self._sep)
+        else:
+            return self._strings[index]
+
+    # endregion __getitem__
 
     def __repr__(self) -> str:
         """Get the string representation of the object."""

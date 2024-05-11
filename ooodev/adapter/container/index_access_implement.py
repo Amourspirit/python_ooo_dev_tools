@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple, Sequence
+from typing import Any, Tuple, Sequence, overload
 import contextlib
 
 import uno
@@ -75,7 +75,14 @@ class IndexAccessImplement(XTypeProvider, XIndexAccess, XElementAccess, XInterfa
             yield self._data[self._iter_index]
             self._iter_index -= 1
 
-    def __getitem__(self, index):
+    # region __getitem__
+    @overload
+    def __getitem__(self, index: int) -> Any: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> IndexAccessImplement: ...
+
+    def __getitem__(self, index: int | slice) -> Any:
         """
         Get an item or a slice of items from this instance.
 
@@ -89,6 +96,8 @@ class IndexAccessImplement(XTypeProvider, XIndexAccess, XElementAccess, XInterfa
             return type(self)(self._data[index], self._element_type)
         else:
             return self._data[index]
+
+    # endregion __getitem__
 
     # endregion Dunder Methods
 
