@@ -17,6 +17,9 @@ from com.sun.star.lang import XTypeProvider
 class IndexAccessImplement(XTypeProvider, XIndexAccess, XElementAccess, XInterface):
     """
     Index Access that implements ``XIndexAccess``
+
+    Note:
+        Supports iteration including reversed, slicing, and indexing.
     """
 
     __pyunointerface__: str = "com.sun.star.container.XIndexAccess"
@@ -53,6 +56,41 @@ class IndexAccessImplement(XTypeProvider, XIndexAccess, XElementAccess, XInterfa
         self._data = elements
         self._types = None
         self._element_type = element_type
+        self._iter_index = 0
+
+    # region Dunder Methods
+    def __len__(self) -> int:
+        return self.getCount()
+
+    def __iter__(self):
+        self._iter_index = 0
+        length = len(self)
+        while self._iter_index < length:
+            yield self._data[self._iter_index]
+            self._iter_index += 1
+
+    def __reversed__(self):
+        self._iter_index = len(self) - 1
+        while self._iter_index >= 0:
+            yield self._data[self._iter_index]
+            self._iter_index -= 1
+
+    def __getitem__(self, index):
+        """
+        Get an item or a slice of items from this instance.
+
+        Args:
+            index (int or slice): The index or slice to get.
+
+        Returns:
+            The item or slice of items at the given index or slice.
+        """
+        if isinstance(index, slice):
+            return type(self)(self._data[index], self._element_type)
+        else:
+            return self._data[index]
+
+    # endregion Dunder Methods
 
     # region XInterface
     def acquire(self) -> None:
