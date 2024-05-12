@@ -2,7 +2,7 @@
 
 # region Imports
 from __future__ import annotations
-from typing import cast, Iterable, TYPE_CHECKING
+from typing import Any, cast, Iterable, TYPE_CHECKING
 import datetime
 
 import uno
@@ -590,40 +590,20 @@ class FormPartial:
             )
         return results
 
-    def insert_control_hidden(
-        self,
-        *,
-        x: int | UnitT,
-        y: int | UnitT,
-        width: int | UnitT,
-        height: int | UnitT,
-        anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
-        name: str = "",
-    ) -> FormCtlHidden:
+    def insert_control_hidden(self, *, name: str = "", **kwargs: Any) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
 
         Args:
-            x (int | UnitT): X Coordinate.
-            y (int | UnitT): Y Coordinate.
-            width (int | UnitT): Width.
-            height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``
             name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
 
         Returns:
             FormCtlHidden: Hidden Control.
         """
+        # **kwargs are just for backwards compatibility.
         # when control is created, it will automatically get the same lo instance as LoContext.
         with LoContext(self.__lo_inst):
             results = mForms.Forms.insert_control_hidden(
-                doc=self.__doc,
-                draw_page=self.__draw_page,
-                x=x,
-                y=y,
-                width=width,
-                height=height,
-                anchor_type=anchor_type,
                 name=name,
                 parent_form=self.__component,
             )
@@ -1248,7 +1228,7 @@ class FormPartial:
 
         Returns:
             FormCtlTextField: Text Field Control.
-        
+
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
         """
@@ -1309,7 +1289,7 @@ class FormPartial:
 
         Returns:
             FormCtlTimeField: Time Field Control.
-        
+
         Hint:
             - ``BorderKind`` can be imported from ``ooodev.utils.kind.border_kind``.
             - ``TimeFormatKind`` can be imported from ``ooodev.utils.kind.time_format_kind``.

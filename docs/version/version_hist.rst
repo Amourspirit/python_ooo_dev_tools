@@ -2,6 +2,46 @@
 Version History
 ***************
 
+Version 0.43.0
+==============
+
+A new Auto load for the ``ooodev`` library has been added. Now the library attempts to automatically load the ``Lo`` class with ``from ooodev.loader import Lo``.
+This should eliminate the need to manually call ``Lo.current_doc`` or use the ``MacroLoader`` before using the library.
+Note this only for when the library is used in a macro. In a script the ``Lo`` class will still need to be loaded manually.
+
+``ooodev.utils.string.str_list.StrList`` has been updated and now  support slicing.
+
+``ooodev.adapter.container.index_access_implement.IndexAccessImplement`` has been updated and now supports slicing, iteration, reversed iteration, and length.
+
+Update for Hidden Controls. Now hidden controls can be added to documents and are persisted when the document is saved and re-opened.
+
+.. code-block:: python
+
+    from __future__ import annotations
+    from pathlib import Path
+    import uno
+    from ooo.dyn.beans.property_attribute import PropertyAttributeEnum
+    from ooodev.calc import CalcDoc
+
+    doc = CalcDoc.from_current_doc()
+
+    sheet = doc.sheets[0]
+    if len(sheet.draw_page.forms) == 0:
+        frm = sheet.draw_page.forms.add_form("MyForm")
+    else:
+        frm = sheet.draw_page.forms[0]
+    ctl = frm.insert_control_hidden(name="MyHidden")
+    ctl.hidden_value = "Hello World"
+    ctl.add_property("Special", PropertyAttributeEnum.CONSTRAINED, "Special Data")
+    fnm = Path.cwd() / "tmp" / "hidden.ods"
+    doc.save_doc(fnm)
+
+Breaking Changes
+----------------
+
+The ``insert_control_hidden()`` method args have changed. Some args have been removed.
+This should not affect preexisting code as the hidden control was not properly implemented before.
+
 Version 0.42.1
 ==============
 
