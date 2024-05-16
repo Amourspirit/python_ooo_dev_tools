@@ -8,6 +8,8 @@ from __future__ import annotations
 from datetime import datetime
 import time
 from pathlib import Path
+import contextlib
+import os
 from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Tuple, TYPE_CHECKING, Type
 
 import uno  # pylint: disable=W0611
@@ -2422,5 +2424,21 @@ def _on_global_document_event(src: Any, event: EventArgs, *args, **kwargs) -> No
 _Events().on(LoNamedEvent.BRIDGE_DISPOSED, _on_connect_dispose)
 _Events().on(LoNamedEvent.MACRO_LOADER_EXIT, _on_connect_dispose)
 
-
 __all__ = ("Lo",)
+
+
+def _autoload():
+    with contextlib.suppress(Exception):
+        # unfortunately uno.getComponentContext() cause a Segmentation fault (core dumped)
+        # this error is critical and can not be caught
+        # ctx = uno.getComponentContext()
+        # if ctx is None:
+        #     return
+        # auto load for macro mode
+        if "LIBO_VERSION" in os.environ or "URE_BOOTSTRAP" in os.environ:
+            if "OOODEV_SKIP_AUTOLOAD" not in os.environ:
+                _ = Lo.desktop
+                print("Loaded")
+
+
+_autoload()

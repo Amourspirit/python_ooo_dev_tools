@@ -2517,16 +2517,10 @@ class Forms:
     @classmethod
     def insert_control_hidden(
         cls,
-        doc: XComponent,
         *,
-        x: int | UnitT,
-        y: int | UnitT,
-        width: int | UnitT,
-        height: int | UnitT,
-        anchor_type: TextContentAnchorType = TextContentAnchorType.AT_PARAGRAPH,
         name: str = "",
         parent_form: XNameContainer | None = None,
-        draw_page: XDrawPage | None = None,
+        **kwargs: Any,
     ) -> FormCtlHidden:
         """
         Inserts a Hidden control into the form.
@@ -2535,50 +2529,25 @@ class Forms:
 
         Args:
             doc (XComponent): Component.
-            x (int | UnitT): X Coordinate.
-            y (int | UnitT): Y Coordinate.
-            width (int | UnitT): Width.
-            height (int, UnitT): Height.
-            anchor_type (TextContentAnchorType, optional): Control Anchor Type. Defaults to ``TextContentAnchorType.AT_PARAGRAPH``.
-            name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
             parent_form (XNameContainer, optional): Parent form in which to add control.
-            draw_page (XDrawPage, optional): Draw Page in which to add control.
-                If None, then the Draw Page is obtained from the document.
+            name (str, optional): Name of control. Must be a unique name. If empty, a unique name is generated.
 
         Returns:
             FormCtlHidden: Hidden Control.
 
+        .. versionchanged:: 0.43.0
+            Working
+
         .. versionadded:: 0.14.0
         """
-        # TODO: Hidden control has not model. insert_control_hidden needs to be re-worked.
+
+        comp = mLo.Lo.create_instance_mcf(XComponent, "com.sun.star.form.component.HiddenControl", raise_err=True)
+
         if not name:
             name = cls.create_name(parent_form, "Hidden")
-        try:
-            props, ctl_shape = cls._add_control(
-                doc=doc if draw_page is None else draw_page,
-                name=name,
-                label=None,
-                comp_kind=FormComponentKind.HIDDEN_CONTROL,
-                x=x,
-                y=y,
-                width=width,
-                height=height,
-                anchor_type=anchor_type,
-                parent_form=parent_form,
-                styles=(),
-            )
-            model = mLo.Lo.qi(XControlModel, props, True)
-            ctl = cls.get_control(doc, model)
-            if not ctl.isDesignMode():
-                ctl.setDesignMode(True)
-
-            ctl_hidden = FormCtlHidden(ctl)
-            ctl_hidden.control_shape = cast("ControlShape", ctl_shape)
-            ctl.setDesignMode(False)
-            return ctl_hidden
-
-        except Exception:
-            raise
+        if parent_form is not None:
+            parent_form.insertByName(name, comp)
+        return FormCtlHidden(comp)
 
     @classmethod
     def insert_control_image_button(

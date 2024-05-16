@@ -11,6 +11,7 @@ from ooodev.utils.partial.gui_partial_t import GuiPartialT
 from ooodev.utils.partial.lo_inst_props_partial_t import LoInstPropsPartialT
 from ooodev.utils.partial.qi_partial_t import QiPartialT
 from ooodev.utils.partial.service_partial_t import ServicePartialT
+from ooodev.utils.partial.libraries_partial_t import LibrariesPartialT
 
 if TYPE_CHECKING:
     from typing_extensions import Protocol
@@ -27,6 +28,7 @@ class OfficeDocumentT(
     CreateDialogPartialT,
     EventsT,
     DispatchPartialT,
+    LibrariesPartialT,
     Protocol,
 ):
     """Represents the common interface for all office documents."""

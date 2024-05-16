@@ -9,7 +9,6 @@ from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 
 from ooodev.events.args.event_args import EventArgs
-from ooodev.events.lo_events import EventArg
 from ooodev.io.log.named_logger import NamedLogger
 from ooodev.events.args.generic_args import GenericArgs
 
@@ -48,6 +47,8 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         self._build_args: Dict[BuildImportArg, BuildImportArg] = {}
         self._event_args: Dict[BuildEventArg, BuildEventArg] = {}
         self._omit: Set[str] = set()
+        # add suffixes that are excluded from having _partial appended to the class name
+        self._partial_excludes = {"_listener", "_events"}
         self._service_info = mLo.Lo.qi(XServiceInfo, self._component)
         self._type_names = None
         if self._service_info is None:
@@ -84,10 +85,15 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         return self._type_names
 
     def auto_interface(self) -> None:
+        """
+        Automatically add interfaces to the builder based on the component types.
+        """
         unique_type_names: Set[str] = set()
         lst = self._get_type_names_list()
         for type_name in lst:
             if type_name in unique_type_names:
+                continue
+            if self.has_omit(type_name):
                 continue
             unique_type_names.add(type_name)
             self.auto_add_interface(type_name)
@@ -411,8 +417,12 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         ns, class_name = suffix.rsplit(".", 1)  #  beans, XExactName
         if class_name.startswith("X"):
             class_name = class_name[1:]  # ExactName
-        odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.camel_to_snake(class_name)}_partial"
-        odev_class = f"{class_name}Partial"
+        odev_ns = f"ooodev.adapter.{ns.lower()}.{gUtil.Util.camel_to_snake(class_name)}"
+        if not odev_ns.endswith(tuple(self._partial_excludes)):
+            odev_ns += "_partial"
+            odev_class = f"{class_name}Partial"
+        else:
+            odev_class = class_name
         return f"{odev_ns}.{odev_class}"
 
     def has_type(self, t: Type[Any]) -> bool:
@@ -612,6 +622,12 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
             optional (bool, optional): Specifies if the import is optional. Defaults to ``True``.
             check_kind (CheckKind, int, optional): Check Kind. Defaults to ``CheckKind.INTERFACE``.
         """
+        # when adding a UNO Type it needs to be added to the type names if it does not exist.
+        # This way when the builder checks for _supports_interface int it will know if the component supports the interface.
+        if uno_name.startswith("com.sun.star."):
+            types = self._get_type_names()
+            if uno_name not in types:
+                types.add(uno_name)
         name = self._convert_to_ooodev(uno_name)
         self.add_import(name=name, uno_name=uno_name, optional=optional, check_kind=check_kind)
 
@@ -655,6 +671,16 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         """
         ooo_dev_name = self._convert_to_ooodev(name)
         return any(arg.ooodev_name == ooo_dev_name for arg in self._build_args.keys())
+
+    def has_omit(self, name: str) -> bool:
+        """
+        Check if the builder has an omit.
+
+        Args:
+            name (str): Ooodev or UNO name such as ``ooodev.adapter.container.index_access_partial.IndexAccessPartial`` or  ``com.sun.star.awt.XWindow``.
+        """
+        ooo_dev_name = self._convert_to_ooodev(name)
+        return ooo_dev_name in self._omit
 
     def add_import(
         self,
@@ -1023,5 +1049,14 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
     @lo_inst.setter
     def lo_inst(self, value: LoInst) -> None:
         self._LoInstPropsPartial__lo_inst = value
+
+    @property
+    def partial_excludes(self) -> Set[str]:
+        """
+        This is the set of suffixes that are excluded from having ``_partial`` append to the class name.
+
+        These name should be in lower case such as ``_listener`` and  ``_events``.
+        """
+        return self._partial_excludes
 
     # endregion Properties
