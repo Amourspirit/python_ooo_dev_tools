@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
+from typing import Any, TYPE_CHECKING
 
 import uno
 from com.sun.star.frame import XTitle
@@ -9,7 +9,6 @@ from ooodev.loader import lo as mLo
 
 
 if TYPE_CHECKING:
-    from com.sun.star.frame import DispatchInformation
     from ooodev.utils.type_var import UnoInterface
 
 

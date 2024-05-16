@@ -6,10 +6,7 @@ import unohelper
 from com.sun.star.util import XModifyListener
 from com.sun.star.sheet import XSpreadsheetDocument
 
-from ooodev.utils.lo import Lo
-from ooodev.calc import Calc
-from ooodev.calc import CalcDoc
-from ooodev.utils.type_var import PathOrStr
+from ooodev.loader.lo import Lo
 from ooodev.io.log.named_logger import NamedLogger
 from ooo.dyn.table.cell_content_type import CellContentType
 

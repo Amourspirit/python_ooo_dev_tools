@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ooodev.adapter.script.document_script_library_container_comp import DocumentScriptLibraryContainerComp
     from ooodev.adapter.script.document_dialog_library_container_comp import DocumentDialogLibraryContainerComp
+    from ooodev.macro.script.python_script import PythonScript
 
     from typing_extensions import Protocol
 else:
@@ -29,5 +30,15 @@ class LibrariesPartialT(Protocol):
 
         Returns:
             DocumentDialogLibraryContainerComp: The instance.
+        """
+        ...
+
+    @property
+    def python_script(self) -> PythonScript:
+        """
+        Gets the python script instance.
+
+        Returns:
+            PythonScript: The instance.
         """
         ...

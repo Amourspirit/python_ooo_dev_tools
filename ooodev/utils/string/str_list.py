@@ -29,12 +29,12 @@ class StrList:
         self._indent_str = "   "
 
     # region Methods
-    def append(self, value: str, no_indent: bool = False) -> StrList:
+    def append(self, value: str = "", no_indent: bool = False) -> StrList:
         """
         Add a string to the list
 
         Args:
-            value (str): String to add
+            value (str, optional): String to add. Defaults to "".
             no_indent (bool, optional): If True, no indent is added. Defaults to False.
 
         Returns:
