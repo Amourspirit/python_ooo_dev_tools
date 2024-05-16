@@ -80,6 +80,7 @@ from ooodev.write.style import write_style_families as mWriteStyleFamilies
 from ooodev.write.write_draw_page import WriteDrawPage
 from ooodev.write.write_draw_pages import WriteDrawPages
 from ooodev.write.write_text_frames import WriteTextFrames
+from ooodev.utils.partial.libraries_partial import LibrariesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XController
@@ -117,6 +118,7 @@ class WriteDoc(
     DocIoPartial["WriteDoc"],
     CreateDialogPartial,
     DispatchPartial,
+    LibrariesPartial,
 ):
     """A class to represent a Write document."""
 
@@ -166,6 +168,7 @@ class WriteDoc(
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
+        LibrariesPartial.__init__(self, component=doc)
         self._draw_page = None
         self._draw_pages = None
         self._text_frames = None

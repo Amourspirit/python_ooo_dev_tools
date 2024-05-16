@@ -185,8 +185,8 @@ class MacroScript:
         elif lower_lang == "basic":
             language = "Basic"
             module = f".{module}."
-            if location == "user":
-                location = "application"
+            # if location == "user":
+            #     location = "application"
 
         url = "vnd.sun.star.script"
         url = f"{url}:{library}{module}{name}?language={language}&location={location}"
