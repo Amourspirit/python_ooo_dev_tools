@@ -2,6 +2,172 @@
 Version History
 ***************
 
+Version 0.43.0
+==============
+
+Read and Write Python Macro Code
+--------------------------------
+
+Now it is possible to read and write Python macro code to documents.
+
+This example writes a Python script to a document and then reads it back.
+
+The python macros are persisted when the document is saved and re-opened.
+
+.. code-block:: python
+
+    from __future__ import annotations
+    import logging
+    import uno
+
+    from ooodev.calc import CalcDoc
+    from ooodev.loader import Lo
+    from ooodev.loader.inst.options import Options
+    from ooodev.utils.string.str_list import StrList
+
+
+    def main():
+
+        loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+        doc = CalcDoc.create_doc(loader=loader, visible=True)
+        try:
+            psa = doc.python_script
+            assert psa is not None
+            code = StrList(sep="\n")
+            code.append("from __future__ import annotations")
+            code.append()
+            code.append("def say_hello() -> None:")
+            with code.indented():
+                code.append('print("Hello World!")')
+            code.append()
+            code_str = str(code)
+            assert psa.is_valid_python(code_str)
+            psa.write_file("MyFile", code_str, allow_override=True)
+            psa_code = psa.read_file("MyFile")
+            assert psa_code == code_str
+
+        finally:
+            doc.close()
+            Lo.close_office()
+
+
+    if __name__ == "__main__":
+        main()
+
+
+
+Write Basic code
+----------------
+
+Now it is possible to write and add ``basic`` scripts to documents.
+
+This example shows how to add a basic script to a Calc document.
+
+The basic macro is persisted when the document is saved and re-opened.
+
+
+.. code-block:: python
+
+    from __future__ import annotations
+    import logging
+    import uno
+
+    from ooodev.calc import CalcDoc
+    from ooodev.loader import Lo
+    from ooodev.loader.inst.options import Options
+    from ooodev.utils.string.str_list import StrList
+    from ooodev.adapter.container.name_container_comp import NameContainerComp
+    from ooodev.macro.script.macro_script import MacroScript
+
+
+    def main():
+        loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+        doc = CalcDoc.create_doc(loader=loader, visible=True)
+        try:
+            inst = doc.basic_libraries
+            mod_name = "MyModule"
+            lib_name = "MyLib"
+            clean = True
+            added_lib = False
+
+            if not inst.has_by_name(lib_name):
+                added_lib = True
+                inst.create_library(lib_name)
+
+            inst.load_library(lib_name)
+
+            lib = NameContainerComp(inst.get_by_name(lib_name))  # type: ignore
+            if lib.has_by_name(mod_name):
+                lib.remove_by_name(mod_name)
+
+            code = StrList(sep="\n")
+            code.append("Option Explicit")
+            code.append("Sub Main")
+            with code.indented():
+                code.append('MsgBox "Hello World"')
+            code.append("End Sub")
+            lib.insert_by_name(mod_name, code.to_string())
+
+            MacroScript.call(
+                name="Main",
+                library=lib_name,
+                module=mod_name,
+                location="document",
+            )
+            print("Macro Executed")
+            if clean:
+                lib.remove_by_name(mod_name)
+                if added_lib:
+                    inst.remove_library(lib_name)
+
+            print("Done")
+        finally:
+            doc.close()
+            Lo.close_office()
+
+    if __name__ == "__main__":
+        main()
+
+Auto loader
+-----------
+
+A new Auto load for the ``ooodev`` library has been added. Now the library attempts to automatically load the ``Lo`` class with ``from ooodev.loader import Lo``.
+This should eliminate the need to manually call ``Lo.current_doc`` or use the ``MacroLoader`` before using the library.
+Note this only for when the library is used in a macro. In a script the ``Lo`` class will still need to be loaded manually.
+
+``ooodev.utils.string.str_list.StrList`` has been updated and now  support slicing.
+
+``ooodev.adapter.container.index_access_implement.IndexAccessImplement`` has been updated and now supports slicing, iteration, reversed iteration, and length.
+
+Update for Hidden Controls. Now hidden controls can be added to documents and are persisted when the document is saved and re-opened.
+
+.. code-block:: python
+
+    from __future__ import annotations
+    from pathlib import Path
+    import uno
+    from ooo.dyn.beans.property_attribute import PropertyAttributeEnum
+    from ooodev.calc import CalcDoc
+
+    doc = CalcDoc.from_current_doc()
+
+    sheet = doc.sheets[0]
+    if len(sheet.draw_page.forms) == 0:
+        frm = sheet.draw_page.forms.add_form("MyForm")
+    else:
+        frm = sheet.draw_page.forms[0]
+    ctl = frm.insert_control_hidden(name="MyHidden")
+    ctl.hidden_value = "Hello World"
+    ctl.add_property("Special", PropertyAttributeEnum.CONSTRAINED, "Special Data")
+    fnm = Path.cwd() / "tmp" / "hidden.ods"
+    doc.save_doc(fnm)
+
+Breaking Changes
+----------------
+
+The ``insert_control_hidden()`` method args have changed. Some args have been removed.
+This should not affect preexisting code as the hidden control was not properly implemented before.
+
 Version 0.42.1
 ==============
 

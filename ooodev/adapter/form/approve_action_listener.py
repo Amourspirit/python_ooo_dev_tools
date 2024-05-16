@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class ApproveActionListener(AdapterBase, XApproveActionListener):
     """
-    can be implemented to listen and probably veto actions to be performed on components.
+    Can be implemented to listen and probably veto actions to be performed on components.
 
     An example for an action would be the click of a CommandButton.
 

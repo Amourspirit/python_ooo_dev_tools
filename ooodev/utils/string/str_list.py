@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import Iterable
+import contextlib
+from typing import Any, Iterable, overload, Generator
 
 
 class StrList:
@@ -23,18 +24,24 @@ class StrList:
             strings = list(strings)
         self._strings = strings
         self._sep = sep
+        self._iter_index = 0
+        self._indent = 0
+        self._indent_str = "   "
 
     # region Methods
-    def append(self, value: str) -> StrList:
+    def append(self, value: str = "", no_indent: bool = False) -> StrList:
         """
         Add a string to the list
 
         Args:
-            value (str): String to add
+            value (str, optional): String to add. Defaults to "".
+            no_indent (bool, optional): If True, no indent is added. Defaults to False.
 
         Returns:
             StrList: Self.
         """
+        if self._indent > 0 and not no_indent:
+            value = self._get_indent_str() + value
         self._strings.append(value)
         return self
 
@@ -64,13 +71,30 @@ class StrList:
         """Copy the list."""
         return StrList(strings=self._strings.copy(), sep=self._sep)
 
-    def extend(self, strings: Iterable[str]) -> StrList:
-        """Extend the list."""
+    def extend(self, strings: Iterable[str], no_indent: bool = False) -> StrList:
+        """
+        Extend the list.
+
+        Args:
+            strings (Iterable[str]): Strings to add.
+            no_indent (bool, optional): If True, no indent is added. Defaults to False.
+        """
+        if self._indent > 0 and not no_indent:
+            strings = [self._get_indent_str() + string for string in strings]
         self._strings.extend(strings)
         return self
 
-    def insert(self, index: int, value: str) -> StrList:
-        """Insert a value into the list."""
+    def insert(self, index: int, value: str, no_indent: bool = False) -> StrList:
+        """
+        Insert a value into the list.
+
+        Args:
+            index (int): Index to insert the value.
+            value (str): Value to insert.
+            no_indent (bool, optional): If True, no indent is added. Defaults to False.
+        """
+        if self._indent > 0 and not no_indent:
+            value = self._get_indent_str() + value
         self._strings.insert(index, value)
         return self
 
@@ -101,6 +125,50 @@ class StrList:
         self._strings = list(dict.fromkeys(self._strings))
         return self
 
+    # region Indent Methods
+    @contextlib.contextmanager
+    def indented(self):
+        """
+        Context Manager. Increase the indent.
+
+        Example:
+
+            .. code-block:: python
+
+                code = StrList(sep="\\n")
+                code.append("Sub Main")
+                with code.indented():
+                    code.append('MsgBox "Hello World"')
+                code.append("End Sub")
+        """
+        self.indent_amt += 1
+        try:
+            yield self
+        finally:
+            self.indent_amt -= 1
+
+    def _get_indent_str(self) -> str:
+        if self._indent < 1:
+            return ""
+        return self._indent_str * self._indent
+
+    def set_indent(self, value: int) -> StrList:
+        """Set the indent."""
+        self._indent = max(0, value)
+        return self
+
+    def increase_indent(self) -> StrList:
+        """Increase the indent."""
+        self._indent += 1
+        return self
+
+    def decrease_indent(self) -> StrList:
+        """Decrease the indent."""
+        self._indent -= 1
+        self._indent = max(0, self._indent)
+        return self
+
+    # endregion Indent Methods
     # endregion Methods
 
     # region Dunder Methods
@@ -124,7 +192,18 @@ class StrList:
 
     def __iter__(self):
         """Iterator for the list."""
-        return iter(self._strings)
+        self._iter_index = 0
+        length = len(self)
+        while self._iter_index < length:
+            yield self._strings[self._iter_index]
+            self._iter_index += 1
+
+    def __reversed__(self):
+        """Reverse iterator for the list."""
+        self._iter_index = len(self) - 1
+        while self._iter_index >= 0:
+            yield self._strings[self._iter_index]
+            self._iter_index -= 1
 
     def __str__(self):
         """Convert list to string."""
@@ -140,9 +219,26 @@ class StrList:
         """Delete an item from the list."""
         del self._strings[index]
 
-    def __getitem__(self, index: int):
-        """Get an item from the list."""
-        return self._strings[index]
+    # region __getitem__
+    @overload
+    def __getitem__(self, index: int) -> str: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> StrList: ...
+
+    def __getitem__(self, index: int | slice) -> Any:
+        """
+        Get an item from the list.
+
+        Supports slicing. When sliced a new StrList is returned.
+        """
+
+        if isinstance(index, slice):
+            return type(self)(self._strings[index], self._sep)
+        else:
+            return self._strings[index]
+
+    # endregion __getitem__
 
     def __repr__(self) -> str:
         """Get the string representation of the object."""
@@ -168,3 +264,24 @@ class StrList:
     def separator(self, value: str):
         """Set the separator."""
         self._sep = value
+
+    @property
+    def indent_amt(self) -> int:
+        """Get/Sets the indent amount"""
+        return self._indent
+
+    @indent_amt.setter
+    def indent_amt(self, value: int):
+        """Set the indent."""
+        self._indent = max(0, value)
+
+    @property
+    def indent_str(self) -> str:
+        """Gets/Sets the indent string"""
+        return self._indent_str
+
+    @indent_str.setter
+    def indent_str(self, value: str):
+        self._indent_str = value
+
+    # endregion Properties

@@ -19,6 +19,7 @@ Submodules
    ooodev.adapter.util.flush_listener
    ooodev.adapter.util.flushable_partial
    ooodev.adapter.util.mode_selector_partial
+   ooodev.adapter.util.modifiable_partial
    ooodev.adapter.util.modify_broadcaster_partial
    ooodev.adapter.util.modify_events
    ooodev.adapter.util.modify_listener

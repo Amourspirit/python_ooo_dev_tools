@@ -48,10 +48,15 @@ class ThePopupMenuControllerFactoryComp(ComponentBase, UIControllerFactoryPartia
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        factory = lo_inst.get_singleton("/singletons/com.sun.star.frame.thePopupMenuControllerFactory")  # type: ignore
+        key = "/singletons/com.sun.star.frame.thePopupMenuControllerFactory"
+        if key in lo_inst.cache:
+            return cast(ThePopupMenuControllerFactoryComp, lo_inst.cache[key])
+        factory = lo_inst.get_singleton(key)  # type: ignore
         if factory is None:
             raise ValueError("Could not get thePopupMenuControllerFactory singleton.")
-        return cls(factory)
+        result = cls(factory)
+        lo_inst.cache[key] = result
+        return result
 
     # region Properties
     @property

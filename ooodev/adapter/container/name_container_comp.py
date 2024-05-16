@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.name_container_partial import NameContainerPartial
@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from com.sun.star.container import XNameContainer
 
 
-class NameContainerComp(ComponentProp, NameContainerPartial):
+class NameContainerComp(ComponentProp, NameContainerPartial[Any]):
     """
     Class for managing XNameContainer Component.
     """

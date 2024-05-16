@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    ooodev.adapter.uno.adapter_partial
+   ooodev.adapter.uno.interface_partial
    ooodev.adapter.uno.weak_partial
 
 Module contents

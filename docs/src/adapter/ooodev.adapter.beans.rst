@@ -29,6 +29,7 @@ Submodules
    ooodev.adapter.beans.property_set_comp
    ooodev.adapter.beans.property_set_info_partial
    ooodev.adapter.beans.property_set_info_t
+   ooodev.adapter.beans.property_set_option_partial
    ooodev.adapter.beans.property_set_partial
    ooodev.adapter.beans.property_state_partial
    ooodev.adapter.beans.property_with_state_partial

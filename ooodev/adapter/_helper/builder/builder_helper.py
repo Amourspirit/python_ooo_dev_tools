@@ -20,32 +20,41 @@ def builder_add_comp_defaults(builder: DefaultBuilder) -> None:
         - ``QiPartial``
         - ``EventsPartial``
     """
-    if not builder.has_import("com.sun.star.uno.XWeak"):
-        builder.auto_add_interface("com.sun.star.uno.XWeak")
-    if not builder.has_import("com.sun.star.lang.XTypeProvider"):
-        builder.auto_add_interface("com.sun.star.lang.XTypeProvider")
-    if not builder.has_import("com.sun.star.lang.XServiceInfo"):
-        builder.auto_add_interface("com.sun.star.lang.XServiceInfo")
-    if not builder.has_import("ooodev.utils.partial.interface_partial.InterfacePartial"):
+
+    keys = {
+        "com.sun.star.uno.XWeak",
+        "com.sun.star.lang.XTypeProvider",
+        "com.sun.star.lang.XServiceInfo",
+    }
+
+    for key in keys:
+        if not builder.has_import(key) and not builder.has_omit(key):
+            builder.auto_add_interface(key)
+
+    key = "ooodev.utils.partial.interface_partial.InterfacePartial"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.utils.partial.interface_partial.InterfacePartial",
+            name=key,
             optional=False,
             init_kind=InitKind.NONE,
             check_kind=CheckKind.NONE,
         )
-    if not builder.has_import("ooodev.utils.partial.qi_partial.QiPartial"):
+
+    key = "ooodev.utils.partial.qi_partial.QiPartial"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.utils.partial.qi_partial.QiPartial",
+            name=key,
             uno_name="com.sun.star.uno.XInterface",
             optional=True,
             init_kind=InitKind.COMPONENT,
             check_kind=CheckKind.INTERFACE,
         )
 
-    if not builder.has_import("ooodev.events.partial.events_partial.EventsPartial"):
+    key = "ooodev.events.partial.events_partial.EventsPartial"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.insert_import(
             idx=0,
-            name="ooodev.events.partial.events_partial.EventsPartial",
+            name=key,
             optional=False,
             init_kind=InitKind.NONE,
             check_kind=CheckKind.NONE,
@@ -79,9 +88,10 @@ def builder_add_interface_defaults(builder: DefaultBuilder) -> None:
 
 
 def builder_add_property_change_implement(builder: DefaultBuilder) -> None:
-    if not builder.has_import("ooodev.adapter.beans.property_change_implement.PropertyChangeImplement"):
+    key = "ooodev.adapter.beans.property_change_implement.PropertyChangeImplement"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.adapter.beans.property_change_implement.PropertyChangeImplement",
+            name=key,
             uno_name="com.sun.star.beans.XPropertySet",
             optional=True,
             init_kind=InitKind.COMPONENT,
@@ -90,9 +100,10 @@ def builder_add_property_change_implement(builder: DefaultBuilder) -> None:
 
 
 def builder_add_property_veto_implement(builder: DefaultBuilder) -> None:
-    if not builder.has_import("ooodev.adapter.beans.vetoable_change_implement.VetoableChangeImplement"):
+    key = "ooodev.adapter.beans.vetoable_change_implement.VetoableChangeImplement"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.adapter.beans.vetoable_change_implement.VetoableChangeImplement",
+            name=key,
             uno_name="com.sun.star.beans.XPropertySet",
             optional=True,
             init_kind=InitKind.COMPONENT,
@@ -101,9 +112,10 @@ def builder_add_property_veto_implement(builder: DefaultBuilder) -> None:
 
 
 def builder_add_lo_inst_props_partial(builder: DefaultBuilder) -> None:
-    if not builder.has_import("ooodev.utils.partial.lo_inst_props_partial.LoInstPropsPartial"):
+    key = "ooodev.utils.partial.lo_inst_props_partial.LoInstPropsPartial"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.utils.partial.lo_inst_props_partial.LoInstPropsPartial",
+            name=key,
             uno_name="",
             optional=False,
             init_kind=InitKind.LO_INST,
@@ -112,9 +124,10 @@ def builder_add_lo_inst_props_partial(builder: DefaultBuilder) -> None:
 
 
 def builder_add_component_prop(builder: DefaultBuilder) -> None:
-    if not builder.has_import("ooodev.adapter.component_prop.ComponentProp"):
+    key = "ooodev.adapter.component_prop.ComponentProp"
+    if not builder.has_import(key) and not builder.has_omit(key):
         builder.add_import(
-            name="ooodev.adapter.component_prop.ComponentProp",
+            name=key,
             uno_name="",
             optional=False,
             init_kind=InitKind.COMPONENT,
