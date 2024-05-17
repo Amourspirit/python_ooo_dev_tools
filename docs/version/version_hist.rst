@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.43.1
+==============
+
+Auto Load Disabled. Auto Load is currently causing issue when OooDev is being using in an Extension.
+
+
 Version 0.43.0
 ==============
 

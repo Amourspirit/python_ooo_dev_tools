@@ -2435,10 +2435,14 @@ def _autoload():
         # if ctx is None:
         #     return
         # auto load for macro mode
+        # AutoLoad is currently Not working correctly.
+        # Causing an error when uses in an extension.
+        # setting os.environ["OOODEV_SKIP_AUTOLOAD"] will did not skip the auto load. Perhaps due to threading.
+        # Not sure of a fix yet.
         if "LIBO_VERSION" in os.environ or "URE_BOOTSTRAP" in os.environ:
             if "OOODEV_SKIP_AUTOLOAD" not in os.environ:
-                _ = Lo.desktop
+                # _ = Lo.desktop
                 print("Loaded")
 
 
-_autoload()
+# _autoload()
