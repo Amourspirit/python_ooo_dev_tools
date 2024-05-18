@@ -1,17 +1,18 @@
 # region imports
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_progress_bar_model_partial import UnoControlProgressBarModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlProgressBar  # service
     from com.sun.star.awt import UnoControlProgressBarModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_progress_bar import ModelProgressBar
     from ooodev.dialog.dl_control.view.view_progress_bar import ViewProgressBar
 # endregion imports
@@ -36,6 +37,11 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
 
     # endregion init
 
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlProgressBar({self.name})"
+        return "CtlProgressBar"
+
     # region Overrides
     def get_view_ctl(self) -> UnoControlProgressBar:
         return cast("UnoControlProgressBar", super().get_view_ctl())
@@ -57,6 +63,36 @@ class CtlProgressBar(DialogControlBase, UnoControlProgressBarModelPartial):
         return DialogControlNamedKind.PROGRESS_BAR
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlProgressBar":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlProgressBar: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlProgressBarModel", win, **kwargs)
+        return CtlProgressBar(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
 

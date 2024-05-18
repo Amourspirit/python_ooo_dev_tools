@@ -23,7 +23,7 @@ from ooodev.dialog.search.tree_search.rule_data_compare import RuleDataCompare
 from ooodev.dialog.search.tree_search.rule_data_insensitive import RuleDataInsensitive
 from ooodev.dialog.search.tree_search.rule_text_sensitive import RuleTextSensitive
 from ooodev.dialog.search.tree_search.rule_text_insensitive import RuleTextInsensitive
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 
 if TYPE_CHECKING:
@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from com.sun.star.awt.tree import TreeControlModel  # service
     from com.sun.star.awt.tree import XMutableTreeNode
     from com.sun.star.awt.tree import XTreeNode
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_tree import ModelTree
 # endregion imports
 
@@ -68,6 +69,11 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         self._model_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlTree({self.name})"
+        return "CtlTree"
 
     # region Lazy Listeners
     def _on_selection_change_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -390,6 +396,36 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
         return search.find_node(node)
 
     # endregion Tree Nodes
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlTree":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlTree: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.TreeControlModel", win, **kwargs)
+        return CtlTree(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
     @property

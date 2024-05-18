@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
-from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.units.unit_app_font_height import UnitAppFontHeight
 from ooodev.units.unit_app_font_width import UnitAppFontWidth
 from ooodev.units.unit_app_font_x import UnitAppFontX
@@ -15,7 +14,7 @@ else:
 
 
 class UnoControlDialogElementPartial:
-    """Partial class for UnoControlDialogElement. Must be used as a mixin that provides the ``ModelPropPartial``."""
+    """Partial class for UnoControlDialogElement."""
 
     def __init__(self, component: UnoControlDialogElement):
         """

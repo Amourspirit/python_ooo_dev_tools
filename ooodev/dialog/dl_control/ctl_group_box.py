@@ -1,17 +1,18 @@
 # region imports
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
 
 from ooodev.mock import mock_g
 from ooodev.adapter.awt.uno_control_group_box_model_partial import UnoControlGroupBoxModelPartial
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlGroupBox  # service
     from com.sun.star.awt import UnoControlGroupBoxModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_group_box import ModelGroupBox
     from ooodev.dialog.dl_control.view.view_group_box import ViewGroupBox
 # endregion imports
@@ -36,6 +37,11 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
 
     # endregion init
 
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlGroupBox({self.name})"
+        return "CtlGroupBox"
+
     # region Overrides
     def get_view_ctl(self) -> UnoControlGroupBox:
         return cast("UnoControlGroupBox", super().get_view_ctl())
@@ -57,6 +63,36 @@ class CtlGroupBox(DialogControlBase, UnoControlGroupBoxModelPartial):
         return DialogControlNamedKind.GROUP_BOX
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlGroupBox":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlGroupBox: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlGroupBoxModel", win, **kwargs)
+        return CtlGroupBox(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
     @property
