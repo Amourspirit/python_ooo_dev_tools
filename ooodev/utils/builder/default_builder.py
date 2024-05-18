@@ -830,7 +830,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
         self.add_event_arg(bi)
         return bi
 
-    def get_class_type(self, name: str, base_class: Type[Any]) -> Type[Any]:
+    def get_class_type(self, name: str, base_class: Type[Any], set_mod_name: bool = True) -> Type[Any]:
         """
         Build the import.
 
@@ -839,6 +839,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
                 When a full import name is passed then the last part is used as the class name and parts before are used as the module name.
             init_kind (InitKind, int, optional): Init Option. Defaults to ``InitKind.COMPONENT``.
             base_class (Type[Any], optional): Base Class. Defaults to ``BuilderBase``.
+            set_mod_name (bool, optional): Set the module name. Defaults to ``True``.
 
         Returns:
             Any: Class instance
@@ -859,7 +860,7 @@ class DefaultBuilder(LoInstPropsPartial, EventsPartial):
             mod = ""
             class_name = name
         clz = self._generate_class(base_class, class_name)
-        if mod:
+        if set_mod_name and mod:
             with contextlib.suppress(Exception):
                 clz.__module__ = mod
         return clz

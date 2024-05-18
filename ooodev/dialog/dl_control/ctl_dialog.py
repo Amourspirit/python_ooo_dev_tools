@@ -34,6 +34,9 @@ if TYPE_CHECKING:
 class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, TopWindowEvents, WindowEvents):
     """Class for Dialog Control"""
 
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+
     # pylint: disable=unused-argument
     # region init
     def __init__(self, ctl: UnoControlDialog) -> None:
@@ -54,6 +57,11 @@ class CtlDialog(UnoControlDialogComp, CtlListenerBase, UnitConversionPartial, To
         self._model_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlDialog({self.name})"
+        return "CtlDialog"
 
     # region Lazy Listeners
     def _on_top_window_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:

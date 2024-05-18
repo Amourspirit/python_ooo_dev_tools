@@ -2,17 +2,18 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno  # pylint: disable=unused-import
+from ooo.dyn.awt.push_button_type import PushButtonType
+from ooodev.mock import mock_g
 from ooodev.adapter.awt.action_events import ActionEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.type_var import PathOrStr
 from ooodev.adapter.awt.uno_control_button_model_partial import UnoControlButtonModelPartial
-
-from ooodev.mock import mock_g
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlButton  # service
     from com.sun.star.awt import UnoControlButtonModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_button import ModelButton
     from ooodev.dialog.dl_control.view.view_button import ViewButton
 # endregion imports
@@ -43,6 +44,11 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
 
     # endregion init
 
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlButton({self.name})"
+        return "CtlButton"
+
     # region Lazy Listeners
     def _on_action_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
         # will only ever fire once
@@ -64,6 +70,39 @@ class CtlButton(DialogControlBase, UnoControlButtonModelPartial, ActionEvents):
         return cast("UnoControlButtonModel", self.get_view_ctl().getModel())
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlButton":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+            btn_type (PushButtonType | None, optional): Type of Button.
+
+        Returns:
+            CtlButton: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        btn_type = kwargs.pop("btn_type", PushButtonType.STANDARD)
+        ctrl = _create_control("com.sun.star.awt.UnoControlButtonModel", win, **kwargs)
+        model = ctrl.getModel()
+        uno_any = uno.Any("short", btn_type)  # type: ignore
+        uno.invoke(model, "setPropertyValue", ("PushButtonType", uno_any))  # type: ignore
+        return CtlButton(ctl=ctrl)
 
     # region Properties
     @property

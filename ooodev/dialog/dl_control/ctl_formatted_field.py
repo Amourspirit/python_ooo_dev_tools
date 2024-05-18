@@ -10,12 +10,12 @@ from ooodev.adapter.awt.text_events import TextEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlFormattedField  # service
     from com.sun.star.awt import UnoControlFormattedFieldModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_formatted_field import ModelFormattedField
     from ooodev.dialog.dl_control.view.view_formatted_field import ViewFormattedField
 # endregion imports
@@ -45,6 +45,11 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         self._view_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlFormattedField({self.name})"
+        return "CtlFormattedField"
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -81,6 +86,36 @@ class CtlFormattedField(DialogControlBase, UnoControlFormattedFieldModelPartial,
         return DialogControlNamedKind.FORMATTED_TEXT
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlFormattedField":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlFormattedField: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlFormattedFieldModel", win, **kwargs)
+        return CtlFormattedField(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
 

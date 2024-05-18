@@ -23,6 +23,11 @@ if TYPE_CHECKING:
 class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
     """Class for creating a Dialog. Multiple Document are supported"""
 
+    def __new__(cls, *args, **kwargs):
+        result = super().__new__(cls, ctl=None)
+        result._custom__init__(*args, **kwargs)
+        return result
+
     def __init__(
         self,
         title: str,
@@ -50,6 +55,22 @@ class Dialog(CtlDialog, DialogControlsPartial, DialogsPartial):
             lo_inst (LoInst, optional): Lo Instance. Used when creating multiple documents. Defaults to ``None``.
             ctl (UnoControlDialog): Dialog Control. If ``None`` then an new Dialog is created. Defaults to ``None``.
         """
+        # because this class inherits from multiple classes. of which some are dynamic then a custom init has to be called in the __new__ method.
+        # this method serves two purposes. 1. it is require for the class to construct correctly and 2. is for type hinting purposes.
+        pass
+
+    def _custom__init__(
+        self,
+        title: str,
+        x: int | UnitT = -1,
+        y: int | UnitT = -1,
+        width: int | UnitT = -1,
+        height: int | UnitT = -1,
+        *,
+        lo_inst: LoInst | None = None,
+        dialog: UnoControlDialog | None = None,
+    ) -> None:
+
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         if dialog is None:

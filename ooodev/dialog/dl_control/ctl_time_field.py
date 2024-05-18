@@ -1,8 +1,6 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import contextlib
-import datetime
 import uno  # pylint: disable=unused-import
 
 from ooodev.mock import mock_g
@@ -14,11 +12,12 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 # pylint: disable=useless-import-alias
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlTimeField  # service
     from com.sun.star.awt import UnoControlTimeFieldModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_time_field import ModelTimeField
     from ooodev.dialog.dl_control.view.view_time_field import ViewTimeField
 # endregion imports
@@ -48,6 +47,11 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
         self._view_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlTimeField({self.name})"
+        return "CtlTimeField"
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -83,6 +87,36 @@ class CtlTimeField(DialogControlBase, UnoControlTimeFieldModelPartial, SpinEvent
         return DialogControlNamedKind.TIME
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlTimeField":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlTimeField: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlTimeFieldModel", win, **kwargs)
+        return CtlTimeField(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
 

@@ -12,11 +12,12 @@ from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 
 # pylint: disable=useless-import-alias
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlDateField  # service
     from com.sun.star.awt import UnoControlDateFieldModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_date_field import ModelDateField
     from ooodev.dialog.dl_control.view.view_date_field import ViewDateField
 # endregion imports
@@ -46,6 +47,11 @@ class CtlDateField(DialogControlBase, UnoControlDateFieldModelPartial, SpinEvent
         self._view_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlDateField({self.name})"
+        return "CtlDateField"
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -81,6 +87,36 @@ class CtlDateField(DialogControlBase, UnoControlDateFieldModelPartial, SpinEvent
         return DialogControlNamedKind.DATE_FIELD
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlDateField":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlDateField: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlDateFieldModel", win, **kwargs)
+        return CtlDateField(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
 

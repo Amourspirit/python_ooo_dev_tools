@@ -7,15 +7,18 @@ from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDial
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.type_var import PathOrStr
+from ooodev.dialog.dl_control.model.model_dialog_element_partial import ModelDialogElementPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlModel
-    from ooodev.units.unit_obj import UnitT
 
 # Model Position and Size are in AppFont units. View Size and Position are in Pixel units.
 
 
-class ModelButton(ModelPropPartial, UnoControlButtonModelPartial, UnoControlDialogElementPartial):
+class ModelButton(ModelPropPartial, UnoControlButtonModelPartial, ModelDialogElementPartial):
+
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, model: UnoControlModel) -> None:
         """
@@ -26,7 +29,12 @@ class ModelButton(ModelPropPartial, UnoControlButtonModelPartial, UnoControlDial
         """
         ModelPropPartial.__init__(self, obj=model)  # must precede UnoControlButtonModelPartial
         UnoControlButtonModelPartial.__init__(self, self.model)
-        UnoControlDialogElementPartial.__init__(self, self.model)
+        ModelDialogElementPartial.__init__(self, self.model)
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"ModelButton({self.name})"
+        return "ModelButton"
 
     @property
     def context_writing_mode(self) -> int:

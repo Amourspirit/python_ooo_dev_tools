@@ -11,11 +11,12 @@ from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
 from ooodev.adapter.awt.uno_control_currency_field_model_partial import UnoControlCurrencyFieldModelPartial
 
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlCurrencyField  # service
     from com.sun.star.awt import UnoControlCurrencyFieldModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_currency_field import ModelCurrencyField
     from ooodev.dialog.dl_control.view.view_currency_field import ViewCurrencyField
 # endregion imports
@@ -45,6 +46,11 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
         self._view_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlCurrencyField({self.name})"
+        return "CtlCurrencyField"
 
     # region Lazy Listeners
     def _on_spin_events_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -81,6 +87,36 @@ class CtlCurrencyField(DialogControlBase, UnoControlCurrencyFieldModelPartial, S
         return DialogControlNamedKind.CURRENCY
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlCurrencyField":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlCurrencyField: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlCurrencyFieldModel", win, **kwargs)
+        return CtlCurrencyField(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
     @property

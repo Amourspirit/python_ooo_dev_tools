@@ -2809,25 +2809,25 @@ class Dialogs:
         # note PositionX and PositionY are marked as str in the API but are actually int
 
         # don't convert AppFont units to Pixel units
-        if info.getPropertyByName("PositionX") and px_x > -1:
+        if info.hasPropertyByName("PositionX") and info.getPropertyByName("PositionX") and px_x > -1:
             if isinstance(x, UnitAppFontX):
                 props.setPropertyValue("PositionX", int(x))
             else:
                 props.setPropertyValue("PositionX", int(UnitAppFontX.from_unit_val(px_x)))
 
-        if info.getPropertyByName("PositionY") and px_y > -1:
+        if info.hasPropertyByName("PositionY") and info.getPropertyByName("PositionY") and px_y > -1:
             if isinstance(y, UnitAppFontY):
                 props.setPropertyValue("PositionY", int(y))
             else:
                 props.setPropertyValue("PositionY", int(UnitAppFontY.from_unit_val(px_y)))
 
-        if info.getPropertyByName("Width") and px_width > -1:
+        if info.hasPropertyByName("Width") and info.getPropertyByName("Width") and px_width > -1:
             if isinstance(width, UnitAppFontWidth):
                 props.setPropertyValue("Width", int(width))
             else:
                 props.setPropertyValue("Width", int(UnitAppFontWidth.from_unit_val(px_width)))
 
-        if info.getPropertyByName("Height") and px_height > -1:
+        if info.hasPropertyByName("Height") and info.getPropertyByName("Height") and px_height > -1:
             if isinstance(height, UnitAppFontHeight):
                 props.setPropertyValue("Height", int(height))
             else:
