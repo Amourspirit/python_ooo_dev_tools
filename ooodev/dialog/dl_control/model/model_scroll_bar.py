@@ -3,16 +3,19 @@ from typing import Any, TYPE_CHECKING
 import contextlib
 from pathlib import Path
 from ooodev.adapter.awt.uno_control_scroll_bar_model_partial import UnoControlScrollBarModelPartial
-from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDialogElementPartial
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.type_var import PathOrStr
+from ooodev.dialog.dl_control.model.model_dialog_element_partial import ModelDialogElementPartial
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlModel
 
 
-class ModelScrollBar(ModelPropPartial, UnoControlScrollBarModelPartial, UnoControlDialogElementPartial):
+class ModelScrollBar(ModelPropPartial, UnoControlScrollBarModelPartial, ModelDialogElementPartial):
+
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, model: UnoControlModel) -> None:
         """
@@ -23,7 +26,12 @@ class ModelScrollBar(ModelPropPartial, UnoControlScrollBarModelPartial, UnoContr
         """
         ModelPropPartial.__init__(self, obj=model)  # must precede UnoControlButtonModelPartial
         UnoControlScrollBarModelPartial.__init__(self, self.model)
-        UnoControlDialogElementPartial.__init__(self, self.model)
+        ModelDialogElementPartial.__init__(self, self.model)
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"ModelScrollBar({self.name})"
+        return "ModelScrollBar"
 
     @property
     def context_writing_mode(self) -> int:

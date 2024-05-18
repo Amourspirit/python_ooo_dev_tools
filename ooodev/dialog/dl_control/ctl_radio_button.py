@@ -11,13 +11,13 @@ from ooodev.adapter.awt.item_events import ItemEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControlRadioButton  # service
     from com.sun.star.awt import UnoControlRadioButtonModel  # service
+    from com.sun.star.awt import XWindowPeer
     from ooodev.dialog.dl_control.model.model_radio_button import ModelRadioButton
     from ooodev.dialog.dl_control.view.view_radio_button import ViewRadioButton
 # endregion imports
@@ -46,6 +46,11 @@ class CtlRadioButton(DialogControlBase, UnoControlRadioButtonModelPartial, ItemE
         self._view_ex = None
 
     # endregion init
+
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlRadioButton({self.name})"
+        return "CtlRadioButton"
 
     # region Lazy Listeners
     def _on_item_event_listener_add_remove(self, source: Any, event: ListenerEventArgs) -> None:
@@ -76,6 +81,36 @@ class CtlRadioButton(DialogControlBase, UnoControlRadioButtonModelPartial, ItemE
         return DialogControlNamedKind.RADIO_BUTTON
 
     # endregion Overrides
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlRadioButton":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlRadioButton: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlRadioButtonModel", win, **kwargs)
+        return CtlRadioButton(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
 

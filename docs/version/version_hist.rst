@@ -2,6 +2,12 @@
 Version History
 ***************
 
+
+Version 0.43.2
+==============
+
+Update Dialog Controls to have a static ``create()`` method that can be used to create controls for a Top Window.
+
 Version 0.43.1
 ==============
 

@@ -8,12 +8,12 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import info as mInfo
 from ooodev.utils.kind.dialog_control_kind import DialogControlKind
 from ooodev.utils.kind.dialog_control_named_kind import DialogControlNamedKind
-
-from ooodev.dialog.dl_control.ctl_base import DialogControlBase
+from ooodev.dialog.dl_control.ctl_base import DialogControlBase, _create_control
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tab import UnoControlTabPage  # service
     from com.sun.star.awt.tab import UnoControlTabPageModel  # service
+    from com.sun.star.awt import XWindowPeer
 # endregion imports
 
 
@@ -46,6 +46,11 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
 
     # endregion Lazy Listeners
 
+    def __repr__(self) -> str:
+        if hasattr(self, "name"):
+            return f"CtlTabPage({self.name})"
+        return "CtlTabPage"
+
     # region Overrides
     def get_view_ctl(self) -> UnoControlTabPage:
         return cast("UnoControlTabPage", super().get_view_ctl())
@@ -71,6 +76,36 @@ class CtlTabPage(DialogControlBase, ContainerEvents):
     # region Methods
 
     # endregion Methods
+
+    # region Static Methods
+    @staticmethod
+    def create(win: XWindowPeer, **kwargs: Any) -> "CtlTabPage":
+        """
+        Creates a new instance of the control.
+
+        Keyword arguments are optional.
+        Extra Keyword args are passed to the control as property values.
+
+        Args:
+            win (XWindowPeer): Parent Window
+
+        Keyword Args:
+            x (int, UnitT, optional): X Position in Pixels or UnitT.
+            y (int, UnitT, optional): Y Position in Pixels or UnitT.
+            width (int, UnitT, optional): Width in Pixels or UnitT.
+            height (int, UnitT, optional): Height in Pixels or UnitT.
+
+        Returns:
+            CtlTabPage: New instance of the control.
+
+        Note:
+            The `UnoControlDialogElement <https://api.libreoffice.org/docs/idl/ref/servicecom_1_1sun_1_1star_1_1awt_1_1UnoControlDialogElement.html>`__
+            interface is not included when creating the control with a window peer.
+        """
+        ctrl = _create_control("com.sun.star.awt.UnoControlTabPageModel", win, **kwargs)
+        return CtlTabPage(ctl=ctrl)
+
+    # endregion Static Methods
 
     # region Properties
     @property
