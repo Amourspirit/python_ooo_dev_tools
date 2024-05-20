@@ -36,7 +36,7 @@ class InterfacePartial:
         self.__component = component
 
     # region XInterface
-    def queryInterface(self, aType: Any) -> Any:
+    def query_interface(self, aType: Any) -> Any:
         return self.__component.queryInterface(aType)
 
     def release(self) -> None:
