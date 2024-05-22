@@ -18,6 +18,7 @@ Submodules
    ooodev.adapter.beans.properties_change_events
    ooodev.adapter.beans.properties_change_implement
    ooodev.adapter.beans.properties_change_listener
+   ooodev.adapter.beans.properties_change_notifier_partial
    ooodev.adapter.beans.property_access_partial
    ooodev.adapter.beans.property_bag_partial
    ooodev.adapter.beans.property_change_collection
@@ -27,6 +28,7 @@ Submodules
    ooodev.adapter.beans.property_container_partial
    ooodev.adapter.beans.property_partial
    ooodev.adapter.beans.property_set_comp
+   ooodev.adapter.beans.property_set_info_change_notifier_partial
    ooodev.adapter.beans.property_set_info_partial
    ooodev.adapter.beans.property_set_info_t
    ooodev.adapter.beans.property_set_option_partial

@@ -2,6 +2,103 @@
 Version History
 ***************
 
+Version 0.44.0
+==============
+
+Several new classes in the ``ooodev.adapter`` module for working with LibreOffice objects.
+
+Other minor updates and additions.
+
+Subprocess
+----------
+
+Now a subprocess can be used when needed.
+
+Main script
+
+.. code-block:: python
+
+    from __future__ import annotations
+    import logging
+    import sys
+    import os
+    from pathlib import Path
+    import subprocess
+    import uno
+
+    from ooodev.calc import CalcDoc
+    from ooodev.loader import Lo
+    from ooodev.loader.inst.options import Options
+
+
+    def main():
+
+        loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+        doc = CalcDoc.create_doc(loader=loader, visible=True)
+        try:
+            # Start the subprocess
+            script_path = Path(__file__).parent / "myscript.py"
+            env = os.environ.copy()
+            env["PYTHONPATH"] = get_paths()
+            proc = subprocess.Popen(
+                [sys.executable, str(script_path)],
+                stdin=subprocess.PIPE,
+                env=env,
+            )
+
+        finally:
+            doc.close()
+            Lo.close_office()
+
+
+    def get_paths() -> str:
+        pypath = ""
+        p_sep = ";" if os.name == "nt" else ":"
+        for d in sys.path:
+            pypath = pypath + d + p_sep
+        return pypath
+
+
+    if __name__ == "__main__":
+        main()
+
+
+``myscript.py``
+
+.. code-block:: python
+
+    from __future__ import annotations
+    import sys
+    import os
+    from ooodev.calc import CalcDoc
+    from ooodev.utils.string.str_list import StrList
+    from ooodev.loader import Lo
+    from ooodev.conn import conn_factory
+    from ooodev.loader.inst.options import Options
+
+
+    def main():
+        conn_str = os.environ.get("ODEV_CURRENT_CONNECTION", "")
+        conn_opt = os.environ.get("ODEV_CURRENT_CONNECTION_OPTIONS", None)
+
+        conn = conn_factory.get_from_json(conn_str)
+        if conn_opt:
+            opt = Options.deserialize(conn_opt)
+        else:
+            opt = Options()
+    
+        loader = Lo.load_office(connector=conn, opt=opt)  # type: ignore
+        doc = CalcDoc.from_current_doc()
+        sheet = doc.get_active_sheet()
+        sheet[0, 0].value = "Hello World!"
+        # ...
+
+
+Breaking changes
+----------------
+
+``doc.python_script.write_file()`` method longer has a ``allow_override`` arg. Now has a ``mode`` arg that can be ``a`` (append), ``w`` (overwrite if existing, default) or ``x`` (error if exist).
+
 
 Version 0.43.2
 ==============
@@ -147,9 +244,15 @@ A new Auto load for the ``ooodev`` library has been added. Now the library attem
 This should eliminate the need to manually call ``Lo.current_doc`` or use the ``MacroLoader`` before using the library.
 Note this only for when the library is used in a macro. In a script the ``Lo`` class will still need to be loaded manually.
 
+StrList/IndexAccessImplement
+----------------------------
+
 ``ooodev.utils.string.str_list.StrList`` has been updated and now  support slicing.
 
 ``ooodev.adapter.container.index_access_implement.IndexAccessImplement`` has been updated and now supports slicing, iteration, reversed iteration, and length.
+
+Hidden Controls
+---------------
 
 Update for Hidden Controls. Now hidden controls can be added to documents and are persisted when the document is saved and re-opened.
 
