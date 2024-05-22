@@ -9,9 +9,9 @@ from ooodev.loader import lo as mLo
 
 
 if TYPE_CHECKING:
-    from ooodev.utils.type_var import UnoInterface
     from com.sun.star.ucb import XContent
     from com.sun.star.frame import XModel
+    from ooodev.utils.type_var import UnoInterface
 
 
 class TransientDocumentsDocumentContentFactoryPartial:

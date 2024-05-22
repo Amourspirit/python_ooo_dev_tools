@@ -693,6 +693,14 @@ class Lo(metaclass=StaticProperty):
             result = cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
             # register global events
             cls._lo_inst.global_event_broadcaster.add_event_document_event_occurred(_on_global_document_event)
+            if "ODEV_CURRENT_CONNECTION" not in os.environ:
+                if connector is not None:
+                    # OOO_DEV_CURRENT_CONNECTION
+                    os.environ["ODEV_CURRENT_CONNECTION"] = connector.serialize()
+                else:
+                    os.environ["ODEV_CURRENT_CONNECTION"] = ""
+                if opt is not None:
+                    os.environ["ODEV_CURRENT_CONNECTION_OPTIONS"] = opt.serialize()
             return result
         except Exception:
             raise SystemExit(1)  # pylint: disable=W0707
@@ -2414,6 +2422,8 @@ class Lo(metaclass=StaticProperty):
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
     setattr(Lo, "_lo_inst", None)
+    if "ODEV_CURRENT_CONNECTION" in os.environ:
+        del os.environ["ODEV_CURRENT_CONNECTION"]
 
 
 def _on_global_document_event(src: Any, event: EventArgs, *args, **kwargs) -> None:  # pylint: disable=unused-argument
