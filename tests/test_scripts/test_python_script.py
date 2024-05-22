@@ -22,8 +22,8 @@ def test_python_script(loader) -> None:
         code.append()
         code_str = str(code)
         assert psa.is_valid_python(code_str)
-        psa.write_file("MyFile", code_str, allow_override=True)
-        psa.write_file("MyFile", code_str, allow_override=True)
+        psa.write_file("MyFile", code_str, mode="w")
+        psa.write_file("MyFile", code_str, mode="w")
         psa_code = psa.read_file("MyFile")
         assert psa_code == code_str
 

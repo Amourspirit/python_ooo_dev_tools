@@ -20,6 +20,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.libraries_partial import LibrariesPartial
+from ooodev.utils.partial.doc_common_partial import DocCommonPartial
 
 
 if TYPE_CHECKING:
@@ -50,6 +51,7 @@ class DocPartial(
     CreateDialogPartial,
     DispatchPartial,
     LibrariesPartial,
+    DocCommonPartial,
     StylePartial,
 ):
     """
@@ -79,6 +81,7 @@ class DocPartial(
         CreateDialogPartial.__init__(self, lo_inst=self.lo_inst)
         DispatchPartial.__init__(self, lo_inst=self.lo_inst, events=self)
         LibrariesPartial.__init__(self, component=component)
+        DocCommonPartial.__init__(self, component=component)
         StylePartial.__init__(self, component=component)
 
     # region Lazy Listeners

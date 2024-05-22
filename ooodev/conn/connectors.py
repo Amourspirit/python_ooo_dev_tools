@@ -1,8 +1,9 @@
 # coding: utf-8
 from __future__ import annotations
 import os
-from typing import Dict, Iterable, List, cast
+from typing import Any, Dict, Iterable, List, cast
 from pathlib import Path
+import json
 import uuid
 from abc import ABC, abstractmethod
 
@@ -52,6 +53,21 @@ class ConnectorBridgeBase(ConnectorBase):
         if soffice := kwargs.get("soffice"):
             # allow empty string or None to be passed
             self._soffice = soffice
+
+    def _get_serialize_dict(self) -> Dict[str, Any]:
+        d = {
+            "no_restore": self.no_restore,
+            "no_first_start_wizard": self.no_first_start_wizard,
+            "no_logo": self.no_logo,
+            "invisible": self.invisible,
+            "headless": self.headless,
+            "start_as_service": self.start_as_service,
+            "start_office": self.start_office,
+            "env_vars": self.env_vars,
+            "extended_args": self.extended_args,
+            "remote_connection": self.remote_connection,
+        }
+        return d
 
     def update_startup_args(self, args: List[str]) -> None:
         # sets does not preserve order
@@ -231,6 +247,27 @@ class ConnectSocket(ConnectorBridgeBase):
         identifier = self.get_connection_identifier()
         return f"uno:{identifier};urp;StarOffice.ServiceManager"
 
+    def serialize(self) -> str:
+        """
+        Gets serialized connection string.
+
+        .. versionadded:: 0.44.0
+        """
+        d = self._get_serialize_dict()
+        d.update({"connector": "socket", "host": self.host, "port": self.port})
+        return json.dumps(d)
+
+    @staticmethod
+    def deserialize(data: str) -> ConnectSocket:
+        """
+        Deserializes connection string.
+
+        .. versionadded:: 0.44.0
+        """
+        d = cast(dict, json.loads(data))
+        d.pop("connector")
+        return ConnectSocket(**d)
+
     @property
     def host(self) -> str:
         """
@@ -294,6 +331,27 @@ class ConnectPipe(ConnectorBridgeBase):
     def get_connection_str(self) -> str:
         identifier = self.get_connection_identifier()
         return f"uno:{identifier};urp;StarOffice.ServiceManager"
+
+    def serialize(self) -> str:
+        """
+        Gets serialized connection string.
+
+        .. versionadded:: 0.44.0
+        """
+        d = self._get_serialize_dict()
+        d.update({"connector": "pipe", "pipe": self.pipe})
+        return json.dumps(d)
+
+    @staticmethod
+    def deserialize(data: str) -> ConnectPipe:
+        """
+        Deserializes connection string.
+
+        .. versionadded:: 0.44.0
+        """
+        d = cast(dict, json.loads(data))
+        d.pop("connector")
+        return ConnectPipe(**d)
 
     @property
     def pipe(self) -> str:

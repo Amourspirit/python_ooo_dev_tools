@@ -11,7 +11,8 @@ from ooodev.adapter.frame.transient_documents_document_content_factory_comp impo
 from ooodev.adapter.io.pipe_comp import PipeComp
 from ooodev.adapter.io.text_output_stream_comp import TextOutputStreamComp
 from ooodev.adapter.io.text_input_stream_comp import TextInputStreamComp
-from ooodev.utils.string.text_stream import TextStream
+from ooodev.utils.helper.dot_dict import DotDict
+from ooodev.adapter.ucb.simple_file_access_comp import SimpleFileAccessComp
 
 try:
     import pythonscript
@@ -82,7 +83,7 @@ class PythonScript(LoInstPropsPartial):
 
         try:
             content = transient_doc.create_document_content(doc)  # type: ignore
-            id = content.getIdentifier()
+            id = content.get_identifier()
             return id.getContentIdentifier()
         except Exception:
             pass
@@ -202,7 +203,37 @@ class PythonScript(LoInstPropsPartial):
                 return True
         return False
 
-    def write_file(self, filename: str, content: str, node: Any = None, allow_override: bool = False):
+    def _get_sfa(self) -> SimpleFileAccessComp:
+        """Get SimpleFileAccessComp instance."""
+        sfa = SimpleFileAccessComp.from_lo(self.lo_inst)
+        return sfa
+
+    def _create_string_node(self, node: str) -> DotDict:
+        """Get string node."""
+        sfa = self._get_sfa()
+        s = f"{self._get_doc_uri()}/Scripts/python/{node.lstrip('/')}"
+        return DotDict(rootUrl=s, provCtx=DotDict(sfa=sfa.component))
+
+    # def _create_tempfile(self, node):
+    #     """ Copy embedded script to temporary folder."""
+    #     try:
+    #         self.adddoceventlistener()
+    #         if not self.tempdir:
+    #             TP = self.smgr.createInstanceWithContext(
+    #                         "com.sun.star.io.TempFile", self.ctx)
+    #             self.tempdir = base_url(TP.Uri)
+    #         path = node.uri.replace(self.DOC_PROTOCOL + ':/', '')
+    #         filepath = join_url(self.tempdir, path)
+    #         dirpath = '/'.join(filepath.split('/')[:-1])
+    #         sfa = node.provCtx.sfa
+    #         sfa.createFolder(dirpath)
+    #         sfa.copy(node.uri, filepath)
+    #         tempfiles[node.uri] = filepath
+    #         return filepath
+    #     except Exception as e:
+    #         raise ErrorAsMessage("_create_tempfile\n\n"+str(e))
+
+    def write_file(self, filename: str, content: str, node: Any = None, mode: str = "w") -> None:
         """
         Write content to file under supplied node.
 
@@ -211,24 +242,43 @@ class PythonScript(LoInstPropsPartial):
             content (str): The content to write.
             node (Any, optional): The node to write to.
                 If omitted then the content will be written to the document script provider.
+            mode: (str, optional): The mode to open the file. Defaults to "w".
+                mode ``w`` will overwrite the file.
+                mode ``a`` will append to the file.
+                mode ``x`` will create a new file and write to it failing if the file already exists
         """
+        if mode not in {"w", "a", "x"}:
+            mode = "w"
+
         if node is None:
             node = self.document_script_provider.dirBrowseNode
         if isinstance(node, pythonscript.PythonScriptProvider):
             node = node.dirBrowseNode
+        elif isinstance(node, str):
+            node = self._create_string_node(node)
+        elif isinstance(node, DotDict):
+            pass
         elif not isinstance(node, pythonscript.DirBrowseNode):
             self._logger.debug("write_file(): Invalid node type.")
             return
         name = filename
         if name and name.strip():
+            # node.rootUrl = 'vnd.sun.star.tdoc:/1/Scripts/python'
             uri = self._join_url(node.rootUrl, name)
             if not uri.endswith(self.FILE_EXT):
                 uri += self.FILE_EXT
             sfa = node.provCtx.sfa
-            if sfa.exists(uri):
-                if not allow_override:
+            file_exist = sfa.exists(uri)
+            if file_exist:
+                if mode == "x":
                     raise FileExistsError("File exist.")
-                sfa.kill(uri)
+                if mode == "w":
+                    sfa.kill(uri)
+                else:
+                    # append
+                    contents = self.read_file(filename, node)
+                    content = contents + "\n" + content
+                    sfa.kill(uri)
             is_doc = uri.startswith(self.DOC_PROTOCOL)
             try:
                 if is_doc:
@@ -270,6 +320,10 @@ class PythonScript(LoInstPropsPartial):
             node = self.document_script_provider.dirBrowseNode
         if isinstance(node, pythonscript.PythonScriptProvider):
             node = node.dirBrowseNode
+        elif isinstance(node, str):
+            node = self._create_string_node(node)
+        elif isinstance(node, DotDict):
+            pass
         elif not isinstance(node, pythonscript.DirBrowseNode):
             self._logger.debug("read_file(): Invalid node type.")
             return ""

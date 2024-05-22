@@ -60,6 +60,7 @@ Submodules
    ooodev.adapter.frame.title_partial
    ooodev.adapter.frame.transient_documents_document_content_factory_comp
    ooodev.adapter.frame.transient_documents_document_content_factory_partial
+   ooodev.adapter.frame.transient_documents_document_content_identifier_factory_partial
    ooodev.adapter.frame.ui_controller_factory_partial
    ooodev.adapter.frame.ui_controller_registration_partial
 

@@ -129,6 +129,7 @@ class LoBridgeCommon(ConnectBase):
         self._environment = os.environ.copy()
         self._timeout = 30.0
         self._conn_try_sleep = 0.2
+        self._opened_office = False
         self._cache = cache.Cache(use_cache=False) if cache_obj is None else cache_obj
         if self._cache.use_cache:
             self._environment["TMPDIR"] = str(self._cache.working_dir)
@@ -274,6 +275,7 @@ class LoBridgeCommon(ConnectBase):
                     # preexec_fn=os.setsid,  # type: ignore
                     shell=True,
                 )
+            self._opened_office = False
         else:
             # start LibreOffice process with python to use with pyuno using subprocess
             # see https://tinyurl.com/y5y66462
@@ -293,6 +295,7 @@ class LoBridgeCommon(ConnectBase):
                     preexec_fn=os.setsid,  # this is needed for linux, else the process is not properly killed.
                     shell=True,
                 )
+            self._opened_office = True
 
     def del_working_dir(self):
         """
@@ -501,11 +504,14 @@ class LoPipeStart(LoBridgeCommon):
         self._cache.copy_cache_to_profile()
         if self._connector.start_office:
             self._popen()
+            # now that office is started toggle start office to False to prevent sub processes from starting office.
+            self._connector.start_office = False
         try:
             self._connect()
         except NoConnectException as e:  # pylint: disable=invalid-name
-            if self._connector.start_office:
+            if self._opened_office:
                 self.kill_soffice()
+            self._opened_office = False
             raise e
         self._cache.cache_profile()
 
@@ -551,6 +557,7 @@ class LoPipeStart(LoBridgeCommon):
             args.append("StarOffice.Service")
 
         self._popen_from_args(args, shutdown)
+        self._opened_office = not shutdown
 
     @property
     def connector(self) -> connectors.ConnectPipe:
@@ -603,11 +610,14 @@ class LoSocketStart(LoBridgeCommon):
         self._cache.copy_cache_to_profile()
         if self._connector.start_office:
             self._popen()
+            # now that office is started toggle start office to False to prevent sub processes from starting office.
+            self._connector.start_office = False
         try:
             self._connect()
         except NoConnectException as e:  # pylint: disable=invalid-name
-            if self._connector.start_office:
+            if self._opened_office:
                 self.kill_soffice()
+            self._opened_office = False
             raise e
         self._cache.cache_profile()
 
@@ -655,6 +665,7 @@ class LoSocketStart(LoBridgeCommon):
             args.append("StarOffice.Service")
 
         self._popen_from_args(args, shutdown)
+        self._opened_office = not shutdown
 
     @property
     def connector(self) -> connectors.ConnectSocket:

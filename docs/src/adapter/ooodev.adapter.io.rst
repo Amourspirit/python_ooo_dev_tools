@@ -21,6 +21,10 @@ Submodules
    ooodev.adapter.io.persist_object_partial
    ooodev.adapter.io.pipe_comp
    ooodev.adapter.io.pipe_partial
+   ooodev.adapter.io.seekable_partial
+   ooodev.adapter.io.stream_partial
+   ooodev.adapter.io.temp_file_comp
+   ooodev.adapter.io.temp_file_partial
    ooodev.adapter.io.text_input_stream2_partial
    ooodev.adapter.io.text_input_stream_comp
    ooodev.adapter.io.text_input_stream_partial

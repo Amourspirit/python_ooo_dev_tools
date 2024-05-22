@@ -7,10 +7,12 @@ from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.frame.transient_documents_document_content_factory_partial import (
     TransientDocumentsDocumentContentFactoryPartial,
 )
+from ooodev.adapter.ucb.transient_documents_document_content_comp import TransientDocumentsDocumentContentComp
 
 
 if TYPE_CHECKING:
     from com.sun.star.frame import TransientDocumentsDocumentContentFactory  # singleton
+    from com.sun.star.frame import XModel
     from ooodev.loader.inst.lo_inst import LoInst
 
 
@@ -59,6 +61,21 @@ class TransientDocumentsDocumentContentFactoryComp(ComponentBase, TransientDocum
             raise_err=True,
         )
         return cls(transient_doc)
+
+    # region XTransientDocumentsDocumentContentFactory overrides
+    def create_document_content(self, model: XModel) -> TransientDocumentsDocumentContentComp:
+        """
+        Creates a ``TransientDocumentsDocumentContentComp`` based on a given ``com.sun.star.document.OfficeDocument``.
+
+        Raises:
+            com.sun.star.lang.IllegalArgumentException: ``IllegalArgumentException``
+
+        Returns:
+            TransientDocumentsDocumentContentComp: The created document content.
+        """
+        return TransientDocumentsDocumentContentComp(self.component.createDocumentContent(model))  # type: ignore
+
+    # endregion XTransientDocumentsDocumentContentFactory overrides
 
     # region Properties
     @property
