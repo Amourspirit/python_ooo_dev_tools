@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.44.1
+==============
+
+Added ``ooodev.calc.CalcSheet.code_name`` and  ``ooodev.calc.CalcSheet.unique_id`` that is used to access sheet code name and unique id respectively.
+
+Added ``get_sheet_name_from_code_name()`` and ``get_sheet_name_from_unique_id()`` to ``ooodev.calc.CalcDoc``
+that can be used to look up the current sheet name from the sheet code name or the sheet unique id.
+
 Version 0.44.0
 ==============
 

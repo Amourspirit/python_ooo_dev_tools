@@ -520,6 +520,50 @@ class CalcDoc(
         count = len(self.sheets)
         return mGenUtil.Util.get_index(idx, count, allow_greater)
 
+    def get_sheet_name_from_code_name(self, code_name: str) -> str:
+        """
+        Gets the sheet name from the code name.
+
+        Args:
+            code_name (str): Code name of sheet. Case insensitive.
+
+        Returns:
+            str: Name of sheet or empty string if not found.
+
+        Note:
+            The code name may contain any character except for the following: ``[]:*?/\\``
+
+        .. versionadded:: 0.44.1
+        """
+        return mCalc.Calc.get_sheet_name_from_code_name(doc=self.component, code_name=code_name)
+
+    def get_sheet_name_from_unique_id(self, unique_id: str) -> str:
+        """
+        Gets the sheet name from the unique name.
+
+        Args:
+            code_name (str): Unique name of sheet. Case insensitive.
+
+        Returns:
+            str: Name of sheet or empty string if not found.
+
+        Note:
+            The unique name is a is different then the sheet name and the code name.
+            Unlike the code name the unique name will only contain lower case alpha characters.
+
+        .. versionadded:: 0.44.1
+        """
+        if not unique_id:
+            return ""
+        # all unique names are in lower case already.
+        # when this method is run, any sheet that do not already have a unique name will be assigned a unique name,
+        # this is automatically done when sheet.unique_id is accessed.
+        s = unique_id.lower()
+        for sheet in self.sheets:
+            if sheet.unique_id == s:
+                return sheet.name
+        return ""
+
     def freeze(self, num_cols: int, num_rows: int) -> None:
         """
         Freezes spreadsheet columns and rows
