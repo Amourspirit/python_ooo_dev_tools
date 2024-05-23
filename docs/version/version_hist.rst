@@ -5,6 +5,12 @@ Version History
 Version 0.44.1
 ==============
 
+Added ``ooodev.io.sfa.Sfa`` class for working with Simple File Access. This class can be used to read/write/copy and delete files embedded in the document.
+This class can bridge from the document to the file system.
+
+Version 0.44.1
+==============
+
 Added ``ooodev.calc.CalcSheet.code_name`` and  ``ooodev.calc.CalcSheet.unique_id`` that is used to access sheet code name and unique id respectively.
 
 Added ``get_sheet_name_from_code_name()`` and ``get_sheet_name_from_unique_id()`` to ``ooodev.calc.CalcDoc``
