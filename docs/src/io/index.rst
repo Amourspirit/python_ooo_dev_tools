@@ -8,5 +8,6 @@ io
 
     log/index
     json/index
+    sfa/index
     xml/index
     zip/index

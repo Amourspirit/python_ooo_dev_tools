@@ -334,6 +334,7 @@ class PythonScript(LoInstPropsPartial):
                 uri += self.FILE_EXT
             sfa = node.provCtx.sfa
             if not sfa.exists(uri):
+                self._logger.error(f"read_file(): File Not Found. URI: {uri}")
                 raise FileNotFoundError("File not found.")
             try:
                 io = sfa.openFileRead(uri)
