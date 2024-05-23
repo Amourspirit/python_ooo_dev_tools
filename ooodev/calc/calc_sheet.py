@@ -100,6 +100,7 @@ class CalcSheet(
         CalcSheetPropPartial.__init__(self, obj=self)
         self._draw_page = None
         self._charts = None
+        self._unique_id = None
         self._init_events()
 
     # region Events
@@ -3903,9 +3904,57 @@ class CalcSheet(
             self._charts = CalcCharts(owner=self, charts=self.component.getCharts(), lo_inst=self.lo_inst)
         return self._charts
 
+    @property
+    def code_name(self) -> str:
+        """
+        Gets the code name of the sheet.
+
+        If the sheet is renamed this value remains the same. This value is used in macros and is persisted in the document.
+
+        Returns:
+            str: Code Name.
+
+        Note:
+            The code name may contain any character except for the following: ``[]:*?/\\``.
+
+            Code name are added the the sheet when the sheet is created. If the sheet is renamed the code name will not change.
+            Generally the code name will match the original sheet name.
+
+        .. versionadded:: 0.44.1
+        """
+        return self.component.CodeName  # type: ignore
+
+    @property
+    def unique_id(self) -> str:
+        """
+        Gets the unique name of the sheet.
+
+        Returns:
+            str: Unique Name
+
+        Note:
+            The unique name is a is different then the sheet name and ``code_name``.
+            Unlike the ``code_name`` the unique name will only contain lower case alpha characters.
+
+            The unique name is not added to a sheet until this property is access for the first time.
+            After a unique name is added to the sheet it will not change and is persisted with document saves.
+            This means that the unique name will not change when the sheet is renamed or moved.
+
+        .. versionadded:: 0.44.1
+        """
+        if self._unique_id is None:
+            # pylint: disable=import-outside-toplevel
+            # pylint: disable=redefined-outer-name
+            from ooodev.calc.calc_sheet_id import CalcSheetId
+
+            sheet_id = CalcSheetId(sheet=self)
+            self._unique_id = sheet_id.id
+        return self._unique_id
+
     # endregion Properties
 
 
 if mock_g.FULL_IMPORT:
-    from .spreadsheet_draw_page import SpreadsheetDrawPage
-    from .calc_charts import CalcCharts
+    from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
+    from ooodev.calc.calc_charts import CalcCharts
+    from ooodev.calc.calc_sheet_id import CalcSheetId

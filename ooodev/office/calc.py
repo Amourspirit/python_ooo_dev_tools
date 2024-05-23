@@ -9585,6 +9585,31 @@ class Calc:
             return None
         return crs
 
+    @staticmethod
+    def get_sheet_name_from_code_name(doc: XSpreadsheetDocument, code_name: str) -> str:
+        """
+        Gets the sheet name from the code name.
+
+        Args:
+            doc (XSpreadsheetDocument): Spreadsheet document.
+            code_name (str): The sheet code name. Case insensitive.
+
+        Returns:
+            str: The sheet name or an empty string if not found.
+
+        .. versionadded:: 0.44.1
+        """
+        if not code_name:
+            return ""
+        s = code_name.casefold()
+        result = ""
+        sheets = doc.getSheets()
+        for sheet in sheets: # type: ignore
+            if sheet.CodeName.casefold() == s:  # type: ignore
+                result = sheet.Name  # type: ignore
+                break
+        return result
+
     # endregion ------------ search ------------------------------------
 
     # region --------------- cell decoration ---------------------------
