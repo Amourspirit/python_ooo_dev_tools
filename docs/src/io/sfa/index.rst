@@ -1,0 +1,8 @@
+sfa
+===
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

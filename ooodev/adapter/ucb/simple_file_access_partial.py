@@ -93,9 +93,13 @@ class SimpleFileAccessPartial:
         """
         return DateUtil.uno_dt_to_dt(self.__component.getDateTimeModified(file_url))
 
-    def get_folder_contents(self, folder_url: str, include_folders: bool) -> Tuple[str, ...]:
+    def get_folder_contents(self, folder_url: str, include_folders: bool = True) -> Tuple[str, ...]:
         """
         Returns the contents of a folder.
+
+        Args:
+            folder_url (str): The URL of the folder.
+            include_folders (bool, optional): If ``True``, folders are included in the result. Defaults to ``True``.
 
         Raises:
             com.sun.star.ucb.CommandAbortedException: ``CommandAbortedException``
