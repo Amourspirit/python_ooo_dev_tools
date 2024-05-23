@@ -2,7 +2,7 @@
 Version History
 ***************
 
-Version 0.44.1
+Version 0.44.2
 ==============
 
 Added ``ooodev.io.sfa.Sfa`` class for working with Simple File Access. This class can be used to read/write/copy and delete files embedded in the document.
