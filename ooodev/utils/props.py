@@ -37,6 +37,8 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.event_singleton import _Events
 from ooodev.events.props_named_event import PropsNamedEvent
 from ooodev.exceptions import ex as mEx
+from ooodev.utils.helper.dot_dict import DotDict
+
 
 if TYPE_CHECKING:
     from com.sun.star.beans import XPropertySetInfo
@@ -224,6 +226,49 @@ class Props:
         return d
 
     # endregion ---------------- Data -----------------------------------
+
+    # region DotDict
+    @staticmethod
+    def props_to_dot_dict(props: Sequence[PropertyValue]) -> DotDict:
+        """
+        Convert a sequence of PropertyValues to a DotDict.
+
+        |lo_safe|
+
+        Args:
+            props (Sequence[PropertyValue]): Properties to convert to DotDict.
+
+        Returns:
+            DotDict: DotDict
+
+        .. versionadded:: 0.45.0
+        """
+        return DotDict(**{prop.Name: prop.Value for prop in props})
+
+    @staticmethod
+    def dot_dict_to_props(dot_dict: DotDict) -> List[PropertyValue]:
+        """
+        Convert a DotDict to a list of PropertyValues.
+
+        |lo_safe|
+
+        Args:
+            dot_dict (DotDict): DotDict to convert to PropertyValues.
+
+        Returns:
+            List[PropertyValue]: List of PropertyValues
+
+        .. versionadded:: 0.45.0
+        """
+        result = []
+        for k, v in dot_dict.items():
+            pv = PropertyValue()
+            pv.Name = k
+            pv.Value = v
+            result.append(pv)
+        return result
+
+    # endregion DotDict
 
     # region ------------------- uno -----------------------------------
     @staticmethod

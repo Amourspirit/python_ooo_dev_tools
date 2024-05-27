@@ -28,7 +28,9 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.type_var import Row, Table
+from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
@@ -51,6 +53,7 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
     from ooodev.units.unit_obj import UnitT
     from ooodev.calc.controls.cell_control import CellControl
+    from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp
 else:
     XSheetAnnotation = Any
     UnitT = Any
@@ -117,6 +120,7 @@ class CalcCell(
         )
         StylePropertyPartial.__init__(self, component=sheet_cell, property_name="CellStyle")
         self._control = None
+        self._custom_properties = None
         self._init_events()
 
     def _init_events(self) -> None:
@@ -620,7 +624,133 @@ class CalcCell(
 
     # endregion make_constraint()
 
+    # region Refresh
+    def refresh(self) -> None:
+        """
+        Refreshes this instance cell.
+
+        This method should be call if the sheet has rows or columns inserted or deleted since this instance was created that affect the cell address.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.45.0
+        """
+        cell = self.component.getCellAddress()
+        cell_obj = mCellObj.CellObj.from_cell(cell)
+        if self._cell_obj != cell_obj:
+            self._cell_obj = cell_obj
+            self._custom_properties = None
+
+    # endregion Refresh
+
+    # region Custom Properties Methods
+    def _get_custom_properties(self) -> CalcCellCustomProp:
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=redefined-outer-name
+        if self._custom_properties is not None:
+            return self._custom_properties
+        from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp
+
+        self._custom_properties = CalcCellCustomProp(cell=self)
+        return self._custom_properties
+
+    # endregion Custom Properties
+
+    # region Properties Methods
+
     # region Properties
+
+    # region    Custom Properties
+    def get_custom_property(self, name: str, default: Any = NULL_OBJ) -> Any:
+        """
+        Gets a custom property.
+
+        Args:
+            name (str): The name of the property.
+            default (Any, optional): The default value to return if the property does not exist.
+
+        Raises:
+            AttributeError: If the property is not found.
+
+        Returns:
+            Any: The value of the property.
+        """
+        cp = self._get_custom_properties()
+        return cp.get_custom_property(name=name, default=default)
+
+    def get_custom_properties(self) -> DotDict:
+        """
+        Gets custom properties.
+
+        Returns:
+            DotDict: custom properties.
+
+        Hint:
+            DotDict is a class that allows you to access dictionary keys as attributes or keys.
+            DotDict can be imported from ``ooodev.utils.helper.dot_dict.DotDict``.
+        """
+        cp = self._get_custom_properties()
+        return cp.get_custom_properties()
+
+    def has_custom_property(self, name: str) -> bool:
+        """
+        Gets if a custom property exists.
+
+        Args:
+            name (str): The name of the property to check.
+
+        Returns:
+            bool: ``True`` if the property exists, otherwise ``False``.
+        """
+        cp = self._get_custom_properties()
+        return cp.has_custom_property(name=name)
+
+    def set_custom_property(self, name: str, value: Any):
+        """
+        Sets a custom property.
+
+        Args:
+            name (str): The name of the property.
+            value (Any): The value of the property.
+
+        Raises:
+            AttributeError: If the property is a forbidden key.
+        """
+        cp = self._get_custom_properties()
+        cp.set_custom_property(name=name, value=value)
+
+    def set_custom_properties(self, properties: DotDict) -> None:
+        """
+        Sets custom properties.
+
+        Args:
+            properties (DotDict): custom properties to set.
+
+        Hint:
+            DotDict is a class that allows you to access dictionary keys as attributes or keys.
+            DotDict can be imported from ``ooodev.utils.helper.dot_dict.DotDict``.
+        """
+        cp = self._get_custom_properties()
+        cp.set_custom_properties(properties=properties)
+
+    def remove_custom_property(self, name: str) -> None:
+        """
+        Removes a custom property.
+
+        Args:
+            name (str): The name of the property to remove.
+
+        Raises:
+            AttributeError: If the property is a forbidden key.
+
+        Returns:
+            None:
+        """
+        cp = self._get_custom_properties()
+        cp.remove_custom_property(name=name)
+
+    # endregion Custom Properties
 
     @property
     def cell_obj(self) -> mCellObj.CellObj:
@@ -682,3 +812,4 @@ class CalcCell(
 if mock_g.FULL_IMPORT:
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
     from ooodev.calc.controls.cell_control import CellControl
+    from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp

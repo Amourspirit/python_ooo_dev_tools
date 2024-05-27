@@ -77,3 +77,12 @@ def test_lo_inst(loader) -> None:
             lo.close_doc(lo_doc)
     finally:
         Lo.close_doc(doc)
+
+
+def test_lo_version(loader) -> None:
+    from ooodev.loader.lo import Lo
+
+    assert Lo.version is not None
+    assert isinstance(Lo.version, tuple)
+    assert len(Lo.version) == 3
+    assert Lo.version >= (0, 45, 0)

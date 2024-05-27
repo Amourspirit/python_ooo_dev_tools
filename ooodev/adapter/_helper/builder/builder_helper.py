@@ -42,12 +42,14 @@ def builder_add_comp_defaults(builder: DefaultBuilder) -> None:
 
     key = "ooodev.utils.partial.qi_partial.QiPartial"
     if not builder.has_import(key) and not builder.has_omit(key):
+        # QiPartial will always be added as a component because it is XInterface related.
+        # If this is set to optional it causes a issue with some classes reporting they have no qi attribute.
         builder.add_import(
             name=key,
             uno_name="com.sun.star.uno.XInterface",
-            optional=True,
+            optional=False,
             init_kind=InitKind.COMPONENT,
-            check_kind=CheckKind.INTERFACE,
+            check_kind=CheckKind.NONE,
         )
 
     key = "ooodev.events.partial.events_partial.EventsPartial"

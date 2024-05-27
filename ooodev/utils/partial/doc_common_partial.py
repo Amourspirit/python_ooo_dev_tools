@@ -14,6 +14,9 @@ class DocCommonPartial:
         """
         self.__component = component
 
+    def __bool__(self) -> bool:
+        return True
+
     @property
     def runtime_uid(self) -> str:
         """

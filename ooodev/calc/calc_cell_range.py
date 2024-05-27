@@ -932,6 +932,22 @@ class CalcCellRange(
         """
         _ = mCalc.Calc.remove_border(sheet=self.calc_sheet.component, range_obj=self._range_obj)
 
+    def refresh(self) -> None:
+        """
+        Refreshes the range of cells.
+
+        This method should be call if the sheet has rows or columns inserted or deleted since this instance as been created.
+
+        Returns:
+            None:
+
+        .. versionadded:: 0.45.0
+        """
+        rng = self.component.getRangeAddress()
+        rng_obj = RangeObj.from_range(rng)
+        if rng_obj != self._range_obj:
+            self._range_obj = rng_obj
+
     # region Properties
 
     @property

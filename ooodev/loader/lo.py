@@ -2419,6 +2419,18 @@ class Lo(metaclass=StaticProperty):
         """
         return cls._lo_inst.tmp_dir
 
+    @classproperty
+    def version(cls) -> Tuple[int, int, int]:
+        """
+        Gets the OooDev version.
+
+        Returns:
+            Tuple[int, int, int]: Version tuple.
+
+        .. versionadded:: 0.45.0
+        """
+        return cls._lo_inst.version
+
 
 def _on_connect_dispose(source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
     setattr(Lo, "_lo_inst", None)

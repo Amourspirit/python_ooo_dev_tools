@@ -50,6 +50,9 @@ class DotDict:
     def __contains__(self, key: str):
         return key in self.__dict__
 
+    def __len__(self):
+        return len(self.__dict__)
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         Get value from dictionary.
@@ -62,3 +65,6 @@ class DotDict:
             Any: Value of key or default value.
         """
         return self.__dict__.get(key, default)
+
+    def items(self):
+        return self.__dict__.items()
