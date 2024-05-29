@@ -4,6 +4,7 @@
         "github.copilot-chat",
         "streetsidesoftware.code-spell-checker",
         "oderwat.indent-rainbow",
-        "mgesbert.python-path"
+        "mgesbert.python-path",
+        "yuenm18.ooxml-viewer"
     ]
 }

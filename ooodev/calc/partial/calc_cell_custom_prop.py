@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
 import uno
 import unohelper
@@ -7,16 +7,21 @@ from com.sun.star.container import XContainerListener
 from com.sun.star.drawing import XControlShape
 from com.sun.star.form import XForm
 from com.sun.star.lang import XComponent
+from com.sun.star.awt import XControlModel
 
 # from com.sun.star.xml import AttributeData
+from ooo.dyn.drawing.text_vertical_adjust import TextVerticalAdjust
 from ooo.dyn.beans.property_attribute import PropertyAttributeEnum
+from ooo.dyn.awt.size import Size
+from ooo.dyn.awt.point import Point
 
-from ooodev.calc import CalcCell
+from ooodev.calc.calc_cell import CalcCell
 from ooodev.form.controls.form_ctl_hidden import FormCtlHidden
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils import props as mProps
 from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.helper.dot_dict import DotDict
+from ooodev.form.forms import Forms
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
@@ -182,6 +187,7 @@ class CalcCellCustomProp:
             if cell_address.Row == row and cell_address.Column == col:
                 if shape.Name.endswith(self._shape_suffix):
                     self._cache[key] = shape
+                    # shape.Anchor = self._cell.component  # type: ignore
                     result = shape
                 else:
                     cleanup.append(shape)
@@ -199,6 +205,7 @@ class CalcCellCustomProp:
         # Setting shape.Visible does not work here. It does work after shape has been added to the draw page.
         # shape.setPropertyValue("Visible", False)
         # shape.Visible = False
+
         return shape
 
     def _add_shape_to_cell(self) -> str:
@@ -213,7 +220,7 @@ class CalcCellCustomProp:
         if active_sheet != self._cell.calc_sheet:
             activated = True
             self._cell.calc_sheet.set_active()
-        shape = self._create_shape()
+        shape = cast("ControlShape", self._create_shape())
         # the name is not critical as long as it starts with the prefix
         str_id = "id" + gUtil.Util.generate_random_alpha_numeric(14).lower()
         shape.Name = f"{self._shape_prefix}{str_id}{self._shape_suffix}"  # type: ignore
@@ -226,16 +233,65 @@ class CalcCellCustomProp:
         # ad.Value = str_id
         # container.insertByName(self._attribute_name, ad)
         # shape.UserDefinedAttributes = container  # type: ignore
+
+        # FixedText
+        model = self._cell.lo_inst.create_instance_mcf(
+            XControlModel, f"com.sun.star.form.component.FixedText", raise_err=True
+        )
+        model.Name = f"Model_{shape.Name}"  # type: ignore
+        model.Label = ""  # type: ignore
+        shape.setControl(model)
+
+        model = shape.getControl()
+        form = self._get_form()
+        name = Forms.create_name(form, "Control")
+        form.insertByName(name, model)
+
+        model_key_val = {"Printable": False, "EnableVisible": False, "Enabled": False}
+        for key, val in model_key_val.items():
+            if hasattr(model, key):
+                setattr(model, key, val)
+
         self._draw_page.add(shape)
+        # shape.ResizeWithCell = True  # type: ignore
+        # shape.MoveProtect = False
+
+        # note setting visible to true here cause the document to hang when be saved. This is a critical failure.
+        # The Control can be set to invisible but the shape must remain visible.
+        shape_key_val = {
+            "Decorative": False,
+            "TextVerticalAdjust": TextVerticalAdjust.CENTER,
+            "HoriOrient": 0,
+            "MoveProtect": False,
+            "Printable": False,
+            "ResizeWithCell": True,
+            "SizeProtect": False,
+            "Visible": True,
+        }
+        for key, val in shape_key_val.items():
+            if hasattr(shape, key):
+                setattr(shape, key, val)
+
         shape.Anchor = self._cell.component  # type: ignore
-        shape.ResizeWithCell = True  # type: ignore
-        shape.MoveProtect = True  # type: ignore
-        shape.Visible = False  # type: ignore
-        shape.Printable = False  # type: ignore
+
+        shape.setSize(Size(1, 1))
+
+        with contextlib.suppress(Exception):
+            control_access = self._cell.calc_doc.get_control_access()
+            ctl = control_access.getControl(model)
+            if not ctl.isDesignMode():
+                ctl.setDesignMode(True)
+                ctl.setVisible(False)  # type: ignore
+            ctl.setDesignMode(False)
 
         if activated:
             active_sheet.set_active()
         return str_id
+
+    def _get_pos_size(self) -> Tuple[int, int, int, int]:
+        ps = self._cell.component.Position
+        size = self._cell.component.Size
+        return (ps.X, ps.Y, size.Width, size.Height)
 
     # endregion Manage Cell Shape
 
