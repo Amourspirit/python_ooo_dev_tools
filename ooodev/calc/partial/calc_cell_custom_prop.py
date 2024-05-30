@@ -175,6 +175,8 @@ class CalcCellCustomProp:
         # When a cell has been copied and pasted there will be a duplicate shape in the dest cell.
         # For this reason a small cleanup is done if needed to remove any duplicate shapes.
         # The duplicate shapes will have a higher z-order then the original shape. The higher z-order shapes are removed.
+        # Depending on environment there may not be duplicates with the exact shape name. It may be an artifact such as '_cprop_idhdkuy07hizr3eh_id 1'
+        # In this case the artifact is removed when the cell custom properties that contains the artifact is accessed.
 
         key = f"shape_{row}_{col}"
         if key in self._cache:
@@ -182,6 +184,7 @@ class CalcCellCustomProp:
         comp = self._draw_page.component
 
         found_shape = None
+        cleanup = []
 
         for shape in comp:  # type: ignore
             if not shape.supportsService("com.sun.star.drawing.ControlShape"):
@@ -199,9 +202,17 @@ class CalcCellCustomProp:
             cell_address = anchor.CellAddress
             if cell_address.Row == row and cell_address.Column == col:
                 if shape.Name.endswith(self._shape_suffix):
-                    found_shape = shape
-                    break
+                    if found_shape is None:
+                        found_shape = shape
+                else:
+                    cleanup.append(shape)
+
         if found_shape is None:
+            if cleanup:
+                for shape in cleanup:
+                    with contextlib.suppress(Exception):
+                        self._draw_page.remove(shape)
+            cleanup.clear()
             return None
 
         def get_result(shp: Any) -> Any:
@@ -219,7 +230,6 @@ class CalcCellCustomProp:
             return None
 
         result = None
-        cleanup = []
 
         shapes_dict = self._get_shapes_dict()
         shapes = shapes_dict[found_shape.Name]
@@ -231,7 +241,8 @@ class CalcCellCustomProp:
             result = None
             shapes.sort(key=lambda x: x.ZOrder)  # type: ignore
             # if there is more then one shape then the first shape is the original
-            cleanup = shapes[1:]
+            # if cleanup is not empty at this point then it will contain artifacts such as '_cprop_idhdkuy07hizr3eh_id 1' that need to be removed.
+            cleanup.extend(shapes[1:])
             result = get_result(shapes[0])
 
         if cleanup:
