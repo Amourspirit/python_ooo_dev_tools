@@ -11,6 +11,7 @@ from com.sun.star.util import XProtectable
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 from ooodev.mock import mock_g
+from ooodev.adapter.sheet.named_ranges_comp import NamedRangesComp
 from ooodev.adapter.sheet.spreadsheet_comp import SpreadsheetComp
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.lo_events import event_ctx
@@ -30,8 +31,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
-
-
+from ooodev.utils.partial.custom_properties_partial import CustomPropertiesPartial
 from ooodev.calc import calc_cell_range as mCalcCellRange
 from ooodev.calc import calc_cell as mCalcCell
 from ooodev.calc import calc_cell_cursor as mCalcCellCursor
@@ -75,6 +75,7 @@ class CalcSheet(
     StylePartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
+    CustomPropertiesPartial,
 ):
     """Class for managing Calc Sheet"""
 
@@ -101,7 +102,17 @@ class CalcSheet(
         self._draw_page = None
         self._charts = None
         self._unique_id = None
+        self._named_ranges = None
+        forms = self.calc_sheet.draw_page.forms.component
+        CustomPropertiesPartial.__init__(
+            self, forms=forms, form_name="Form_SheetCustomProperties", ctl_name="Sheet_CustomProperties"
+        )
         self._init_events()
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, CalcSheet):
+            return False
+        return self.calc_sheet.component == other.calc_sheet.component
 
     # region Events
     def _init_events(self) -> None:
@@ -3950,6 +3961,18 @@ class CalcSheet(
             sheet_id = CalcSheetId(sheet=self)
             self._unique_id = sheet_id.id
         return self._unique_id
+
+    @property
+    def named_ranges(self) -> NamedRangesComp:
+        """
+        Named Ranges
+
+        Returns:
+            NamedRanges: Named Ranges
+        """
+        if self._named_ranges is None:
+            self._named_ranges = NamedRangesComp(component=self.component.NamedRanges)  # type: ignore
+        return self._named_ranges  # type: ignore
 
     # endregion Properties
 

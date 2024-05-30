@@ -10,6 +10,8 @@ from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
 
+from ooodev.adapter.sheet.named_ranges_comp import NamedRangesComp
+from ooodev.adapter.sheet.database_ranges_comp import DatabaseRangesComp
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
 from ooodev.calc import calc_sheet as mCalcSheet
 from ooodev.calc import calc_sheet_view as mCalcSheetView
@@ -128,6 +130,8 @@ class CalcDoc(
         self._menu = None
         self._menu_bar = None
         self._shortcuts = None
+        self._named_ranges = None
+        self._database_ranges = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -1227,5 +1231,33 @@ class CalcDoc(
         if self._shortcuts is None:
             self._shortcuts = Shortcuts(app=LoService.CALC, lo_inst=self.lo_inst)
         return self._shortcuts
+
+    @property
+    def named_ranges(self) -> NamedRangesComp:
+        """
+        Named Ranges
+
+        Returns:
+            NamedRanges: Named Ranges
+
+        .. versionadded:: 0.45.0
+        """
+        if self._named_ranges is None:
+            self._named_ranges = NamedRangesComp(component=self.component.NamedRanges)  # type: ignore
+        return self._named_ranges  # type: ignore
+
+    @property
+    def database_ranges(self) -> DatabaseRangesComp:
+        """
+        Database Ranges
+
+        Returns:
+            DatabaseRangesComp: Database Ranges
+
+        .. versionadded:: 0.45.0
+        """
+        if self._database_ranges is None:
+            self._database_ranges = DatabaseRangesComp(component=self.component.DatabaseRanges)  # type: ignore
+        return self._database_ranges  # type: ignore
 
     # endregion Properties

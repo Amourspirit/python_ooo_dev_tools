@@ -2,6 +2,57 @@
 Version History
 ***************
 
+
+Version 0.45.0
+==============
+
+Custom Properties
+-----------------
+
+Added custom properties to ``WriterDoc``,  ``DrawDoc`` pages, ``ImpressDoc``pages, ``CalcDoc`` sheets and cell.
+This allows for custom properties to be added to the document, page, sheet or cell using |odev|.
+
+Properties are persisted wth the document.
+Note that these custom properties are only available when using |odev|.
+
+In Calc spreadsheets custom properties can be added to the sheet or cell. Each sheet has its own custom properties and each cell has its own custom properties.
+
+.. code-block:: python
+
+    from ooodev.calc import CalcDoc
+    doc = CalcDoc.create_doc(visible=True)
+
+    sheet = doc.sheets[0]
+    sheet.set_custom_property("MyProp", "MyValue")
+    assert sheet.get_custom_property("MyProp") == "MyValue"
+
+    cell = sheet["A1"]
+    cell.set_custom_property("MyProp", "MyValue")
+    assert cell.get_custom_property("MyProp") == "MyValue"
+
+    cell.set_custom_property("MyNum", 22.3)
+    assert cell.get_custom_property("MyNum") == 22.3
+
+
+    # alternatively use DotDict
+    from ooodev.utils.helper.dot_dict import DotDict
+    props = DotDict()
+    props.MyProp = "MyValue"
+    props.MyProp2 = "MyValue2"
+    cell.set_custom_properties(props)
+
+    # get all custom properties
+    props = cell.get_custom_properties() # DotDict instance
+    print(props.MyProp)
+    print(props.MyProp2)
+
+Version
+-------
+
+Added a Version Property to ``ooodev.loader.Lo``. This property return the current version of the library as a tuple in the format of ``(0, 45, 0)``.
+
+
+
 Version 0.44.2
 ==============
 

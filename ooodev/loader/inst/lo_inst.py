@@ -42,6 +42,7 @@ from ooo.dyn.util.close_veto_exception import CloseVetoException
 # not importing for doc building just result in short import name for
 # args that use these.
 # this is also true because docs/conf.py ignores com import for autodoc
+import ooodev
 from ooodev.mock import mock_g
 
 # import module and not module content to avoid circular import issue.
@@ -2199,6 +2200,25 @@ class LoInst(EventsPartial):
         tmp_dir = Path(uno.fileUrlToSystemPath(ps.temp[0]))
         self._cache[key] = tmp_dir
         return tmp_dir
+
+    @property
+    def version(self) -> Tuple[int, int, int]:
+        """
+        Gets the OooDev version.
+
+        Returns:
+            Tuple[int, int, int]: Version tuple.
+
+        .. versionadded:: 0.45.0
+        """
+        key = "ooodev_version"
+        if key in self._cache:
+            return self._cache[key]
+        s = ooodev.get_version()
+        ver = s.split(".")
+        ver_int = tuple([int(v) for v in ver])
+        self._cache[key] = ver_int
+        return ver_int  # type: ignore
 
 
 __all__ = ("LoInst",)
