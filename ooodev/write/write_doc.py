@@ -59,6 +59,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_text_range import WriteTextRange
+from ooodev.utils.partial.custom_properties_partial import CustomPropertiesPartial
 
 # from . import write_draw_page as mWriteDrawPage
 from ooodev.write import write_paragraph_cursor as mWriteParagraphCursorCursor
@@ -121,6 +122,7 @@ class WriteDoc(
     DispatchPartial,
     LibrariesPartial,
     DocCommonPartial,
+    CustomPropertiesPartial,
 ):
     """A class to represent a Write document."""
 
@@ -178,6 +180,7 @@ class WriteDoc(
         self._tables = None
         self._menu = None
         self._shortcuts = None
+        CustomPropertiesPartial.__init__(self, forms=self.draw_page.forms.component)
 
     # region Lazy Listeners
 

@@ -26,6 +26,11 @@ def test_sfa(loader, tmp_path) -> None:
         assert sfa.inst.is_folder(new_dir)
         s_file = new_dir + "/new_file.txt"
         sfa.write_text_file(s_file, "Hello, World!")
+
+        # check that file can be accessed before saving
+        txt = sfa.read_text_file(s_file)
+        assert txt == "Hello, World!"
+
         doc.save_doc(pth)
     finally:
         if doc is not None:
@@ -72,6 +77,10 @@ def test_sfa_copy_file_to_doc(loader, tmp_path) -> None:
         assert sfa.inst.is_folder(new_dir)
         s_file = new_dir + "/new_file.txt"
         sfa.inst.copy(source_url=tmp_txt_file.as_uri(), dest_url=s_file)
+
+        # check that file can be accessed before saving
+        txt = sfa.read_text_file(s_file)
+        assert txt == "Hello, World!"
 
         doc.save_doc(pth)
     finally:

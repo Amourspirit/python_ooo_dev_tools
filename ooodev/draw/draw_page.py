@@ -16,6 +16,7 @@ from ooodev.office import draw as mDraw
 from ooodev.units.unit_mm import UnitMM
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.type_var import PathOrStr
+from ooodev.utils.partial.custom_properties_partial import CustomPropertiesPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -28,6 +29,7 @@ _T = TypeVar("_T", bound="ComponentT")
 
 # ShapeFactoryPartial of GenericDrawPage implements OfficeDocumentPropPartial
 
+
 class DrawPage(
     GenericDrawPage["DrawPage[_T]"],
     Generic[_T],
@@ -35,6 +37,7 @@ class DrawPage(
     VetoableChangeImplement,
     EventsPartial,
     PropPartial,
+    CustomPropertiesPartial,
 ):
     """
     Represents a draw page.
@@ -60,6 +63,7 @@ class DrawPage(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         EventsPartial.__init__(self)
         self._forms = None
+        CustomPropertiesPartial.__init__(self, forms=self.forms.component)
 
     def __len__(self) -> int:
         return self.component.getCount()

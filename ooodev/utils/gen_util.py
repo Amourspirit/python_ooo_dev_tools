@@ -65,6 +65,33 @@ class Util:
         """
         return "".join(secrets.choice(string.ascii_letters) for _ in range(length))
 
+    @staticmethod
+    def generate_random_hex_string(length: int = 8) -> str:
+        """
+        Generates a random string.
+
+        Args:
+            length (int, optional): Length of string to generate. Default ``8``
+
+        Returns:
+            str: Random string
+        """
+        return "".join(secrets.choice(string.hexdigits) for _ in range(length))
+
+    @staticmethod
+    def generate_random_alpha_numeric(length: int = 8) -> str:
+        """
+        Generates a random alpha numeric string.
+
+        Args:
+            length (int, optional): Length of string to generate. Default ``8``
+
+        Returns:
+            str: Random string
+        """
+        s = string.ascii_letters + string.digits
+        return "".join(secrets.choice(s) for _ in range(length))
+
     @classmethod
     def is_iterable(cls, arg: Any, excluded_types: Sequence[type] | None = None) -> bool:
         """

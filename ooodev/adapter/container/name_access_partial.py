@@ -65,6 +65,18 @@ class NameAccessPartial(Generic[T], element_access_partial.ElementAccessPartial)
 
     # endregion Methods
 
+    def __contains__(self, name: str) -> bool:
+        """
+        Checks if the container has an element with the specified name.
+
+        Args:
+            name (str): The name of the element.
+
+        Returns:
+            bool: ``True`` if the container has an element with the specified name, otherwise ``False``.
+        """
+        return self.has_by_name(name)
+
 
 def get_builder(component: Any) -> DefaultBuilder:
     """

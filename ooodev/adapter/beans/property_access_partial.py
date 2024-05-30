@@ -45,6 +45,13 @@ class PropertyAccessPartial:
         Returns:
             tuple[PropertyValue, ...]: The property values.
         """
+        # This is unexpected but getPropertyValues() on a hidden control result is an error.
+        # uno.com.sun.star.lang.IllegalArgumentException: incorrect number of parameters passed invoking function getPropertyValues: expected 1, got 0 at ./stoc/source/invocation/invocation.cxx:606
+        # This may be a bug in the uno library.
+        # This also may happen on other objects that implement XPropertyAccess.
+        # A workaround is to check if the object has a PropertyValues attribute.
+        if hasattr(self.__component, "PropertyValues"):
+            return self.__component.PropertyValues  # type: ignore
         return self.__component.getPropertyValues()
 
     def set_property_values(self, values: tuple[PropertyValue, ...]) -> None:
