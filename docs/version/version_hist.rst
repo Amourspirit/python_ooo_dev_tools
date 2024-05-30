@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.45.1
+==============
+
+Minor update for Cell Custom properties to clean up artifacts.
+
 
 Version 0.45.0
 ==============
