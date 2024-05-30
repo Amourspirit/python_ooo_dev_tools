@@ -33,6 +33,7 @@ Submodules
    ooodev.adapter.container.name_access_partial
    ooodev.adapter.container.name_access_t
    ooodev.adapter.container.name_container_comp
+   ooodev.adapter.container.name_container_impl
    ooodev.adapter.container.name_container_partial
    ooodev.adapter.container.name_index_t
    ooodev.adapter.container.name_replace_comp

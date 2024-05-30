@@ -63,7 +63,7 @@ def test_sheet_cell_custom_props(loader, tmp_path) -> None:
     doc = None
     try:
         pth = Path(tmp_path, "test_sheet_cell_custom_props.ods")
-        doc = CalcDoc.create_doc(loader)
+        doc = CalcDoc.create_doc(loader=loader)
         sheet = doc.sheets[0]
         cell = sheet["A1"]
         cell.set_custom_property("test1", "test_val1")
@@ -200,6 +200,7 @@ def test_sheet_and_cell_custom_props(loader, tmp_path) -> None:
 
         # test cell moved.
         sheet2.insert_row(1, 1)
+        sheet2.insert_column(1, 1)
         cell.refresh()
         dd = cell.get_custom_properties()
         assert dd.Ran == "Ran One"
@@ -245,8 +246,8 @@ def test_sheet_and_cell_custom_props(loader, tmp_path) -> None:
         assert dd.sheet2_test1 == "test_val1"
         assert dd.sheet2_test2 == 10
 
-        # cell was moved down one row.
-        cell = sheet2["B3"]
+        # cell was moved down and right one row.
+        cell = sheet2["C3"]
         dd = cell.get_custom_properties()
         assert dd.Ran == "Ran One"
         assert dd.StopMe == "Stop Me"

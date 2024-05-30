@@ -109,6 +109,11 @@ class CalcSheet(
         )
         self._init_events()
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, CalcSheet):
+            return False
+        return self.calc_sheet.component == other.calc_sheet.component
+
     # region Events
     def _init_events(self) -> None:
         self._fn_on_range_before_from_obj = self._on_range_before_from_obj

@@ -636,11 +636,11 @@ class CalcCell(
 
         .. versionadded:: 0.45.0
         """
+        self._custom_properties = None
         cell = self.component.getCellAddress()
         cell_obj = mCellObj.CellObj.from_cell(cell)
         if self._cell_obj != cell_obj:
             self._cell_obj = cell_obj
-            self._custom_properties = None
 
     # endregion Refresh
 
@@ -706,6 +706,16 @@ class CalcCell(
         cp = self._get_custom_properties()
         return cp.has_custom_property(name=name)
 
+    def has_custom_properties(self) -> bool:
+        """
+        Gets if a custom properties exists.
+
+        Returns:
+            bool: ``True`` if the properties exists, otherwise ``False``.
+        """
+        cp = self._get_custom_properties()
+        return cp.has_custom_properties()
+
     def set_custom_property(self, name: str, value: Any):
         """
         Sets a custom property.
@@ -749,6 +759,16 @@ class CalcCell(
         """
         cp = self._get_custom_properties()
         cp.remove_custom_property(name=name)
+
+    def remove_custom_properties(self) -> None:
+        """
+        Removes any custom properties.
+
+        Returns:
+            None:
+        """
+        cp = self._get_custom_properties()
+        cp.remove_custom_properties()
 
     # endregion Custom Properties
 
