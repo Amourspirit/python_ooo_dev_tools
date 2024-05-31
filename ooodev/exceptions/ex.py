@@ -57,6 +57,12 @@ class CellError(Exception):
     pass
 
 
+class CellDeletedError(CellError):
+    """Error when cell is deleted"""
+
+    pass
+
+
 class ConfigError(Exception):
     """Config Error"""
 

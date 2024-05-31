@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.45.2
+==============
+
+Added add a class that can be used to clean Sheet Custom Properties. ``ooodev.calc.cell.custom_prop_clean.CustomPropClean``.
+In most all cases this will not be need but is there for edge cases.
+
+
 Version 0.45.1
 ==============
 
@@ -14,7 +21,7 @@ Version 0.45.0
 Custom Properties
 -----------------
 
-Added custom properties to ``WriterDoc``,  ``DrawDoc`` pages, ``ImpressDoc``pages, ``CalcDoc`` sheets and cell.
+Added custom properties to ``WriterDoc``,  ``DrawDoc`` pages, ``ImpressDoc`` pages, ``CalcDoc`` sheets and cell.
 This allows for custom properties to be added to the document, page, sheet or cell using |odev|.
 
 Properties are persisted wth the document.
