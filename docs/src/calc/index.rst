@@ -8,6 +8,7 @@ calc
     :glob:
 
     *
+    cell/index
     chart2/index
     export/index
     filter/index
