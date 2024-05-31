@@ -228,6 +228,16 @@ class LoInst(EventsPartial):
 
     def on_office_closing(self, event_args: CancelEventArgs) -> None:
         self.trigger_event(LoNamedEvent.OFFICE_CLOSING, event_args)
+        if event_args.cancel:
+            return
+        self._clear_cache()
+        self._glb_event_broadcaster = None
+        self._current_doc = None
+        self._mc_factory = None
+        self._xdesktop = None
+        self._xcc = None
+        self._fn_on_document_event = None
+        self._fn_on_lo_del_cache_attrs = None
 
     def on_office_closed(self, event_args: EventArgs) -> None:
         self.trigger_event(LoNamedEvent.OFFICE_CLOSED, event_args)

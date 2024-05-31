@@ -13,6 +13,7 @@ from ooo.dyn.beans.property_attribute import PropertyAttributeEnum
 from ooo.dyn.awt.size import Size
 
 from ooodev.calc.calc_cell import CalcCell
+from ooodev.calc.cell.custom_prop_base import CustomPropBase
 from ooodev.form.controls.form_ctl_hidden import FormCtlHidden
 from ooodev.utils import gen_util as gUtil
 from ooodev.utils import props as mProps
@@ -20,12 +21,10 @@ from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.helper.dot_dict import DotDict
 
 if TYPE_CHECKING:
-    from com.sun.star.form.component import Form
     from com.sun.star.container import ContainerEvent
     from com.sun.star.container import XContainer
     from com.sun.star.drawing import ControlShape
     from com.sun.star.lang import EventObject
-    from com.sun.star.form.component import HiddenControl
     from ooodev.loader.inst.lo_inst import LoInst
 
 # Because the shape that is added to the cell is relative to the cell then when the cell moves the shape moves with it.
@@ -42,15 +41,17 @@ if TYPE_CHECKING:
 # Removing the form would not remove the shapes. It would be possible for a developer to monitor the sheet and manually remove the hidden controls.
 # This is not really an issue because the hidden controls are not visible and do not effect the document.
 # See Also: https://ask.libreoffice.org/t/how-to-detect-cell-delete-event/106250
+# Also There is a ooodev.calc.cell.custom_prop_clean.CustomPropClean that can be used to clean up the hidden controls if needed.
+# this could also be done on a document saving event or other event if needed
 
 
-class CalcCellCustomProp:
+class CustomProp(CustomPropBase):
     """A partial class for Calc Cell custom properties."""
 
     class ContainerListener(unohelper.Base, XContainerListener):
 
         def __init__(
-            self, form_name: str, cp: CalcCellCustomProp, lo_inst: LoInst, subscriber: XContainer | None = None
+            self, form_name: str, cp: CustomProp, lo_inst: LoInst, subscriber: XContainer | None = None
         ) -> None:
             super().__init__()
             self._form_name = form_name
@@ -108,63 +109,44 @@ class CalcCellCustomProp:
         def lo_inst(self) -> LoInst:
             return self._lo_inst
 
-    def __init__(self, cell: CalcCell, form_name: str = "CellCustomProperties") -> None:
+    def __init__(self, cell: CalcCell) -> None:
+        CustomPropBase.__init__(self, cell.calc_sheet)
         self._cell = cell
-        self._shape_prefix = "_cprop_"
-        self._shape_suffix = "_id"  # suffix is important for ensure shape duplicates are removed.
-        self._draw_page = self._cell.calc_sheet.draw_page
         self._forbidden_keys = set(("HiddenValue", "Name", "ClassId", "Tag"))
-        self._form_name = form_name
         self._attribute_name = "CustomPropertiesId"
         self._ctl_name = None
         self._row = self._cell.cell_obj.row - 1
         self._col = self._cell.cell_obj.col_obj.index
-        self._cache = {}
-        self._container_listener: CalcCellCustomProp.ContainerListener
-        self._container_listener = CalcCellCustomProp.ContainerListener(
+        self._container_listener: CustomProp.ContainerListener
+        self._container_listener = CustomProp.ContainerListener(
             form_name=self._form_name, cp=self, lo_inst=self._cell.lo_inst, subscriber=self._draw_page.forms.component
         )
-
-    def _get_hidden_control_simple(self, name: str) -> HiddenControl | None:
-        frm = self._get_form()
-        if not frm.hasByName(name):
-            return None
-        return frm.getByName(name)
-
-    def _get_hidden_control_name_from_shape(self, shape: XControlShape) -> str:
-        # Name is in format of _cprop_idofhsvtcky1hgom_id
-        name = shape.Name  # type: ignore
-        prefix_len = len(self._shape_prefix)
-        suffix_len = len(self._shape_suffix)
-        name = name[prefix_len:]
-        name = name[:-suffix_len]
-        return name
 
     # region Manage Cell Shape
 
     def _get_control_id(self) -> Tuple[XControlShape, str]:
         key = "control_id"
-        if key in self._cache:
-            return self._cache[key]
+        if key in self.cache:
+            return self.cache[key]
         shape = self._find_shape_by_cell_row_col(self._row, self._col)
         if shape is None:
             shape, s = self._add_shape_to_cell()
             return shape, s
         s = self._get_hidden_control_name_from_shape(shape)
 
-        self._cache[key] = shape, s
+        self.cache[key] = shape, s
         return shape, s
 
     def _get_shapes_dict(self) -> Dict[str, List[XControlShape]]:
 
-        comp = self._draw_page.component
+        comp = self.draw_page.component
         shapes = {}
         # find all shapes on the draw page that start with prefix and end with suffix
         for shape in comp:  # type: ignore
             if not shape.supportsService("com.sun.star.drawing.ControlShape"):
                 continue
             name = cast(str, shape.Name)
-            if name.startswith(self._shape_prefix) and name.endswith(self._shape_suffix):
+            if name.startswith(self.shape_prefix) and name.endswith(self.shape_suffix):
                 if name in shapes:
                     shapes[name].append(shape)
                 else:
@@ -179,9 +161,9 @@ class CalcCellCustomProp:
         # In this case the artifact is removed when the cell custom properties that contains the artifact is accessed.
 
         key = f"shape_{row}_{col}"
-        if key in self._cache:
-            return self._cache[key]
-        comp = self._draw_page.component
+        if key in self.cache:
+            return self.cache[key]
+        comp = self.draw_page.component
 
         found_shape = None
         cleanup = []
@@ -196,12 +178,12 @@ class CalcCellCustomProp:
             if anchor.getImplementationName() != "ScCellObj":
                 continue
 
-            if not shape.Name.startswith(self._shape_prefix):
+            if not shape.Name.startswith(self.shape_prefix):
                 continue
 
             cell_address = anchor.CellAddress
             if cell_address.Row == row and cell_address.Column == col:
-                if shape.Name.endswith(self._shape_suffix):
+                if shape.Name.endswith(self.shape_suffix):
                     if found_shape is None:
                         found_shape = shape
                 else:
@@ -248,15 +230,15 @@ class CalcCellCustomProp:
         if cleanup:
             for shape in cleanup:
                 with contextlib.suppress(Exception):
-                    self._draw_page.remove(shape)
+                    self.draw_page.remove(shape)
         if result:
-            self._cache[key] = result
+            self.cache[key] = result
         return result
 
     def _create_shape(self) -> XControlShape:
         shape = cast(
             "ControlShape",
-            self._cell.lo_inst.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True),
+            self.sheet.lo_inst.create_instance_msf(XControlShape, "com.sun.star.drawing.ControlShape", raise_err=True),
         )
         # Setting shape.Visible does not work here. It does work after shape has been added to the draw page.
         # shape.setPropertyValue("Visible", False)
@@ -271,17 +253,17 @@ class CalcCellCustomProp:
         # Testing is showing that by activate the sheet before adding the shape the issue is resolved.
         # This also works in headless mode.
         # Once a cell has a shape for the custom properties it will not be added again and this is no longer an issue.
-        active_sheet = self._cell.calc_doc.get_active_sheet()
+        active_sheet = self.sheet.calc_doc.get_active_sheet()
         activated = False
-        if active_sheet.name != self._cell.calc_sheet.name:
+        if active_sheet.name != self.sheet.name:
             activated = True
-            self._cell.calc_sheet.set_active()
+            self.sheet.calc_sheet.set_active()
         shape = cast("ControlShape", self._create_shape())
 
         str_id = "id" + gUtil.Util.generate_random_alpha_numeric(14).lower()
-        shape.Name = f"{self._shape_prefix}{str_id}{self._shape_suffix}"  # type: ignore
+        shape.Name = f"{self.shape_prefix}{str_id}{self.shape_suffix}"  # type: ignore
 
-        self._draw_page.add(shape)
+        self.draw_page.add(shape)
 
         # note setting visible to true here cause the document to hang when be saved. This is a critical failure.
         shape.Anchor = self._cell.component  # type: ignore
@@ -305,66 +287,25 @@ class CalcCellCustomProp:
             active_sheet.set_active()
         return shape, str_id
 
-    def _get_pos_size(self) -> Tuple[int, int, int, int]:
-        ps = self._cell.component.Position
-        size = self._cell.component.Size
-        return (ps.X, ps.Y, size.Width, size.Height)
-
     # endregion Manage Cell Shape
 
     # region Manage Hidden Control
 
-    def _get_form(self) -> Form:
-
-        key = self._form_name
-        if key in self._cache:
-            return self._cache[key]
-        forms = self._draw_page.forms.component
-        if len(forms) == 0:  # type: ignore
-            # insert a default form1.
-            # The reason for this is many users many working in forms[0].
-            # This way there will be a from to work with that is not for properties.
-            # This is not critical but it is a good practice.
-            # If the user deletes Forms[0] it will not wipe the property forms.
-            # Also if the user draws control on the spreadsheet or other document it will use this form.
-            frm = cast(
-                "Form",
-                self._cell.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True),
-            )
-            frm.Name = "Form1"
-            forms.insertByName("Form1", frm)
-
-        if forms.hasByName(key):
-            frm = forms.getByName(key)
-        else:
-            frm = cast(
-                "Form",
-                self._cell.lo_inst.create_instance_mcf(XForm, "stardiv.one.form.component.Form", raise_err=True),
-            )
-            frm.Name = key
-            forms.insertByName(key, frm)
-        self._cache[key] = frm
-        return frm
-
     def _get_hidden_control(self) -> FormCtlHidden:
-        shape, ctl_name = self._get_control_id()
+        _, ctl_name = self._get_control_id()
         key = f"hidden_ctl_{ctl_name}"
-        if key in self._cache:
-            return cast(FormCtlHidden, self._cache[key])
+        if key in self.cache:
+            return cast(FormCtlHidden, self.cache[key])
         frm = self._get_form()
         if not frm.hasByName(ctl_name):
             comp = self._cell.lo_inst.create_instance_mcf(
                 XComponent, "com.sun.star.form.component.HiddenControl", raise_err=True
             )
-            try:
-                model = shape.getControl()
-                comp.HiddenValue = model.getName()  # type: ignore
-            except Exception:
-                comp.HiddenValue = ""  # type: ignore
+            comp.HiddenValue = ""  # type: ignore
             frm.insertByName(ctl_name, comp)
 
-        ctl = FormCtlHidden(frm.getByName(ctl_name), self._cell.lo_inst)
-        self._cache[key] = ctl
+        ctl = FormCtlHidden(frm.getByName(ctl_name), self.sheet.lo_inst)
+        self.cache[key] = ctl
         return ctl
 
     # endregion Manage Hidden Control
@@ -422,15 +363,15 @@ class CalcCellCustomProp:
         Returns:
             bool: ``True`` if the property exists, otherwise ``False``.
         """
-        key = self._form_name
-        if key not in self._cache:
+        key = self.form_name
+        if key not in self.cache:
             # form has not been loaded yet, It may not exist
-            if not self._draw_page.forms.has_by_name(self._form_name):
+            if not self.draw_page.forms.has_by_name(self._form_name):
                 # if there is no form there is no properties for any cell yet.
                 return False
 
         key = "control_id"
-        if key not in self._cache:
+        if key not in self.cache:
             # shape has not been loaded
             shape = self._find_shape_by_cell_row_col(self._row, self._col)
             # if the cell has no shape it has no properties
@@ -451,16 +392,16 @@ class CalcCellCustomProp:
         Returns:
             bool: ``True`` if the property exists, otherwise ``False``.
         """
-        key = self._form_name
-        if key not in self._cache:
+        key = self.form_name
+        if key not in self.cache:
             # form has not been loaded yet, It may not exist
-            if not self._draw_page.forms.has_by_name(self._form_name):
+            if not self.draw_page.forms.has_by_name(self.form_name):
                 # if there is no form there is no properties for any cell yet.
                 return False
 
         key = "control_id"
         shape = None
-        if key not in self._cache:
+        if key not in self.cache:
             # shape has not been loaded
             shape = self._find_shape_by_cell_row_col(self._row, self._col)
             # if the cell has no shape it has no properties
@@ -536,13 +477,13 @@ class CalcCellCustomProp:
         # remove hidden control
         # remove form if it is empty
         # remove shape
-        forms = self._draw_page.forms
-        if forms.has_by_name(self._form_name):
+        forms = self.draw_page.forms
+        if forms.has_by_name(self.form_name):
             _, ctl_id = self._get_control_id()
-            form = forms[self._form_name]
+            form = forms[self.form_name]
             form.remove_by_name(ctl_id)
         if not form.has_elements():
-            forms.remove_by_name(self._form_name)
+            forms.remove_by_name(self.form_name)
             form = None
         shape = self._find_shape_by_cell_row_col(self._row, self._col)
         if shape:
@@ -551,12 +492,10 @@ class CalcCellCustomProp:
 
     # endregion Property Access
 
-    def _reset(self) -> None:
-        self._cache.clear()
-
     def __del__(self) -> None:
         with contextlib.suppress(Exception):
             comp = self._draw_page.forms.component
             if self._container_listener and comp:
                 comp.removeContainerListener(self._container_listener)
             self._container_listener = None  # type: ignore
+        super().__del__()

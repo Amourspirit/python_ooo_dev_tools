@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, overload, Sequence, TYPE_CHECKING
 import uno
+from com.sun.star.uno import RuntimeException
 
 from ooodev.mock import mock_g
 from ooodev.adapter.sheet.sheet_cell_comp import SheetCellComp
@@ -53,7 +54,7 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
     from ooodev.units.unit_obj import UnitT
     from ooodev.calc.controls.cell_control import CellControl
-    from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp
+    from ooodev.calc.cell.custom_prop import CustomProp
 else:
     XSheetAnnotation = Any
     UnitT = Any
@@ -631,28 +632,51 @@ class CalcCell(
 
         This method should be call if the sheet has rows or columns inserted or deleted since this instance was created that affect the cell address.
 
+        Raises:
+            CellDeletedError: If the cell has been deleted.
+
         Returns:
             None:
 
+        See Also:
+            - :py:meth:`~.calc_cell.CalcCell.is_cell_deleted`
+
         .. versionadded:: 0.45.0
         """
+        if self.is_cell_deleted():
+            raise mEx.CellDeletedError(f"Cell {self._cell_obj} has been deleted.")
         self._custom_properties = None
         cell = self.component.getCellAddress()
         cell_obj = mCellObj.CellObj.from_cell(cell)
         if self._cell_obj != cell_obj:
             self._cell_obj = cell_obj
 
+    def is_cell_deleted(self) -> bool:
+        """
+        Determines if this cell has been deleted.
+
+        Returns:
+            bool: ``True`` if cell is deleted; Otherwise, ``False``.
+
+        .. versionadded:: 0.45.2
+        """
+        try:
+            assert self.component.AbsoluteName
+        except RuntimeException:
+            return True
+        return False
+
     # endregion Refresh
 
     # region Custom Properties Methods
-    def _get_custom_properties(self) -> CalcCellCustomProp:
+    def _get_custom_properties(self) -> CustomProp:
         # pylint: disable=import-outside-toplevel
         # pylint: disable=redefined-outer-name
         if self._custom_properties is not None:
             return self._custom_properties
-        from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp
+        from ooodev.calc.cell.custom_prop import CustomProp
 
-        self._custom_properties = CalcCellCustomProp(cell=self)
+        self._custom_properties = CustomProp(cell=self)
         return self._custom_properties
 
     # endregion Custom Properties
@@ -832,4 +856,4 @@ class CalcCell(
 if mock_g.FULL_IMPORT:
     from ooodev.calc.calc_cell_text_cursor import CalcCellTextCursor
     from ooodev.calc.controls.cell_control import CellControl
-    from ooodev.calc.partial.calc_cell_custom_prop import CalcCellCustomProp
+    from ooodev.calc.cell.custom_prop import CustomProp
