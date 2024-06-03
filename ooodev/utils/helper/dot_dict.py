@@ -68,3 +68,9 @@ class DotDict:
 
     def items(self):
         return self.__dict__.items()
+
+    def keys(self):
+        return self.__dict__.keys()
+
+    def values(self):
+        return self.__dict__.values()

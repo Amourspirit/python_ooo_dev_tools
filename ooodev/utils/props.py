@@ -215,6 +215,8 @@ class Props:
         .. versionadded:: 0.40.0
         """
         d = {}
+        if not data:
+            return d
 
         if isinstance(data[0], (tuple, list)):
             data_seq = cast(Union[Sequence[Tuple[str, Any]], Sequence[List[str]]], data)
