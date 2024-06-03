@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
+from typing import Any, Dict, List, Set, Tuple, cast, overload, Sequence, TYPE_CHECKING
 import uno
 
 from com.sun.star.drawing import XDrawPageSupplier
@@ -62,6 +62,7 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_doc import CalcDoc
     from ooodev.calc.calc_charts import CalcCharts
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
+    from ooodev.calc.cell.sheet_cell_custom_properties import SheetCellCustomProperties
 
 
 class CalcSheet(
@@ -103,6 +104,7 @@ class CalcSheet(
         self._charts = None
         self._unique_id = None
         self._named_ranges = None
+        self._custom_cell_properties = None
         forms = self.calc_sheet.draw_page.forms.component
         CustomPropertiesPartial.__init__(
             self, forms=forms, form_name="Form_SheetCustomProperties", ctl_name="Sheet_CustomProperties"
@@ -3974,6 +3976,18 @@ class CalcSheet(
             self._named_ranges = NamedRangesComp(component=self.component.NamedRanges)  # type: ignore
         return self._named_ranges  # type: ignore
 
+    @property
+    def custom_cell_properties(self) -> SheetCellCustomProperties:
+        """
+        Gets the custom property access for the sheet.
+        """
+        # pylint: disable=import-outside-toplevel
+        if self._custom_cell_properties is None:
+            from ooodev.calc.cell.sheet_cell_custom_properties import SheetCellCustomProperties
+
+            self._custom_cell_properties = SheetCellCustomProperties(self)
+        return self._custom_cell_properties
+
     # endregion Properties
 
 
@@ -3981,3 +3995,4 @@ if mock_g.FULL_IMPORT:
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
     from ooodev.calc.calc_charts import CalcCharts
     from ooodev.calc.calc_sheet_id import CalcSheetId
+    from ooodev.calc.cell.sheet_cell_custom_properties import SheetCellCustomProperties

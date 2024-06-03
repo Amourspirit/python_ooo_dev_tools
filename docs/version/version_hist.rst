@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.45.3
+==============
+
+Add Less then and Greater then operators to ``CellObj`` class. Now you can compare less then and greater then as well as sort a list of ``CellObj``.
+
+Added a ``custom_cell_properties`` property to ``CalcSheets`` This allows for access to all the sheet custom cell properties.
+
+Other minor updates and bug fixes.
+
 Version 0.45.2
 ==============
 
