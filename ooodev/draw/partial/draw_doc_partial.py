@@ -606,7 +606,7 @@ class DrawDocPartial(Generic[_T]):
         Returns:
             None:
         """
-        mGUI.GUI.set_visible(doc=self.__component, visible=visible)
+        mGui.GUI.set_visible(doc=self.__component, visible=visible)
 
     def zoom(self, type: ZoomKind = ZoomKind.ENTIRE_PAGE) -> None:
         """
@@ -618,7 +618,7 @@ class DrawDocPartial(Generic[_T]):
 
         def zoom_val(value: int) -> None:
             with LoContext(self.__lo_inst):
-                mGUI.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
+                mGui.GUI.zoom(view=ZoomKind.BY_VALUE, value=value)
 
         if type in (
             ZoomKind.ENTIRE_PAGE,
@@ -627,7 +627,7 @@ class DrawDocPartial(Generic[_T]):
             ZoomKind.PAGE_WIDTH_EXACT,
         ):
             with LoContext(self.__lo_inst):
-                mGUI.GUI.zoom(view=type)
+                mGui.GUI.zoom(view=type)
         elif type == ZoomKind.ZOOM_200_PERCENT:
             zoom_val(200)
         elif type == ZoomKind.ZOOM_150_PERCENT:
@@ -647,7 +647,7 @@ class DrawDocPartial(Generic[_T]):
             value (int, optional): Value to set zoom. e.g. 160 set zoom to 160%. Default ``100``.
         """
         with LoContext(self.__lo_inst):
-            mGUI.GUI.zoom_value(value=value)
+            mGui.GUI.zoom_value(value=value)
 
 
 if mock_g.FULL_IMPORT:

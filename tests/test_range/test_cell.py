@@ -366,3 +366,100 @@ def test_range_convertor_idx(loader) -> None:
 
     finally:
         doc.close()
+
+
+def test_cell_less_then(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.calc import CalcDoc
+
+    doc = None
+    try:
+        doc = CalcDoc.create_doc()
+        _ = doc.sheets[0]
+
+        A1 = CellObj.from_cell("A1")
+        A2 = CellObj.from_cell("A2")
+        A7 = CellObj.from_cell("A7")
+        B1 = CellObj.from_cell("B1")
+
+        assert A1 < A2
+        assert A1 <= A2
+        assert A1 < A7
+        assert A1 <= A7
+        assert A2 < A7
+        assert A2 <= A7
+        assert A1 < B1
+        assert A1 <= B1
+        assert A7 < B1
+        assert A7 <= B1
+
+        S0A1 = CellObj("A", 1, sheet_idx=0)
+        S1A1 = CellObj("A", 1, sheet_idx=1)
+        assert S0A1 < S1A1
+        assert S0A1 <= S1A1
+
+    finally:
+        if doc is not None:
+            doc.close()
+
+
+def test_cell_greater_then(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.calc import CalcDoc
+
+    doc = None
+    try:
+        doc = CalcDoc.create_doc()
+        _ = doc.sheets[0]
+
+        A1 = CellObj.from_cell("A1")
+        A2 = CellObj.from_cell("A2")
+        A7 = CellObj.from_cell("A7")
+        B1 = CellObj.from_cell("B1")
+
+        assert A2 > A1
+        assert A2 >= A1
+        assert A7 > A1
+        assert A7 >= A1
+        assert A7 > A2
+        assert A7 >= A2
+        assert B1 > A1
+        assert B1 >= A1
+        assert B1 > A7
+        assert B1 >= A7
+
+        S0A1 = CellObj("A", 1, sheet_idx=0)
+        S1A1 = CellObj("A", 1, sheet_idx=1)
+        assert S1A1 > S0A1
+        assert S1A1 >= S0A1
+
+    finally:
+        if doc is not None:
+            doc.close()
+
+
+def test_cell_sort(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.calc import CalcDoc
+
+    doc = None
+    try:
+        doc = CalcDoc.create_doc()
+        _ = doc.sheets[0]
+
+        A1 = CellObj.from_cell("A1")
+        A2 = CellObj.from_cell("A2")
+        A7 = CellObj.from_cell("A7")
+        B1 = CellObj.from_cell("B1")
+        D2 = CellObj.from_cell("D2")
+
+        lst = [A7, D2, A1, A2, B1]
+        lst.sort()
+        assert lst == [A1, B1, A2, D2, A7]
+
+    finally:
+        if doc is not None:
+            doc.close()

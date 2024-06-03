@@ -45,8 +45,8 @@ Example Add Single Item
         from ooodev.adapter.ui.context_menu_interceptor_event_data import ContextMenuInterceptorEventData
         from ooodev.calc import CalcDoc
         from ooodev.events.args.event_args_generic import EventArgsGeneric
-        from ooodev.gui.menu.popup.action.action_trigger_container import ActionTriggerContainer
-        from ooodev.gui.menu.popup.action.action_trigger_item import ActionTriggerItem
+        from ooodev.gui.menu.context.action_trigger_container import ActionTriggerContainer
+        from ooodev.gui.menu.context.action_trigger_item import ActionTriggerItem
         from ooodev.loader import Lo
 
         
@@ -67,7 +67,8 @@ Example Add Single Item
                 if container[0].CommandURL == ".uno:Insert":
                     container.insert_by_index(0, ActionTriggerItem(".uno:SelectTables", "Sheet..."))
                     event.event_data.action = ContextMenuAction.EXECUTE_MODIFIED
-
+            except Exception as e:
+                print(e)
 
         def main():
             loader = Lo.load_office(connector=Lo.ConnectPipe())

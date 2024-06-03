@@ -216,6 +216,58 @@ class CellObj:
             return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
         return str(self) == other.upper() if isinstance(other, str) else False
 
+    def __lt__(self, other: object) -> bool:
+        try:
+            oth = None
+            if isinstance(other, str):
+                oth = CellObj.from_cell(other)
+            elif isinstance(other, CellObj):
+                oth = other
+            if oth is not None:
+                if self.sheet_idx < oth.sheet_idx:
+                    return True
+                if self.row < oth.row:
+                    return True
+                if self.col_obj < oth.col_obj:
+                    return True
+                return False
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __le__(self, other: object) -> bool:
+        return self == other or self < other
+
+    def __gt__(self, other: object) -> bool:
+        try:
+            oth = None
+            if isinstance(other, str):
+                oth = CellObj.from_cell(other)
+            elif isinstance(other, CellObj):
+                oth = other
+            if oth is not None:
+                if self.sheet_idx > oth.sheet_idx:
+                    return True
+                if self.row > oth.row:
+                    return True
+                if self.col_obj > oth.col_obj:
+                    return True
+                return False
+        except IndexError:
+            raise
+        except AssertionError as e:
+            raise IndexError from e
+        except Exception:
+            pass
+        return NotImplemented
+
+    def __ge__(self, other: object) -> bool:
+        return self == other or self > other
+
     def __add__(self, other: object) -> CellObj:
         try:
             if isinstance(other, str):
@@ -338,6 +390,9 @@ class CellObj:
         except Exception:
             pass
         return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((self.col, self.row, self.sheet_idx))
 
     # endregion dunder methods
 

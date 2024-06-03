@@ -402,3 +402,65 @@ def test_sheet_and_cell_custom_props_renamed_sheet(loader, tmp_path) -> None:
     finally:
         if doc:
             doc.close()
+
+
+def test_sheet_custom_cell(loader, tmp_path) -> None:
+    # get_sheet is overload method.
+    # testing each overload.
+    doc = None
+    try:
+
+        doc = CalcDoc.create_doc(loader)
+        sheet = doc.sheets[0]
+
+        for i in range(1, 5):
+            cell = sheet[f"A{i}"]
+            dd = DotDict()
+            dd.cell_name = f"A{i}"
+            dd.cell_num = i
+            cell.set_custom_properties(dd)
+
+        for i in range(1, 5):
+            cell = sheet[f"C{i}"]
+            dd = DotDict()
+            dd.cell_name = f"C{i}"
+            dd.cell_num = i
+            cell.set_custom_properties(dd)
+
+        for i in range(1, 5):
+            cell = sheet[f"D{i}"]
+            dd = DotDict()
+            dd.cell_name = f"d{i}"
+            dd.cell_num = i
+            dd.my_prop = f"my prop{i}"
+            cell.set_custom_properties(dd)
+
+        cell_props = sheet.custom_cell_properties.get_cell_properties()
+        assert len(cell_props) == 12
+
+        for cell_obj, props_set in cell_props.items():
+            cell = sheet[cell_obj]
+            assert "cell_name" in props_set
+            assert "cell_num" in props_set
+            for prop_name in props_set:
+                assert cell.has_custom_property(prop_name)
+
+        cell_props = sheet.custom_cell_properties.get_cell_properties("my_prop")
+        assert len(cell_props) == 4
+
+        for cell_obj, props_set in cell_props.items():
+            cell = sheet[cell_obj]
+            assert "cell_name" in props_set
+            assert "cell_num" in props_set
+            assert "my_prop" in props_set
+            for prop_name in props_set:
+                assert cell.has_custom_property(prop_name)
+
+        sheet.custom_cell_properties.remove_all_custom_properties()
+        assert sheet.draw_page.forms.has_by_name(sheet.custom_cell_properties.form_name) is False
+        cell_props = sheet.custom_cell_properties.get_cell_properties()
+        assert len(cell_props) == 0
+
+    finally:
+        if doc:
+            doc.close()
