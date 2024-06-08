@@ -33,15 +33,16 @@ class DocIoPartial(Generic[_T]):
         self.__owner = owner
 
     @classmethod
-    def get_doc_from_component(cls, doc: XComponent, lo_inst: LoInst | None) -> _T:
+    def get_doc_from_component(cls, doc: XComponent, lo_inst: LoInst | None = None) -> _T:
         """
         Gets a document.
 
         Args:
-            doc (XComponent): Component to build Draw document from.
+            doc (XComponent): Component to build document from.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
 
         Raises:
-            Exception: If not a Draw document.
+            Exception: If not a valid document.
 
         Returns:
             _T : Document.

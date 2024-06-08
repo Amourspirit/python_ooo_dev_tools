@@ -918,8 +918,8 @@ class Info(metaclass=StaticProperty):
             mLo.Lo.print("Unknown document")
             return mLo.Lo.Service.UNKNOWN
 
-    @staticmethod
-    def is_doc_type(obj: Any, doc_type: LoService | str) -> bool:
+    @classmethod
+    def is_doc_type(cls, obj: Any, doc_type: LoService | str) -> bool:
         """
         Gets if doc is a particular doc type.
 
@@ -932,10 +932,8 @@ class Info(metaclass=StaticProperty):
         Returns:
             bool: ``True`` if obj matches; Otherwise, ``False``
         """
-        with contextlib.suppress(Exception):
-            si = mLo.Lo.qi(XServiceInfo, obj)
-            return False if si is None else si.supportsService(str(doc_type))
-        return False
+
+        return cls.support_service(obj, doc_type)
 
     @staticmethod
     def get_implementation_name(obj: Any) -> str:
@@ -1178,7 +1176,7 @@ class Info(metaclass=StaticProperty):
             print(f"'{service}'")
 
     @staticmethod
-    def support_service(obj: Any, *service: str) -> bool:
+    def support_service(obj: Any, *service: str | LoService) -> bool:
         """
         Gets if ``obj`` supports a service.
 
@@ -1186,19 +1184,23 @@ class Info(metaclass=StaticProperty):
 
         Args:
             obj (object): Object to check for supported service
-            *service (str): Variable length argument list of UNO namespace strings such as ``com.sun.star.configuration.GroupAccess``
+            *service (str, LoService): Variable length argument list of UNO namespace strings such as ``com.sun.star.configuration.GroupAccess``
 
         Returns:
             bool: ``True`` if ``obj`` supports any passed in service; Otherwise, ``False``
         """
-
+        if obj is None:
+            return False
+        if not service:
+            return False
         result = False
         try:
-            si = mLo.Lo.qi(XServiceInfo, obj)
-            if si is None:
-                return result
+            if not hasattr(obj, "supportsService"):
+                return False
+            si = cast(XServiceInfo, obj)
+
             for srv in service:
-                result = si.supportsService(srv)  # type: ignore
+                result = si.supportsService(str(srv))  # type: ignore
                 if result:
                     break
         except Exception as e:
