@@ -2107,14 +2107,31 @@ class LoInst(EventsPartial):
         return self._is_default
 
     @property
-    def current_doc(self) -> OfficeDocumentT:
+    def current_doc(self) -> OfficeDocumentT | None:
         """
         Get the current document.
 
-        This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
+        If there is no current document then an attempt is made to get the current document from the last active document from the desktop components.
+
+        Note:
+            This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
+
+
+        .. versionchanged:: 0.45.5
+            This property will now return the latest document from the desktop components if the current document is None.
         """
         if self._current_doc is None:
-            self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
+            doc = self.desktop.get_current_component()
+            if doc is None:
+                for comp in self.desktop.components:
+                    # if there is more then on component then the first match is used.
+                    # It seems the last opened document is the first in the list.
+                    doc = comp
+                    break
+            if doc is None:
+                return None  # type: ignore
+            self._current_doc = doc_factory(doc=doc, lo_inst=self)
+            # self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
         return self._current_doc
 
     @property
