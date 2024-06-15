@@ -13,6 +13,12 @@ The ``extra_data`` property can be assigned properties and access like a diction
 ``ooodev.utils.partial.the_dictionary_partial.TheDictionaryPartial`` is a partial class that can be used to add dictionary like access to a class.
 
 
+Added ``from_obj`` static method to ``CalcCell``, ``CalcCellRange``, ``CalcSheet`` and ``CalcDoc`` classes.
+This method can be used to create a new instance of the class from an existing object.
+For instance a ``CalcCell`` can be created from a ``XCell`` object. The ``CalcCell`` will have reference to the ``CalcSheet`` and ``CalcDoc`` instances.
+A ``CalcSheet`` or ``CalcDoc`` can be created from a cell or a cell range using the ``from_obj`` static method.
+
+
 Version 0.45.5
 ==============
 

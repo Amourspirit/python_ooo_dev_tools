@@ -9,6 +9,7 @@ from com.sun.star.frame import XModel
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
+from com.sun.star.sheet import XSheetCellRange
 
 from ooodev.adapter.sheet.named_ranges_comp import NamedRangesComp
 from ooodev.adapter.sheet.database_ranges_comp import DatabaseRangesComp
@@ -99,7 +100,7 @@ class CalcDoc(
 
         Args:
             doc (XSpreadsheetDocument): UNO object the supports ``com.sun.star.sheet.SpreadsheetDocument`` service.
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
 
         Raises:
             NotSupportedDocumentError: If not a valid Calc document.
@@ -1264,3 +1265,52 @@ class CalcDoc(
         return self._database_ranges  # type: ignore
 
     # endregion Properties
+
+    # region Static Methods
+    @classmethod
+    def from_obj(cls, obj: Any, lo_inst: LoInst | None = None) -> CalcDoc | None:
+        """
+        Creates a CalcDoc from an object.
+
+        Args:
+            obj (Any): Object to create CalcDoc from. Can be a CalcDoc, CalcDocPropPartial, or any object that can be converted to a CalcDoc such as a sheet, cell, or range.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            CalcDoc: CalcDoc if found; Otherwise, ``None``
+        
+        .. versionadded:: 0.46.0
+        """
+        if mInfo.Info.is_instance(obj, CalcDoc):
+            return obj
+        if mInfo.Info.is_instance(obj, CalcDocPropPartial):
+            return obj.calc_doc
+
+        if hasattr(obj, "component"):
+            obj = obj.component
+
+        if not hasattr(obj, "getImplementationName"):
+            return None
+        sheet = None
+        doc = None
+        imp_name = obj.getImplementationName()
+        if imp_name == "ScTableSheetObj":
+            sheet = obj
+
+        if sheet is None:
+            if mInfo.Info.is_instance(obj, XSheetCellRange):
+                # cell and range object implement XSpreadsheetDocument
+                sheet = obj.getSpreadsheet()
+
+        if sheet is not None:
+            doc = sheet.DrawPage.Forms.Parent  # type: ignore
+
+        if doc is not None:
+            return cls.get_doc_from_component(doc=doc, lo_inst=lo_inst)  # type: ignore
+
+        if mInfo.Info.is_doc_type(doc_type=cls.DOC_TYPE.get_service(), obj=obj):
+            return cls.get_doc_from_component(doc=obj, lo_inst=lo_inst)  # type: ignore
+
+        return None
+
+    # endregion Static Methods

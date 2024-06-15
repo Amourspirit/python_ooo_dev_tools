@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, overload, Sequence, TYPE_CHECKING
+from typing import Any, cast, overload, Sequence, TYPE_CHECKING
 import uno
 from com.sun.star.uno import RuntimeException
 
@@ -33,6 +33,7 @@ from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.type_var import Row, Table
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
+from ooodev.utils import info as mInfo
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
@@ -45,6 +46,7 @@ if TYPE_CHECKING:
     from com.sun.star.sheet import XGoalSeek
     from com.sun.star.sheet import XSheetAnnotation
     from com.sun.star.text import XTextRange
+    from com.sun.star.table import CellAddress
     from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator
     from ooodev.proto.style_obj import StyleT
     from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -798,6 +800,53 @@ class CalcCell(
         cp.remove_custom_properties()
 
     # endregion Custom Properties
+
+    # region Static Methods
+
+    @classmethod
+    def from_obj(cls, obj: Any, lo_inst: LoInst | None = None) -> CalcCell | None:
+        """
+        Creates a CalcCell from an object.
+
+        Args:
+            obj (Any): Object to create CalcCell from. Can be a CalcCell, CalcCellPropPartial, or any object that can be converted to a CalcCell such as a cell.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            CalcSheet: CalcSheet if found; Otherwise, ``None``
+
+        .. versionadded:: 0.46.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.calc.calc_sheet import CalcSheet
+
+        if mInfo.Info.is_instance(obj, CalcCellPropPartial):
+            return obj.calc_cell
+
+        calc_sheet = CalcSheet.from_obj(obj=obj, lo_inst=lo_inst)
+        if calc_sheet is None:
+            return None
+
+        if hasattr(obj, "component"):
+            obj = obj.component
+
+        if not hasattr(obj, "getImplementationName"):
+            return None
+
+        cell = None
+        imp_name = obj.getImplementationName()
+        if imp_name == "ScCellObj":
+            cell = obj
+
+        if cell is None:
+            return None
+
+        addr = cast("CellAddress", cell.getCellAddress())
+        cell_obj = mCellObj.CellObj.from_idx(col_idx=addr.Column, row_idx=addr.Row, sheet_idx=addr.Sheet)
+
+        return cls(owner=calc_sheet, cell=cell_obj, lo_inst=lo_inst)
+
+    # endregion Static Methods
 
     @property
     def cell_obj(self) -> mCellObj.CellObj:

@@ -3993,6 +3993,55 @@ class CalcSheet(
 
     # endregion Properties
 
+    # region Static Methods
+
+    @classmethod
+    def from_obj(cls, obj: Any, lo_inst: LoInst | None = None) -> CalcSheet | None:
+        """
+        Creates a CalcSheet from an object.
+
+        Args:
+            obj (Any): Object to create CalcSheet from. Can be a CalcSheet, CalcSheetPropPartial, or any object that can be converted to a CalcSheet such as a sheet, cell, or range.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            CalcSheet: CalcSheet if found; Otherwise, ``None``
+        
+        .. versionadded:: 0.46.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.calc.calc_doc import CalcDoc
+
+        if mInfo.Info.is_instance(obj, CalcSheetPropPartial):
+            return obj.calc_sheet
+
+        calc_doc = CalcDoc.from_obj(obj=obj, lo_inst=lo_inst)
+        if calc_doc is None:
+            return None
+
+        if hasattr(obj, "component"):
+            obj = obj.component
+
+        if not hasattr(obj, "getImplementationName"):
+            return None
+
+        sheet = None
+        imp_name = obj.getImplementationName()
+        if imp_name == "ScTableSheetObj":
+            sheet = obj
+
+        if sheet is None:
+            if mInfo.Info.is_instance(obj, XSheetCellRange):
+                # cell and range object implement XSpreadsheetDocument
+                sheet = obj.getSpreadsheet()
+
+        if sheet is not None:
+            return cls(owner=calc_doc, sheet=sheet, lo_inst=lo_inst)
+
+        return None
+
+    # endregion Static Methods
+
 
 if mock_g.FULL_IMPORT:
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
