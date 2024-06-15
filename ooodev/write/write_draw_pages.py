@@ -9,6 +9,7 @@ from com.sun.star.drawing import XDrawPage
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils import info as mInfo
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from ooodev.write.write_doc import WriteDoc
 
 
-class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiPartial):
+class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiPartial, TheDictionaryPartial):
     """
     Class for managing Writer Draw Pages.
     """
@@ -43,6 +44,7 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
         DrawPagesComp.__init__(self, slides)  # type: ignore
         # The API does not show that DrawPages implements XNameAccess, but it does.
         QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:

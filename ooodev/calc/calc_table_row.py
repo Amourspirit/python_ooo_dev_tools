@@ -12,6 +12,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
@@ -28,7 +29,14 @@ if TYPE_CHECKING:
 
 
 class CalcTableRow(
-    LoInstPropsPartial, TableRowComp, QiPartial, ServicePartial, StylePartial, CalcSheetPropPartial, CalcDocPropPartial
+    LoInstPropsPartial,
+    TableRowComp,
+    QiPartial,
+    ServicePartial,
+    TheDictionaryPartial,
+    StylePartial,
+    CalcSheetPropPartial,
+    CalcDocPropPartial,
 ):
     """Represents a calc table row."""
 
@@ -53,6 +61,7 @@ class CalcTableRow(
         QiPartial.__init__(self, component=comp, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=comp)
         ServicePartial.__init__(self, component=comp, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 

@@ -26,6 +26,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.area.transparency.transparency_partial import (
     TransparencyPartial as TransparencyTransparency,
 )
@@ -67,6 +68,7 @@ class ChartDataSeries(
     PropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
     StylePartial,
@@ -110,6 +112,7 @@ class ChartDataSeries(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)
         StylePartial.__init__(self, component=component)

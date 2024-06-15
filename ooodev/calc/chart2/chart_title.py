@@ -20,6 +20,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.chart2.title.alignment.chart2_title_orientation_partial import (
     Chart2TitleOrientationPartial,
 )
@@ -55,6 +56,7 @@ class ChartTitle(
     PropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
     StylePartial,
@@ -98,6 +100,7 @@ class ChartTitle(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)
         StylePartial.__init__(self, component=component)

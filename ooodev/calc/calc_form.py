@@ -9,6 +9,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
 if TYPE_CHECKING:
@@ -16,7 +17,9 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_forms import CalcForms
 
 
-class CalcForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial, CalcDocPropPartial):
+class CalcForm(
+    LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, ServicePartial, TheDictionaryPartial, CalcDocPropPartial
+):
     """
     Calc From. Represents a form in a Calc document.
 
@@ -36,6 +39,7 @@ class CalcForm(LoInstPropsPartial, DataFormComp, QiPartial, FormPartial, Service
         FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        TheDictionaryPartial.__init__(self)
 
     def __getitem__(self, index: str | int) -> Any:
         if isinstance(index, int):

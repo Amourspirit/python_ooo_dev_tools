@@ -17,6 +17,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc import calc_sheet as mCalcSheet
 
@@ -33,6 +34,7 @@ class CalcSheets(
     NameReplacePartial["Spreadsheet"],
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     ElementIndexPartial,
     CalcDocPropPartial,
 ):
@@ -88,6 +90,7 @@ class CalcSheets(
         NameReplacePartial.__init__(self, component=sheets, interface=None)  # type: ignore
         QiPartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=sheets, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         ElementIndexPartial.__init__(self, component=self)  # type: ignore
         CalcDocPropPartial.__init__(self, obj=owner)
 

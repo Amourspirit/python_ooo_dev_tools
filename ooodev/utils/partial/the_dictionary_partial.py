@@ -7,17 +7,36 @@ class TheDict:
     """A partial class for implementing dictionary values"""
 
     def __init__(self, values: Dict[str, Any] | None = None) -> None:
-        self._kv_data = values if values is not None else {}
+        if values:
+            self.__dict__.update(values)
 
     def __getitem__(self, key: str) -> Any:
-        return self._kv_data.get(key, NULL_OBJ)
+        return self.__dict__[key]
 
     def __setitem__(self, key: str, value: Any) -> None:
-        self._kv_data[key] = value
+        self.__dict__[key] = value
 
     def __delitem__(self, key: str) -> None:
-        if key in self._kv_data:
-            del self._kv_data[key]
+        if key in self.__dict__:
+            del self.__dict__[key]
+
+    def __getattr__(self, key: str):
+        try:
+            return self.__dict__[key]
+        except KeyError:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+
+    def __setattr__(self, key: str, value: Any):
+        self.__dict__[key] = value
+
+    def __delattr__(self, key: str):
+        del self.__dict__[key]
+
+    def __contains__(self, key: str):
+        return key in self.__dict__
+
+    def __len__(self):
+        return len(self.__dict__)
 
     def get(self, key: str, default: Any = NULL_OBJ) -> Any:
         """
@@ -29,14 +48,14 @@ class TheDict:
 
         Returns:
             Any: Data for ``key`` if found; Otherwise, if ``default`` is set then ``default``.
+
+        Raises:
+            KeyError: If ``key`` is not found and ``default`` is not set.
         """
-        if self._kv_data is None:
-            if default is NULL_OBJ:
-                raise KeyError(f'"{key}" not found. Maybe you want to include a default value.')
-            return default
+
         if default is NULL_OBJ:
-            return self._kv_data[key]
-        return self._kv_data.get(key, default)
+            return self.__dict__[key]
+        return self.__dict__.get(key, default)
 
     def set(self, key: str, value: Any, allow_overwrite: bool = True) -> bool:
         """
@@ -50,13 +69,11 @@ class TheDict:
         Returns:
             bool: ``True`` if values is written; Otherwise, ``False``
         """
-        if self._kv_data is None:
-            self._kv_data = {}
         if allow_overwrite:
-            self._kv_data[key] = value
+            self.__dict__[key] = value
             return True
-        if key not in self._kv_data:
-            self._kv_data[key] = value
+        if key not in self.__dict__:
+            self.__dict__[key] = value
             return True
         return False
 
@@ -70,7 +87,7 @@ class TheDict:
         Returns:
             bool: ``True`` if key exist; Otherwise ``False``
         """
-        return False if self._kv_data is None else key in self._kv_data
+        return key in self
 
     def remove(self, key: str) -> bool:
         """
@@ -82,12 +99,22 @@ class TheDict:
         Returns:
             bool: ``True`` if key was found and removed; Otherwise, ``False``
         """
-        if self._kv_data is None:
-            return False
-        if key in self._kv_data:
-            del self._kv_data[key]
+        if key in self.__dict__:
+            del self.__dict__[key]
             return True
         return False
+
+    def items(self):
+        """Returns all items in the dictionary in a set like object."""
+        return self.__dict__.items()
+
+    def keys(self):
+        """Returns all keys in the dictionary in a set like object."""
+        return self.__dict__.keys()
+
+    def values(self):
+        """Returns an object providing a view on the dictionary's values."""
+        return self.__dict__.values()
 
 
 class TheDictionaryPartial:
@@ -104,7 +131,17 @@ class TheDictionaryPartial:
 
     @property
     def extra_data(self) -> TheDict:
-        """Extra Data Key Value Pair Dictionary"""
+        """
+        Extra Data Key Value Pair Dictionary.
+
+        Properties can be assigned properties and access like a dictionary and with dot notation.
+
+        Note:
+            This is a dictionary object that can be used to store key value pairs.
+            Generally speaking this data is not part of the object's main data structure and is not saved with the object (document).
+
+            This property is used to store data that is not part of the object's main data structure and can be used however the developer sees fit.
+        """
         if self.__the_dict is None:
             self.__the_dict = TheDict()
         return self.__the_dict

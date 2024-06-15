@@ -4,6 +4,7 @@ from typing import Any, TYPE_CHECKING
 import uno
 from ooodev.loader import lo as mLo
 from ooodev.utils.comp.prop import Prop
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
 
 class ChartFloor(
     Prop["ChartFloor"],
+    TheDictionaryPartial,
     ChartDocPropPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
@@ -57,6 +59,7 @@ class ChartFloor(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         Prop.__init__(self, owner=self, component=component, lo_inst=lo_inst)
+        TheDictionaryPartial.__init__(self)
         ChartDocPropPartial.__init__(self, chart_doc=owner.chart_doc)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)

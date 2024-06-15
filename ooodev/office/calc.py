@@ -466,6 +466,25 @@ class Calc:
             raise mEx.NoneError("current document")
         return cls.get_ss_doc(doc)
 
+    @classmethod
+    def get_doc_from_sheet(cls, sheet: XSpreadsheetDocument) -> XSpreadsheetDocument:
+        """
+        Gets the document from a sheet.
+        
+        Args:
+            sheet (XSpreadsheetDocument): Sheet to get document from.
+        
+        Returns:
+            XSpreadsheetDocument: Spreadsheet Document.
+        
+        .. versionadded:: 0.46.0
+        """
+        sht = cast(Any, sheet)
+        imp_name = sht.getImplementationName()
+        if imp_name != "ScTableSheetObj":
+            raise Exception("Not a spreadsheet sheet")
+        return sht.DrawPage.Forms.Parent
+
     # endregion ------------ document methods ------------------
 
     # region --------------- sheet methods -----------------------------
@@ -9604,7 +9623,7 @@ class Calc:
         s = code_name.casefold()
         result = ""
         sheets = doc.getSheets()
-        for sheet in sheets: # type: ignore
+        for sheet in sheets:  # type: ignore
             if sheet.CodeName.casefold() == s:  # type: ignore
                 result = sheet.Name  # type: ignore
                 break

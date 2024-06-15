@@ -14,6 +14,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.utils.kind.chart2_types import ChartTypes as ChartTypes
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.office import chart2 as mCharts
 from ooodev.utils.color import CommonColor
 from ooodev.calc.chart2.table_chart import TableChart
@@ -29,7 +30,13 @@ if TYPE_CHECKING:
 
 
 class CalcCharts(
-    LoInstPropsPartial, TableChartsComp, QiPartial, ServicePartial, CalcSheetPropPartial, CalcDocPropPartial
+    LoInstPropsPartial,
+    TableChartsComp,
+    QiPartial,
+    ServicePartial,
+    TheDictionaryPartial,
+    CalcSheetPropPartial,
+    CalcDocPropPartial,
 ):
     """
     Class for managing Calc Charts.
@@ -51,6 +58,7 @@ class CalcCharts(
         TableChartsComp.__init__(self, component=charts)  # type: ignore
         QiPartial.__init__(self, component=charts, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=charts, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
 

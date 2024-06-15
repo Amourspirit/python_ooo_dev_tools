@@ -67,10 +67,13 @@ class DotDict:
         return self.__dict__.get(key, default)
 
     def items(self):
+        """Returns all items in the dictionary in a set like object."""
         return self.__dict__.items()
 
     def keys(self):
+        """Returns all keys in the dictionary in a set like object."""
         return self.__dict__.keys()
 
     def values(self):
+        """Returns an object providing a view on the dictionary's values."""
         return self.__dict__.values()

@@ -23,6 +23,7 @@ from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind
 from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.adapter.awt.size_struct_generic_comp import SizeStructGenericComp
 from ooodev.adapter.awt.point_struct_generic_comp import PointStructGenericComp
 
@@ -60,6 +61,7 @@ class ShapeBase(
     ExportJpgPartial,
     ExportPngPartial,
     ServicePartial,
+    TheDictionaryPartial,
     Generic[_T],
 ):
     def __init__(self, owner: _T, component: XShape, lo_inst: LoInst | None = None) -> None:
@@ -76,6 +78,7 @@ class ShapeBase(
         ExportJpgPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
         ExportPngPartial.__init__(self, component=component, events=events, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         self.__owner = owner
         self.__component = component
         self.__props = {}

@@ -18,6 +18,7 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from ooodev.proto.component_proto import ComponentT
@@ -36,6 +37,7 @@ class DrawPages(
     NameAccessPartial["XDrawPage"],
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
 ):
     """
     Class for managing Draw Pages.
@@ -62,6 +64,7 @@ class DrawPages(
         NameAccessPartial.__init__(self, component=slides, interface=None)  # type: ignore
         QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
     def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:

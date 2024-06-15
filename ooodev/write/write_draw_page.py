@@ -15,6 +15,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_forms import WriteForms
 
@@ -34,6 +35,7 @@ class WriteDrawPage(
     Shapes2Partial,
     Shapes3Partial,
     QiPartial,
+    TheDictionaryPartial,
     PropPartial,
     StylePartial,
     ShapeFactoryPartial["WriteDrawPage[_T]"],
@@ -61,6 +63,7 @@ class WriteDrawPage(
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
