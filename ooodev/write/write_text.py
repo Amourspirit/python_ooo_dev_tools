@@ -12,6 +12,7 @@ from ooodev.utils import info as mInfo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_paragraphs as mWriteParagraphs
 from ooodev.write.write_text_content import WriteTextContent
@@ -33,6 +34,7 @@ class WriteText(
     TextComp,
     RelativeTextContentInsertPartial,
     QiPartial,
+    TheDictionaryPartial,
     StylePartial,
     Generic[T],
 ):
@@ -61,6 +63,7 @@ class WriteText(
         TextComp.__init__(self, component)  # type: ignore
         RelativeTextContentInsertPartial.__init__(self, component=component, interface=None)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=component)
 
     def get_paragraphs(self) -> mWriteParagraphs.WriteParagraphs[T]:

@@ -7,6 +7,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.font.font_effects_partial import FontEffectsPartial
 from ooodev.format.inner.partial.font.font_only_partial import FontOnlyPartial
@@ -41,6 +42,7 @@ class ChartLegend(
     EventsPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
     PropPartial,
@@ -79,6 +81,7 @@ class ChartLegend(
         EventsPartial.__init__(self)
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         FontEffectsPartial.__init__(self, factory_name="ooodev.chart2.legend", component=component, lo_inst=lo_inst)

@@ -9,6 +9,7 @@ from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPro
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -25,6 +26,7 @@ class DrawDocView(
     DrawingDocumentDrawViewComp,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
 ):
     """Draw Doc Controller View class. This class is used to manage the view of a Draw document. It is usually accessed via ``DrawDoc.current_controller.``"""
 
@@ -43,6 +45,7 @@ class DrawDocView(
         DrawingDocumentDrawViewComp.__init__(self, component)
         QiPartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=self.component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     # region Properties
     # region DrawDocPropPartial Overrides

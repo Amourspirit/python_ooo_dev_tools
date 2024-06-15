@@ -9,6 +9,7 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_form import WriteForm
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from ooodev.write.write_draw_page import WriteDrawPage
 
 
-class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
+class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial, TheDictionaryPartial):
     """
     Class for managing Writer Forms.
 
@@ -41,6 +42,7 @@ class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
         FormsComp.__init__(self, forms)  # type: ignore
         WriteDocPropPartial.__init__(self, obj=owner.write_doc)
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     def __next__(self) -> WriteForm:
         """
@@ -49,7 +51,7 @@ class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
         Returns:
             WriteForm: The next form.
         """
-        return WriteForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
+        return WriteForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)  # type: ignore
 
     def __getitem__(self, key: str | int) -> WriteForm:
         """
@@ -216,7 +218,7 @@ class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XIndexAccess overrides
 
@@ -238,7 +240,7 @@ class WriteForms(LoInstPropsPartial, FormsComp, WriteDocPropPartial, QiPartial):
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find form with name '{name}'")
         result = super().get_by_name(name)
-        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return WriteForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XNameAccess overrides
 

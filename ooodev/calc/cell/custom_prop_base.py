@@ -3,6 +3,7 @@ from typing import cast, TYPE_CHECKING
 import uno
 from com.sun.star.drawing import XControlShape
 from com.sun.star.form import XForm
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
@@ -11,8 +12,9 @@ if TYPE_CHECKING:
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
-class CustomPropBase:
+class CustomPropBase(TheDictionaryPartial):
     def __init__(self, sheet: CalcSheet) -> None:
+        TheDictionaryPartial.__init__(self)
         self._shape_prefix = "_cprop_"
         self._shape_suffix = "_id"  # suffix is important for ensure shape duplicates are removed.
         self._sheet = sheet

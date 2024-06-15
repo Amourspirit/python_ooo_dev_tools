@@ -13,13 +13,16 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form import XForms
     from ooodev.draw.draw_page import DrawPage
 
 
-class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPartial, ServicePartial):
+class DrawForms(
+    LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPartial, ServicePartial, TheDictionaryPartial
+):
     """
     Class for managing Draw Forms.
 
@@ -68,6 +71,7 @@ class DrawForms(LoInstPropsPartial, OfficeDocumentPropPartial, FormsComp, QiPart
         FormsComp.__init__(self, forms)  # type: ignore
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     def __next__(self) -> DrawForm:
         return DrawForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)  # type: ignore

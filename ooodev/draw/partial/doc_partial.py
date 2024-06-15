@@ -21,6 +21,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.libraries_partial import LibrariesPartial
 from ooodev.utils.partial.doc_common_partial import DocCommonPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 
 if TYPE_CHECKING:
@@ -53,6 +54,7 @@ class DocPartial(
     LibrariesPartial,
     DocCommonPartial,
     StylePartial,
+    TheDictionaryPartial,
 ):
     """
     Document partial class.
@@ -83,6 +85,7 @@ class DocPartial(
         LibrariesPartial.__init__(self, component=component)
         DocCommonPartial.__init__(self, component=component)
         StylePartial.__init__(self, component=component)
+        TheDictionaryPartial.__init__(self)
 
     # region Lazy Listeners
 

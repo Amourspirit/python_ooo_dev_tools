@@ -34,6 +34,8 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
+from ooodev.utils import info as mInfo
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
@@ -76,6 +78,7 @@ class CalcCellRange(
     PropPartial,
     StylePartial,
     ServicePartial,
+    TheDictionaryPartial,
     FontOnlyPartial,
     FontEffectsPartial,
     FontPartial,
@@ -117,6 +120,7 @@ class CalcCellRange(
         QiPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cell_range)
+        TheDictionaryPartial.__init__(self)
         ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=self.lo_inst)
         FontEffectsPartial.__init__(
@@ -947,6 +951,52 @@ class CalcCellRange(
         rng_obj = RangeObj.from_range(rng)
         if rng_obj != self._range_obj:
             self._range_obj = rng_obj
+
+    # region Static Methods
+
+    @classmethod
+    def from_obj(cls, obj: Any, lo_inst: LoInst | None = None) -> CalcCellRange | None:
+        """
+        Creates a CalcCellRange from an object.
+
+        Args:
+            obj (Any): Object to create CalcCellRange from. Can be a CalcCellRange, CalcCellRangePropPartial, or any object that can be converted to a CalcCellRange such as a cell.
+            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to ``None``.
+
+        Returns:
+            CalcSheet: CalcSheet if found; Otherwise, ``None``
+        
+        .. versionadded:: 0.46.0
+        """
+        # pylint: disable=import-outside-toplevel
+        from ooodev.calc.calc_sheet import CalcSheet
+
+        if mInfo.Info.is_instance(obj, CalcCellRange):
+            return obj
+
+        calc_sheet = CalcSheet.from_obj(obj=obj, lo_inst=lo_inst)
+        if calc_sheet is None:
+            return None
+
+        if hasattr(obj, "component"):
+            obj = obj.component
+
+        if not hasattr(obj, "getImplementationName"):
+            return None
+
+        cell_rng = None
+        imp_name = obj.getImplementationName()
+        if imp_name == "ScCellRangeObj":
+            cell_rng = obj
+
+        if cell_rng is None:
+            return None
+
+        addr = cast("CellRangeAddress", cell_rng.getRangeAddress())
+
+        return cls(owner=calc_sheet, rng=addr, lo_inst=lo_inst)
+
+    # endregion Static Methods
 
     # region Properties
 

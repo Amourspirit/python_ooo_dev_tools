@@ -11,6 +11,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.draw import draw_text_cursor
 
 if TYPE_CHECKING:
@@ -21,7 +22,14 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class DrawText(
-    Generic[_T], LoInstPropsPartial, OfficeDocumentPropPartial, TextComp, QiPartial, StylePartial, ServicePartial
+    Generic[_T],
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    TextComp,
+    QiPartial,
+    StylePartial,
+    ServicePartial,
+    TheDictionaryPartial,
 ):
     """
     Represents text content.
@@ -49,6 +57,7 @@ class DrawText(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     def add_bullet(self, level: int, text: str) -> None:
         """

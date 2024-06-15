@@ -14,6 +14,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc import calc_cell_range as mCalcCellRange
@@ -38,6 +39,7 @@ class CalcCellCursor(
     ServicePartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
+    TheDictionaryPartial,
 ):
     def __init__(self, owner: CalcSheet, cursor: XSheetCellCursor, lo_inst: LoInst | None = None) -> None:
         if lo_inst is None:
@@ -51,6 +53,7 @@ class CalcCellCursor(
         ServicePartial.__init__(self, component=cursor, lo_inst=self.lo_inst)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        TheDictionaryPartial.__init__(self)
 
     def find_used_cursor(self) -> mCalcCellRange.CalcCellRange:
         """

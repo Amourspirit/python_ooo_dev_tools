@@ -20,6 +20,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.chart2.borders.axis_line_properties_partial import AxisLinePropertiesPartial
 from ooodev.format.inner.partial.chart2.axis.positioning.chart2_axis_pos_axis_line_partial import (
     Chart2AxisPosAxisLinePartial,
@@ -55,6 +56,7 @@ class ChartAxis(
     PropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
     StylePartial,
@@ -92,6 +94,7 @@ class ChartAxis(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
 

@@ -44,6 +44,7 @@ from ooodev.utils import selection as mSelection
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.dispatch_partial import DispatchPartial
 from ooodev.utils.data_type.size import Size
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.loader.inst.clsid import CLSID
 from ooodev.loader.inst.doc_type import DocType
 from ooodev.loader.inst.service import Service as LoService
@@ -115,6 +116,7 @@ class WriteDoc(
     PropPartial,
     GuiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     EventsPartial,
     StylePartial,
     DocIoPartial["WriteDoc"],
@@ -167,6 +169,7 @@ class WriteDoc(
         PropPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         GuiPartial.__init__(self, component=doc, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=doc, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         EventsPartial.__init__(self)
         StylePartial.__init__(self, component=doc)
         DocIoPartial.__init__(self, owner=self, lo_inst=self.lo_inst)

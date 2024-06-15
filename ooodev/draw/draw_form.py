@@ -9,6 +9,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 if TYPE_CHECKING:
@@ -16,7 +17,15 @@ if TYPE_CHECKING:
     from ooodev.draw.draw_forms import DrawForms
 
 
-class DrawForm(LoInstPropsPartial, OfficeDocumentPropPartial, DataFormComp, QiPartial, FormPartial, ServicePartial):
+class DrawForm(
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    DataFormComp,
+    QiPartial,
+    TheDictionaryPartial,
+    FormPartial,
+    ServicePartial,
+):
     """Draw Form class"""
 
     def __init__(self, owner: DrawForms, component: Form, lo_inst: LoInst | None = None) -> None:
@@ -27,6 +36,7 @@ class DrawForm(LoInstPropsPartial, OfficeDocumentPropPartial, DataFormComp, QiPa
         OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         DataFormComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         draw_page = owner.owner.component
         FormPartial.__init__(self, owner=self, draw_page=draw_page, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)

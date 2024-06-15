@@ -10,6 +10,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.text.text_frames import TextFramesComp
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_text_frame import WriteTextFrame
 
@@ -21,7 +22,9 @@ if TYPE_CHECKING:
     from ooodev.write.write_doc import WriteDoc  # circular import if not TYPE_CHECKING
 
 
-class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, QiPartial, ServicePartial):
+class WriteTextFrames(
+    LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, QiPartial, ServicePartial, TheDictionaryPartial
+):
     """
     Class for managing Writer Text Frames.
 
@@ -44,6 +47,7 @@ class WriteTextFrames(LoInstPropsPartial, TextFramesComp, WriteDocPropPartial, Q
         TextFramesComp.__init__(self, frames)  # type: ignore
         QiPartial.__init__(self, component=frames, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=frames, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     def __next__(self) -> WriteTextFrame[WriteDoc]:
         """

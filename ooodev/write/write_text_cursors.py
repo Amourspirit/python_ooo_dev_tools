@@ -5,6 +5,7 @@ import uno
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.write.write_text_cursor import WriteTextCursor
@@ -18,6 +19,7 @@ class WriteTextCursors(
     IndexAccessComp,
     WriteDocPropPartial,
     QiPartial,
+    TheDictionaryPartial,
 ):
     """
     Class for managing Writer Forms.
@@ -43,6 +45,7 @@ class WriteTextCursors(
         LoInstPropsPartial.__init__(self, lo_inst=self.write_doc.lo_inst)
         IndexAccessComp.__init__(self, component=component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
 
     def __next__(self) -> WriteTextCursor:
         return WriteTextCursor(owner=self, component=super().__next__(), lo_inst=self.lo_inst)

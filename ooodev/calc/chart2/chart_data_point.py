@@ -12,6 +12,7 @@ from ooodev.adapter.chart2.data_point_properties_partial import DataPointPropert
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.chart2.numbers.numbers_numbers_partial import NumbersNumbersPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.format.inner.partial.area.fill_color_partial import FillColorPartial
@@ -61,6 +62,7 @@ class ChartDataPoint(
     FillPropertiesPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
     NumbersNumbersPartial,
@@ -110,6 +112,7 @@ class ChartDataPoint(
         FillPropertiesPartial.__init__(self, component=component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcDocPropPartial.__init__(self, obj=chart_doc.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=chart_doc.calc_sheet)
         NumbersNumbersPartial.__init__(
