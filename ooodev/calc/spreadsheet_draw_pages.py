@@ -14,6 +14,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
@@ -26,7 +27,7 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class SpreadsheetDrawPages(
-    LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial, CalcDocPropPartial, Generic[_T]
+    LoInstPropsPartial, DrawPagesComp, QiPartial, ServicePartial, TheDictionaryPartial, CalcDocPropPartial, Generic[_T]
 ):
     """
     Class for managing Spreadsheet Draw Pages.
@@ -48,6 +49,7 @@ class SpreadsheetDrawPages(
         ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         # The API does not show that DrawPages implements XNameAccess, but it does.
         QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         if not isinstance(owner, CalcDocPropPartial):
             raise TypeError(f"Owner must inherit from CalcDocPropPartial: {type(owner)}")
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)

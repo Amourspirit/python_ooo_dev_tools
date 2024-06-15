@@ -2,6 +2,17 @@
 Version History
 ***************
 
+Version 0.46.0
+==============
+
+Now most all document related classed implement the ``ooodev.utils.partial.the_dictionary_partial.TheDictionaryPartial`` class.
+This allows classes to have a dictionary property named ``extra_data`` for adding extra data to the class. Note that this data is not saved with the document.
+This is useful for adding extra data to a class that is not part of the class itself.
+The ``extra_data`` property can be assigned properties and access like a dictionary and with dot notation.
+
+``ooodev.utils.partial.the_dictionary_partial.TheDictionaryPartial`` is a partial class that can be used to add dictionary like access to a class.
+
+
 Version 0.45.5
 ==============
 

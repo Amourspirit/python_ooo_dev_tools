@@ -10,6 +10,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 
 if TYPE_CHECKING:
@@ -25,6 +26,7 @@ class WriteTextPortion(
     WriteDocPropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     PropPartial,
     StylePartial,
 ):
@@ -53,6 +55,7 @@ class WriteTextPortion(
         TextPortionComp.__init__(self, component)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
         # self.__doc = doc

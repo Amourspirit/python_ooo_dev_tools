@@ -8,6 +8,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write import write_paragraph as mWriteParagraph
 
@@ -22,6 +23,7 @@ class WriteParagraphs(
     WriteDocPropPartial,
     TextComp,
     QiPartial,
+    TheDictionaryPartial,
     Generic[T],
 ):
     """
@@ -48,6 +50,7 @@ class WriteParagraphs(
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         TextComp.__init__(self, component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
 
     # region Overrides
     def _is_next_element_valid(self, element: Any) -> bool:

@@ -11,6 +11,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.calc_form import CalcForm
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
 
 
-class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDocPropPartial):
+class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, TheDictionaryPartial, QiPartial, CalcDocPropPartial):
     """
     Class for managing Calc Forms.
 
@@ -67,6 +68,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDo
         ServicePartial.__init__(self, component=forms, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=forms, lo_inst=self.lo_inst)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
+        TheDictionaryPartial.__init__(self)
 
     def __next__(self) -> CalcForm:
         """
@@ -75,7 +77,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDo
         Returns:
             CalcForm: The next form.
         """
-        return CalcForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)
+        return CalcForm(owner=self, component=super().__next__(), lo_inst=self.lo_inst)  # type: ignore
 
     def __getitem__(self, index: str | int) -> CalcForm:
         """
@@ -242,7 +244,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDo
         """
         idx = self._get_index(idx, True)
         result = super().get_by_index(idx)
-        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XIndexAccess overrides
 
@@ -264,7 +266,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, QiPartial, CalcDo
         if not self.has_by_name(name):
             raise mEx.MissingNameError(f"Unable to find sheet with name '{name}'")
         result = super().get_by_name(name)
-        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)
+        return CalcForm(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
     # endregion XNameAccess overrides
 

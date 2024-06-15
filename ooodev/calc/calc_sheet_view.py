@@ -20,6 +20,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.adapter.ui.context_menu_interception_partial import ContextMenuInterceptionPartial
 from ooodev.adapter.ui.context_menu_interceptor_events import ContextMenuInterceptorEvents
 from ooodev.events.args.generic_args import GenericArgs
@@ -159,6 +160,7 @@ class CalcSheetView(
     PropPartial,
     StylePartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcDocPropPartial,
     CompDefaultsPartial,
     UserInputInterceptionPartial,
@@ -182,6 +184,7 @@ class CalcSheetView(
     def __new__(cls, owner: CalcDoc, view: XSpreadsheetView, *args, **kwargs):
         builder = get_builder(component=view)
         builder_helper.builder_add_comp_defaults(builder)
+        builder_helper.builder_add_the_dictionary_partial(builder)
 
         builder_only = kwargs.get("_builder_only", False)
         if builder_only:

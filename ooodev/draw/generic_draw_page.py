@@ -14,6 +14,7 @@ from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -34,6 +35,7 @@ class GenericDrawPage(
     Shapes2Partial,
     Shapes3Partial,
     ServicePartial,
+    TheDictionaryPartial,
     QiPartial,
     StylePartial,
 ):
@@ -61,6 +63,7 @@ class GenericDrawPage(
         Shapes2Partial.__init__(self, component=component, interface=None)  # type: ignore
         Shapes3Partial.__init__(self, component=component, interface=None)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)
 

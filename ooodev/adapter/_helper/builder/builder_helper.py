@@ -135,3 +135,15 @@ def builder_add_component_prop(builder: DefaultBuilder) -> None:
             init_kind=InitKind.COMPONENT,
             check_kind=CheckKind.NONE,
         )
+
+
+def builder_add_the_dictionary_partial(builder: DefaultBuilder) -> None:
+    key = "ooodev.utils.partial.the_dictionary_partial.TheDictionaryPartial"
+    if not builder.has_import(key) and not builder.has_omit(key):
+        builder.add_import(
+            name=key,
+            uno_name="",
+            optional=False,
+            init_kind=InitKind.NONE,
+            check_kind=CheckKind.NONE,
+        )

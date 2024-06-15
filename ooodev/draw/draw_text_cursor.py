@@ -14,6 +14,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
@@ -34,6 +35,7 @@ class DrawTextCursor(
     PropertyChangeImplement,
     VetoableChangeImplement,
     ServicePartial,
+    TheDictionaryPartial,
     PropPartial,
     QiPartial,
     StylePartial,
@@ -62,6 +64,7 @@ class DrawTextCursor(
         OfficeDocumentPropPartial.__init__(self, owner.office_doc)
         TextCursorPartial.__init__(self, owner=owner, component=component)
         TextCursorComp.__init__(self, component)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)

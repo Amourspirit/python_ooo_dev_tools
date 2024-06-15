@@ -20,6 +20,7 @@ from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.events.partial.events_partial import EventsPartial
@@ -51,6 +52,7 @@ class WriteTextCursor(
     VetoableChangeImplement,
     PropPartial,
     QiPartial,
+    TheDictionaryPartial,
     StylePartial,
 ):
     """
@@ -92,6 +94,7 @@ class WriteTextCursor(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=component)
         self._style_direct_char = None
 

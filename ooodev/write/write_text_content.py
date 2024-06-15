@@ -11,6 +11,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from ooodev.proto.component_proto import ComponentT
@@ -22,7 +23,14 @@ T = TypeVar("T", bound="ComponentT")
 
 
 class WriteTextContent(
-    Generic[T], LoInstPropsPartial, TextContentComp, WriteDocPropPartial, QiPartial, ServicePartial, StylePartial
+    Generic[T],
+    LoInstPropsPartial,
+    TextContentComp,
+    WriteDocPropPartial,
+    QiPartial,
+    ServicePartial,
+    TheDictionaryPartial,
+    StylePartial,
 ):
     """Represents writer text content."""
 
@@ -46,6 +54,7 @@ class WriteTextContent(
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
+        TheDictionaryPartial.__init__(self)
 
     def get_character_properties(self) -> CharacterPropertiesComp | None:
         """

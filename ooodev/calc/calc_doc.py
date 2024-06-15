@@ -54,6 +54,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.libraries_partial import LibrariesPartial
 from ooodev.utils.partial.doc_common_partial import DocCommonPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -85,6 +86,7 @@ class CalcDoc(
     LibrariesPartial,
     DocCommonPartial,
     CalcDocPropPartial,
+    TheDictionaryPartial,
 ):
     """Defines a Calc Document"""
 
@@ -123,6 +125,7 @@ class CalcDoc(
         LibrariesPartial.__init__(self, component=doc)
         DocCommonPartial.__init__(self, component=doc)
         CalcDocPropPartial.__init__(self, obj=self)
+        TheDictionaryPartial.__init__(self)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None

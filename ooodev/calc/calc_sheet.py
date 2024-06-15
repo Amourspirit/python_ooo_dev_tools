@@ -32,6 +32,7 @@ from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.custom_properties_partial import CustomPropertiesPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc import calc_cell_range as mCalcCellRange
 from ooodev.calc import calc_cell as mCalcCell
 from ooodev.calc import calc_cell_cursor as mCalcCellCursor
@@ -73,6 +74,7 @@ class CalcSheet(
     QiPartial,
     PropPartial,
     ServicePartial,
+    TheDictionaryPartial,
     StylePartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
@@ -96,6 +98,7 @@ class CalcSheet(
         QiPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=sheet, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=sheet)
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CalcDocPropPartial.__init__(self, obj=owner)

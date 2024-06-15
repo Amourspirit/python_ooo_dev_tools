@@ -8,6 +8,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.style_partial import StylePartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
 from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
@@ -32,6 +33,7 @@ class ChartDiagram(
     ChartDocPropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     StylePartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
@@ -57,6 +59,7 @@ class ChartDiagram(
         ChartDocPropPartial.__init__(self, chart_doc=owner)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=component)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)

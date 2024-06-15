@@ -34,6 +34,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
@@ -76,6 +77,7 @@ class CalcCellRange(
     PropPartial,
     StylePartial,
     ServicePartial,
+    TheDictionaryPartial,
     FontOnlyPartial,
     FontEffectsPartial,
     FontPartial,
@@ -117,6 +119,7 @@ class CalcCellRange(
         QiPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         PropPartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=cell_range)
+        TheDictionaryPartial.__init__(self)
         ServicePartial.__init__(self, component=cell_range, lo_inst=self.lo_inst)
         FontOnlyPartial.__init__(self, factory_name="ooodev.calc.cell_rng", component=cell_range, lo_inst=self.lo_inst)
         FontEffectsPartial.__init__(

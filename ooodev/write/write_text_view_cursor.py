@@ -22,6 +22,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.type_var import PathOrStr
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write import write_doc as mWriteDoc
 from ooodev.events.write_named_event import WriteNamedEvent
 from ooodev.write.partial.text_cursor_partial import TextCursorPartial
@@ -48,6 +49,7 @@ class WriteTextViewCursor(
     VetoableChangeImplement,
     PropPartial,
     QiPartial,
+    TheDictionaryPartial,
     StylePartial,
     EventsPartial,
 ):
@@ -80,6 +82,7 @@ class WriteTextViewCursor(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=component)
         EventsPartial.__init__(self)
         self._style_direct_char = None

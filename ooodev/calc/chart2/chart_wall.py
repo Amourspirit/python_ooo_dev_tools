@@ -4,6 +4,7 @@ from typing import Any, TYPE_CHECKING
 import uno
 from ooodev.loader import lo as mLo
 from ooodev.utils.comp.prop import Prop
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.adapter.drawing.line_properties_partial import LinePropertiesPartial
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial
@@ -31,6 +32,7 @@ class ChartWall(
     ChartDocPropPartial,
     CalcDocPropPartial,
     CalcSheetPropPartial,
+    TheDictionaryPartial,
     FillPropertiesPartial,
     LinePropertiesPartial,
     FillColorPartial,
@@ -60,6 +62,7 @@ class ChartWall(
         ChartDocPropPartial.__init__(self, chart_doc=owner.chart_doc)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         CalcSheetPropPartial.__init__(self, obj=owner.calc_sheet)
+        TheDictionaryPartial.__init__(self)
         FillPropertiesPartial.__init__(self, component=component)
         LinePropertiesPartial.__init__(self, component=component)
         FillColorPartial.__init__(self, factory_name="ooodev.char2.wall.area", component=component, lo_inst=lo_inst)

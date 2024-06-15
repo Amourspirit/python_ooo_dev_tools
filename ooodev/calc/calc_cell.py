@@ -32,6 +32,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.type_var import Row, Table
 from ooodev.utils.helper.dot_dict import DotDict
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.format.inner.partial.style.style_property_partial import StylePropertyPartial
 from ooodev.calc.partial.calc_cell_prop_partial import CalcCellPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
@@ -69,6 +70,7 @@ class CalcCell(
     PropPartial,
     StylePartial,
     ServicePartial,
+    TheDictionaryPartial,
     CalcCellPropPartial,
     CalcSheetPropPartial,
     CalcDocPropPartial,
@@ -98,6 +100,7 @@ class CalcCell(
         PropPartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=sheet_cell)
         ServicePartial.__init__(self, component=sheet_cell, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         CalcCellPropPartial.__init__(self, obj=self)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)

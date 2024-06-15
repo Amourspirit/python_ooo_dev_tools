@@ -16,6 +16,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -35,6 +36,7 @@ class MasterDrawPage(
     QiPartial,
     PropPartial,
     StylePartial,
+    TheDictionaryPartial,
     Generic[_T],
 ):
     """Represents a draw page."""
@@ -56,6 +58,7 @@ class MasterDrawPage(
         PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         StylePartial.__init__(self, component=component)

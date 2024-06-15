@@ -29,6 +29,7 @@ from ooodev.utils.kind.form_component_kind import FormComponentKind
 from ooodev.utils.kind.language_kind import LanguageKind
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import ControlShape  # service
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
 
 class FormCtlBase(
     LoInstPropsPartial,
+    TheDictionaryPartial,
     PropPartial,
     FocusEvents,
     KeyEvents,
@@ -81,6 +83,7 @@ class FormCtlBase(
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
+        TheDictionaryPartial.__init__(self)
         # generally speaking EventArgs.event_data will contain the Event object for the UNO event raised.
         self._set_control(ctl)
         # in some cases the control model is removed from the control.

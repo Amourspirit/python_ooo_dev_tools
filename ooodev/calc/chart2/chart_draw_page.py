@@ -16,6 +16,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.adapter.drawing.shape_collection_comp import ShapeCollectionComp
 from ooodev.adapter.lang.component_partial import ComponentPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
@@ -37,6 +38,7 @@ class ChartDrawPage(
     CalcSheetPropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     EventsPartial,
     PropPartial,
     StylePartial,
@@ -66,6 +68,7 @@ class ChartDrawPage(
         CalcSheetPropPartial.__init__(self, owner.calc_sheet)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         EventsPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)

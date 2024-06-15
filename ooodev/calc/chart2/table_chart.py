@@ -15,6 +15,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc.chart2.chart_doc import ChartDoc
@@ -34,6 +35,7 @@ class TableChart(
     PropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     PropertyChangeImplement,
     VetoableChangeImplement,
     CalcSheetPropPartial,
@@ -59,6 +61,7 @@ class TableChart(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore # pylint: disable=no-member
         PropertyChangeImplement.__init__(self, component=component, trigger_args=generic_args)
         VetoableChangeImplement.__init__(self, component=component, trigger_args=generic_args)

@@ -17,6 +17,7 @@ from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 
 if TYPE_CHECKING:
@@ -27,7 +28,13 @@ _T = TypeVar("_T", bound="ComponentT")
 
 
 class GenericDrawPages(
-    LoInstPropsPartial, OfficeDocumentPropPartial, DrawPagesComp, QiPartial, ServicePartial, Generic[_T]
+    LoInstPropsPartial,
+    OfficeDocumentPropPartial,
+    DrawPagesComp,
+    QiPartial,
+    ServicePartial,
+    TheDictionaryPartial,
+    Generic[_T],
 ):
     """
     Class for managing Generic Draw Pages.
@@ -53,6 +60,7 @@ class GenericDrawPages(
         # The API does not show that DrawPages implements XNameAccess, but it does.
         QiPartial.__init__(self, component=slides, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=slides, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
     def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:

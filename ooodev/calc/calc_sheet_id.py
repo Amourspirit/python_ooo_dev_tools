@@ -5,6 +5,7 @@ from com.sun.star.form import XForm
 
 from ooodev.form.controls.form_ctl_hidden import FormCtlHidden
 from ooodev.utils import gen_util as gUtil
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 
 if TYPE_CHECKING:
     from com.sun.star.form.component import Form
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from ooodev.calc.calc_form import CalcForm
 
 
-class CalcSheetId:
+class CalcSheetId(TheDictionaryPartial):
     """
     Generates a unique id for the sheet if it does not exist and makes it available via the id property.
 
@@ -23,6 +24,7 @@ class CalcSheetId:
     """
 
     def __init__(self, sheet: CalcSheet) -> None:
+        TheDictionaryPartial.__init__(self)
         self._sheet = sheet
         self._hidden_name = "SheetUniqueID"
         self._id = ""

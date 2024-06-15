@@ -15,6 +15,7 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.utils.context.lo_context import LoContext
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.loader import lo as mLo
 from ooodev.form import forms as mForms
@@ -57,7 +58,7 @@ if TYPE_CHECKING:
 # pylint: disable=super-init-not-called
 
 
-class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
+class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial, TheDictionaryPartial):
     """A partial class for a cell control."""
 
     def __init__(self, calc_obj: Any, lo_inst: LoInst | None = None) -> None:
@@ -66,6 +67,7 @@ class SheetControlBase(LoInstPropsPartial, CalcSheetPropPartial, EventsPartial):
         self._calc_obj = calc_obj
         LoInstPropsPartial.__init__(self, lo_inst=lo_inst)
         EventsPartial.__init__(self)
+        TheDictionaryPartial.__init__(self)
         self._init_calc_sheet_prop()
         self._current_control = NULL_OBJ
 

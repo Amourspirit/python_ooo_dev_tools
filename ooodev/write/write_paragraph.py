@@ -12,6 +12,7 @@ from ooodev.format.inner.style_partial import StylePartial
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
@@ -34,6 +35,7 @@ class WriteParagraph(
     VetoableChangeImplement,
     TextRangePartial,
     QiPartial,
+    TheDictionaryPartial,
     PropPartial,
     StylePartial,
 ):
@@ -67,6 +69,7 @@ class WriteParagraph(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         TextRangePartial.__init__(self, component=self.component)  # type: ignore
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
+        TheDictionaryPartial.__init__(self)
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)  # type: ignore
         StylePartial.__init__(self, component=component)
 

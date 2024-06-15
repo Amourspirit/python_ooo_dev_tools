@@ -12,6 +12,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 
@@ -32,6 +33,7 @@ class CalcTableCol(
     TableColumnComp,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     StylePartial,
     CalcSheetPropPartial,
     CalcDocPropPartial,
@@ -58,6 +60,7 @@ class CalcTableCol(
         TableColumnComp.__init__(self, comp)  # type: ignore
         QiPartial.__init__(self, component=comp, lo_inst=self.lo_inst)  # type: ignore
         ServicePartial.__init__(self, component=comp, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         StylePartial.__init__(self, component=comp)
         CalcSheetPropPartial.__init__(self, obj=owner)
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)

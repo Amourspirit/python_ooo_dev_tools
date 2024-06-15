@@ -27,6 +27,7 @@ from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.service_partial import ServicePartial
+from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.calc.chart2.kind.chart_axis_kind import ChartAxisKind
 from ooodev.calc.chart2.kind.chart_title_kind import ChartTitleKind
 from ooodev.calc.chart2.kind.chart_diagram_kind import ChartDiagramKind
@@ -68,6 +69,7 @@ class ChartDoc(
     PropPartial,
     QiPartial,
     ServicePartial,
+    TheDictionaryPartial,
     EventsPartial,
     ChartDocPropPartial,
     PropertyChangeImplement,
@@ -104,6 +106,7 @@ class ChartDoc(
         PropPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         QiPartial.__init__(self, component=component, lo_inst=self.lo_inst)
         ServicePartial.__init__(self, component=component, lo_inst=self.lo_inst)
+        TheDictionaryPartial.__init__(self)
         EventsPartial.__init__(self)
         ChartDocPropPartial.__init__(self, chart_doc=self)
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore # pylint: disable=no-member
