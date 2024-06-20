@@ -22,7 +22,7 @@ from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.libraries_partial import LibrariesPartial
 from ooodev.utils.partial.doc_common_partial import DocCommonPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
-
+from ooodev.utils.partial.json_custom_props_partial import JsonCustomPropsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XShape
@@ -55,6 +55,7 @@ class DocPartial(
     DocCommonPartial,
     StylePartial,
     TheDictionaryPartial,
+    JsonCustomPropsPartial,
 ):
     """
     Document partial class.
@@ -86,6 +87,7 @@ class DocPartial(
         DocCommonPartial.__init__(self, component=component)
         StylePartial.__init__(self, component=component)
         TheDictionaryPartial.__init__(self)
+        JsonCustomPropsPartial.__init__(self, doc=self)  # type: ignore
 
     # region Lazy Listeners
 

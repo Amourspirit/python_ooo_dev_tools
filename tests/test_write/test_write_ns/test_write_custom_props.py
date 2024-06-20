@@ -22,12 +22,16 @@ def test_writer_custom_props(loader, tmp_path) -> None:
         dd.doc_name = "Who knows"
         dd.doc_num = 1
         dd.boolean = True
+        dd.empty_str = ""
+        dd.nothing = None
         doc.set_custom_properties(dd)
 
         dd = doc.get_custom_properties()
         assert dd.doc_name == "Who knows"
         assert dd.doc_num == 1
         assert dd.boolean is True
+        assert dd.empty_str == ""
+        assert dd.nothing is None
 
         doc.save_doc(pth)
         doc.close()
@@ -37,7 +41,8 @@ def test_writer_custom_props(loader, tmp_path) -> None:
         assert dd.doc_name == "Who knows"
         assert dd.doc_num == 1
         assert dd.boolean is True
-        assert len(dd) == 3
+        assert dd.empty_str == ""
+        assert dd.nothing is None
 
     finally:
         if doc:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Any, Dict
 from ooodev.utils.gen_util import NULL_OBJ
+from ooodev.utils.helper.dot_dict import DotDict
 
 
 class TheDict:
@@ -37,6 +38,9 @@ class TheDict:
 
     def __len__(self):
         return len(self.__dict__)
+
+    def __copy__(self):
+        return self.copy()
 
     def get(self, key: str, default: Any = NULL_OBJ) -> Any:
         """
@@ -115,6 +119,30 @@ class TheDict:
     def values(self):
         """Returns an object providing a view on the dictionary's values."""
         return self.__dict__.values()
+
+    def copy(self):
+        """Returns a shallow copy of the dictionary."""
+        return self.__dict__.copy()
+
+    def copy_dict(self) -> dict:
+        """Returns a shallow copy of the dictionary."""
+        return self.__dict__.copy()
+
+    def update(self, other: dict | TheDict | DotDict):
+        """
+        Update dictionary with another dictionary.
+
+        Args:
+            other (dict, TheDict, DotDict): Dictionary to update with.
+        """
+        if isinstance(other, (TheDict, DotDict)):
+            self.__dict__.update(other.__dict__)
+        else:
+            self.__dict__.update(other)
+
+    def clear(self):
+        """Clears the dictionary"""
+        self.__dict__.clear()
 
 
 class TheDictionaryPartial:

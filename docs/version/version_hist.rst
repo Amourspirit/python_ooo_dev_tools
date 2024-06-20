@@ -2,6 +2,94 @@
 Version History
 ***************
 
+Version 0.47.0
+==============
+
+Breaking Changes
+----------------
+
+Writer custom properties have been updated to be more consistent with other document types.
+in ``0.45.0`` custom document properties were added to Writer documents. Now the custom properties have been updated to be more consistent with other document types.
+This means any custom properties prior to ``0.47.0`` will not be read by this version. The custom properties for Writer documents will need to be reset.
+Changes to custom document properties are not expected to change going forward.
+
+Other custom properties such as Calc Sheet and Cell custom properties are not affected.
+
+Custom Document Properties
+--------------------------
+
+Calc, Draw, Impress and Writer documents now have custom properties that can be set and retrieved.
+Custom Document Properties are new for Calc, Draw, Impress but not Writer documents.
+
+Custom Document Properties are persisted with the document.
+
+Custom document properties take advantage of the new ``ooodev.io.json.JsonCustomProps``
+and ``ooodev.io.json.DocJsonFile`` classes. These class make it possible to save and load json files to a document.
+
+
+Logging Updates
+---------------
+
+Now it is possible to log to a file. By default only a console logger is used for logging.
+``ooodev.io.log.logging`` now has a ``add_file_logger()`` and ``remove_file_logger()`` methods that can be used to set or remove the log file.
+
+.. code-block:: python
+
+    from ooodev.io.log import logging as logger
+    from ooodev.loader import Lo
+
+    log_file = Lo.tmp_dir / "my_log.log"
+    logger.add_file_logger(log_file)
+    logger.info("Hello World")
+    logger.remove_file_logger(log_file)
+
+
+A new environment variable ``ODEV_LOG_LEVEL`` can be used to set the logging level.
+Any value below ``10`` (``logging.DEBUG``) will mean logging is disabled.
+
+.. code-block:: python
+
+    import logging
+    import os
+    os.environ["ODEV_LOG_LEVEL"] = str(logging.WARNING)
+
+    from ooodev.loader import Lo
+    from ooodev.io.log import logging as logger
+
+    logger.info("Hello World")  # will not log
+
+    os.environ["ODEV_LOG_LEVEL"] = str(logging.INFO) # or "20"
+    logger.reset_logger()
+
+    logger.info("Hello World")  # will log
+
+
+Also Logging can be set when starting LibreOffice via the Loader and Options.
+
+.. code-block:: python
+
+    from __future__ import annotations
+    from ooodev.io.log import logging as logger
+
+    from ooodev.calc import CalcDoc
+    from ooodev.loader import Lo
+    from ooodev.loader.inst.options import Options
+
+
+    def main():
+
+        loader = Lo.load_office(connector=Lo.ConnectPipe(), opt=Options(log_level=logging.DEBUG))
+        doc = None
+        try:
+            doc = CalcDoc.create_doc(loader=loader, visible=True)
+            logger.debug("Hello World")
+            # do other work
+        finally:
+            if doc:
+                doc.close()
+            Lo.close_office()
+
+
 Version 0.46.0
 ==============
 
