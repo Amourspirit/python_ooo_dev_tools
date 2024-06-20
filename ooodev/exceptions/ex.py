@@ -541,3 +541,37 @@ class NameClashError(Exception):
     """Generic Name Clash Error"""
 
     pass
+
+
+# region Json Errors
+class JsonError(Exception):
+    """Generic Json Error"""
+
+    pass
+
+
+class JsonDecodeError(JsonError):
+    """Json Decode Error"""
+
+    pass
+
+
+class JsonEncodeError(JsonError):
+    """Json Encode Error"""
+
+    pass
+
+
+class JsonLoadError(JsonError):
+    """Json Load Error"""
+
+    pass
+
+
+class JsonDumpError(JsonError):
+    """Json Dump Error"""
+
+    pass
+
+
+# endregion Json Errors

@@ -765,9 +765,9 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             return False
 
-        if self._xdesktop is None:
-            self.print("No office connection found")
-            return True
+        # if self._xdesktop is None:
+        #     self.print("No office connection found")
+        #     return True
 
         if self._is_office_terminated:
             self.print("Office has already been requested to terminate")
@@ -821,7 +821,8 @@ class LoInst(EventsPartial):
             eargs = EventArgs(self.kill_office.__qualname__)
             self.on_office_closed(eargs)
             self.on_reset(eargs)
-            self.print("Killed Office")
+            self._lo_inst = None
+            # self.print("Killed Office")
         except Exception as e:
             raise Exception("Unable to kill Office") from e
 
