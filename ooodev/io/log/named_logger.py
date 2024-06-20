@@ -1,7 +1,10 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ooodev.io.log import logging as logger
 import logging
+
+if TYPE_CHECKING:
+    from ooodev.utils.type_var import PathOrStr
 
 
 class NamedLogger:
@@ -110,6 +113,44 @@ class NamedLogger:
         """
         logger.warning(f"{self._name}: {msg}", *args, **kwargs)
         return
+
+    # region Handler methods
+    def add_file_logger(self, log_file: PathOrStr, log_level: int = -1) -> bool:
+        """
+        Add a file logger to the logger if it does not already exist.
+
+        Args:
+            log_file (PathOrStr): Log File Path.
+            log_level (int, optional): Log Level. Defaults to Instance Log Level.
+
+        Returns:
+            bool: True if the handler was added, False otherwise.
+        """
+        return logger.add_file_logger(log_file, log_level)
+
+    def remove_file_logger(self, log_file: PathOrStr) -> bool:
+        """
+        Remove a file logger from the logger if it exists.
+
+        Args:
+            log_file (PathOrStr): Log File Path.
+
+        Returns:
+            bool: True if the handler was removed, False otherwise.
+        """
+        return logger.remove_file_logger(log_file)
+
+    def remove_handlers(self) -> None:
+        """
+        Remove all handlers from the logger.
+        """
+        logger.remove_handlers()
+
+    def add_stream_handler(self) -> None:
+        """Adds a stream handler to the logger if it does not already exist."""
+        logger.add_stream_handler()
+
+    # endregion Handler methods
 
     # region Properties
     @property

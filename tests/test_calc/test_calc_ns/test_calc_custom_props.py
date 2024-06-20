@@ -464,3 +464,47 @@ def test_sheet_custom_cell(loader, tmp_path) -> None:
     finally:
         if doc:
             doc.close()
+
+
+def test_doc_custom_props(loader, tmp_path) -> None:
+    # get_sheet is overload method.
+    # testing each overload.
+    doc = None
+    try:
+        pth = Path(tmp_path, "test_doc_custom_props.ods")
+        doc = CalcDoc.create_doc(loader)
+
+        dd = doc.get_custom_properties()
+        assert len(dd) == 0
+
+        dd = DotDict()
+        dd.test1 = 10
+        dd.test2 = "Hello World"
+        dd.test3 = None
+        doc.set_custom_properties(dd)
+        test1 = doc.get_custom_property("test1")
+        assert test1 == 10
+        test2 = doc.get_custom_property("test2")
+        assert test2 == "Hello World"
+        test3 = doc.get_custom_property("test3")
+        assert test3 is None
+
+        doc.save_doc(pth)
+        doc.close()
+
+        doc = CalcDoc.open_doc(pth)
+        dd = doc.get_custom_properties()
+        assert dd.test1 == 10
+        assert dd.test2 == "Hello World"
+        assert dd.test3 is None
+
+        test1 = doc.get_custom_property("test1")
+        assert test1 == 10
+        test2 = doc.get_custom_property("test2")
+        assert test2 == "Hello World"
+        test3 = doc.get_custom_property("test3")
+        assert test3 is None
+
+    finally:
+        if doc:
+            doc.close()

@@ -53,6 +53,9 @@ class DotDict:
     def __len__(self):
         return len(self.__dict__)
 
+    def __copy__(self):
+        return self.copy()
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         Get value from dictionary.
@@ -77,3 +80,27 @@ class DotDict:
     def values(self):
         """Returns an object providing a view on the dictionary's values."""
         return self.__dict__.values()
+
+    def update(self, other: dict | DotDict):
+        """
+        Update dictionary with another dictionary.
+
+        Args:
+            other (dict, DotDict): Dictionary to update with.
+        """
+        if isinstance(other, DotDict):
+            self.__dict__.update(other.__dict__)
+        else:
+            self.__dict__.update(other)
+
+    def copy(self) -> DotDict:
+        """Returns a shallow copy of the dictionary."""
+        return DotDict(**self.__dict__)
+
+    def copy_dict(self) -> dict:
+        """Returns a shallow copy of the dictionary."""
+        return self.__dict__.copy()
+
+    def clear(self):
+        """Clears the dictionary"""
+        self.__dict__.clear()

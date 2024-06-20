@@ -18,6 +18,7 @@ from ooodev.loader import Lo
 from ooodev.utils import paths as mPaths
 from ooodev.loader.inst import Options as LoOptions
 from ooodev.conn import connectors
+from ooodev.io.log import logging as logger
 
 # from ooodev.connect import connectors as mConnectors
 from ooodev.conn import cache as mCache
@@ -222,7 +223,7 @@ def _get_loader_socket_no_start(
 
 # @pytest.fixture(scope="session", autouse=True)
 @pytest.fixture(scope="session")
-def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
+def loader(tmp_path_session, run_headless, soffice_path, soffice_env, set_log_file):
     # for testing with a snap the cache_obj must be omitted.
     # This because the snap is not allowed to write to the real tmp directory.
     test_socket = os.environ.get("ODEV_TEST_CONN_SOCKET", "0")
@@ -240,11 +241,13 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env):
         loader = _get_loader_pipe_default(
             headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
         )
+    set_log_file("test.log")
     yield loader
     if connect_kind == "no_start":
         # only close office if it was started by the test
         return
     Lo.close_office()
+    Lo.kill_office()
 
 
 # endregion Loader methods
@@ -267,6 +270,15 @@ def copy_fix_writer(tmp_path_session):
         return dst
 
     return copy_res
+
+
+@pytest.fixture(scope="session")
+def set_log_file(tmp_path_session):
+    def set_file(fnm):
+        file = Path(tmp_path_session, fnm)
+        logger.add_file_logger(file)
+
+    return set_file
 
 
 @pytest.fixture(scope="session")
