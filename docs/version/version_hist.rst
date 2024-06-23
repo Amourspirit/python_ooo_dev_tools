@@ -2,6 +2,17 @@
 Version History
 ***************
 
+Version 0.47.1
+==============
+
+Added a new Range Selector Popup to CalcDoc and CalcSheet via ``get_range_selection_from_popup()`` method.
+A range selection popup can be invoked from a single method.
+This is made possible by the new ``ooodev.calc.sheet.range_selector.RangeSelector`` class.
+
+.. image:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1b102f85-1546-4814-8396-253f5935aced
+    :alt: Screenshot of Popup Range selector dialog for Calc
+    :align: center
+
 Version 0.47.0
 ==============
 
