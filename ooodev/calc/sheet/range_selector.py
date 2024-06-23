@@ -148,12 +148,10 @@ class RangeSelector:
         # view.remove_range_selection_listener(src)
         if event.event_data.state == "done":
             if event.event_data.result:
-                print(f"Selected range: {event.event_data.result}")
+                # print(f"Selected range: {event.event_data.result}")
                 if event.event_data.rng_obj:
                     rng_obj = cast("RangeObj", event.event_data.rng_obj)
                     view.extra_data.selection_result = rng_obj
-        else:
-            print("Selection aborted")
 
     def get_range_selection(self, doc: CalcDoc) -> RangeObj | None:
         """
@@ -173,7 +171,7 @@ class RangeSelector:
         view.add_range_selection_listener(ex_listener)
         props = Props.make_props(Title=self._title, CloseOnMouseRelease=self._close_on_mouse_release)
         view.component.startRangeSelection(props)
-        print("Make a selection in the document")
+        # print("Make a selection in the document")
         while not view.extra_data.selection_made:
             time.sleep(0.5)
         result = view.extra_data.selection_result
