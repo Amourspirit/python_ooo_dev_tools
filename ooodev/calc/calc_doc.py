@@ -11,6 +11,7 @@ from com.sun.star.sheet import XSpreadsheets
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.sheet import XSheetCellRange
 
+from ooodev.mock import mock_g
 from ooodev.adapter.sheet.named_ranges_comp import NamedRangesComp
 from ooodev.adapter.sheet.database_ranges_comp import DatabaseRangesComp
 from ooodev.adapter.sheet.spreadsheet_document_comp import SpreadsheetDocumentComp
@@ -57,6 +58,7 @@ from ooodev.utils.partial.libraries_partial import LibrariesPartial
 from ooodev.utils.partial.doc_common_partial import DocCommonPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.utils.partial.json_custom_props_partial import JsonCustomPropsPartial
+from ooodev.calc.partial.popup_rng_sel_partial import PopupRngSelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -90,6 +92,7 @@ class CalcDoc(
     CalcDocPropPartial,
     TheDictionaryPartial,
     JsonCustomPropsPartial,
+    PopupRngSelPartial,
 ):
     """Defines a Calc Document"""
 
@@ -130,6 +133,7 @@ class CalcDoc(
         CalcDocPropPartial.__init__(self, obj=self)
         TheDictionaryPartial.__init__(self)
         JsonCustomPropsPartial.__init__(self, doc=self)
+        PopupRngSelPartial.__init__(self, doc=self)
         self._sheets = None
         self._draw_pages = None
         self._current_controller = None
@@ -1317,3 +1321,7 @@ class CalcDoc(
         return None
 
     # endregion Static Methods
+
+
+if mock_g.FULL_IMPORT:
+    from ooodev.calc.sheet.range_selector import RangeSelector

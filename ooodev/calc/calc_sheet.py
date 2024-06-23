@@ -41,6 +41,7 @@ from ooodev.calc import calc_table_row as mCalcTableRow
 from ooodev.calc.partial import sheet_cell_partial as mSheetCellPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
+from ooodev.calc.partial.popup_rng_sel_partial import PopupRngSelPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SolverConstraint  # struct
@@ -79,6 +80,7 @@ class CalcSheet(
     CalcDocPropPartial,
     CalcSheetPropPartial,
     CustomPropertiesPartial,
+    PopupRngSelPartial,
 ):
     """Class for managing Calc Sheet"""
 
@@ -103,6 +105,7 @@ class CalcSheet(
         mSheetCellPartial.SheetCellPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         CalcDocPropPartial.__init__(self, obj=owner)
         CalcSheetPropPartial.__init__(self, obj=self)
+        PopupRngSelPartial.__init__(self, doc=owner)
         self._draw_page = None
         self._charts = None
         self._unique_id = None
@@ -4006,7 +4009,7 @@ class CalcSheet(
 
         Returns:
             CalcSheet: CalcSheet if found; Otherwise, ``None``
-        
+
         .. versionadded:: 0.46.0
         """
         # pylint: disable=import-outside-toplevel
