@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any
+from ooodev.io.log.named_logger import NamedLogger
 
 
 class DocCommonPartial:
@@ -13,6 +14,7 @@ class DocCommonPartial:
             component (Any): Any Uno Component that supports ``XStorageBasedLibraryContainer`` interface.
         """
         self.__component = component
+        self.__log = NamedLogger(name=self.__class__.__name__)
 
     def __bool__(self) -> bool:
         return True
@@ -36,3 +38,13 @@ class DocCommonPartial:
             str: The string value.
         """
         return self.__component.StringValue
+
+    @property
+    def log(self) -> NamedLogger:
+        """
+        Gets the logger.
+
+        Returns:
+            NamedLogger: The logger.
+        """
+        return self.__log

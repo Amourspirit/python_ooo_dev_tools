@@ -1,10 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing_extensions import Protocol
+    from ooodev.io.log.named_logger import NamedLogger
 else:
     Protocol = object
+    NamedLogger = Any
 
 
 class DocCommonPartialT(Protocol):
@@ -26,5 +28,15 @@ class DocCommonPartialT(Protocol):
 
         Returns:
             str: The string value.
+        """
+        ...
+
+    @property
+    def log(self) -> NamedLogger:
+        """
+        Gets the logger.
+
+        Returns:
+            NamedLogger: The logger.
         """
         ...

@@ -14,3 +14,4 @@ calc
     filter/index
     partial/index
     controls/index
+    sheet/index
