@@ -8,11 +8,13 @@ import unohelper
 from com.sun.star.sheet import XRangeSelectionListener
 
 from ooodev.globals.gbl_events import GblEvents
-from ooodev.calc import CalcDoc, CalcSheetView, RangeObj
+from ooodev.calc.calc_doc import CalcDoc
+from ooodev.calc.calc_sheet_view import CalcSheetView
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.utils import props as mProps
+from ooodev.utils.data_type.range_obj import RangeObj
 from ooodev.io.log.named_logger import NamedLogger
 
 if TYPE_CHECKING:
