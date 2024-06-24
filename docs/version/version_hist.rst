@@ -2,16 +2,26 @@
 Version History
 ***************
 
-Version 0.47.1
+Version 0.47.3
 ==============
 
-Added a new Range Selector Popup to CalcDoc and CalcSheet via ``get_range_selection_from_popup()`` method.
-A range selection popup can be invoked from a single method.
-This is made possible by the new ``ooodev.calc.sheet.range_selector.RangeSelector`` class.
+Now all OfficeDocument Classes such as ``WritDoc``, ``CalcDoc``, ``DrawDoc`` and ``ImpressDoc`` have a ``log`` property that can be used to write to the log.
+
+Added a new Range Selector Popup to CalcDoc and CalcSheet via ``invoke_range_selection()`` method if not running from command line then this method should be used
+over ``get_range_selection_from_popup()`` that was introduced in ``0.47.1``.
 
 .. image:: https://github.com/Amourspirit/python_ooo_dev_tools/assets/4193389/1b102f85-1546-4814-8396-253f5935aced
     :alt: Screenshot of Popup Range selector dialog for Calc
     :align: center
+
+
+Version 0.47.1
+==============
+
+Added a new Range Selector Popup to CalcDoc and CalcSheet via ``get_range_selection_from_popup()`` method. See Also: ``0.47.3`` update.
+A range selection popup can be invoked from a single method.
+This is made possible by the new ``ooodev.calc.sheet.range_selector.RangeSelector`` class.
+
 
 Version 0.47.0
 ==============

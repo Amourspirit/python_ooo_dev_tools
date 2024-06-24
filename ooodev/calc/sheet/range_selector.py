@@ -1,79 +1,44 @@
-"""
-Range selection dialog for Calc sheets.
-
-Example Usage:
-
-.. code-block:: python
-
-    def main():
-        with Lo.Loader(connector=Lo.ConnectSocket()) as loader:
-            doc = None
-            try:
-
-                doc = CalcDoc.create_doc(loader=loader, visible=True)
-                selector = RangeSelector()
-                rng = selector.get_range_selection(doc)
-
-                print("Range Sel", rng) # D3:E6
-
-            finally:
-                if doc is not None:
-                    doc.close()
-"""
-
 from __future__ import annotations
+from typing import Any, TYPE_CHECKING, Callable
 import time
+import threading
 import contextlib
-from typing import Any, cast, TYPE_CHECKING, Callable
-
 import uno
 import unohelper
 from com.sun.star.sheet import XRangeSelectionListener
+
+from ooodev.globals import GblEvents
+from ooodev.calc import CalcDoc, CalcSheetView, RangeObj
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.helper.dot_dict import DotDict
-from ooodev.utils.props import Props
+from ooodev.utils import props as mProps
+from ooodev.io.log.named_logger import NamedLogger
 
 if TYPE_CHECKING:
-    from ooodev.calc import CalcSheetView
-    from ooodev.utils.data_type.range_obj import RangeObj
     from com.sun.star.lang import EventObject
     from com.sun.star.sheet import RangeSelectionEvent
-    from ooodev.calc import CalcDoc
-
-# https://ask.libreoffice.org/t/range-selection-with-a-dialog-box-in-a-python-macro/33732/11
 
 
-class RangeSelector:
-    """
-    Class to popup a range selector.
-
-    Note:
-        This class requires the GUI to be present and will not work in Headless mode.
-
-        Also this class in implemented into ``CalcDoc`` and ``CalcSheet`` via the ``get_range_selection_from_popup()`` method.
-
-    Example:
-
-        .. code-block:: python
-
-            doc = CalcDoc.from_current_doc()
-            selector = RangeSelector()
-            rng = selector.get_range_selection(doc)
-
-            print("Range Sel", rng) # D3:E6
+_SELECTION_MADE = None
+_SELECTION_RESULT = None
 
 
-    .. versionadded:: 0.47.1
-    """
+class RangeSelector(EventsPartial):
 
     class _ExampleRangeListener(XRangeSelectionListener, EventsPartial, unohelper.Base):
-        def __init__(self, view: CalcSheetView, auto_remove_listener: bool = True):
+        def __init__(
+            self, view: CalcSheetView, auto_remove_listener: bool, single_cell_mode: bool, initial_value: str
+        ):
             XRangeSelectionListener.__init__(self)
             EventsPartial.__init__(self)
             unohelper.Base.__init__(self)
+            self._log = NamedLogger(name="RangeSelector._ExampleRangeListener")
+            self._log.debug("RangeSelector._ExampleRangeListener.__init__")
             self.view = view
             self.auto_remove = auto_remove_listener
+            self.single_cell_mode = single_cell_mode
+            self.initial_value = initial_value
             self._removed = False
 
         def done(self, event: RangeSelectionEvent):
@@ -83,13 +48,19 @@ class RangeSelector:
                     result=event.RangeDescriptor,
                     event=event,
                     view=self.view,
-                    auto_remove=self.auto_remove,
                     rng_obj=None,
+                    single_cell_mode=self.single_cell_mode,
                 )
             else:
                 dd = DotDict(
-                    state="aborted", result="", event=event, view=self.view, auto_remove=self.auto_remove, rng_obj=None
+                    state="aborted",
+                    result="",
+                    event=event,
+                    view=self.view,
+                    rng_obj=None,
+                    single_cell_mode=self.single_cell_mode,
                 )
+            dd.initial_value = self.initial_value
             if dd.result:
                 with contextlib.suppress(Exception):
                     sheet = self.view.calc_doc.get_active_sheet()
@@ -100,7 +71,7 @@ class RangeSelector:
             if self.auto_remove and self._removed is False:
                 self.view.remove_range_selection_listener(self)
                 self._removed = True
-            self.trigger_event("RangeSelectResult", eargs)
+            self.trigger_event("AfterPopupRangeSelection", eargs)
 
         def aborted(self, event: RangeSelectionEvent):
             eargs = EventArgs(self)
@@ -109,72 +80,149 @@ class RangeSelector:
                 result="aborted",
                 event=event,
                 view=self.view,
-                auto_remove=self.auto_remove,
                 rng_obj=None,
+                single_cell_mode=self.single_cell_mode,
+                initial_value=self.initial_value,
             )
             eargs.event_data = dd
             if self.auto_remove and self._removed is False:
                 self.view.remove_range_selection_listener(self)
                 self._removed = True
-            self.trigger_event("RangeSelectResult", eargs)
+            self.trigger_event("AfterPopupRangeSelection", eargs)
 
         def disposing(self, event: EventObject):
             pass
 
         def subscribe_range_select(self, cb: Callable[[Any, Any], None]) -> None:
-            self.subscribe_event("RangeSelectResult", cb)
+            self.subscribe_event("AfterPopupRangeSelection", cb)
 
         def unsubscribe_range_select(self, cb: Callable[[Any, Any], None]) -> None:
-            self.unsubscribe_event("RangeSelectResult", cb)
+            self.unsubscribe_event("AfterPopupRangeSelection", cb)
 
-    def __init__(self, title: str = "Please select a range", close_on_mouse_release: bool = False):
-        """
-        Constructor for RangeSelection.
-
-        Args:
-            title (str, optional): The title of the popup. Defaults to "Please select a range".
-            close_on_mouse_release (bool, optional): Specifies if the dialog closes when mouse is released. Defaults to ``False``.
-        """
+    def __init__(
+        self,
+        title: str = "Please select a range",
+        close_on_mouse_release: bool = False,
+        single_cell_mode: bool = False,
+        initial_value: str = "",
+    ):
+        EventsPartial.__init__(self)
+        self._gbl_events = GblEvents()
+        self._log = NamedLogger(name="RangeSelection")
+        self._log.debug("RangeSelector.__init__")
         self._title = title
         self._close_on_mouse_release = close_on_mouse_release
+        self._single_cell_mode = single_cell_mode
+        self._initial_value = initial_value
         self._init_cb()
+        self._log.debug("RangeSelector.__init__() complete")
 
     def _init_cb(self) -> None:
         self._fn_on_range_sel = self._on_range_sel
 
     def _on_range_sel(self, src: Any, event: EventArgs):
-        view = cast("CalcSheetView", event.event_data.view)
-        view.extra_data.selection_made = True
-        # view.remove_range_selection_listener(src)
-        if event.event_data.state == "done":
-            if event.event_data.result:
-                # print(f"Selected range: {event.event_data.result}")
-                if event.event_data.rng_obj:
-                    rng_obj = cast("RangeObj", event.event_data.rng_obj)
-                    view.extra_data.selection_result = rng_obj
+        global _SELECTION_MADE, _SELECTION_RESULT
+
+        _SELECTION_RESULT = event.event_data.rng_obj
+
+        _SELECTION_MADE = True
+        self._gbl_events.trigger_event("GlobalCalcRangeSelector", event)
 
     def get_range_selection(self, doc: CalcDoc) -> RangeObj | None:
-        """
-        Get the range selection.
-
-        Args:
-            doc (CalcDoc): The CalcDoc object.
-
-        Returns:
-            RangeObj | None: The range object or ``None`` if no selection was made.
-        """
+        global _SELECTION_MADE, _SELECTION_RESULT
+        self._log.debug("RangeSelector.get_range_selection() Entered")
         view = doc.get_view()
-        ex_listener = RangeSelector._ExampleRangeListener(view)
+        self._log.debug("RangeSelector.get_range_selection() got view")
+        ex_listener = RangeSelector._ExampleRangeListener(
+            view=view,
+            auto_remove_listener=True,
+            single_cell_mode=self._single_cell_mode,
+            initial_value=self._initial_value,
+        )
+        ex_listener.add_event_observers(self.event_observer)
+        # ex_listener.add_event_observers(self._gbl_events.event_observer)
+        self._log.debug("RangeSelector.get_range_selection() created listener")
         ex_listener.subscribe_range_select(self._fn_on_range_sel)
-        view.extra_data.selection_made = False
-        view.extra_data.selection_result = None
+        self._log.debug("RangeSelector.get_range_selection() subscribed _fn_on_range_sel")
+        _SELECTION_MADE = False
+        _SELECTION_RESULT = None
+        self._log.debug("RangeSelector.get_range_selection() set extra data")
         view.add_range_selection_listener(ex_listener)
-        props = Props.make_props(Title=self._title, CloseOnMouseRelease=self._close_on_mouse_release)
+        self._log.debug("RangeSelector.get_range_selection() added listener")
+        if self._initial_value:
+            props = mProps.Props.make_props(
+                Title=self._title,
+                CloseOnMouseRelease=self._close_on_mouse_release,
+                SingleCellMode=self._single_cell_mode,
+                InitialValue=self._initial_value,
+            )
+        else:
+            props = mProps.Props.make_props(
+                Title=self._title,
+                CloseOnMouseRelease=self._close_on_mouse_release,
+                SingleCellMode=self._single_cell_mode,
+            )
+        self._log.debug("RangeSelector.get_range_selection() made props")
         view.component.startRangeSelection(props)
-        # print("Make a selection in the document")
-        while not view.extra_data.selection_made:
+        self._log.debug("RangeSelector.get_range_selection() started range selection")
+        print("Make a selection in the document")
+        tries = 0
+        while not _SELECTION_MADE:
+            tries += 1
+            self._log.debug("RangeSelector.get_range_selection() waiting for selection")
             time.sleep(0.5)
-        result = view.extra_data.selection_result
-        del view.extra_data["selection_made"]
-        del view.extra_data["selection_result"]
+            if tries > 120:
+                self._log.warning("RangeSelector.get_range_selection() timeout")
+                break  # break on 60 seconds max.
+        result = _SELECTION_RESULT
+        # ex_listener.remove_event_observer(self._gbl_events.event_observer)
+        # ex_listener.remove_event_observer(self.event_observer)
+        # del view.extra_data["selection_made"]
+        # del view.extra_data["selection_result"]
+        self._log.debug(f"RangeSelector.get_range_selection() results {result}")
         return result
+
+
+class RangeSelectorThread(threading.Thread, EventsPartial):
+    def __init__(
+        self,
+        title: str = "Please select a range",
+        close_on_mouse_release: bool = False,
+        single_cell_mode: bool = False,
+        initial_value: str = "",
+    ):
+        threading.Thread.__init__(self)
+        EventsPartial.__init__(self)
+        self._stop_event = threading.Event()
+        self._log = NamedLogger(name="RangeSelectorThread")
+        self._rng_sel = RangeSelector(
+            title=title,
+            close_on_mouse_release=close_on_mouse_release,
+            single_cell_mode=single_cell_mode,
+            initial_value=initial_value,
+        )
+        self._rng_sel.add_event_observers(self.event_observer)
+        self._result = None
+        self._fn_on_sel_made = self._on_sel_made
+        self._rng_sel.subscribe_event("AfterPopupRangeSelection", self._fn_on_sel_made)
+
+    def _on_sel_made(self, src: Any, event: EventArgs):
+        print("RangeSelectorThread._on_sel_made()")
+        self._stop_event.set()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def run(self):
+        # doc = XSCRIPTCONTEXT.getDocument()
+        # calc_doc = CalcDoc.get_doc_from_component(doc)
+        try:
+            if not self.stopped():
+                calc_doc = CalcDoc.from_current_doc()
+                self._result = self._rng_sel.get_range_selection(calc_doc)
+        except Exception:
+            self._log.error("Error in RangeSelectorThread.run()", exc_info=True)
+            self._result = None
