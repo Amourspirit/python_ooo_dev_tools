@@ -7,7 +7,7 @@ import uno
 import unohelper
 from com.sun.star.sheet import XRangeSelectionListener
 
-from ooodev.globals import GblEvents
+from ooodev.globals.gbl_events import GblEvents
 from ooodev.calc import CalcDoc, CalcSheetView, RangeObj
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
