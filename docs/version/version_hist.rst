@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.47.4
+==============
+
+Update for Logging and other small things.
+
+
 Version 0.47.3
 ==============
 
