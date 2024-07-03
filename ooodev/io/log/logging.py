@@ -37,6 +37,7 @@ class _Logger:
         logging.addLevelName(logging.DEBUG, "DEBUG")
         logging.addLevelName(logging.INFO, "INFO")
         logging.addLevelName(logging.WARNING, "WARNING")
+        logging.addLevelName(logging.CRITICAL, "CRITICAL")
         # if is_windows:
         #     logging.addLevelName(logging.ERROR, "ERROR")
         #     logging.addLevelName(logging.DEBUG, "DEBUG")
@@ -74,6 +75,9 @@ class _Logger:
     def error(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         self.logger.error(msg, *args, **kwargs)
 
+    def exception(self, msg: Any, *args: Any, **kwargs: Any) -> None:
+        self.logger.exception(msg, *args, **kwargs)
+
     def critical(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         self.logger.critical(msg, *args, **kwargs)
 
@@ -83,7 +87,8 @@ class _Logger:
     # region handlers
 
     def add_console_handler(self):
-        self.logger.addHandler(self._get_console_handler())
+        if not self.is_stream_handler:
+            self.logger.addHandler(self._get_console_handler())
 
     def _get_console_handler(self):
         # check to see if there is already a console handler
@@ -169,6 +174,39 @@ class _Logger:
                 return
         self.logger.addHandler(self._get_console_handler())
 
+    @property
+    def is_stream_handler(self) -> bool:
+        """Check if logger has a stream handler"""
+        for handler in self.logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                return True
+        return False
+
+    @property
+    def is_file_handler(self) -> bool:
+        """Check if logger has a file handler"""
+        for handler in self.logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                return True
+        return False
+
+    @property
+    def log_level(self) -> int:
+        return self._log_level
+
+    @log_level.setter
+    def log_level(self, value: int) -> None:
+        self._log_level = value
+        self.logger.setLevel(value)
+        if value > 0:
+            if self.is_file_handler is False and self.is_stream_handler is False:
+                self.add_stream_handler()
+        else:
+            self.remove_handlers()  # add null handler only
+        for handler in self.logger.handlers:
+            handler.setLevel(value)
+        return
+
     # endregion handlers
 
     @classmethod
@@ -195,6 +233,28 @@ def debug(msg: Any, *args: Any, **kwargs: Any) -> None:
     """
     log = _Logger()
     log.debug(msg, *args, **kwargs)
+    return
+
+
+def critical(msg: Any, *args: Any, **kwargs: Any) -> None:
+    """
+    Logs critical message.
+
+    Args:
+        msg (Any):  message to debug.
+        args (Any, optional):  arguments.
+
+    Keyword Args:
+        exc_info: (_ExcInfoType): Exc Info Type Default to  ``None``
+        stack_info (bool): Stack Info. Defaults to  ``False``.
+        stacklevel (int): Stack Level. Defaults to  ``1``.
+        extra (Mapping[str, object], None): extra Defaults to ``None``.
+
+    Returns:
+        None
+    """
+    log = _Logger()
+    log.critical(msg, *args, **kwargs)
     return
 
 
@@ -232,6 +292,28 @@ def error(msg: Any, *args: Any, **kwargs: Any) -> None:
     """
     log = _Logger()
     log.error(msg, *args, **kwargs)
+    return
+
+
+def exception(msg: Any, *args: Any, **kwargs: Any) -> None:
+    """
+    Logs exception message.
+
+    Args:
+        msg (Any):  message to debug.
+        args (Any, optional):  arguments.
+
+    Keyword Args:
+        exc_info: (_ExcInfoType): Exc Info Type Default to  ``True``
+        stack_info (bool): Stack Info. Defaults to  ``False``.
+        stacklevel (int): Stack Level. Defaults to  ``1``.
+        extra (Mapping[str, object], None): extra Defaults to ``None``.
+
+    Returns:
+        None
+    """
+    log = _Logger()
+    log.exception(msg, *args, **kwargs)
     return
 
 
@@ -303,7 +385,7 @@ def set_log_level(level: int) -> None:
         level (int): The log level.
     """
     log = _Logger()
-    log.logger.setLevel(level)
+    log.log_level = level
     return
 
 

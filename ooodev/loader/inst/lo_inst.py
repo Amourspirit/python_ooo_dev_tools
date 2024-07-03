@@ -141,6 +141,7 @@ class LoInst(EventsPartial):
             self._logger = NamedLogger(f"{self.__class__.__name__} - Root")
         else:
             self._logger = NamedLogger(self.__class__.__name__)
+        self._logger.debug("LoInst Init")
         self._is_default = False
         self._current_doc = None
         _events = Events(source=self) if events is None else events
@@ -163,6 +164,7 @@ class LoInst(EventsPartial):
 
         self._allow_print = self._opt.verbose
         self._set_lo_events()
+        self._logger.debug("LoInst created")
 
     # region Events
     def _set_lo_events(self) -> None:
@@ -183,50 +185,77 @@ class LoInst(EventsPartial):
         _Events().on(GblNamedEvent.DOCUMENT_EVENT, self._fn_on_document_event)
 
     def on_reset(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_reset() Triggering RESET")
         self.trigger_event(LoNamedEvent.RESET, event_args)
         self._current_doc = None
+        self._logger.debug("on_reset() RESET Triggered. Current Doc is None")
 
     def on_doc_creating(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_doc_creating() Triggering DOC_CREATING")
         self.trigger_event(LoNamedEvent.DOC_CREATING, event_args)
         self._current_doc = None
+        self._logger.debug("on_doc_creating() Triggered DOC_CREATING. Current Doc is None")
 
     def on_doc_created(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_doc_created() Triggering DOC_CREATED")
         self.trigger_event(LoNamedEvent.DOC_CREATED, event_args)
         self._current_doc = None
+        self._logger.debug("on_doc_created() Triggered DOC_CREATED. Current Doc is None")
 
     def on_doc_opening(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_doc_opening() Triggering DOC_OPENING")
         self.trigger_event(LoNamedEvent.DOC_OPENING, event_args)
+        self._logger.debug("on_doc_opening() Triggered DOC_OPENING.")
 
     def on_doc_opened(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_doc_opened() Triggering DOC_OPENED")
         self.trigger_event(LoNamedEvent.DOC_OPENED, event_args)
         self._current_doc = None
+        self._logger.debug("on_doc_opened() Triggered DOC_OPENED. Current Doc is None")
 
     def on_doc_closing(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_doc_closing() Triggering DOC_CLOSING")
         self.trigger_event(LoNamedEvent.DOC_CLOSING, event_args)
+        self._logger.debug("on_doc_closing() Triggered DOC_CLOSING")
 
     def on_doc_closed(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_doc_closed() Triggering DOC_CLOSED")
         self.trigger_event(LoNamedEvent.DOC_CLOSED, event_args)
         self._current_doc = None
+        self._logger.debug("on_doc_closed() Triggered DOC_CLOSED. Current Doc is None")
 
     def on_doc_saving(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_doc_saving() Triggering DOC_SAVING")
         self.trigger_event(LoNamedEvent.DOC_SAVING, event_args)
+        self._logger.debug("on_doc_saving() Triggered DOC_SAVING")
 
     def on_doc_saved(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_doc_saved() Triggering DOC_SAVED")
         self.trigger_event(LoNamedEvent.DOC_SAVED, event_args)
+        self._logger.debug("on_doc_saved() Triggered DOC_SAVED")
 
     def on_doc_storing(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_doc_storing() Triggering DOC_STORING")
         self.trigger_event(LoNamedEvent.DOC_STORING, event_args)
+        self._logger.debug("on_doc_storing() Triggered DOC_STORING")
 
     def on_doc_stored(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_doc_stored() Triggering DOC_STORED")
         self.trigger_event(LoNamedEvent.DOC_STORED, event_args)
+        self._logger.debug("on_doc_stored() Triggered DOC_STORED")
 
     def on_office_loading(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_office_loading() Triggering OFFICE_LOADING")
         self.trigger_event(LoNamedEvent.OFFICE_LOADING, event_args)
+        self._logger.debug("on_office_loading() Triggered OFFICE_LOADING.")
 
     def on_office_loaded(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_office_loaded() Triggering OFFICE_LOADED")
         self.trigger_event(LoNamedEvent.OFFICE_LOADED, event_args)
+        self._logger.debug("on_office_loaded() Triggered OFFICE_LOADED")
 
     def on_office_closing(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_office_closing() Triggering OFFICE_CLOSING")
         self.trigger_event(LoNamedEvent.OFFICE_CLOSING, event_args)
         if event_args.cancel:
             return
@@ -238,36 +267,57 @@ class LoInst(EventsPartial):
         self._xcc = None
         self._fn_on_document_event = None
         self._fn_on_lo_del_cache_attrs = None
+        self._logger.debug("on_office_closing() Triggered OFFICE_CLOSING")
 
     def on_office_closed(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_office_closed() Triggering OFFICE_CLOSED")
         self.trigger_event(LoNamedEvent.OFFICE_CLOSED, event_args)
+        self._logger.debug("on_office_closed() Triggered OFFICE_CLOSED")
 
     def on_component_loading(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_component_loading() Triggering COMPONENT_LOADING")
         self.trigger_event(LoNamedEvent.COMPONENT_LOADING, event_args)
+        self._logger.debug("on_component_loading() Triggered COMPONENT_LOADING")
 
     def on_component_loaded(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_component_loaded() Triggering COMPONENT_LOADED")
         self.trigger_event(LoNamedEvent.COMPONENT_LOADED, event_args)
+        self._logger.debug("on_component_loaded() Triggered COMPONENT_LOADED")
 
     def on_dispatching(self, event_args: DispatchCancelArgs) -> None:
+        self._logger.debug("on_dispatching() Triggering DISPATCHING")
         self.trigger_event(LoNamedEvent.DISPATCHING, event_args)
+        self._logger.debug("on_dispatching() Triggered DISPATCHING")
 
     def on_dispatched(self, event_args: DispatchArgs) -> None:
+        self._logger.debug("on_dispatched() Triggering DISPATCHED")
         self.trigger_event(LoNamedEvent.DISPATCHED, event_args)
+        self._logger.debug("on_dispatched() Triggered DISPATCHED")
 
     def on_controllers_locking(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_controllers_locking() Triggering CONTROLLERS_LOCKING")
         self.trigger_event(LoNamedEvent.CONTROLLERS_LOCKING, event_args)
+        self._logger.debug("on_controllers_locking() Triggered CONTROLLERS_LOCKING")
 
     def on_controllers_locked(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_controllers_locked() Triggering CONTROLLERS_LOCKED")
         self.trigger_event(LoNamedEvent.CONTROLLERS_LOCKED, event_args)
+        self._logger.debug("on_controllers_locked() Triggered CONTROLLERS_LOCKED")
 
     def on_controllers_unlocking(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_controllers_unlocking() Triggering CONTROLLERS_UNLOCKING")
         self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKING, event_args)
+        self._logger.debug("on_controllers_unlocking() Triggered CONTROLLERS_UNLOCKING")
 
     def on_controllers_unlocked(self, event_args: EventArgs) -> None:
+        self._logger.debug("on_controllers_unlocked() Triggering CONTROLLERS_UNLOCKED")
         self.trigger_event(LoNamedEvent.CONTROLLERS_UNLOCKED, event_args)
+        self._logger.debug("on_controllers_unlocked() Triggered CONTROLLERS_UNLOCKED")
 
     def on_printing(self, event_args: CancelEventArgs) -> None:
+        self._logger.debug("on_printing() Triggering PRINTING")
         self.trigger_event(GblNamedEvent.PRINTING, event_args)
+        self._logger.debug("on_printing() Triggered PRINTING")
 
     def on_lo_del_cache_attrs(self, source: object, event: EventArgs) -> None:  # pylint: disable=unused-argument
         # clears Lo Attributes that are dynamically created
@@ -281,7 +331,7 @@ class LoInst(EventsPartial):
         self.trigger_event(LoNamedEvent.BRIDGE_DISPOSED, EventArgs(self.on_lo_disposing_bridge.__qualname__))
 
     def on_lo_disposed(self, source: Any, event: EventObject) -> None:  # pylint: disable=unused-argument
-        self.print("Office bridge has gone!!")
+        self._logger.debug("Office bridge has gone!!")
         data_attrs = ("_xcc", "_doc", "_mc_factory", "_ms_factory", "_lo_inst", "_xdesktop", "_loader")
         data_vals = (None, None, None, None, None, None, None)
         for attr, val in zip(data_attrs, data_vals):
@@ -305,7 +355,7 @@ class LoInst(EventsPartial):
             name = doc_event.EventName
             if name == "OnUnfocus":
                 self._clear_cache()
-                # print("Cleared Cache")
+                self._logger.debug("on_global_document_event() Cleared Cache")
 
     # endregion Events
 
@@ -518,6 +568,7 @@ class LoInst(EventsPartial):
         except mEx.MissingInterfaceError:
             raise
         except Exception as e:
+            self._logger.exception(f"Couldn't create interface for '{service_name}'")
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
 
     # endregion create_instance_msf()
@@ -566,10 +617,13 @@ class LoInst(EventsPartial):
                 raise mEx.MissingInterfaceError(atype)
             return interface_obj
         except mEx.CreateInstanceMcfError:
+            self._logger.error(f"CreateInstanceMcfError Error. Couldn't create instance for '{service_name}'")
             raise
         except mEx.MissingInterfaceError:
+            self._logger.exception(f"MissingInterfaceError Couldn't get interface for '{service_name}'")
             raise
         except Exception as e:
+            self._logger.exception(f"Couldn't create interface for '{service_name}'")
             raise Exception(f"Couldn't create interface for '{service_name}'") from e
 
     # endregion create_instance_mcf()
@@ -646,7 +700,7 @@ class LoInst(EventsPartial):
             # some component call this method and are triggered during docs building.
             # by adding this block this method will be exited if docs are building.
             return None  # type: ignore
-
+        self._logger.debug("load_office()")
         # Creation sequence: remote component content (xcc) -->
         #                     remote service manager (mcFactory) -->
         #                     remote desktop (xDesktop) -->
@@ -675,6 +729,7 @@ class LoInst(EventsPartial):
         if self._singleton_instance:
             self._is_default = True
         self.on_office_loaded(eargs)
+        self._logger.debug("load_office() Loaded Office")
         return loader
 
     def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
@@ -698,6 +753,7 @@ class LoInst(EventsPartial):
         self._xcc = self._lo_inst.ctx
         self._load_from_context()
         if self._loader is None:
+            self._logger.error("load_from_lo_loader() Unable to access XComponentLoader")
             raise mEx.LoadingError("Unable to access XComponentLoader")
         return self._loader
 
@@ -720,19 +776,23 @@ class LoInst(EventsPartial):
 
     def _load_from_context(self) -> None:
         if self._xcc is None:
+            self._logger.error("No component context found")
             raise mEx.LoadingError("No component context found")
         self._mc_factory = self._xcc.getServiceManager()
         if self._mc_factory is None:
+            self._logger.error("Office Service Manager is unavailable")
             raise mEx.LoadingError("Office Service Manager is unavailable")
         desktop: Any = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theDesktop")  # type: ignore
         self._xdesktop = TheDesktop(desktop)
         gb = self._mc_factory.DefaultContext.getByName("/singletons/com.sun.star.frame.theGlobalEventBroadcaster")  # type: ignore
         self._glb_event_broadcaster = TheGlobalEventBroadcaster(gb)
         if self._xdesktop is None:
+            self._logger.error("Could not create a desktop service")
             raise mEx.LoadingError("Could not create a desktop service")
         # self._xdesktop.add_event_frame_action(self._fn_on_context_changed)
         self._loader = self.qi(XComponentLoader, self._xdesktop.component)
         if self._loader is None:
+            self._logger.error("Unable to access XComponentLoader")
             raise mEx.LoadingError("Unable to access XComponentLoader")
 
     def _reset_for_doc(self, doc: XComponent) -> None:
@@ -758,7 +818,7 @@ class LoInst(EventsPartial):
 
     # region office shutdown
     def close_office(self) -> bool:
-        self.print("Closing Office")
+        self._logger.debug("Closing Office")
 
         cargs = CancelEventArgs(self.close_office.__qualname__)
         self.on_office_closing(cargs)
@@ -766,11 +826,11 @@ class LoInst(EventsPartial):
             return False
 
         # if self._xdesktop is None:
-        #     self.print("No office connection found")
+        #     self._logger.debug("No office connection found")
         #     return True
 
         if self._is_office_terminated:
-            self.print("Office has already been requested to terminate")
+            self._logger.debug("Office has already been requested to terminate")
             return self._is_office_terminated
         num_tries = 1
         start = time.time()
@@ -796,23 +856,23 @@ class LoInst(EventsPartial):
             is_dead = self._xdesktop.terminate()
             if is_dead:
                 if num_tries > 1:
-                    self.print(f"{num_tries}. Office terminated")
+                    self._logger.debug(f"{num_tries}. Office terminated")
                 else:
-                    self.print("Office terminated")
+                    self._logger.debug("Office terminated")
             else:
-                self.print(f"{num_tries}. Office failed to terminate")
+                self._logger.debug(f"{num_tries}. Office failed to terminate")
             return is_dead
         except DisposedException:
-            self.print("Office link disposed")
+            self._logger.debug("Office link disposed")
             return True
         except Exception as e:
-            self.print(f"Termination exception: {e}")
+            self._logger.debug(f"Termination exception: {e}")
             return False
 
     def kill_office(self) -> None:
         # sourcery skip: extract-method, raise-specific-error
         if self._lo_inst is None:
-            self.print("No instance to kill")
+            self._logger.debug("No instance to kill")
             return
         try:
             # raised a NotImplementedError when self._lo_inst is direct (macro mode)
@@ -822,7 +882,7 @@ class LoInst(EventsPartial):
             self.on_office_closed(eargs)
             self.on_reset(eargs)
             self._lo_inst = None
-            # self.print("Killed Office")
+            # self._logger.debug("Killed Office")
         except Exception as e:
             raise Exception("Unable to kill Office") from e
 
@@ -853,6 +913,7 @@ class LoInst(EventsPartial):
         .. versionadded:: 0.9.8
         """
         if self._is_default:
+            self._logger.error("Cannot set loader for default instance")
             raise mEx.LoadingError("Cannot set loader for default instance")
         cargs = CancelEventArgs(self.open_doc.__qualname__)
         cargs.event_data = component
@@ -877,7 +938,7 @@ class LoInst(EventsPartial):
         if loader is None:
             loader = cast(XComponentLoader, self._loader)
         nn = self.get_flat_filter_name(doc_type=doc_type.get_doc_type_str())
-        self.print(f"Flat filter Name: {nn}")
+        self._logger.debug(f"Flat filter Name: {nn}")
         # do not set Hidden=True property here.
         # there is a strange error that pops up conditionally and it seems
         # to be remedied by not setting Hidden=True
@@ -933,11 +994,11 @@ class LoInst(EventsPartial):
             internal_props = tuple(props)
         open_file_url = None
         if mFileIO.FileIO.is_openable(pth):
-            self.print(f"Opening {pth}")
+            self._logger.debug(f"Opening {pth}")
             open_file_url = mFileIO.FileIO.fnm_to_url(pth)
 
         elif self.is_url(pth):
-            self.print(f"Will treat filename as a URL: '{pth}'")
+            self._logger.debug(f"Will treat filename as a URL: '{pth}'")
             open_file_url = pth
         else:
             raise Exception(f"Unable to get url from file: {pth}")
@@ -949,6 +1010,7 @@ class LoInst(EventsPartial):
             self.on_doc_opened(eargs)
             return doc
         except Exception as e:
+            self._logger.exception(f"Unable to open document: {open_file_url}")
             raise Exception("Unable to open the document") from e
 
     # endregion open_doc()
@@ -984,7 +1046,7 @@ class LoInst(EventsPartial):
         """
         e = ext.casefold().lstrip(".")
         if not e:
-            self.print("Empty string: Using writer")
+            self._logger.debug("Empty string: Using writer")
             return LoDocTypeStr.WRITER
         if e == "odb":
             return LoDocTypeStr.BASE
@@ -999,7 +1061,7 @@ class LoInst(EventsPartial):
         elif e == "odt":
             return LoDocTypeStr.WRITER
         else:
-            self.print(f"Do not recognize extension '{ext}'; using writer")
+            self._logger.debug(f"Do not recognize extension '{ext}'; using writer")
             return LoDocTypeStr.WRITER
 
     def doc_type_str(self, doc_type_val: LoDocType) -> LoDocTypeStr:
@@ -1048,13 +1110,14 @@ class LoInst(EventsPartial):
             local_props = mProps.Props.make_props(Hidden=True)
         else:
             local_props = tuple(properties)
-        self.print(f"Creating Office document {dtype}")
+        self._logger.debug(f"Creating Office document {dtype}")
         try:
             doc = loader.loadComponentFromURL(f"private:factory/{dtype}", "_blank", 0, local_props)  # type: ignore
             self._reset_for_doc(doc)
             self.on_doc_created(eargs)
             return doc
         except Exception as e:
+            self._logger.exception(f"Could not create document: {dtype}")
             raise Exception("Could not create a document") from e
 
     # endregion create_doc()
@@ -1098,7 +1161,7 @@ class LoInst(EventsPartial):
         if not mFileIO.FileIO.is_openable(template_path):
             raise Exception(f"Template file can not be opened: '{template_path}'")
 
-        self.print(f"Opening template: '{template_path}'")
+        self._logger.debug(f"Opening template: '{template_path}'")
         template_url = mFileIO.FileIO.fnm_to_url(fnm=template_path)
 
         props = mProps.Props.make_props(Hidden=True, AsTemplate=True)
@@ -1108,6 +1171,7 @@ class LoInst(EventsPartial):
             self.on_doc_created(EventArgs.from_args(cargs))
             return doc
         except Exception as e:
+            self._logger.exception(f"Could not create document from template: '{template_path}'")
             raise Exception("Could not create document from template") from e
 
     # endregion create_doc_from_template()
@@ -1125,8 +1189,9 @@ class LoInst(EventsPartial):
         store = self.qi(XStorable, doc, True)
         try:
             store.store()
-            self.print("Saved the document by overwriting")
+            self._logger.debug("Saved the document by overwriting")
         except IOException as e:
+            self._logger.exception("Could not save the document")
             raise Exception("Could not save the document") from e
 
         self.on_doc_saved(EventArgs.from_args(cargs))
@@ -1200,7 +1265,7 @@ class LoInst(EventsPartial):
         ext = mInfo.Info.get_ext(fnm)
         txt_format = "Text"
         if ext is None:
-            self.print("Assuming a text format")
+            self._logger.debug("Assuming a text format")
         else:
             txt_format = self.ext_to_format(ext=ext, doc_type=doc_type)
         if password is None:
@@ -1313,7 +1378,7 @@ class LoInst(EventsPartial):
                 return "OpenDocument Text Flat XML"
 
         else:
-            self.print(f"Do not recognize extension '{ext}'; using text")
+            self._logger.debug(f"Do not recognize extension '{ext}'; using text")
             return "Text"
 
     # region    store_doc_format()
@@ -1341,8 +1406,8 @@ class LoInst(EventsPartial):
             return False
         pth = mFileIO.FileIO.get_absolute_path(cast("PathOrStr", cargs.event_data["fnm"]))
         fmt = str(cargs.event_data["format"])
-        self.print(f"Saving the document in '{pth}'")
-        self.print(f"Using format {fmt}")
+        self._logger.debug(f"Saving the document in '{pth}'")
+        self._logger.debug(f"Using format {fmt}")
 
         try:
             save_file_url = mFileIO.FileIO.fnm_to_url(pth)
@@ -1352,6 +1417,7 @@ class LoInst(EventsPartial):
                 store_props = mProps.Props.make_props(Overwrite=True, FilterName=fmt, Password=password)
             store.storeToURL(save_file_url, store_props)  # type: ignore
         except IOException as e:
+            self._logger.exception(f"Could not save '{pth}'")
             raise Exception(f"Could not save '{pth}'") from e
         self.on_doc_stored(EventArgs.from_args(cargs))
         return True
@@ -1375,12 +1441,13 @@ class LoInst(EventsPartial):
             return False
         if closeable is None:
             return False
-        self.print("Closing the document")
+        self._logger.debug("Closing the document")
         try:
             closeable.close(cargs.event_data)
             self.on_doc_closed(EventArgs.from_args(cargs))
             return True
         except CloseVetoException as e:
+            self._logger.error("close() Close was vetoed")
             raise Exception("Close was vetoed") from e
 
     # region close_doc()
@@ -1398,6 +1465,7 @@ class LoInst(EventsPartial):
             closeable = self.qi(XCloseable, doc, True)
             self.close(closeable=closeable, deliver_ownership=deliver_ownership)
         except DisposedException as e:
+            self._logger.error("close_doc() Document close failed since Office link disposed")
             raise Exception("Document close failed since Office link disposed") from e
 
     # endregion close_doc()
@@ -1628,10 +1696,12 @@ class LoInst(EventsPartial):
         try:
             foo_pos = uno_cmd.index("Foo.")
         except ValueError as e:
+            self._logger.exception(f"Could not find Foo header in command: '{uno_cmd}'")
             raise ValueError(f"Could not find Foo header in command: '{uno_cmd}'") from e
         try:
             lang_pos = uno_cmd.index("?language")
         except ValueError as exc:
+            self._logger.exception(f"Could not find language header in command: '{uno_cmd}'")
             raise ValueError(f"Could not find language header in command: '{uno_cmd}'") from exc
         start = foo_pos + 4
         return uno_cmd[start:lang_pos]
@@ -1640,7 +1710,7 @@ class LoInst(EventsPartial):
 
     def inspect(self, obj: object) -> None:
         if self._xcc is None or self._mc_factory is None:
-            self.print("No office connection found")
+            self._logger.debug("No office connection found")
             return
         try:
             ts = mInfo.Info.get_interface_types(obj)
@@ -1650,18 +1720,17 @@ class LoInst(EventsPartial):
             inspector = self._mc_factory.createInstanceWithContext("org.openoffice.InstanceInspector", self._xcc)
             #       hands on second use
             if inspector is None:
-                self.print("Inspector Service could not be instantiated")
+                self._logger.debug("Inspector Service could not be instantiated")
                 return
-            self.print("Inspector Service instantiated")
+            self._logger.debug("Inspector Service instantiated")
             intro = self.create_instance_mcf(XIntrospection, "com.sun.star.beans.Introspection", raise_err=True)
             intro_acc = intro.inspect(inspector)
             method = intro_acc.getMethod("inspect", -1)
-            self.print(f"inspect() method was found: {method is not None}")
+            self._logger.debug(f"inspect() method was found: {method is not None}")
             params = [[obj, title]]
             method.invoke(inspector, params)
         except Exception as e:
-            self.print("Could not access Inspector:")
-            self.print(f"    {e}")
+            self._logger.exception("Could not access Inspector")
 
     def mri_inspect(self, obj: object) -> None:
         # sourcery skip: raise-specific-error
@@ -1671,8 +1740,9 @@ class LoInst(EventsPartial):
         #  Forum tutorial: https://forum.openoffice.org/en/forum/viewtopic.php?f=74&t=49294
         xi = self.create_instance_mcf(XIntrospection, "mytools.Mri")
         if xi is None:
+            self._logger.error("MRI Inspector Service could not be instantiated")
             raise Exception("MRI Inspector Service could not be instantiated")
-        self.print("MRI Inspector Service instantiated")
+        self._logger.debug("MRI Inspector Service instantiated")
         xi.inspect(obj)
 
     # ------------------ color methods ---------------------
@@ -1688,7 +1758,7 @@ class LoInst(EventsPartial):
             ms (int): Number of milliseconds to delay
         """
         if ms <= 0:
-            self.print("Lo.delay(): Ms must be greater then zero")
+            self._logger.debug("Lo.delay(): Ms must be greater then zero")
             return
         sec = ms / 1000
         time.sleep(sec)
@@ -1730,7 +1800,7 @@ class LoInst(EventsPartial):
         try:
             return int(s)
         except ValueError:
-            self.print(f"{s} could not be parsed as an int; using 0")
+            self._logger.debug(f"{s} could not be parsed as an int; using 0")
         return 0
 
     @overload
@@ -1804,11 +1874,11 @@ class LoInst(EventsPartial):
 
     def get_container_names(self, con: XIndexAccess) -> List[str] | None:
         if con is None:
-            self.print("Container is null")
+            self._logger.debug("Container is null")
             return None
         num_el = con.getCount()
         if num_el == 0:
-            self.print("No elements in the container")
+            self._logger.debug("No elements in the container")
             return None
 
         names_list = []
@@ -1817,7 +1887,7 @@ class LoInst(EventsPartial):
             names_list.append(named.getName())
 
         if not names_list:
-            self.print("No element names found in the container")
+            self._logger.debug("No element names found in the container")
             return None
         return names_list
 
@@ -1831,8 +1901,8 @@ class LoInst(EventsPartial):
                 if named and named.getName() == nm:
                     return self.qi(XPropertySet, el)
             except Exception:
-                self.print(f"Could not access element {i}")
-        self.print(f"Could not find a '{nm}' property set in the container")
+                self._logger.debug(f"Could not access element {i}")
+        self._logger.debug(f"Could not find a '{nm}' property set in the container")
         return None
 
     def is_uno_interfaces(self, component: Any, *args: str | UnoInterface) -> bool:
@@ -1923,7 +1993,7 @@ class LoInst(EventsPartial):
         elif doc_type == LoDocTypeStr.IMPRESS:
             return "OpenDocument Presentation Flat XML"
         else:
-            print("No Flat XML filter for this document type; using Flat text")
+            self._logger.debug("No Flat XML filter for this document type; using Flat text")
             return "OpenDocument Text Flat XML"
 
     # endregion XML
@@ -2018,10 +2088,12 @@ class LoInst(EventsPartial):
         if self.is_loaded is False:
             # attempt to connect direct
             # failure will result in script error and then exit
+            self._logger.debug("this_component: Office not loaded. Calling load_office()")
             self.load_office()
 
         # comp = self.star_desktop.getCurrentComponent()
         if self.desktop is None:
+            self._logger.debug("this_component: Could not access desktop. Returning NOne")
             return None
         desktop = self.desktop.component
         doc = desktop.getCurrentComponent()
@@ -2030,11 +2102,13 @@ class LoInst(EventsPartial):
         # else:
         #     doc = self._doc
         if doc is None:
+            self._logger.debug("this_component: Could not access current document. Returning None")
             return None
         service_info = self.qi(XServiceInfo, doc, True)
         impl = service_info.getImplementationName()
         # com.sun.star.comp.sfx2.BackingComp is the Main Launcher App.
         if impl in ("com.sun.star.comp.basic.BasicIDE", "com.sun.star.comp.sfx2.BackingComp"):
+            self._logger.debug("this_component: Basic IDE or Welcome screen. Returning None")
             return None  # None when Basic IDE or welcome screen
         return doc
 
@@ -2091,12 +2165,14 @@ class LoInst(EventsPartial):
     def lo_loader(self) -> LoLoader:
         """Get/Sets the loader for this instance"""
         if self._lo_loader is None:
+            self._logger.error("lo_loader: Office not loaded")
             raise mEx.LoadingError("Office not loaded")
         return self._lo_loader
 
     @lo_loader.setter
     def lo_loader(self, value: LoLoader) -> None:
         if self._is_default:
+            self._logger.error("lo_loader: Cannot set loader for default instance")
             raise mEx.LoadingError("Cannot set loader for default instance")
         if value is self._lo_loader:
             return
@@ -2110,51 +2186,92 @@ class LoInst(EventsPartial):
     @property
     def current_doc(self) -> OfficeDocumentT | None:
         """
-        Get the current document.
+        Get/Sets the current document.
 
         If there is no current document then an attempt is made to get the current document from the last active document from the desktop components.
 
         Note:
             This property does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
 
+            It is almost never necessary to set this property directly. When there are changes to the environment, such as when a new document gets focus,
+            this class will automatically pick up the changes and update the current document.
+            However, there may be exceptions this this such as when extension has a OnFocus job.
+            In cases such as that the OnFocus may need to set the current document.
+
+
+        .. versionchanged:: 0.47.4
+            It is now possible to set the current document.
 
         .. versionchanged:: 0.45.5
             This property will now return the latest document from the desktop components if the current document is None.
         """
         if self._current_doc is None:
+            self._logger.debug(
+                "current_doc: Current document is None. Attempting to get via desktop.get_current_component()"
+            )
             doc = self.desktop.get_current_component()
             if doc is None:
+                self._logger.debug(
+                    "current_doc: Could not access current document. Attempting to get from desktop current desktop.components"
+                )
                 for comp in self.desktop.components:
                     # if there is more then on component then the first match is used.
                     # It seems the last opened document is the first in the list.
+                    self._logger.debug("current_doc: found a component to use.")
                     doc = comp
+                    if self._logger.is_debug:
+                        if hasattr(doc, "getImplementationName"):
+                            self._logger.debug(f"current_doc: Component: {doc.getImplementationName()}")
+                        if hasattr(doc, "getURL"):
+                            self._logger.debug(f"current_doc: Component URL: {doc.getURL()}")
+                        if hasattr(doc, "RuntimeUID"):
+                            self._logger.debug(f"current_doc: Component RuntimeUID: {doc.RuntimeUID}")
                     break
             if doc is None:
+                self._logger.debug("current_doc: Could not access current document. Returning None")
                 return None  # type: ignore
             self._current_doc = doc_factory(doc=doc, lo_inst=self)
             # self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
-        return self._current_doc
+        return self._current_doc  # type: ignore
+
+    @current_doc.setter
+    def current_doc(self, value: OfficeDocumentT | XComponent) -> None:
+        self._clear_cache()
+        if hasattr(value, "DOC_TYPE"):
+            self._current_doc = value
+        else:
+            try:
+                self._current_doc = doc_factory(doc=value, lo_inst=self)
+            except Exception:
+                self._logger.exception("current_doc: Could not set current document")
+                raise
 
     @property
     def desktop(self) -> TheDesktop:
         """Get the current desktop"""
         if self._xdesktop is None:
+            self._logger.debug("desktop: Could not access desktop")
             if self.is_loaded is False:
+                self._logger.debug("desktop: Office not loaded. Attempting to load office")
                 # attempt to connect direct
                 # failure will result in script error and then exit
                 self.load_office()
         if self._xdesktop is None:
+            self._logger.error("desktop: Could not access desktop")
             raise mEx.LoadingError("Could not access desktop")
         return self._xdesktop
 
     @property
     def global_event_broadcaster(self) -> TheGlobalEventBroadcaster:
         if self._glb_event_broadcaster is None:
+            self._logger.debug("global_event_broadcaster:Global Event Broadcaster is None")
             if self.is_loaded is False:
+                self._logger.debug("global_event_broadcaster: Office not loaded. Attempting to load office")
                 # attempt to connect direct
                 # failure will result in script error and then exit
                 self.load_office()
         if self._glb_event_broadcaster is None:
+            self._logger.error("global_event_broadcaster: Could not access the Global Event Broadcaster")
             raise mEx.LoadingError("Could not access the Global Event Broadcaster")
         return self._glb_event_broadcaster
 
