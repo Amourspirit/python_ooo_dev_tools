@@ -74,6 +74,26 @@ class NamedLogger:
         logger.error(f"{self._name}: {msg}", *args, **kwargs)
         return
 
+    def exception(self, msg: Any, *args: Any, **kwargs: Any) -> None:
+        """
+        Logs error message.
+
+        Args:
+            msg (Any):  message to debug.
+            args (Any, optional):  arguments.
+
+        Keyword Args:
+            exc_info: (_ExcInfoType): Exc Info Type Default to  ``True``
+            stack_info (bool): Stack Info. Defaults to  ``False``.
+            stacklevel (int): Stack Level. Defaults to  ``1``.
+            extra (Mapping[str, object], None): extra Defaults to ``None``.
+
+        Returns:
+            None
+        """
+        logger.exception(f"{self._name}: {msg}", *args, **kwargs)
+        return
+
     def info(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         """
         Logs info message.
@@ -112,6 +132,26 @@ class NamedLogger:
             None
         """
         logger.warning(f"{self._name}: {msg}", *args, **kwargs)
+        return
+
+    def critical(self, msg: Any, *args: Any, **kwargs: Any) -> None:
+        """
+        Logs critical message.
+
+        Args:
+            msg (Any):  message to debug.
+            args (Any, optional):  arguments.
+
+        Keyword Args:
+            exc_info: (_ExcInfoType): Exc Info Type Default to  ``None``
+            stack_info (bool): Stack Info. Defaults to  ``False``.
+            stacklevel (int): Stack Level. Defaults to  ``1``.
+            extra (Mapping[str, object], None): extra Defaults to ``None``.
+
+        Returns:
+            None
+        """
+        logger.critical(f"{self._name}: {msg}", *args, **kwargs)
         return
 
     # region Handler methods
