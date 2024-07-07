@@ -1,3 +1,4 @@
+from copy import copy
 import pytest
 from typing import cast
 
@@ -459,6 +460,29 @@ def test_cell_sort(loader) -> None:
         lst = [A7, D2, A1, A2, B1]
         lst.sort()
         assert lst == [A1, B1, A2, D2, A7]
+
+    finally:
+        if doc is not None:
+            doc.close()
+
+
+def test_cell_copy(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+
+    from ooodev.calc import CalcDoc
+
+    doc = None
+    try:
+        doc = CalcDoc.create_doc()
+        _ = doc.sheets[0]
+
+        A1 = CellObj.from_cell("A1")
+        A2 = A1.copy()
+        assert A1 == A2
+        assert id(A1) != id(A2)
+        A3 = copy(A2)
+        assert A2 == A3
+        assert id(A2) != id(A3)
 
     finally:
         if doc is not None:
