@@ -1,3 +1,4 @@
+from copy import copy
 import pytest
 
 # pylint: disable=import-outside-toplevel
@@ -1146,3 +1147,16 @@ def test_range_values_converter_index(loader) -> None:
 
     finally:
         doc.close()
+
+
+def test_range_copy():
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    rng1 = RangeObj.from_range("A1:C4")
+
+    rng2 = rng1.copy()
+    assert rng1 == rng2
+    assert id(rng1) != id(rng2)
+    rng3 = copy(rng2)
+    assert rng2 == rng3
+    assert id(rng2) != id(rng3)

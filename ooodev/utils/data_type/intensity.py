@@ -31,3 +31,17 @@ class Intensity(BaseIntValue):
             return i == self.value
         except Exception as e:
             return False
+
+    def __copy__(self) -> Intensity:
+        return Intensity(self.value)
+
+    def copy(self) -> Intensity:
+        """
+        Copies the instance
+
+        Returns:
+            Intensity: Copy of the instance
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()

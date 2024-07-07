@@ -204,9 +204,26 @@ class CellObj:
             col_start=self.col, col_end=self.col, row_start=self.row, row_end=self.row, sheet_idx=self.sheet_idx
         )
 
+    def copy(self) -> CellObj:
+        """
+        Copy the current instance.
+
+        Returns:
+            CellObj: New instance of CellObj
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()
+
     # endregion methods
 
     # region dunder methods
+
+    def __copy__(self) -> CellObj:
+        if self.range_obj is None:
+            return CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=None)
+        rng_obj = self.range_obj.copy()
+        return CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=rng_obj)
 
     def __str__(self) -> str:
         return f"{self.col}{self.row}"
