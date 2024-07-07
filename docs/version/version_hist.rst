@@ -2,10 +2,15 @@
 Version History
 ***************
 
+Version 0.47.5
+==============
+
+Added copy method for RangeObj, CellObj and other minor things.
+
 Version 0.47.4
 ==============
 
-Update for Logging and other small things.
+Update for Logging and other minor things.
 
 
 Version 0.47.3

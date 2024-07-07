@@ -90,6 +90,15 @@ class RangeValues:
         end = mTb.TableHelper.make_cell_name(row=self.row_end, col=self.col_end, zero_index=True)
         return f"{start}:{end}"
 
+    def __copy__(self) -> RangeValues:
+        return RangeValues(
+            col_start=self.col_start,
+            col_end=self.col_end,
+            row_start=self.row_start,
+            row_end=self.row_end,
+            sheet_idx=self.sheet_idx,
+        )
+
     # endregion dunder
 
     # region Math
@@ -345,6 +354,17 @@ class RangeValues:
         )
 
     # endregion from_range()
+
+    def copy(self) -> RangeValues:
+        """
+        Gets a copy of the instance
+
+        Returns:
+            RangeValues: Copy of the instance
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()
 
     def get_range_obj(self) -> mRngObj.RangeObj:
         """

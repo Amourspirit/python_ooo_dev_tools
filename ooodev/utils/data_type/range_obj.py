@@ -110,7 +110,27 @@ class RangeObj:
         """
         return self.cell_count
 
+    def __copy__(self) -> RangeObj:
+        return RangeObj(
+            col_start=self.col_start,
+            col_end=self.col_end,
+            row_start=self.row_start,
+            row_end=self.row_end,
+            sheet_idx=self.sheet_idx,
+        )
+
     # region methods
+
+    def copy(self) -> RangeObj:
+        """
+        Copy the current instance.
+
+        Returns:
+            RangeObj: New instance of RangeObj
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()
 
     def set_sheet_index(self, idx: int | None = None) -> RangeObj:
         """

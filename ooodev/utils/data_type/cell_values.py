@@ -49,6 +49,20 @@ class CellValues:
             return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
         return str(self) == other.upper() if isinstance(other, str) else False
 
+    def __copy__(self) -> CellValues:
+        return CellValues(col=self.col, row=self.row, sheet_idx=self.sheet_idx)
+
+    def copy(self) -> CellValues:
+        """
+        Copies the instance
+
+        Returns:
+            CellValues: Copy of the instance
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()
+
     def get_cell_address(self) -> CellAddress:
         """
         Gets a cell address

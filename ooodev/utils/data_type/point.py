@@ -13,3 +13,17 @@ class Point:
 
     x: int
     y: int
+
+    def __copy__(self) -> Point:
+        return Point(self.x, self.y)
+
+    def copy(self) -> Point:
+        """
+        Copies the instance
+
+        Returns:
+            Point: Copy of the instance
+
+        .. versionadded:: 0.47.5
+        """
+        return self.__copy__()
