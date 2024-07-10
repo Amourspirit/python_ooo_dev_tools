@@ -188,6 +188,19 @@ class FormCtlBase(
 
     # region other methods
 
+    def set_design_mode(self, on: bool) -> None:
+        """
+        Sets the design mode for use in a design editor.
+
+        Normally the control will be painted directly without a peer.
+
+        Args:
+            on (bool): ``True`` to set design mode on; Otherwise, ``False``.
+
+        .. versionadded:: 0.47.6
+        """
+        self.get_control().setDesignMode(on)
+
     def assign_script(
         self,
         interface_name: str | XInterface,
@@ -195,6 +208,7 @@ class FormCtlBase(
         script_name: str,
         loc: str,
         language: str | LanguageKind = LanguageKind.PYTHON,
+        auto_remove_existing: bool = True,
     ) -> None:
         """
         Binds a macro to a form control.
@@ -207,12 +221,17 @@ class FormCtlBase(
             script_name (str): Script Name.
             loc (str): can be user, share, document, and extensions.
             language (str | LanguageKind, optional): Language. Defaults to LanguageKind.PYTHON.
+            auto_remove_existing (bool, optional): Remove existing script. Defaults to ``True``.
 
         Returns:
             None:
 
         See Also:
-            `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+            - `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+            - :py:meth:`~.remove_script`
+
+        .. versionchanged:: 0.47.6
+            added auto_remove_existing parameter.
         """
         props = self.get_property_set()
         self._forms_class.assign_script(
@@ -222,6 +241,33 @@ class FormCtlBase(
             script_name=script_name,
             loc=loc,
             language=language,
+            auto_remove_existing=auto_remove_existing,
+        )
+
+    def remove_script(self, interface_name: str | XInterface, method_name: str, remove_params: str = "") -> None:
+        """
+        Removes a script from a form control.
+
+        Args:
+            ctl_props (XPropertySet): _description_
+            interface_name (str | XInterface): _description_
+            method_name (str): _description_
+            remove_params (str, optional): _description_. Defaults to "".
+
+        Raises:
+            RemoveScriptError: if there is an error removing the script.
+
+        Returns:
+            None:
+
+        See Also:
+            - :py:meth:`~.assign_script`
+
+        .. versionadded:: 0.47.6
+        """
+        props = self.get_property_set()
+        self._forms_class.remove_script(
+            ctl_props=props, interface_name=interface_name, method_name=method_name, remove_params=remove_params
         )
 
     def get_id(self) -> int:
