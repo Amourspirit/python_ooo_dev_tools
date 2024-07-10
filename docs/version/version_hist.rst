@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.47.6
+==============
+
+Update for Form Controls. Now scripts can be added and removed from form controls.
+Previously scripts could only be added to controls and updating the script location was not working correctly.
+Now when adding a script to a control it will automatically remove the old script if it exists.
+
 Version 0.47.5
 ==============
 

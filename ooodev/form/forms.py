@@ -34,7 +34,7 @@ from ooo.dyn.script.script_event_descriptor import ScriptEventDescriptor
 from ooo.dyn.sdb.command_type import CommandType
 from ooo.dyn.text.text_content_anchor_type import TextContentAnchorType
 
-
+from ooodev.exceptions import ex as mEx
 from ooodev.proto.style_obj import StyleT
 from ooodev.utils import gen_util as gUtil
 from ooodev.gui import gui as mGui
@@ -1679,13 +1679,28 @@ class Forms:
 
     # region  bind a macro to a form control
     @staticmethod
+    def _get_control_pos(ctl_props: XPropertySet) -> int:
+        props_child = mLo.Lo.qi(XChild, ctl_props, True)
+        parent_form = mLo.Lo.qi(XIndexContainer, props_child.getParent(), True)
+
+        pos = -1
+        for i in range(parent_form.getCount()):
+            child = mLo.Lo.qi(XPropertySet, parent_form.getByIndex(i))
+            if mInfo.Info.is_same(child, ctl_props):
+                pos = i
+                break
+        return pos
+
+    @classmethod
     def assign_script(
+        cls,
         ctl_props: XPropertySet,
         interface_name: str | XInterface,
         method_name: str,
         script_name: str,
         loc: str,
         language: str | LanguageKind = LanguageKind.PYTHON,
+        auto_remove_existing: bool = True,
     ) -> None:
         """
         Binds a macro to a form control.
@@ -1699,47 +1714,94 @@ class Forms:
             script_name (str): Script Name.
             loc (str): can be user, share, document, and extensions.
             language (str | LanguageKind, optional): Language. Defaults to LanguageKind.PYTHON.
+            auto_remove_existing (bool, optional): Remove existing script. Defaults to ``True``.
+
+        Raises:
+            ScriptError: If there is an error assigning the script.
 
         Returns:
             None:
 
         See Also:
-            `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+            - `Scripting Framework URI Specification <https://wiki.openoffice.org/wiki/Documentation/DevGuide/Scripting/Scripting_Framework_URI_Specification>`_
+            - :py:meth:`~.Forms.remove_script`
+
+        .. versionchanged:: 0.47.6
+            added auto_remove_existing parameter.
         """
         # https://wiki.openoffice.org/wiki/Documentation/DevGuide/WritingUNO/XInterface
         # In C++, two objects are the same if their XInterface are the same. The queryInterface() for XInterface will have to
         # be called on both. In Java, check for the identity by calling the runtime function
         # com.sun.star.uni.UnoRuntime.areSame().
         try:
-            props_child = mLo.Lo.qi(XChild, ctl_props, True)
-            parent_form = mLo.Lo.qi(XIndexContainer, props_child.getParent(), True)
-
-            pos = -1
-            for i in range(parent_form.getCount()):
-                child = mLo.Lo.qi(XPropertySet, parent_form.getByIndex(i))
-                if mInfo.Info.is_same(child, ctl_props):
-                    pos = i
-                    break
-
+            pos = cls._get_control_pos(ctl_props)
             if pos == -1:
                 mLo.Lo.print("Could not find control's position in form")
+                return
+            props_child = mLo.Lo.qi(XChild, ctl_props, True)
+            parent_form = mLo.Lo.qi(XIndexContainer, props_child.getParent(), True)
+            if isinstance(interface_name, str):
+                listener_type = interface_name
+                return
             else:
-                if isinstance(interface_name, str):
-                    listener_type = interface_name
-                else:
-                    listener_type = interface_name.__pyunointerface__
-                mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
-                ed = ScriptEventDescriptor(
-                    listener_type,
-                    method_name,
-                    "",
-                    "Script",
-                    f"vnd.sun.star.script:{script_name}?language={language}&location={loc}",
-                )
+                listener_type = interface_name.__pyunointerface__
+            mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
+            ed = ScriptEventDescriptor(
+                listener_type,
+                method_name,
+                "",
+                "Script",
+                f"vnd.sun.star.script:{script_name}?language={language}&location={loc}",
+            )
 
-                mgr.registerScriptEvent(pos, ed)
-        except Exception:
-            raise
+            if auto_remove_existing:
+                with contextlib.suppress(mEx.RemoveScriptError):
+                    cls.remove_script(ctl_props, listener_type, method_name)
+
+            mgr.registerScriptEvent(pos, ed)
+        except Exception as e:
+            raise mEx.ScriptError(f"Error assigning script: {e}") from e
+
+    @classmethod
+    def remove_script(
+        cls, ctl_props: XPropertySet, interface_name: str | XInterface, method_name: str, remove_params: str = ""
+    ) -> None:
+        """
+        Removes a script from a form control.
+
+        Args:
+            ctl_props (XPropertySet): _description_
+            interface_name (str | XInterface): _description_
+            method_name (str): _description_
+            remove_params (str, optional): _description_. Defaults to "".
+
+        Raises:
+            RemoveScriptError: if there is an error removing the script.
+
+        Returns:
+            None:
+
+        See Also:
+            - :py:meth:`~.Forms.assign_script`
+
+        .. versionadded:: 0.47.6
+        """
+        try:
+            pos = cls._get_control_pos(ctl_props)
+            if pos == -1:
+                mLo.Lo.print("Could not find control's position in form")
+                return
+            props_child = mLo.Lo.qi(XChild, ctl_props, True)
+            parent_form = mLo.Lo.qi(XIndexContainer, props_child.getParent(), True)
+            if isinstance(interface_name, str):
+                listener_type = interface_name
+            else:
+                listener_type = interface_name.__pyunointerface__
+            mgr = mLo.Lo.qi(XEventAttacherManager, parent_form, True)
+            # oForm.revokeScriptEvent(i, "XActionListener", "actionPerformed", "")
+            mgr.revokeScriptEvent(pos, listener_type, method_name, remove_params)
+        except Exception as e:
+            raise mEx.RemoveScriptError(f"Error removing script: {e}") from e
 
     # endregion  bind a macro to a form control
 

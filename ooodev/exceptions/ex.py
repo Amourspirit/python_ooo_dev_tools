@@ -575,3 +575,15 @@ class JsonDumpError(JsonError):
 
 
 # endregion Json Errors
+
+
+class ScriptError(Exception):
+    """Generic Script Error"""
+
+    pass
+
+
+class RemoveScriptError(ScriptError):
+    """Error when removing a script"""
+
+    pass
