@@ -30,6 +30,9 @@ from ooodev.utils import file_io as mFile
 from ooodev.utils.color import CommonColor
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.utils.data_type.generic_unit_size import GenericUnitSize
+from ooodev.utils.data_type.cell_obj import CellObj
+from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.utils.data_type.range_values import RangeValues
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.prop_partial import PropPartial
 from ooodev.utils.partial.qi_partial import QiPartial
@@ -44,15 +47,14 @@ from ooodev.adapter.table.cell_properties2_partial_props import CellProperties2P
 
 
 if TYPE_CHECKING:
+    from com.sun.star.sheet import SheetCell
     from com.sun.star.sheet import SheetCellRange
     from com.sun.star.table import CellAddress
     from ooo.dyn.table.cell_range_address import CellRangeAddress
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.proto.style_obj import StyleT
     from ooodev.utils.color import Color
-    from ooodev.utils.data_type.cell_obj import CellObj
     from ooodev.utils.data_type.cell_values import CellValues
-    from ooodev.utils.data_type.range_obj import RangeObj
     from ooodev.utils.data_type.size import Size
     from ooodev.utils.kind.chart2_types import ChartTemplateBase, ChartTypes as ChartTypes
     from ooodev.utils.type_var import Table, TupleArray, FloatTable, Row, PathOrStr
@@ -176,6 +178,14 @@ class CalcCellRange(
         """Compares two instances of CalcCellRange."""
         return not self.__eq__(other)
 
+    def __copy__(self) -> CalcCellRange:
+        """Copies the instance."""
+        return CalcCellRange(owner=self.calc_sheet, rng=self.range_obj, lo_inst=self.lo_inst)
+
+    def __repr__(self) -> str:
+        """Gets the string representation of the instance."""
+        return f"<CalcCellRange({self.get_range_str()})>"
+
     # endregion dunder methods
 
     # region StylePropertyPartial overrides
@@ -267,6 +277,78 @@ class CalcCellRange(
 
     # endregion Chart2
 
+    def find_used_range(self, content_flags: int = 23) -> CalcCellRange:
+        """
+        Finds used range.
+
+        The used range is found by querying the current range for content specified by the ``content_flags``.
+
+        Args:
+            content_flags (int, optional): CellFlags. Defaults to 23.
+
+        Raises:
+            CellRangeError: If unable to get used range object
+
+        Returns:
+            CalcCellRange: The Cell Range object that represents the used range.
+
+        Note:
+            Default ``CellFlags`` is: ``CellFlags.FORMULA | CellFlags.VALUE | CellFlags.DATETIME | CellFlags.STRING``
+
+            ``CellFlags`` can be imported from ``com.sun.star.sheet``.
+
+        See Also:
+            `API CellFlags <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html>`_
+
+        .. versionadded:: 0.47.7
+        """
+        try:
+            # content_flags = CellFlags.FORMULA | CellFlags.VALUE | CellFlags.DATETIME | CellFlags.STRING
+            cell_range = self.qi(XCellRange, True)
+            rng_obj = self.calc_doc.range_converter.get_range_obj(cell_range=cell_range)
+
+            cursor = self.calc_sheet.create_cursor_by_range(range_obj=rng_obj)
+            q_result = cursor.component.queryContentCells(content_flags)
+            if q_result is None:
+                raise mEx.CellRangeError("Error getting used range object: queryContentCells() returned None")
+            cells = q_result.getCells()
+            if cells is None:
+                raise mEx.CellRangeError("Error getting used range object: getCells() returned None")
+            if not cells.hasElements():
+                raise mEx.CellRangeError("Error getting used range object: getCells() has no elements")
+            enum = cells.createEnumeration()
+            if enum is None:
+                raise mEx.CellRangeError("Error getting used range object: createEnumeration() returned None")
+            sheet_cells: List[CellObj] = []
+            while enum.hasMoreElements():
+                sc = cast("SheetCell", enum.nextElement())
+                sheet_cells.append(CellObj.from_cell(sc.getCellAddress()))
+
+            if len(sheet_cells) < 2:
+                raise mEx.CellRangeError(
+                    f"Error getting used range object: Not enough cells found. Minimum is 2. Found: {len(sheet_cells)}"
+                )
+            sheet_cells.sort()
+            cell_start = sheet_cells[0]
+            cell_end = sheet_cells[-1]
+            addr_start = cell_start.get_cell_values()
+            addr_end = cell_end.get_cell_values()
+            result = RangeValues(
+                col_start=addr_start.col,
+                row_start=addr_start.row,
+                col_end=addr_end.col,
+                row_end=addr_end.row,
+                sheet_idx=rng_obj.sheet_idx,
+            )
+            # cursor.component.gotoStartOfUsedArea(False) and gotoEndOfUsedArea(True) are not working
+            # correctly. The goto methods go outside the bounds of the range.
+            ro = RangeObj.from_range(result)
+            return CalcCellRange(owner=self.calc_sheet, rng=ro, lo_inst=self.lo_inst)
+        except mEx.CellRangeError:
+            raise
+        except Exception as e:
+            raise mEx.CellRangeError(f"Error getting used range object: {e}") from e
+
     def change_style(self, style_name: str) -> bool:
         """
         Changes style of a range of cells.
@@ -317,6 +399,17 @@ class CalcCellRange(
                 sheet=self.calc_sheet.component, range_val=self._range_obj, cell_flags=cell_flags
             )
         return result
+
+    def copy(self) -> CalcCellRange:
+        """
+        Copies the instance.
+
+        Returns:
+            CalcCellRange: Copied instance.
+
+        .. versionadded:: 0.47.7
+        """
+        return self.__copy__()
 
     def delete_cells(self, is_shift_left: bool) -> bool:
         """
@@ -965,7 +1058,7 @@ class CalcCellRange(
 
         Returns:
             CalcSheet: CalcSheet if found; Otherwise, ``None``
-        
+
         .. versionadded:: 0.46.0
         """
         # pylint: disable=import-outside-toplevel
