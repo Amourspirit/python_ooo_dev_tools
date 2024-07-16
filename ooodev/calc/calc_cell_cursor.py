@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, overload
+from typing import Any, cast, List, TYPE_CHECKING, overload
 import uno
 
 from com.sun.star.table import XCellRange
@@ -19,8 +19,13 @@ from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc import calc_cell_range as mCalcCellRange
 from ooodev.calc import calc_cell as mCalcCell
+from ooodev.utils.data_type.cell_obj import CellObj
+from ooodev.utils.data_type.range_obj import RangeObj
+from ooodev.utils.data_type.range_values import RangeValues
+from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
+    from com.sun.star.sheet import SheetCell
     from com.sun.star.table import CellAddress
     from com.sun.star.table import XCell
     from com.sun.star.sheet import XSheetCellCursor
@@ -67,6 +72,77 @@ class CalcCellCursor(
         """
         found = mCalc.Calc.find_used_cursor(self.component)
         return mCalcCellRange.CalcCellRange(owner=self.calc_sheet, rng=found, lo_inst=self.lo_inst)
+
+    def find_used_range_obj(self, content_flags: int = 23) -> RangeObj:
+        """
+        Finds used range object.
+
+        The used range is found by querying the current range for content specified by the ``content_flags``.
+
+        Args:
+            content_flags (int, optional): CellFlags. Defaults to 23.
+
+        Raises:
+            CellRangeError: If unable to get used range object
+
+        Returns:
+            RangeObj: The Range object that represents the used range.
+
+        Note:
+            Default ``CellFlags`` is: ``CellFlags.FORMULA | CellFlags.VALUE | CellFlags.DATETIME | CellFlags.STRING``
+
+            ``CellFlags`` can be imported from ``com.sun.star.sheet``.
+
+        See Also:
+            `API CellFlags <https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1CellFlags.html>`_
+
+        .. versionadded:: 0.47.7
+        """
+        try:
+            # content_flags = CellFlags.FORMULA | CellFlags.VALUE | CellFlags.DATETIME | CellFlags.STRING
+            cell_range = self.qi(XCellRange, True)
+            rng_obj = self.calc_doc.range_converter.get_range_obj(cell_range=cell_range)
+
+            cursor = self.calc_sheet.create_cursor_by_range(range_obj=rng_obj)
+            q_result = cursor.component.queryContentCells(content_flags)
+            if q_result is None:
+                raise mEx.CellRangeError("Error getting used range object: queryContentCells() returned None")
+            cells = q_result.getCells()
+            if cells is None:
+                raise mEx.CellRangeError("Error getting used range object: getCells() returned None")
+            if not cells.hasElements():
+                raise mEx.CellRangeError("Error getting used range object: getCells() has no elements")
+            enum = cells.createEnumeration()
+            if enum is None:
+                raise mEx.CellRangeError("Error getting used range object: createEnumeration() returned None")
+            sheet_cells: List[CellObj] = []
+            while enum.hasMoreElements():
+                sc = cast("SheetCell", enum.nextElement())
+                sheet_cells.append(CellObj.from_cell(sc.getCellAddress()))
+
+            if len(sheet_cells) < 2:
+                raise mEx.CellRangeError(
+                    f"Error getting used range object: Not enough cells found. Minimum is 2. Found: {len(sheet_cells)}"
+                )
+            sheet_cells.sort()
+            cell_start = sheet_cells[0]
+            cell_end = sheet_cells[-1]
+            addr_start = cell_start.get_cell_values()
+            addr_end = cell_end.get_cell_values()
+            result = RangeValues(
+                col_start=addr_start.col,
+                row_start=addr_start.row,
+                col_end=addr_end.col,
+                row_end=addr_end.row,
+                sheet_idx=rng_obj.sheet_idx,
+            )
+            # cursor.component.gotoStartOfUsedArea(False) and gotoEndOfUsedArea(True) are not working
+            # correctly. The goto methods go outside the bounds of the range.
+            return RangeObj.from_range(result)
+        except mEx.CellRangeError:
+            raise
+        except Exception as e:
+            raise mEx.CellRangeError(f"Error getting used range object: {e}") from e
 
     def get_calc_cell_range(self) -> mCalcCellRange.CalcCellRange:
         """

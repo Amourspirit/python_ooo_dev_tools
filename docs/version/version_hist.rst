@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.47.7
+==============
+
+Added ``CalcCellRange.find_used_range()`` and ``CalcCellCursor.find_used_range_obj()`` methods.
+Both methods find the use area with the current range.
+
+Other minor updates.
+
+
 Version 0.47.6
 ==============
 

@@ -587,3 +587,9 @@ class RemoveScriptError(ScriptError):
     """Error when removing a script"""
 
     pass
+
+
+class CellRangeError(CellError):
+    """Error when cell range is invalid"""
+
+    pass
