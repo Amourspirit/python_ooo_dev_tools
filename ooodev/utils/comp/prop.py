@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertySet  # service
     from ooodev.loader.inst.lo_inst import LoInst
 
-_T = TypeVar(
-    "_T",
-)
+_T = TypeVar("_T")
 
 
 class Prop(Generic[_T], LoInstPropsPartial, PropPartial, PropertySetComp):
