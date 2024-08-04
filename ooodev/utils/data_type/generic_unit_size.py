@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 from typing import Generic, TypeVar, Union
 import uno
 from com.sun.star.awt import Size
@@ -9,9 +10,14 @@ from ooodev.units.unit_obj import UnitT  # do not import from ooodev.unit or wil
 from ooodev.utils.data_type.generic_size import GenericSize
 
 _T = TypeVar("_T", bound=UnitT)
+# https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
+if sys.version_info >= (3, 12):
+    TNum = TypeVar(name="TNum", bound=(int, float))
+    _TNum = TypeVar(name="_TNum", bound=(int, float))
+else:
+    TNum = TypeVar(name="TNum", bound=Union[int, float])
+    _TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
-TNum = TypeVar(name="TNum", bound=Union[int, float])
-_TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
 # example usage in: ooodev.form.controls.form_ctl_base.py
 

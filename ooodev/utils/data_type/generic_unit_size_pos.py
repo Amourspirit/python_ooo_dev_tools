@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 from typing import Generic, TypeVar, Union, Tuple
 import uno
 from com.sun.star.awt import Point
@@ -12,8 +13,15 @@ from ooodev.units import unit_factory
 from ooodev.units.unit_obj import UnitT
 
 _T = TypeVar("_T", bound=UnitT)
-TNum = TypeVar(name="TNum", bound=Union[int, float])
-_TNum = TypeVar(name="_TNum", bound=Union[int, float])
+
+
+# https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
+if sys.version_info >= (3, 12):
+    TNum = TypeVar(name="TNum", bound=(int, float))
+    _TNum = TypeVar(name="_TNum", bound=(int, float))
+else:
+    TNum = TypeVar(name="TNum", bound=Union[int, float])
+    _TNum = TypeVar(name="_TNum", bound=Union[int, float])
 
 
 # class FloatSize(GenericSize[float]):
