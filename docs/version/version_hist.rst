@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.47.8
+==============
+
+Fix for a Typing issue in Python 3.12.
+
 Version 0.47.7
 ==============
 
