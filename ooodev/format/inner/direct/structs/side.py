@@ -31,7 +31,7 @@ from ooodev.utils.color import StandardColor
 
 # endregion Import
 
-_TSide = TypeVar(name="_TSide", bound="Side")
+_TSide = TypeVar("_TSide", bound="Side")
 
 # region Enums
 

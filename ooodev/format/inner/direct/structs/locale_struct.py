@@ -23,7 +23,7 @@ from ooodev.utils import props as mProps
 # endregion Import
 # pylint: disable=unexpected-keyword-arg
 
-_TLocaleStruct = TypeVar(name="_TLocaleStruct", bound="LocaleStruct")
+_TLocaleStruct = TypeVar("_TLocaleStruct", bound="LocaleStruct")
 
 
 class LocaleStruct(StructBase):

@@ -13,7 +13,7 @@ from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
-_TDataPointLabelStruct = TypeVar(name="_TDataPointLabelStruct", bound="DataPointLabelStruct")
+_TDataPointLabelStruct = TypeVar("_TDataPointLabelStruct", bound="DataPointLabelStruct")
 
 
 class DataPointLabelStruct(StructBase):

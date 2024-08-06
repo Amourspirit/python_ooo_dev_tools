@@ -12,7 +12,7 @@ from ooodev.format.inner.style_base import StyleBase
 
 # endregion Import
 
-_TAbstractLineNumber = TypeVar(name="_TAbstractLineNumber", bound="AbstractLineNumber")
+_TAbstractLineNumber = TypeVar("_TAbstractLineNumber", bound="AbstractLineNumber")
 
 
 class LineNumberProps(NamedTuple):

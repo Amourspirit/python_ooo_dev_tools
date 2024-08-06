@@ -6,7 +6,7 @@ from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
-_TProtect = TypeVar(name="_TProtect", bound="Protect")
+_TProtect = TypeVar("_TProtect", bound="Protect")
 
 
 class Protect(StyleBase):

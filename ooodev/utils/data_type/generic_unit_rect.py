@@ -1,5 +1,4 @@
 from __future__ import annotations
-import sys
 from typing import Generic, TypeVar, Union
 import uno
 from com.sun.star.awt import Rectangle
@@ -12,12 +11,8 @@ from ooodev.units.unit_obj import UnitT
 _T = TypeVar("_T", bound=UnitT)
 
 # https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
-if sys.version_info >= (3, 12):
-    TNum = TypeVar(name="TNum", bound=(int, float))
-    _TNum = TypeVar(name="_TNum", bound=(int, float))
-else:
-    TNum = TypeVar(name="TNum", bound=Union[int, float])
-    _TNum = TypeVar(name="_TNum", bound=Union[int, float])
+TNum = TypeVar("TNum", bound=Union[int, float])
+_TNum = TypeVar("_TNum", bound=Union[int, float])
 
 
 class GenericUnitRect(Generic[_T, TNum]):

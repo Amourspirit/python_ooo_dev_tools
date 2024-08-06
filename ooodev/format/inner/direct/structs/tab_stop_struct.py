@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 # endregion Import
 
-_TTabStopStruct = TypeVar(name="_TTabStopStruct", bound="TabStopStruct")
+_TTabStopStruct = TypeVar("_TTabStopStruct", bound="TabStopStruct")
 
 
 class FillCharKind(Enum):

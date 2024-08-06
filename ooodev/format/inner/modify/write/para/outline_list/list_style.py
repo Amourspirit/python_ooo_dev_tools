@@ -14,7 +14,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TInnerListStyle = TypeVar(name="_TInnerListStyle", bound="InnerListStyle")
+_TInnerListStyle = TypeVar("_TInnerListStyle", bound="InnerListStyle")
 
 
 class InnerListStyle(StyleBase):

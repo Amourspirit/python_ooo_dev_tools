@@ -2,7 +2,7 @@
 Version History
 ***************
 
-Version 0.47.8
+Version 0.47.9
 ==============
 
 Fix for a Typing issue in Python 3.12.

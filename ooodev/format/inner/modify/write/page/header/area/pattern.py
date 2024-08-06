@@ -13,7 +13,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 
 # endregion Import
 
-_TPattern = TypeVar(name="_TPattern", bound="Pattern")
+_TPattern = TypeVar("_TPattern", bound="Pattern")
 
 
 class Pattern(PageStyleBaseMulti):

@@ -11,7 +11,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TSettings = TypeVar(name="_TSettings", bound="Settings")
+_TSettings = TypeVar("_TSettings", bound="Settings")
 
 
 class Settings(StyleBase):

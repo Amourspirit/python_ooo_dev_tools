@@ -14,7 +14,7 @@ from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
 
 
-_TPattern = TypeVar(name="_TPattern", bound="Pattern")
+_TPattern = TypeVar("_TPattern", bound="Pattern")
 
 
 class Pattern(StyleMulti):

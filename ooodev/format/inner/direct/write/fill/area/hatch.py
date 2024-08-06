@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 # pylint: disable=unexpected-keyword-arg
 
-_THatch = TypeVar(name="_THatch", bound="Hatch")
+_THatch = TypeVar("_THatch", bound="Hatch")
 
 
 class Hatch(StyleMulti):

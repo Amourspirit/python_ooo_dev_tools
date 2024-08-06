@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 # https://github.com/LibreOffice/core/blob/6379414ca34527fbe69df2035d49d651655317cd/vcl/source/filter/ipict/ipict.cxx#L92
 
-_TPattern = TypeVar(name="_TPattern", bound="Pattern")
+_TPattern = TypeVar("_TPattern", bound="Pattern")
 
 
 class Pattern(StyleBase):

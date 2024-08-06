@@ -22,7 +22,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TLineSpacing = TypeVar(name="_TLineSpacing", bound="LineSpacing")
+_TLineSpacing = TypeVar("_TLineSpacing", bound="LineSpacing")
 
 
 class LineSpacing(StyleMulti):

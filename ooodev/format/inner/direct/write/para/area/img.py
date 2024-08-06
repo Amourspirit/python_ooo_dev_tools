@@ -26,7 +26,7 @@ from ooodev.utils.data_type.size_mm import SizeMM
 
 # endregion Imports
 
-_TImg = TypeVar(name="_TImg", bound="Img")
+_TImg = TypeVar("_TImg", bound="Img")
 
 
 class Img(StyleMulti):

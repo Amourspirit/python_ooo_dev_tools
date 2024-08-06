@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 # endregion Import
 
-_THatch = TypeVar(name="_THatch", bound="Hatch")
+_THatch = TypeVar("_THatch", bound="Hatch")
 
 
 class Hatch(PageStyleBaseMulti):

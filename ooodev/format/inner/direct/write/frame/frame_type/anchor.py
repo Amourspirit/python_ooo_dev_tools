@@ -10,7 +10,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.frame_type_anchor_props import FrameTypeAnchorProps
 
-_TAnchor = TypeVar(name="_TAnchor", bound="Anchor")
+_TAnchor = TypeVar("_TAnchor", bound="Anchor")
 
 if TYPE_CHECKING:
     # this class is only available at design time.

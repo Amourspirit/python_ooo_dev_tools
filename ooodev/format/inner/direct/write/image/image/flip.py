@@ -9,7 +9,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.image_flip_props import ImageFlipProps
 
-_TFlip = TypeVar(name="_TFlip", bound="Flip")
+_TFlip = TypeVar("_TFlip", bound="Flip")
 
 
 class FlipKind(Enum):

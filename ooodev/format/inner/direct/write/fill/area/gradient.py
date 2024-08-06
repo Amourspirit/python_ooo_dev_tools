@@ -35,7 +35,7 @@ from ooodev.utils.data_type.offset import Offset as Offset
 
 # endregion Import
 
-_TGradient = TypeVar(name="_TGradient", bound="Gradient")  # pylint: disable=invalid-name
+_TGradient = TypeVar("_TGradient", bound="Gradient")  # pylint: disable=invalid-name
 
 
 class Gradient(StyleMulti):

@@ -20,7 +20,7 @@ from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
-_TShadowStruct = TypeVar(name="_TShadowStruct", bound="ShadowStruct")
+_TShadowStruct = TypeVar("_TShadowStruct", bound="ShadowStruct")
 
 
 class ShadowStruct(StructBase):

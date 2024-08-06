@@ -17,7 +17,7 @@ from ooodev.format.inner.direct.write.para.text_flow.breaks import Breaks
 from ooodev.format.inner.direct.write.para.text_flow.hyphenation import Hyphenation
 from ooodev.format.inner.direct.write.para.text_flow.flow_options import FlowOptions
 
-_TTextFlow = TypeVar(name="_TTextFlow", bound="TextFlow")
+_TTextFlow = TypeVar("_TTextFlow", bound="TextFlow")
 
 
 class TextFlow(StyleMulti):

@@ -18,7 +18,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.units.unit_obj import UnitT
 
-_TIndentSpacing = TypeVar(name="_TIndentSpacing", bound="IndentSpacing")
+_TIndentSpacing = TypeVar("_TIndentSpacing", bound="IndentSpacing")
 
 
 class IndentSpacing(StyleMulti):

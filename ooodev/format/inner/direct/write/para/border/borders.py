@@ -21,7 +21,7 @@ from ooodev.utils import props as mProps
 
 # endregion imports
 
-_TBorders = TypeVar(name="_TBorders", bound="Borders")
+_TBorders = TypeVar("_TBorders", bound="Borders")
 
 
 class Borders(StyleMulti):

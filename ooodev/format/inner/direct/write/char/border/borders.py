@@ -21,7 +21,7 @@ from ooodev.format.inner.direct.write.char.border.sides import Sides
 
 # endregion Import
 
-_TBorders = TypeVar(name="_TBorders", bound="Borders")
+_TBorders = TypeVar("_TBorders", bound="Borders")
 
 
 class Borders(StyleMulti):

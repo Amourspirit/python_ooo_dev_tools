@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 # endregion Import
 
-_TIndent = TypeVar(name="_TIndent", bound="Indent")
+_TIndent = TypeVar("_TIndent", bound="Indent")
 
 
 class Indent(StyleBase):

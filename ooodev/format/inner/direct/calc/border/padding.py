@@ -18,7 +18,7 @@ from ooodev.format.inner.common.props.border_props import BorderProps as BorderP
 
 # endregion Import
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):

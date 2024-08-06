@@ -17,7 +17,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import color as mColor
 
 
-_TFillColor = TypeVar(name="_TFillColor", bound="FillColor")
+_TFillColor = TypeVar("_TFillColor", bound="FillColor")
 
 
 class FillColor(AbstractColor):

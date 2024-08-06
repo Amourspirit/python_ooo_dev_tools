@@ -11,7 +11,7 @@ from ooodev.utils import props as mProps
 
 # endregion imports
 
-_TImageMapOptions = TypeVar(name="_TImageMapOptions", bound="ImageMapOptions")
+_TImageMapOptions = TypeVar("_TImageMapOptions", bound="ImageMapOptions")
 
 
 class ImageMapOptions(StyleBase):

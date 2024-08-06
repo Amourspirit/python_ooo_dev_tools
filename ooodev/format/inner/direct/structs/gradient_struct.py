@@ -32,7 +32,7 @@ from ooodev.utils.data_type.offset import Offset
 # see Also:
 # https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
 
-_TGradientStruct = TypeVar(name="_TGradientStruct", bound="GradientStruct")
+_TGradientStruct = TypeVar("_TGradientStruct", bound="GradientStruct")
 
 
 class GradientStruct(StructBase):

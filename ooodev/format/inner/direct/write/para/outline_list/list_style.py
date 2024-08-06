@@ -22,7 +22,7 @@ from ooodev.utils import props as mProps
 
 # from ...events.args.key_val_cancel_args import KeyValCancelArgs
 
-_TListStyle = TypeVar(name="_TListStyle", bound="ListStyle")
+_TListStyle = TypeVar("_TListStyle", bound="ListStyle")
 
 
 class ListStyle(StyleBase):

@@ -25,7 +25,7 @@ from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Imports
 
-_TFontEffects = TypeVar(name="_TFontEffects", bound="FontEffects")
+_TFontEffects = TypeVar("_TFontEffects", bound="FontEffects")
 
 
 class FontLine:

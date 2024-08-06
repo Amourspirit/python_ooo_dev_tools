@@ -24,10 +24,10 @@ from ooodev.units.unit_convert import UnitConvert
 
 # region Types
 
-_TTableProperties = TypeVar(name="_TTableProperties", bound="TableProperties")
-_TSharedAuto = TypeVar(name="_TSharedAuto", bound="_SharedAuto")
-_TTblAuto = TypeVar(name="_TTblAuto", bound="_TblAuto")
-_TTblRelLeftByWidth = TypeVar(name="_TTblRelLeftByWidth", bound="_TblRelLeftByWidth")
+_TTableProperties = TypeVar("_TTableProperties", bound="TableProperties")
+_TSharedAuto = TypeVar("_TSharedAuto", bound="_SharedAuto")
+_TTblAuto = TypeVar("_TTblAuto", bound="_TblAuto")
+_TTblRelLeftByWidth = TypeVar("_TTblRelLeftByWidth", bound="_TblRelLeftByWidth")
 TblAbsUnit = Union[float, UnitT]
 TblRelUnit = Union[int, Intensity]
 

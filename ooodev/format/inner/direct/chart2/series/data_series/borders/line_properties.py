@@ -12,7 +12,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color
 from ooodev.utils.data_type.intensity import Intensity
 
-_TLineProperties = TypeVar(name="_TLineProperties", bound="LineProperties")
+_TLineProperties = TypeVar("_TLineProperties", bound="LineProperties")
 
 
 class _LinePropertiesProps(NamedTuple):

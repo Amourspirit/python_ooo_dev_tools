@@ -19,7 +19,7 @@ from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
-_TOutline = TypeVar(name="_TOutline", bound="Outline")
+_TOutline = TypeVar("_TOutline", bound="Outline")
 
 
 class LevelKind(IntEnum):

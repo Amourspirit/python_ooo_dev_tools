@@ -22,7 +22,7 @@ from ooodev.utils.data_type.byte import Byte
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TDropCapStruct = TypeVar(name="_TDropCapStruct", bound="DropCapStruct")
+_TDropCapStruct = TypeVar("_TDropCapStruct", bound="DropCapStruct")
 
 
 class DropCapStruct(StructBase):

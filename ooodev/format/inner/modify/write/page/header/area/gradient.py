@@ -17,7 +17,7 @@ from ooodev.utils.data_type.intensity_range import IntensityRange
 from ooodev.utils.data_type.offset import Offset
 
 # endregion Import
-_TGradient = TypeVar(name="_TGradient", bound="Gradient")
+_TGradient = TypeVar("_TGradient", bound="Gradient")
 
 
 class Gradient(PageStyleBaseMulti):

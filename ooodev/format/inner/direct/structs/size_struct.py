@@ -15,7 +15,7 @@ from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion Import
 
-_TSizeStruct = TypeVar(name="_TSizeStruct", bound="SizeStruct")
+_TSizeStruct = TypeVar("_TSizeStruct", bound="SizeStruct")
 
 
 class SizeStruct(StructBase):

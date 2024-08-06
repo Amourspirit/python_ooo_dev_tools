@@ -17,7 +17,7 @@ from ooodev.format.inner.common.props.cell_text_align_props import CellTextAlign
 
 # endregion Imports
 
-_TTextAlign = TypeVar(name="_TTextAlign", bound="TextAlign")
+_TTextAlign = TypeVar("_TTextAlign", bound="TextAlign")
 
 
 # region Enums

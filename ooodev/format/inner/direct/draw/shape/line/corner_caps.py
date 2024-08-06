@@ -11,7 +11,7 @@ from ooodev.format.inner.style_base import StyleBase
 from ooodev.utils import props as mProps
 
 
-_TCornerCaps = TypeVar(name="_TCornerCaps", bound="CornerCaps")
+_TCornerCaps = TypeVar("_TCornerCaps", bound="CornerCaps")
 
 
 class CornerCaps(StyleBase):

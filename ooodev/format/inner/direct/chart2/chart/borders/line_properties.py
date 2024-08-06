@@ -15,7 +15,7 @@ from ooodev.utils.data_type.intensity import Intensity
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TLineProperties = TypeVar(name="_TLineProperties", bound="LineProperties")
+_TLineProperties = TypeVar("_TLineProperties", bound="LineProperties")
 
 
 class LineProperties(StyleBase):

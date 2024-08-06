@@ -19,7 +19,7 @@ from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 
 
-_TLayoutSettings = TypeVar(name="_TLayoutSettings", bound="LayoutSettings")
+_TLayoutSettings = TypeVar("_TLayoutSettings", bound="LayoutSettings")
 
 # The LayoutSettings class is missing a few properties:
 # Paper Tray options. I did not see much value in adding it.

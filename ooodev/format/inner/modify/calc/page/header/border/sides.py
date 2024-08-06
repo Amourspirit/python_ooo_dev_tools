@@ -57,7 +57,7 @@ class InnerSides(DirectSides):
     # endregion properties
 
 
-_TSides = TypeVar(name="_TSides", bound="Sides")
+_TSides = TypeVar("_TSides", bound="Sides")
 
 
 class Sides(CellStyleBaseMulti):

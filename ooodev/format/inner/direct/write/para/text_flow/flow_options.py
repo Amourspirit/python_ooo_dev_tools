@@ -18,7 +18,7 @@ from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 # endregion Import
 
-_TFlowOptions = TypeVar(name="_TFlowOptions", bound="FlowOptions")
+_TFlowOptions = TypeVar("_TFlowOptions", bound="FlowOptions")
 
 
 class FlowOptions(StyleBase):

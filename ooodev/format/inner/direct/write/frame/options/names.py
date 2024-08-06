@@ -14,7 +14,7 @@ from ooodev.format.inner.common.props.frame_options_names_props import FrameOpti
 if TYPE_CHECKING:
     from com.sun.star.text import ChainedTextFrame  # service
 
-_TNames = TypeVar(name="_TNames", bound="Names")
+_TNames = TypeVar("_TNames", bound="Names")
 
 
 class Names(AbstractDocument):

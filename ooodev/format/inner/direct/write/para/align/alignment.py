@@ -19,7 +19,7 @@ from ooodev.format.inner.style_base import StyleMulti
 from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 
-_TAlignment = TypeVar(name="_TAlignment", bound="Alignment")
+_TAlignment = TypeVar("_TAlignment", bound="Alignment")
 
 
 class LastLineKind(Enum):

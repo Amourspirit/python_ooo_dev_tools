@@ -7,6 +7,7 @@ There is also a property called ``WritingMode``. But also changing it does not s
 When a shapes changes the writing mode via the dialog it seems to change the shape.Start.WritingMode property;
 however it seems not possible to set this property manually.
 """
+
 from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
 import uno
@@ -20,7 +21,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
 
-_TTextDirection = TypeVar(name="_TTextDirection", bound="TextDirection")
+_TTextDirection = TypeVar("_TTextDirection", bound="TextDirection")
 
 
 class TextDirection(StyleBase):
@@ -79,13 +80,11 @@ class TextDirection(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextDirection], obj: Any) -> _TTextDirection:
-        ...
+    def from_obj(cls: Type[_TTextDirection], obj: Any) -> _TTextDirection: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TTextDirection], obj: Any, **kwargs) -> _TTextDirection:
-        ...
+    def from_obj(cls: Type[_TTextDirection], obj: Any, **kwargs) -> _TTextDirection: ...
 
     @classmethod
     def from_obj(cls: Type[_TTextDirection], obj: Any, **kwargs) -> _TTextDirection:

@@ -9,7 +9,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.frame_options_align_props import FrameOptionsAlignProps
 
-_TAlign = TypeVar(name="_TAlign", bound="Align")
+_TAlign = TypeVar("_TAlign", bound="Align")
 
 if TYPE_CHECKING:
     # this class is only available at design time.
