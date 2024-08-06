@@ -25,7 +25,7 @@ from ooodev.format.inner.direct.calc.border.shadow import Shadow as Shadow
 
 # endregion imports
 
-_TBorders = TypeVar(name="_TBorders", bound="Borders")
+_TBorders = TypeVar("_TBorders", bound="Borders")
 
 
 class Borders(StyleMulti):

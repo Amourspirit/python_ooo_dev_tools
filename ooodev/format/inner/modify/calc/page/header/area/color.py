@@ -11,7 +11,7 @@ from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
 
 # endregion Import
-_TColor = TypeVar(name="_TColor", bound="Color")
+_TColor = TypeVar("_TColor", bound="Color")
 
 
 class InnerColor(AbstractColor):

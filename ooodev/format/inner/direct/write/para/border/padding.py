@@ -11,7 +11,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 from ooodev.format.inner.common.props.border_props import BorderProps
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):

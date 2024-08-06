@@ -32,7 +32,7 @@ from ooodev.utils.color import Color
 
 # endregion Import
 
-_TFont = TypeVar(name="_TFont", bound="Font")
+_TFont = TypeVar("_TFont", bound="Font")
 
 
 class Font(StyleBase):

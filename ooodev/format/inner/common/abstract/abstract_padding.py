@@ -20,7 +20,7 @@ from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.border_props import BorderProps
 
 # endregion Imports
-_TAbstractPadding = TypeVar(name="_TAbstractPadding", bound="AbstractPadding")
+_TAbstractPadding = TypeVar("_TAbstractPadding", bound="AbstractPadding")
 
 
 class AbstractPadding(StyleBase):

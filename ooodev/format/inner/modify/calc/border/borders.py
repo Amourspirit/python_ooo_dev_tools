@@ -17,7 +17,7 @@ from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseM
 
 # endregion Imports
 
-_TInnerBorders = TypeVar(name="_TInnerBorders", bound="InnerBorders")
+_TInnerBorders = TypeVar("_TInnerBorders", bound="InnerBorders")
 
 
 class InnerBorders(StyleMulti):

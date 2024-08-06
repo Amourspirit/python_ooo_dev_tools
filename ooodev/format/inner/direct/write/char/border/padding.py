@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 # endregion Import
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):

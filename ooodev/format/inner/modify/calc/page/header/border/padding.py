@@ -10,7 +10,7 @@ from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseM
 
 # endregion Import
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class InnerPadding(AbstractPadding):

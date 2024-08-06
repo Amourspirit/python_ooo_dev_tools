@@ -10,7 +10,7 @@ from ooodev.format.inner.common.props.frame_wrap_options_props import FrameWrapO
 
 # endregion Import
 
-_TOptions = TypeVar(name="_TOptions", bound="Options")
+_TOptions = TypeVar("_TOptions", bound="Options")
 
 
 class Options(StyleBase):

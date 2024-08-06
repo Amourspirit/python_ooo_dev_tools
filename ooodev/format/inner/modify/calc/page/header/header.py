@@ -13,7 +13,7 @@ from ooodev.meta.disabled_method import DisabledMethod
 
 # endregion Import
 
-_THeader = TypeVar(name="_THeader", bound="Header")
+_THeader = TypeVar("_THeader", bound="Header")
 
 
 class InnerStyle(AbstractHF):

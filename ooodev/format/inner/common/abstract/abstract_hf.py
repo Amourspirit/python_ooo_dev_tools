@@ -16,7 +16,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TAbstractHF = TypeVar(name="_TAbstractHF", bound="AbstractHF")
+_TAbstractHF = TypeVar("_TAbstractHF", bound="AbstractHF")
 
 
 class AbstractHF(StyleBase):

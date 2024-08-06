@@ -28,7 +28,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
-_TPageStyleBaseMulti = TypeVar(name="_TPageStyleBaseMulti", bound="PageStyleBaseMulti")
+_TPageStyleBaseMulti = TypeVar("_TPageStyleBaseMulti", bound="PageStyleBaseMulti")
 
 
 class PageStyleBaseMulti(StyleMulti):

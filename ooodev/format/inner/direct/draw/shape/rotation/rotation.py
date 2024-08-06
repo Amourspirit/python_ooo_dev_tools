@@ -11,7 +11,7 @@ from ooodev.utils import props as mProps
 if TYPE_CHECKING:
     from ooodev.units.angle_unit_obj import AngleUnitT
 
-_TRotation = TypeVar(name="_TRotation", bound="Rotation")
+_TRotation = TypeVar("_TRotation", bound="Rotation")
 
 # pivot point and base point are difficult to calculate.
 # pivot point is the point that the shape rotates around.

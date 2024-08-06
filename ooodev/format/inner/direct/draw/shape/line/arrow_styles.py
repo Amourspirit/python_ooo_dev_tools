@@ -12,7 +12,7 @@ from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TArrowStyles = TypeVar(name="_TArrowStyles", bound="ArrowStyles")
+_TArrowStyles = TypeVar("_TArrowStyles", bound="ArrowStyles")
 
 
 class ArrowStyles(StyleBase):

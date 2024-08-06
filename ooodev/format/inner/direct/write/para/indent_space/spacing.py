@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 # endregion Import
 
 
-_TSpacing = TypeVar(name="_TSpacing", bound="Spacing")
+_TSpacing = TypeVar("_TSpacing", bound="Spacing")
 
 
 class Spacing(StyleBase):

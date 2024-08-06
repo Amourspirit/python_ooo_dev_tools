@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 # endregion imports
 
-_TCropStruct = TypeVar(name="_TCropStruct", bound="CropStruct")
+_TCropStruct = TypeVar("_TCropStruct", bound="CropStruct")
 
 
 class CropStruct(StructBase):

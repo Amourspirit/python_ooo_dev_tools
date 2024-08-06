@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 # endregion Import
 
-_TLineSpacingStruct = TypeVar(name="_TLineSpacingStruct", bound="LineSpacingStruct")
+_TLineSpacingStruct = TypeVar("_TLineSpacingStruct", bound="LineSpacingStruct")
 
 
 class LineSpacingStruct(StructBase):

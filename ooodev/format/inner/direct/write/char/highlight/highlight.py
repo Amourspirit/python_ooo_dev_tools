@@ -21,7 +21,7 @@ from ooodev.utils import props as mProps
 from ooodev.utils.color import Color, StandardColor
 
 # endregion Import
-_THighlight = TypeVar(name="_THighlight", bound="Highlight")
+_THighlight = TypeVar("_THighlight", bound="Highlight")
 
 
 class Highlight(StyleBase):

@@ -25,7 +25,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TTabs = TypeVar(name="_TTabs", bound="Tabs")
+_TTabs = TypeVar("_TTabs", bound="Tabs")
 
 
 class Tabs(TabStopStruct):

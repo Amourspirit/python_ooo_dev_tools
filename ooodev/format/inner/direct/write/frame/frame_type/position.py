@@ -22,7 +22,7 @@ from ooodev.units.unit_mm import UnitMM
 from ooodev.units.unit_obj import UnitT
 from ooodev.utils import props as mProps
 
-_TPosition = TypeVar(name="_TPosition", bound="Position")
+_TPosition = TypeVar("_TPosition", bound="Position")
 
 
 class HoriOrient(Enum):

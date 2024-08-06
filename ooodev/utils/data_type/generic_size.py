@@ -1,16 +1,12 @@
 from __future__ import annotations
 import contextlib
-import sys
 from typing import TypeVar, Generic, Union, TYPE_CHECKING
 import uno
 from ooo.dyn.awt.size import Size as UnoSize
 
 
 # https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
-if sys.version_info >= (3, 12):
-    T = TypeVar(name="T", bound=(int, float))
-else:
-    T = TypeVar(name="T", bound=Union[int, float])
+T = TypeVar("T", bound=Union[int, float])
 
 
 if TYPE_CHECKING:

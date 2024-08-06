@@ -7,7 +7,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.image_options_properties import ImageOptionsProperties
 
-_TProperties = TypeVar(name="_TProperties", bound="Properties")
+_TProperties = TypeVar("_TProperties", bound="Properties")
 
 
 class Properties(StyleBase):

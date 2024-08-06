@@ -16,7 +16,7 @@ from ooodev.format.inner.common.abstract.abstract_padding import AbstractPadding
 
 # endregion Imports
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class Padding(AbstractPadding):

@@ -26,7 +26,7 @@ from ooodev.utils.color import Color, StandardColor
 
 PARA_BACK_COLOR_FLAGS = 0x7F000000
 
-_THatch = TypeVar(name="_THatch", bound="Hatch")
+_THatch = TypeVar("_THatch", bound="Hatch")
 
 
 class _HatchStruct(HatchStruct):

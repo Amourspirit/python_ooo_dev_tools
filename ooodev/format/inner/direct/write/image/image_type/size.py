@@ -24,7 +24,7 @@ from ooodev.utils.validation import check
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TSize = TypeVar(name="_TSize", bound="Size")
+_TSize = TypeVar("_TSize", bound="Size")
 
 
 class RelativeKind(Enum):

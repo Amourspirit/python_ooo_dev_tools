@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 # endregion Import
 
-_TTableBorderStruct = TypeVar(name="_TTableBorderStruct", bound="TableBorderStruct")
+_TTableBorderStruct = TypeVar("_TTableBorderStruct", bound="TableBorderStruct")
 
 
 class TableBorderStruct(StructBase):

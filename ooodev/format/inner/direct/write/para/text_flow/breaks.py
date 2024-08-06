@@ -19,7 +19,7 @@ from ooodev.format.inner.style_base import StyleBase
 
 # endregion Imports
 
-_TBreaks = TypeVar(name="_TBreaks", bound="Breaks")
+_TBreaks = TypeVar("_TBreaks", bound="Breaks")
 
 
 class Breaks(StyleBase):

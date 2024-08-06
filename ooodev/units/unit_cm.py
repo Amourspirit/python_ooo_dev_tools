@@ -9,7 +9,7 @@ from ooodev.utils.kind.point_size_kind import PointSizeKind
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TUnitCM = TypeVar(name="_TUnitCM", bound="UnitCM")
+_TUnitCM = TypeVar("_TUnitCM", bound="UnitCM")
 
 
 @dataclass(unsafe_hash=True)

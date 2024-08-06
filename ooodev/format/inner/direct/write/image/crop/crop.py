@@ -28,7 +28,7 @@ else:
     SizeObj = Any
     UnitT = Any
 
-_TImageCrop = TypeVar(name="_TImageCrop", bound="ImageCrop")
+_TImageCrop = TypeVar("_TImageCrop", bound="ImageCrop")
 
 
 class CropOpt(CropStruct):

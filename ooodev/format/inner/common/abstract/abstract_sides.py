@@ -18,7 +18,7 @@ from ooodev.format.inner.common.props.border_props import BorderProps as BorderP
 
 # endregion imports
 
-_TAbstractSides = TypeVar(name="_TAbstractSides", bound="AbstractSides")
+_TAbstractSides = TypeVar("_TAbstractSides", bound="AbstractSides")
 
 
 class AbstractSides(StyleMulti):

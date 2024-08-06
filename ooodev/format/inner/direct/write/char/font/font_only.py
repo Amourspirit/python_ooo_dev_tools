@@ -36,8 +36,8 @@ else:
 if mock_g.DOCS_BUILDING:
     from ooodev.meta.static_prop import static_prop
 
-_TFontOnly = TypeVar(name="_TFontOnly", bound="FontOnly")
-_TFontLang = TypeVar(name="_TFontLang", bound="FontLang")
+_TFontOnly = TypeVar("_TFontOnly", bound="FontOnly")
+_TFontLang = TypeVar("_TFontLang", bound="FontLang")
 
 
 class FontLang(LocaleStruct):

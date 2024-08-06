@@ -21,7 +21,7 @@ from ooodev.utils import props as mProps
 # com.sun.star.i18n.NumberFormatIndex
 # endregion Import
 
-_TNumbers = TypeVar(name="_TNumbers", bound="Numbers")
+_TNumbers = TypeVar("_TNumbers", bound="Numbers")
 
 # https://wiki.documentfoundation.org/Documentation/DevGuide/Office_Development#Number_Formats
 

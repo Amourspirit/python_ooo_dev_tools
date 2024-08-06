@@ -14,7 +14,7 @@ from ooodev.format.inner.common.props.cell_text_properties_props import CellText
 
 # endregion Import
 
-_TProperties = TypeVar(name="_TProperties", bound="Properties")
+_TProperties = TypeVar("_TProperties", bound="Properties")
 
 
 class TextDirectionKind(Enum):

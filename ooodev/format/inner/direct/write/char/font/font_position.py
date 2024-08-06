@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 # endregion Import
 
-_TFontPosition = TypeVar(name="_TFontPosition", bound="FontPosition")
+_TFontPosition = TypeVar("_TFontPosition", bound="FontPosition")
 
 
 class CharSpacingKind(Enum):
