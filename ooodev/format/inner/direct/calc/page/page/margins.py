@@ -12,7 +12,7 @@ from ooodev.utils import props as mProps
 from ooodev.units.unit_mm import UnitMM
 from ooodev.units.unit_convert import UnitConvert
 
-_TMargins = TypeVar(name="_TMargins", bound="Margins")
+_TMargins = TypeVar("_TMargins", bound="Margins")
 
 
 class Margins(StyleBase):

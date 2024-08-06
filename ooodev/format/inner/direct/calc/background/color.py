@@ -19,7 +19,7 @@ from ooodev.format.inner.common.props.cell_background_color_props import CellBac
 
 # endregion Import
 
-_TColor = TypeVar(name="_TColor", bound="Color")
+_TColor = TypeVar("_TColor", bound="Color")
 
 
 class Color(StyleBase):

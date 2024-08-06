@@ -22,7 +22,7 @@ from ooodev.utils import props as mProps
 
 # endregion Imports
 
-_TDropCaps = TypeVar(name="_TDropCaps", bound="DropCaps")
+_TDropCaps = TypeVar("_TDropCaps", bound="DropCaps")
 
 
 class DropCaps(StyleMulti):

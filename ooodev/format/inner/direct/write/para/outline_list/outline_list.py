@@ -21,7 +21,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleMulti
 from ooodev.format.writer.style.lst.style_list_kind import StyleListKind
 
-_TOutlineList = TypeVar(name="_TOutlineList", bound="OutlineList")
+_TOutlineList = TypeVar("_TOutlineList", bound="OutlineList")
 
 
 class OutlineList(StyleMulti):

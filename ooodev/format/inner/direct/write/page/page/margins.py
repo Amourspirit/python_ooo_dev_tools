@@ -7,7 +7,7 @@ from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_mm import UnitMM
 from ooodev.units.unit_obj import UnitT
 
-_TMargins = TypeVar(name="_TMargins", bound="Margins")
+_TMargins = TypeVar("_TMargins", bound="Margins")
 
 
 class Margins(CalcMargins):

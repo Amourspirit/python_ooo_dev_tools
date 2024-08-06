@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ooodev.proto.size_obj import SizeObj
 
 
-_TSize = TypeVar(name="_TSize", bound="Size")
+_TSize = TypeVar("_TSize", bound="Size")
 
 
 class Size(GenericSize[int]):

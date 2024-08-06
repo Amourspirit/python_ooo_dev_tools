@@ -18,7 +18,7 @@ from ooodev.format.inner.direct.structs.struct_base import StructBase
 
 # endregion imports
 
-_TCellProtectionStruct = TypeVar(name="_TCellProtectionStruct", bound="CellProtectionStruct")
+_TCellProtectionStruct = TypeVar("_TCellProtectionStruct", bound="CellProtectionStruct")
 
 
 class CellProtectionStruct(StructBase):

@@ -9,7 +9,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 
 # endregion Import
 
-_TPadding = TypeVar(name="_TPadding", bound="Padding")
+_TPadding = TypeVar("_TPadding", bound="Padding")
 
 
 class InnerPadding(AbstractPadding):

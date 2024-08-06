@@ -10,7 +10,7 @@ from ooodev.loader import lo as mLo
 from ooodev.units.angle import Angle
 from ooodev.utils import props as mProps
 
-_TRotation = TypeVar(name="_TRotation", bound="Rotation")
+_TRotation = TypeVar("_TRotation", bound="Rotation")
 
 
 class Rotation(StyleBase):

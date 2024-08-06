@@ -13,7 +13,7 @@ from ooodev.utils import props as mProps
 
 # endregion imports
 
-_TLinkTo = TypeVar(name="_TLinkTo", bound="LinkTo")
+_TLinkTo = TypeVar("_TLinkTo", bound="LinkTo")
 
 
 class TargetKind(Enum):

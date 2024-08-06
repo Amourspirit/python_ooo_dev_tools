@@ -6,7 +6,7 @@ from ooodev.utils import props as mProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
-_TAdapt = TypeVar(name="_TAdapt", bound="Adapt")
+_TAdapt = TypeVar("_TAdapt", bound="Adapt")
 
 
 class Adapt(StyleBase):
@@ -54,13 +54,11 @@ class Adapt(StyleBase):
     # region from_obj()
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAdapt], obj: object) -> _TAdapt:
-        ...
+    def from_obj(cls: Type[_TAdapt], obj: object) -> _TAdapt: ...
 
     @overload
     @classmethod
-    def from_obj(cls: Type[_TAdapt], obj: object, **kwargs) -> _TAdapt:
-        ...
+    def from_obj(cls: Type[_TAdapt], obj: object, **kwargs) -> _TAdapt: ...
 
     @classmethod
     def from_obj(cls: Type[_TAdapt], obj: object, **kwargs) -> _TAdapt:

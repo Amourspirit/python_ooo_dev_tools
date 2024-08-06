@@ -46,10 +46,10 @@ else:
 # endregion Imports
 
 # region Type Vars
-TStyleBase = TypeVar(name="TStyleBase", bound="StyleBase")  # pylint: disable=invalid-name
-TStyleMulti = TypeVar(name="TStyleMulti", bound="StyleMulti")  # pylint: disable=invalid-name
-TStyleName = TypeVar(name="TStyleName", bound="StyleName")  # pylint: disable=invalid-name
-_TStyleModifyMulti = TypeVar(name="_TStyleModifyMulti", bound="StyleModifyMulti")  # pylint: disable=invalid-name
+TStyleBase = TypeVar("TStyleBase", bound="StyleBase")  # pylint: disable=invalid-name
+TStyleMulti = TypeVar("TStyleMulti", bound="StyleMulti")  # pylint: disable=invalid-name
+TStyleName = TypeVar("TStyleName", bound="StyleName")  # pylint: disable=invalid-name
+_TStyleModifyMulti = TypeVar("_TStyleModifyMulti", bound="StyleModifyMulti")  # pylint: disable=invalid-name
 # endregion Type Vars
 
 

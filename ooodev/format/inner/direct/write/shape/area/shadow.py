@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 # endregion Imports
 
-_TShadow = TypeVar(name="_TShadow", bound="Shadow")
+_TShadow = TypeVar("_TShadow", bound="Shadow")
 
 
 class ShadowLocationKind(Enum):

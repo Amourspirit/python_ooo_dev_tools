@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 else:
     XChartDocument = Any
 
-_TNumbers = TypeVar(name="_TNumbers", bound="Numbers")
+_TNumbers = TypeVar("_TNumbers", bound="Numbers")
 
 
 class Numbers(CalcNumbers):

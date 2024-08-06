@@ -24,7 +24,7 @@ from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 # see Also: https://forum.openoffice.org/en/forum/viewtopic.php?p=417389&sid=17b21c173e4a420b667b45a2949b9cc5#p417389
 # The solution to these issues is to apply FillColor to Paragraph cursors TextParagraph.
 
-_TAbstractColor = TypeVar(name="_TAbstractColor", bound="AbstractColor")
+_TAbstractColor = TypeVar("_TAbstractColor", bound="AbstractColor")
 
 
 class AbstractColor(StyleBase):

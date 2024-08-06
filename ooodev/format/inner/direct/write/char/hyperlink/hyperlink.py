@@ -21,7 +21,7 @@ from ooodev.format.inner.direct.write.frame.hyperlink.link_to import TargetKind
 
 # endregion Import
 
-_THyperlink = TypeVar(name="_THyperlink", bound="Hyperlink")
+_THyperlink = TypeVar("_THyperlink", bound="Hyperlink")
 
 
 class Hyperlink(LinkTo):

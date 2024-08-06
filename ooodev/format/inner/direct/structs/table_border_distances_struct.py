@@ -15,7 +15,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TTableBorderDistancesStruct = TypeVar(name="_TTableBorderDistancesStruct", bound="TableBorderDistancesStruct")
+_TTableBorderDistancesStruct = TypeVar("_TTableBorderDistancesStruct", bound="TableBorderDistancesStruct")
 
 
 class TableBorderDistancesStruct(StructBase):

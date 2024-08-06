@@ -17,7 +17,7 @@ from ooodev.format.inner.style_base import StyleBase
 
 # endregion Imports
 
-_THyphenation = TypeVar(name="_THyphenation", bound="Hyphenation")
+_THyphenation = TypeVar("_THyphenation", bound="Hyphenation")
 
 
 class Hyphenation(StyleBase):

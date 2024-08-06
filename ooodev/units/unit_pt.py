@@ -10,7 +10,7 @@ from ooodev.utils.kind.point_size_kind import PointSizeKind
 if TYPE_CHECKING:
     from ooodev.units.unit_obj import UnitT
 
-_TUnitPT = TypeVar(name="_TUnitPT", bound="UnitPT")
+_TUnitPT = TypeVar("_TUnitPT", bound="UnitPT")
 
 
 @dataclass(unsafe_hash=True)

@@ -16,7 +16,7 @@ from ooodev.format.inner.common.props.frame_options_properties import FrameOptio
 if TYPE_CHECKING:
     from ooodev.format.inner.direct.write.para.align.writing_mode import _TWritingMode
 
-_TProperties = TypeVar(name="_TProperties", bound="Properties")
+_TProperties = TypeVar("_TProperties", bound="Properties")
 
 
 class TextDirectionKind(Enum):

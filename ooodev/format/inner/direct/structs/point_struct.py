@@ -13,7 +13,7 @@ from ooodev.utils import props as mProps
 
 # endregion Import
 
-_TPointStruct = TypeVar(name="_TPointStruct", bound="PointStruct")
+_TPointStruct = TypeVar("_TPointStruct", bound="PointStruct")
 
 
 class PointStruct(StructBase):

@@ -11,7 +11,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 
 
-_TAbstractWritingMode = TypeVar(name="_TAbstractWritingMode", bound="AbstractWritingMode")
+_TAbstractWritingMode = TypeVar("_TAbstractWritingMode", bound="AbstractWritingMode")
 
 
 class AbstractWritingMode(StyleBase):

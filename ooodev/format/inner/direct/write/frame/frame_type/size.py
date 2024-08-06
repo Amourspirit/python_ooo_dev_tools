@@ -15,7 +15,7 @@ from ooodev.format.inner.direct.write.image.image_type.size import Size as Image
 from ooodev.format.inner.direct.write.image.image_type.size import RelativeSize
 from ooodev.format.inner.direct.write.image.image_type.size import AbsoluteSize
 
-_TSize = TypeVar(name="_TSize", bound="Size")
+_TSize = TypeVar("_TSize", bound="Size")
 
 
 class Size(ImageSize):

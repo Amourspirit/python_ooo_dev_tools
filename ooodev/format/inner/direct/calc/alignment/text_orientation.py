@@ -16,7 +16,7 @@ from ooodev.format.inner.common.props.cell_text_orientation_props import CellTex
 
 # endregion Import
 
-_TTextOrientation = TypeVar(name="_TTextOrientation", bound="TextOrientation")
+_TTextOrientation = TypeVar("_TTextOrientation", bound="TextOrientation")
 
 
 class EdgeKind(Enum):

@@ -6,7 +6,7 @@ from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps
 from ooodev.format.inner.direct.structs.cell_protection_struct import CellProtectionStruct
 
-_TCellProtection = TypeVar(name="_TCellProtection", bound="CellProtection")
+_TCellProtection = TypeVar("_TCellProtection", bound="CellProtection")
 
 
 class CellProtection(CellProtectionStruct):

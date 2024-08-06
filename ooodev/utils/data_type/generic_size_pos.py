@@ -1,15 +1,11 @@
 from __future__ import annotations
 import contextlib
-import sys
 from typing import TypeVar, Generic, Union
 import uno
 from ooo.dyn.awt.rectangle import Rectangle as UnoRectangle
 
 # https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
-if sys.version_info >= (3, 12):
-    T = TypeVar(name="T", bound=(int, float))
-else:
-    T = TypeVar(name="T", bound=Union[int, float])
+T = TypeVar("T", bound=Union[int, float])
 
 
 class GenericSizePos(Generic[T]):

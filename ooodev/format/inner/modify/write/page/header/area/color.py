@@ -10,7 +10,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 from ooodev.utils import color as mColor
 
 # endregion Import
-_TColor = TypeVar(name="_TColor", bound="Color")
+_TColor = TypeVar("_TColor", bound="Color")
 
 
 class InnerColor(AbstractColor):

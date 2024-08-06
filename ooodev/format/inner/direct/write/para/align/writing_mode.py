@@ -11,7 +11,7 @@ from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 from ooodev.format.inner.common.abstract.abstract_writing_mode import AbstractWritingMode
 
 
-_TWritingMode = TypeVar(name="_TWritingMode", bound="WritingMode")
+_TWritingMode = TypeVar("_TWritingMode", bound="WritingMode")
 
 
 class WritingMode(AbstractWritingMode):

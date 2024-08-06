@@ -10,7 +10,7 @@ from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterSt
 
 # endregion Import
 
-_THeader = TypeVar(name="_THeader", bound="Header")
+_THeader = TypeVar("_THeader", bound="Header")
 
 
 class InnerStyle(AbstractHF):

@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 # https://github.com/LibreOffice/core/blob/cfb2a587bc59d2a0ff520dd09393f898506055d6/vcl/source/outdev/transparent.cxx
 # https://github.com/LibreOffice/core/blob/7c3ea0abeff6e0cb9e2893cec8ed63025a274117/oox/source/export/drawingml.cxx
 
-_TGradient = TypeVar(name="_TGradient", bound="Gradient")
+_TGradient = TypeVar("_TGradient", bound="Gradient")
 
 
 class Gradient(StyleMulti):

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 # see Also:
 # https://github.com/LibreOffice/core/blob/f725629a6241ec064770c28957f11d306c18f130/filter/source/msfilter/escherex.cxx
 
-_THatchStruct = TypeVar(name="_THatchStruct", bound="HatchStruct")
+_THatchStruct = TypeVar("_THatchStruct", bound="HatchStruct")
 
 
 class HatchStruct(StructBase):

@@ -27,7 +27,7 @@ from ooodev.format.inner.direct.structs.table_border_struct import TableBorderSt
 
 # endregion imports
 
-_TBorders = TypeVar(name="_TBorders", bound="Borders")
+_TBorders = TypeVar("_TBorders", bound="Borders")
 
 
 class Borders(StyleMulti):

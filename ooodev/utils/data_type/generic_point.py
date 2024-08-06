@@ -4,7 +4,8 @@ from typing import TypeVar, Generic, Union, TYPE_CHECKING
 import uno
 from ooo.dyn.awt.point import Point as UnoPoint
 
-T = TypeVar(name="T", bound=Union[int, float])
+# See Also: https://github.com/Amourspirit/python_ooo_dev_tools/issues/640
+T = TypeVar("T", bound=Union[int, float])
 
 if TYPE_CHECKING:
     from typing_extensions import Self

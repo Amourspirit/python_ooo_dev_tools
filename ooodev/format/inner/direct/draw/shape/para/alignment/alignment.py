@@ -18,7 +18,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind
 
-_TAlignment = TypeVar(name="_TAlignment", bound="Alignment")
+_TAlignment = TypeVar("_TAlignment", bound="Alignment")
 
 
 class Alignment(StyleBase):

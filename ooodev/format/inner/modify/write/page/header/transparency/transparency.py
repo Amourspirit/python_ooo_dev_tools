@@ -11,7 +11,7 @@ from ooodev.utils.data_type.intensity import Intensity
 
 # endregion Import
 
-_TTransparency = TypeVar(name="_TTransparency", bound="Transparency")
+_TTransparency = TypeVar("_TTransparency", bound="Transparency")
 
 
 class Transparency(PageStyleBaseMulti):

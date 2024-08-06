@@ -59,7 +59,7 @@ class InnerShadow(ShadowStruct):
     # endregion properties
 
 
-_TShadow = TypeVar(name="_TShadow", bound="Shadow")
+_TShadow = TypeVar("_TShadow", bound="Shadow")
 
 
 class Shadow(CellStyleBaseMulti):

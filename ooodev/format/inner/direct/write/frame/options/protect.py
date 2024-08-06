@@ -8,7 +8,7 @@ from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase
 from ooodev.format.inner.common.props.frame_options_protect_props import FrameOptionsProtectProps
 
-_TProtect = TypeVar(name="_TProtect", bound="Protect")
+_TProtect = TypeVar("_TProtect", bound="Protect")
 
 
 class Protect(StyleBase):

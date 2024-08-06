@@ -18,7 +18,7 @@ from ooodev.loader import lo as mLo
 from ooodev.utils import props as mProps
 from ooodev.utils.data_type.size_mm import SizeMM
 
-_TPaperFormat = TypeVar(name="_TPaperFormat", bound="PaperFormat")
+_TPaperFormat = TypeVar("_TPaperFormat", bound="PaperFormat")
 
 
 class PaperFormat(StyleBase):
