@@ -1,5 +1,9 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+#
+# Error: docker-compose command not found: https://github.com/orgs/community/discussions/116610
+# Migrate to Compose V2: https://docs.docker.com/compose/migrate/
+
 
 name: Test
 
@@ -31,9 +35,9 @@ jobs:
         fail_on_empty: false
 
     - name: Build docker images
-      run: docker-compose build
+      run: docker compose build
 
     - name: UnitTest with pytest
       run: |
-        docker-compose up -d
-        docker-compose exec -T ooodev_app pytest
+        docker compose up -d
+        docker compose exec -T ooodev_app pytest
