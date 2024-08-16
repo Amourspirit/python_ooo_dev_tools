@@ -392,8 +392,8 @@ def test_cell_less_then(loader) -> None:
         assert A2 <= A7
         assert A1 < B1
         assert A1 <= B1
-        assert A7 < B1
-        assert A7 <= B1
+        assert A7 > B1
+        assert A7 >= B1
 
         S0A1 = CellObj("A", 1, sheet_idx=0)
         S1A1 = CellObj("A", 1, sheet_idx=1)
@@ -419,6 +419,7 @@ def test_cell_greater_then(loader) -> None:
         A2 = CellObj.from_cell("A2")
         A7 = CellObj.from_cell("A7")
         B1 = CellObj.from_cell("B1")
+        C2 = CellObj.from_cell("C2")
 
         assert A2 > A1
         assert A2 >= A1
@@ -428,8 +429,9 @@ def test_cell_greater_then(loader) -> None:
         assert A7 >= A2
         assert B1 > A1
         assert B1 >= A1
-        assert B1 > A7
-        assert B1 >= A7
+        assert B1 < A7
+        assert B1 <= A7
+        assert C2 > B1
 
         S0A1 = CellObj("A", 1, sheet_idx=0)
         S1A1 = CellObj("A", 1, sheet_idx=1)

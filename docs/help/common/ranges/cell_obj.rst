@@ -13,10 +13,13 @@ Working with the :py:class:`ooodev.utils.data_type.cell_obj.CellObj` class.
 Comparison
 ----------
 
+Comparison is done using sheet index, row and then column.
+If the sheet indexes for the two ``CellObj`` instances less than ``0`` then they are ignored when comparing.
+
 Rules
 ^^^^^
 
-- only ``==`` and ``!=`` comparisons are supported
+- ``==``, ``!=``, ``>``, ``>=``, ``<`` and ``<=`` comparisons are supported
 - ``CellObj`` can be compared to ``CellObj``
 - ``CellObj`` can be compared to ``str``
 
@@ -43,6 +46,18 @@ Example
 
     >>> b4 == "B4" 
     True
+
+    >>> b4 > b2
+    True
+
+    >>> b2 < b4
+    True
+
+    >>> c2 = CellObj.from_cell("C2")
+    >>> c2 > b2
+    True
+
+
 
 Right, Left, Up, Down
 ---------------------
