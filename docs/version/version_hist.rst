@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.47.10
+===============
+
+Update for comparison of ``CellObj``. Now ``CellObj`` is compared by sheet, row and column. If the sheet indexes for the two ``CellObj`` instances less than ``0`` then they are ignored when comparing.
+
+Breaking Changes
+----------------
+
+``CellObj`` is now compared by sheet, row and column, Previously it was compared by sheet, column and row.
+The change was made to be compatible with the way Calc actually calculates formulas which is by row first and then column.
+
+
 Version 0.47.9
 ==============
 
