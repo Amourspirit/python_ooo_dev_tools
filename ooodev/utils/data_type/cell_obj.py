@@ -241,13 +241,7 @@ class CellObj:
             elif isinstance(other, CellObj):
                 oth = other
             if oth is not None:
-                if self.sheet_idx < oth.sheet_idx:
-                    return True
-                if self.row < oth.row:
-                    return True
-                if self.col_obj < oth.col_obj:
-                    return True
-                return False
+                return self.get_cell_values() < oth.get_cell_values()
         except IndexError:
             raise
         except AssertionError as e:
@@ -267,13 +261,7 @@ class CellObj:
             elif isinstance(other, CellObj):
                 oth = other
             if oth is not None:
-                if self.sheet_idx > oth.sheet_idx:
-                    return True
-                if self.row > oth.row:
-                    return True
-                if self.col_obj > oth.col_obj:
-                    return True
-                return False
+                return self.get_cell_values() > oth.get_cell_values()
         except IndexError:
             raise
         except AssertionError as e:
@@ -409,7 +397,7 @@ class CellObj:
         return NotImplemented
 
     def __hash__(self) -> int:
-        return hash((self.col, self.row, self.sheet_idx))
+        return hash((self.sheet_idx, self.row, self.col))
 
     # endregion dunder methods
 

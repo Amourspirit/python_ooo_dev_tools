@@ -46,8 +46,47 @@ class CellValues:
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, CellValues):
-            return self.sheet_idx == other.sheet_idx and self.col == other.col and self.row == other.row
+            if self.sheet_idx < 0 and other.sheet_idx < 0:
+                tpl_oth = (other.row, other.col)
+                tbl_self = (self.row, self.col)
+            else:
+                tpl_oth = (other.sheet_idx, other.row, other.col)
+                tbl_self = (self.sheet_idx, self.row, self.col)
+            return tbl_self == tpl_oth
         return str(self) == other.upper() if isinstance(other, str) else False
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, CellValues):
+            if self.sheet_idx < 0 and other.sheet_idx < 0:
+                tpl_oth = (other.row, other.col)
+                tbl_self = (self.row, self.col)
+            else:
+                tpl_oth = (other.sheet_idx, other.row, other.col)
+                tbl_self = (self.sheet_idx, self.row, self.col)
+            return tbl_self < tpl_oth
+        return NotImplemented
+
+    def __le__(self, other: object) -> bool:
+        if isinstance(other, CellValues):
+            return self == other or self < other
+        return NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, CellValues):
+            if self.sheet_idx < 0 and other.sheet_idx < 0:
+                tpl_oth = (other.row, other.col)
+                tbl_self = (self.row, self.col)
+            else:
+                tpl_oth = (other.sheet_idx, other.row, other.col)
+                tbl_self = (self.sheet_idx, self.row, self.col)
+            return tbl_self > tpl_oth
+        return NotImplemented
+
+    def __ge__(self, other: object) -> bool:
+        return self == other or self > other
+
+    def __hash__(self) -> int:
+        return hash((self.sheet_idx, self.row, self.col))
 
     def __copy__(self) -> CellValues:
         return CellValues(col=self.col, row=self.row, sheet_idx=self.sheet_idx)
