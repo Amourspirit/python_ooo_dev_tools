@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.47.11
+===============
+
+Fix minor bug for Custom Properties.
+
+
 Version 0.47.10
 ===============
 
