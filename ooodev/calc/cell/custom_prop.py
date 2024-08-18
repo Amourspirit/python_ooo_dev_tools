@@ -147,7 +147,10 @@ class CustomProp(CustomPropBase):
                 continue
             if not shape.supportsService("com.sun.star.drawing.ControlShape"):
                 continue
-            name = cast(str, shape.Name)
+            try:
+                name = cast(str, shape.Name)
+            except AttributeError:
+                continue
             if name.startswith(self.shape_prefix) and name.endswith(self.shape_suffix):
                 if name in shapes:
                     shapes[name].append(shape)
