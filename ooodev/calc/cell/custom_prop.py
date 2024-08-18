@@ -143,6 +143,8 @@ class CustomProp(CustomPropBase):
         shapes = {}
         # find all shapes on the draw page that start with prefix and end with suffix
         for shape in comp:  # type: ignore
+            if not hasattr(shape, "supportsService"):
+                continue
             if not shape.supportsService("com.sun.star.drawing.ControlShape"):
                 continue
             name = cast(str, shape.Name)
