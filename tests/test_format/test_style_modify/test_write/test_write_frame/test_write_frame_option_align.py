@@ -35,7 +35,7 @@ def test_write(loader, para_text) -> None:
         assert f_style.prop_inner.prop_adjust == style.prop_inner.prop_adjust
 
         with pytest.raises(mEx.DeletedAttributeError):
-            style = style = Align(adjust=VertAdjustKind.BLOCK)
+            style = Align(adjust=VertAdjustKind.BLOCK)
 
         Lo.delay(delay)
     finally:
