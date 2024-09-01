@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.47.12"
+version = "0.47.13"
 
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
@@ -29,12 +29,13 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ooouno = ">=2.1.2"
-typing-extensions = ">=4.9.0"
+ooouno = ">=3.0.0"
+typing-extensions = ">=4.12"
 
 
 [[tool.poetry.source]]
@@ -54,13 +55,13 @@ thefuzz = ">=0.19.0"
 python-Levenshtein = ">=0.20.7"
 lo-dev-search = {version = ">=2.0.2", platform = "linux"}
 ruff = ">=0.1.9"
-black = {extras = ["d"], version = ">=23.1.0"}
-oooenv = ">=0.1.1"
+black = {extras = ["d"], version = ">=24"}
+oooenv = ">=0.2.4"
 pytest-mock = ">=3.10"
 pyright = ">=1.1.343"
 pytest-dotenv = "^0.5.2"
 sphobjinv = "^2.3.1"
-ooo-dev-odh = "^0.1.4"
+ooo-dev-odh = "^0.1.6"
 pydeps = "^1.12.18"
 oooscript = "^1.1.4"
 
@@ -79,7 +80,7 @@ sphinx-copybutton = "^0.5.2"
 sphinx-design = "^0.5.0"
 
 
-[tool.poetry.group.DEV.dependencies]
+[tool.poetry.group.dev_extra.dependencies]
 numpy = "<=1.24"
 
 [tool.pytest.ini_options]
