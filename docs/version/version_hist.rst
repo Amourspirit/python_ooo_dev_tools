@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.47.14
+===============
+
+Adjust Input box for better formatting on MacOS.
+
 Version 0.47.12
 ===============
 

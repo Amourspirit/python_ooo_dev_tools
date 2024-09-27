@@ -13,6 +13,7 @@ from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
+from ooodev.utils.sys_info import SysInfo
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XFrame
@@ -89,6 +90,7 @@ class Input:
         ok_lbl = cast(str, cargs.event_data["ok_lbl"])
         cancel_lbl = cast(str, cargs.event_data["cancel_lbl"])
         is_password = cast(bool, cargs.event_data["is_password"])
+        platform = SysInfo.get_platform()
 
         # get or set a font descriptor. This helps to keep the font consistent across different platforms.
         fd = mInfo.Info.get_font_descriptor("Liberation Serif", "Regular")
@@ -100,14 +102,21 @@ class Input:
                 Pitch=2,
                 Weight=100,
             )
-        fd.Height = 10
+        if platform == SysInfo.PlatformEnum.MAC:
+            fd.Height = 14
+            height = 140
+            box_height = 30
+        else:
+            fd.Height = 10
+            height = 120
+            box_height = 20
 
         width = 450
-        height = 120
         btn_width = 100
         btn_height = 30
         margin = 6
         vert_margin = 12
+        btn_fd_height = 12
         border_kind = BorderKind.BORDER_SIMPLE
         dialog = Dialogs.create_dialog(
             x=-1,
@@ -118,7 +127,7 @@ class Input:
         )
 
         ctl_lbl = Dialogs.insert_label(
-            dialog_ctrl=dialog.control, label=msg, x=margin, y=margin, width=width - (margin * 2), height=20
+            dialog_ctrl=dialog.control, label=msg, x=margin, y=margin, width=width - (margin * 2), height=box_height
         )
         ctl_lbl.font_descriptor = fd
         sz = ctl_lbl.view.getPosSize()
@@ -129,7 +138,7 @@ class Input:
                 x=sz.X,
                 y=sz.Height + sz.Y + vert_margin,
                 width=sz.Width,
-                height=sz.Height,
+                height=box_height,
                 border=border_kind,
             )
         else:
@@ -139,7 +148,7 @@ class Input:
                 x=sz.X,
                 y=sz.Height + sz.Y + vert_margin,
                 width=sz.Width,
-                height=sz.Height,
+                height=box_height,
                 border=border_kind,
             )
         txt_input.font_descriptor = fd
@@ -153,7 +162,7 @@ class Input:
             btn_type=PushButtonType.CANCEL,
         )
         ctl_btn_cancel.font_descriptor = fd
-        ctl_btn_cancel.font_descriptor.height = 12
+        ctl_btn_cancel.font_descriptor.height = btn_fd_height
         sz = ctl_btn_cancel.view.getPosSize()
         ctl_btn_ok = Dialogs.insert_button(
             dialog_ctrl=dialog.control,
