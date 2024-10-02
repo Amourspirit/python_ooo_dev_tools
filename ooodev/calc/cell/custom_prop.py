@@ -176,6 +176,10 @@ class CustomProp(CustomPropBase):
         for shape in comp:  # type: ignore
             if not shape.supportsService("com.sun.star.drawing.ControlShape"):
                 continue
+            if not hasattr(shape, "Name"):
+                # Added in Version 0.47.15
+                # Some shapes do not have a name attribute. Just ignore them here.
+                continue
 
             anchor = shape.Anchor
             if anchor is None:
