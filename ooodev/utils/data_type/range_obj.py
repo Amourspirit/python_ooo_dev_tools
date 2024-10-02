@@ -111,13 +111,16 @@ class RangeObj:
         return self.cell_count
 
     def __copy__(self) -> RangeObj:
-        return RangeObj(
+        ro = RangeObj(
             col_start=self.col_start,
             col_end=self.col_end,
             row_start=self.row_start,
             row_end=self.row_end,
             sheet_idx=self.sheet_idx,
         )
+        if hasattr(self, "_sheet_name"):
+            object.__setattr__(ro, "_sheet_name", getattr(self, "_sheet_name"))
+        return ro
 
     # region methods
 
@@ -282,11 +285,11 @@ class RangeObj:
         Get a string representation of range
 
         Args:
-            include_sheet_name (bool, optional): If ``True`` and there is a sheet name then it is included in format of ``Sheet1.A2.G3``;
+            include_sheet_name (bool, optional): If ``True`` and there is a sheet name then it is included in format of ``Sheet1.A2:G3``;
                 Otherwise format of ``A2:G3``.Defaults to ``False``.
 
         Returns:
-            str: Gets a string representation such as ``A1:T12``/
+            str: Gets a string representation such as ``A1:T12``
         """
         s = f"{self.col_start}{self.row_start}:{self.col_end}{self.row_end}"
         if include_sheet_name and self.sheet_name:
@@ -898,6 +901,8 @@ class RangeObj:
         except AttributeError:
             c = mCellObj.CellObj(col=self.col_start, row=self.row_start, sheet_idx=self.sheet_idx, range_obj=self)
             object.__setattr__(self, "_cell_start", ref(c))
+            if hasattr(self, "_sheet_name"):
+                object.__setattr__(c, "_sheet_name", getattr(self, "_sheet_name"))
         return self._cell_start()  # type: ignore
 
     @property
