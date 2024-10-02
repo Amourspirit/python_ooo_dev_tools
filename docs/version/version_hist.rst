@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.47.16
+===============
+
+Minor fix for some shapes not having a supportsService attribute when parsing custom properties in a Draw Shape.
+
 Version 0.47.15
 ===============
 
