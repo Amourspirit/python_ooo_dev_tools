@@ -2,6 +2,13 @@
 Version History
 ***************
 
+Version 0.47.17
+===============
+
+Added ``sheet_name`` to ``CellObj``.
+Added ``to_string()`` method to ``CellObj`` that optionally includes the sheet name.
+
+
 Version 0.47.16
 ===============
 

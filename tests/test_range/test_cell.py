@@ -489,3 +489,37 @@ def test_cell_copy(loader) -> None:
     finally:
         if doc is not None:
             doc.close()
+
+
+def test_cell_sheet_name(loader) -> None:
+    from ooodev.utils.data_type.cell_obj import CellObj
+    from ooodev.utils.data_type.range_obj import RangeObj
+
+    from ooodev.calc import CalcDoc
+
+    doc = None
+    try:
+        doc = CalcDoc.create_doc()
+        sheet = doc.sheets[0]
+        sheet.name = "Sheet1"
+        sheet_name = sheet.name
+
+        A1 = CellObj.from_cell(f"{sheet_name}.A1")
+        assert A1.sheet_name == sheet_name
+        assert A1.to_string(True) == f"{sheet_name}.A1"
+        assert str(A1) == "A1"
+        A2 = CellObj.from_cell("A2")
+        A2.set_sheet_index(0)
+        assert A2.sheet_name == sheet_name
+        assert A2.to_string(True) == f"{sheet_name}.A2"
+        assert str(A2) == "A2"
+
+        ro = RangeObj.from_range(f"{sheet_name}.A3:A3")
+        assert ro.is_single_cell()
+        assert ro.start.sheet_name == sheet_name
+        assert ro.start.to_string(True) == f"{sheet_name}.A3"
+        assert str(ro.start) == "A3"
+
+    finally:
+        if doc is not None:
+            doc.close()

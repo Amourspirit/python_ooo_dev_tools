@@ -174,6 +174,24 @@ class CellObj:
 
     # region methods
 
+    def to_string(self, include_sheet_name: bool = False) -> str:
+        """
+        Get a string representation of range
+
+        Args:
+            include_sheet_name (bool, optional): If ``True`` and there is a sheet name then it is included in format of ``Sheet1.A2``;
+                Otherwise format of ``A2``.Defaults to ``False``.
+
+        Returns:
+            str: Gets a string representation such as ``A1:T12``
+
+        .. versionadded:: 0.47.17
+        """
+        s = f"{self.col}{self.row}"
+        if include_sheet_name and self.sheet_name:
+            s = f"{self.sheet_name}.{s}"
+        return s
+
     def get_cell_values(self) -> mCellVals.CellValues:
         """
         Gets cell values
@@ -221,12 +239,16 @@ class CellObj:
 
     def __copy__(self) -> CellObj:
         if self.range_obj is None:
-            return CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=None)
-        rng_obj = self.range_obj.copy()
-        return CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=rng_obj)
+            co = CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=None)
+        else:
+            rng_obj = self.range_obj.copy()
+            co = CellObj(col=self.col, row=self.row, sheet_idx=self.sheet_idx, range_obj=rng_obj)
+        if hasattr(self, "_sheet_name"):
+            object.__setattr__(co, "_sheet_name", getattr(self, "_sheet_name"))
+        return co
 
     def __str__(self) -> str:
-        return f"{self.col}{self.row}"
+        return self.to_string(False)
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, CellObj):
@@ -402,6 +424,28 @@ class CellObj:
     # endregion dunder methods
 
     # region properties
+    @property
+    def sheet_name(self) -> str:
+        """
+        Gets sheet name
+
+        .. versionadded:: 0.47.17
+        """
+        # return self._sheet_name
+        try:
+            return self._sheet_name  # type: ignore
+        except AttributeError:
+            name = ""
+            if self.sheet_idx < 0:
+                return name
+            with contextlib.suppress(Exception):
+                # pylint: disable=no-member
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    doc = cast("CalcDoc", mLo.Lo.current_doc)
+                    sheet = doc.sheets[self.sheet_idx]
+                    name = sheet.name
+                    object.__setattr__(self, "_sheet_name", name)
+        return name
 
     @property
     def col_obj(self) -> mCol.ColObj:
