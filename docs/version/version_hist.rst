@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.47.15
+===============
+
+Minor fix for some shapes not having a Name attribute when parsing custom properties in a Calc Sheet.
+
 Version 0.47.14
 ===============
 
