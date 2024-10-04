@@ -2,6 +2,7 @@ from __future__ import annotations
 import csv
 import os
 import sys
+import contextlib
 from pathlib import Path
 import shutil
 import stat
@@ -247,7 +248,8 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env, set_log_fi
         # only close office if it was started by the test
         return
     Lo.close_office()
-    Lo.kill_office()
+    with contextlib.suppress(Exception):
+        Lo.kill_office()
 
 
 # endregion Loader methods

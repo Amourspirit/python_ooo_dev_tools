@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.47.18
+===============
+
+Fix of issue 666. Calling ``doc.close_office()`` was not working.
+
 Version 0.47.17
 ===============
 
