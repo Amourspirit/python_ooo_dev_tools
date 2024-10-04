@@ -260,16 +260,19 @@ class LoInst(EventsPartial):
         if event_args.cancel:
             return
         self._clear_cache()
+        # self._xdesktop = None must stay in on_office_closed().
+        # If it were here then office will not terminate.
+        # https://github.com/Amourspirit/python_ooo_dev_tools/issues/666
         self._glb_event_broadcaster = None
         self._current_doc = None
         self._mc_factory = None
-        self._xdesktop = None
         self._xcc = None
         self._fn_on_document_event = None
         self._fn_on_lo_del_cache_attrs = None
         self._logger.debug("on_office_closing() Triggered OFFICE_CLOSING")
 
     def on_office_closed(self, event_args: EventArgs) -> None:
+        self._xdesktop = None
         self._logger.debug("on_office_closed() Triggering OFFICE_CLOSED")
         self.trigger_event(LoNamedEvent.OFFICE_CLOSED, event_args)
         self._logger.debug("on_office_closed() Triggered OFFICE_CLOSED")
