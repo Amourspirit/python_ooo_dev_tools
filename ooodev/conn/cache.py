@@ -9,6 +9,7 @@ from typing import Tuple
 from ooodev.utils.type_var import PathOrStr
 from ooodev.utils import sys_info
 from ooodev.cfg import config
+from ooodev.io.log.named_logger import NamedLogger
 
 
 class Cache:
@@ -21,12 +22,20 @@ class Cache:
         Keyword Args:
             use_cache (bool, optional): Determines if caching is used. Default is True
             cache_path (PathOrStr, optional): Set the path used for caching LO profile data.
+                If set to empty string then no profile will be copied and a new profile will be created.
                 Default is searched for in known locations.
             working_dir (PathOrStr, optional): sets the working dir to use.
                 This is the dir that LO profile will be copied to. Defaults to a newly generated temp dir.
+            no_shared_ext (bool, optional): Determines if shared extensions are used.
+                If set to True then no shared extensions are disabled for the session.
+                Default is False.
         """
+        self._log = NamedLogger(self.__class__.__name__)
+        self._log.debug("Cache.__init__")
         self._use_cache = bool(kwargs.get("use_cache", True))
+        self._no_shared_ext = bool(kwargs.get("no_shared_ext", False))
         self._profile_dir_name = "profile"
+        self._no_share_dir_name = "no_share"
         self._profile_cached = False
         cache_path = kwargs.get("cache_path", None)
         if cache_path is not None:
@@ -38,6 +47,7 @@ class Cache:
     def _get_cache_path(self) -> Path | None:
         # this method is only ever called the user does not provide a cache_path
         # see: https://www.howtogeek.com/289587/how-to-find-your-libreoffice-profile-folder-in-windows-macos-and-linux/
+        self._log.debug("Cache._get_cache_path()")
         cache_path = None
         platform = sys_info.SysInfo.get_platform()
 
@@ -56,11 +66,11 @@ class Cache:
             return (False, None) if result is None else (True, result)
 
         # lookup profile versions from config
-        for s_ver in config.Config().profile_versions:
+        for s_ver in config.Config().profile_versions:  # type: ignore
             is_valid, cache_path = get_path(s_ver)
             if is_valid:
                 break
-
+        self._log.debug(f"Cache._get_cache_path(): {cache_path}")
         return cache_path
 
     def cache_profile(self) -> None:
@@ -70,11 +80,16 @@ class Cache:
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
         # copy_cache_to_profile is called before this method
-        if self.use_cache is False:
+        if not self.use_cache:
+            self._log.debug("Cache.cache_profile(): use_cache is False")
             return
-        if self.cache_path is None:
+        if not self.cache_path:
+            self._log.debug("Cache.cache_profile(): cache_path is None")
             return
         if self._profile_cached is False:
+            self._log.debug(
+                f"Cache.cache_profile(): copying profile to cache. From: {self.user_profile} To: {self.cache_path}"
+            )
             copytree(self.user_profile, self.cache_path)
         return
 
@@ -86,11 +101,16 @@ class Cache:
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
         # this method is called before cache_profile.
-        if self.use_cache is False:
+        if not self.use_cache:
+            self._log.debug("Cache.copy_cache_to_profile(): use_cache is False")
             return
-        if self.cache_path is None:
+        if not self.cache_path:
+            self._log.debug("Cache.copy_cache_to_profile(): cache_path is None")
             return
         if self.cache_path.exists() and self.cache_path.is_dir():
+            self._log.debug(
+                f"Cache.copy_cache_to_profile(): copying cache to profile. From: {self.cache_path} To: {self.user_profile}"
+            )
             copytree(self.cache_path, self.user_profile)
             self._profile_cached = True
         else:
@@ -107,7 +127,13 @@ class Cache:
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
         if self.use_cache and (self.working_dir.exists() and self.working_dir.is_dir()):
-            shutil.rmtree(self.working_dir)
+            try:
+                shutil.rmtree(self.working_dir)
+                self._log.debug(f"Cache.del_working_dir(): Deleted working dir: {self.working_dir}")
+            except Exception:
+                self._log.exception(f"Cache.del_working_dir(): Error deleting working dir: {self.working_dir}.")
+        else:
+            self._log.debug("Cache.del_working_dir(): working dir does not exist or use_cache is False")
 
     @property
     def user_profile(self) -> Path:
@@ -117,6 +143,17 @@ class Cache:
         except AttributeError:
             self._user_profile = Path(self.working_dir, self._profile_dir_name)
         return self._user_profile
+
+    @property
+    def no_share_path(self) -> Path | None:
+        """Gets user No shared extension path"""
+        try:
+            if self._no_shared_ext is False:
+                return None
+            return self._no_share_path
+        except AttributeError:
+            self._no_share_path = Path(self.working_dir, self._no_share_dir_name)
+        return self._no_share_path
 
     @property
     def cache_path(self) -> Path | None:
@@ -130,10 +167,14 @@ class Cache:
             return self._cache_path
         except AttributeError:
             self._cache_path = self._get_cache_path()
+            self._log.debug(f"Cache.cache_path: {self._cache_path}")
         return self._cache_path
 
     @cache_path.setter
     def cache_path(self, value: PathOrStr | None):
+        if not value:
+            self._cache_path = None
+            return
         self._cache_path = Path(value)  # type: ignore
 
     @property
@@ -148,6 +189,7 @@ class Cache:
             return self._working_dir
         except AttributeError:
             self._working_dir = Path(tempfile.mkdtemp())
+            self._log.debug(f"Cache.working_dir: {self._working_dir}")
         return self._working_dir
 
     @working_dir.setter
