@@ -43,7 +43,7 @@ def test_dynamic_from(import_str, alias, loader):
 @pytest.mark.parametrize(
     "import_str, alias",
     [
-        pytest.param("numpy", "np", id="numpy"),
+        pytest.param("verr", "Version", id="verr"),
     ],
     ids=str,
 )
