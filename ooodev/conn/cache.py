@@ -21,8 +21,10 @@ class Cache:
 
         Keyword Args:
             use_cache (bool, optional): Determines if caching is used. Default is True
-            cache_path (PathOrStr, optional): Set the path used for caching LO profile data.
+            profile_path (PathOrStr, optional): Set the path used for getting LO profile data.
+                If not set then an attempt is made to copy the user profiler.
                 If set to empty string then no profile will be copied and a new profile will be created.
+                If set to a path then that path will be used.
                 Default is searched for in known locations.
             working_dir (PathOrStr, optional): sets the working dir to use.
                 This is the dir that LO profile will be copied to. Defaults to a newly generated temp dir.
@@ -37,17 +39,22 @@ class Cache:
         self._profile_dir_name = "profile"
         self._no_share_dir_name = "no_share"
         self._profile_cached = False
-        cache_path = kwargs.get("cache_path", None)
-        if cache_path is not None:
-            self.cache_path = cache_path
+        profile_path = kwargs.get("profile_path", None)
+        if profile_path is None:
+            # cache_path is now obsolete but kept for backwards compatibility
+            profile_path = kwargs.get("cache_path", None)
+            if profile_path is not None:
+                self._log.warning("Cache.__init__(): cache_path is obsolete. Use profile_path instead.")
+        if profile_path is not None:
+            self.profile_path = profile_path
         working_dir = kwargs.get("working_dir", None)
         if working_dir is not None:
             self.working_dir = working_dir
 
-    def _get_cache_path(self) -> Path | None:
+    def _get_profile_path(self) -> Path | None:
         # this method is only ever called the user does not provide a cache_path
         # see: https://www.howtogeek.com/289587/how-to-find-your-libreoffice-profile-folder-in-windows-macos-and-linux/
-        self._log.debug("Cache._get_cache_path()")
+        self._log.debug("Cache._get_profile_path()")
         cache_path = None
         platform = sys_info.SysInfo.get_platform()
 
@@ -70,7 +77,7 @@ class Cache:
             is_valid, cache_path = get_path(s_ver)
             if is_valid:
                 break
-        self._log.debug(f"Cache._get_cache_path(): {cache_path}")
+        self._log.debug(f"Cache._get_profile_path(): {cache_path}")
         return cache_path
 
     def cache_profile(self) -> None:
@@ -83,14 +90,14 @@ class Cache:
         if not self.use_cache:
             self._log.debug("Cache.cache_profile(): use_cache is False")
             return
-        if not self.cache_path:
+        if not self.profile_path:
             self._log.debug("Cache.cache_profile(): cache_path is None")
             return
         if self._profile_cached is False:
             self._log.debug(
-                f"Cache.cache_profile(): copying profile to cache. From: {self.user_profile} To: {self.cache_path}"
+                f"Cache.cache_profile(): copying profile to cache. From: {self.user_profile} To: {self.profile_path}"
             )
-            copytree(self.user_profile, self.cache_path)
+            copytree(self.user_profile, self.profile_path)
         return
 
     def copy_cache_to_profile(self) -> None:
@@ -104,14 +111,14 @@ class Cache:
         if not self.use_cache:
             self._log.debug("Cache.copy_cache_to_profile(): use_cache is False")
             return
-        if not self.cache_path:
+        if not self.profile_path:
             self._log.debug("Cache.copy_cache_to_profile(): cache_path is None")
             return
-        if self.cache_path.exists() and self.cache_path.is_dir():
+        if self.profile_path.exists() and self.profile_path.is_dir():
             self._log.debug(
-                f"Cache.copy_cache_to_profile(): copying cache to profile. From: {self.cache_path} To: {self.user_profile}"
+                f"Cache.copy_cache_to_profile(): copying cache to profile. From: {self.profile_path} To: {self.user_profile}"
             )
-            copytree(self.cache_path, self.user_profile)
+            copytree(self.profile_path, self.user_profile)
             self._profile_cached = True
         else:
             # create the dir.
@@ -148,34 +155,32 @@ class Cache:
     def no_share_path(self) -> Path | None:
         """Gets user No shared extension path"""
         try:
-            if self._no_shared_ext is False:
-                return None
-            return self._no_share_path
+            return None if self._no_shared_ext is False else self._no_share_path
         except AttributeError:
             self._no_share_path = Path(self.working_dir, self._no_share_dir_name)
         return self._no_share_path
 
     @property
-    def cache_path(self) -> Path | None:
+    def profile_path(self) -> Path | None:
         """
-        Gets/Sets cache path
+        Gets/Sets profile path
 
         The when possible default is obtained by searching in know locations, depending on OS.
         For instance on Linux will search in ``~/.config/libreoffice/4``
         """
         try:
-            return self._cache_path
+            return self._profile_path
         except AttributeError:
-            self._cache_path = self._get_cache_path()
-            self._log.debug(f"Cache.cache_path: {self._cache_path}")
-        return self._cache_path
+            self._cache_path = self._get_profile_path()
+            self._log.debug(f"Cache.cache_path: {self._profile_path}")
+        return self._profile_path
 
-    @cache_path.setter
-    def cache_path(self, value: PathOrStr | None):
+    @profile_path.setter
+    def profile_path(self, value: PathOrStr | None):
         if not value:
-            self._cache_path = None
+            self._profile_path = None
             return
-        self._cache_path = Path(value)  # type: ignore
+        self._profile_path = Path(value)  # type: ignore
 
     @property
     def working_dir(self) -> Path:

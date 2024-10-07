@@ -37,8 +37,13 @@ This is the first chapter with code, and so the first where programs could crash
 2.1 Starting Office
 ===================
 
+.. _ch02_1_running_as_macro:
+
+2.1.1 Introduction
+------------------
+
 Every program must load Office before working with a document (unless run in a macro), and shut it down before exiting.
-These tasks are handled by :py:meth:`.Lo.load_office` and :py:meth:`.Lo.close_office` from the ::py:class:`.Lo`.
+These tasks are handled by :py:meth:`.Lo.load_office` and :py:meth:`.Lo.close_office` from the :py:class:`.Lo`.
 A typical program will look like the following:
 
 .. tabs::
@@ -154,10 +159,15 @@ See |convert_doc|_ for an example.
 It is also simple to start LibreOffice from the command line automate tasks and leave it open for user input.
 See `Calc Add Range of Data Automation <https://github.com/Amourspirit/python-ooouno-ex/tree/main/ex/auto/calc/odev_add_range_data>`_ for an example.
 
+.. _ch02_1_1_running_as_macro:
+
+2.1.2 Running as a Macro
+------------------------
+
 There is of course running as a macro as well.
 
 Running a project with several modules can be a bit daunting task.
-For this reason oooscript_ was created, which can easily pack several scripts into one script and embed the result into a LibreOfice Document.
+For this reason oooscript_ was created, which can easily pack several scripts into one script and embed the result into a LibreOffice Document.
 
 The easiest way to run a several module/class project in LibreOffice is to pack into a single script first.
 Many examples can be found on |lo_uno_ex|_,
@@ -188,6 +198,11 @@ Macros only need use use ``Lo.ThisComponent`` as show below.
         .. cssclass:: tab-none
 
             .. group-tab:: None
+
+.. _ch02_1_3_static_classes:
+
+2.1.3 Using Static classes
+--------------------------
 
 :py:meth:`.Lo.load_office` probably illustrates a significant coding decisions – the use of global static variables inside the :py:class:`~.lo.Lo` class.
 In particular, the XComponentContext_, XDesktop_, and XMultiComponentFactory_ objects created by :py:meth:`~.lo.Lo.load_office` are stored globally for later use.
@@ -265,6 +280,185 @@ Querying for the interface has the huge advantage of providing typing :numref:`c
 The use of generics makes :py:meth:`.Lo.create_instance_mcf` useful for creating any type of interface object.
 Unfortunately, generics aren't utilized in the Office API, which relies instead on Object, Office's Any class, or the XInterface class which is inherited by all interfaces.
 
+.. _ch02_1_cache_options:
+
+2.1.4 Cache Options
+-------------------
+
+The :py:meth:`.Lo.load_office` method has an optional ``cache_obj`` parameter.
+This parameter is used to cache the control the environment used to connect to LibreOffice.
+
+When using the :py:meth:`.Lo.load_office` method with the ``cache_obj`` parameter, the cache object is used to store the connection environment.
+The ``cache_obj`` parameter is an instance of the :py:class:`~.conn.cache.Cache` class.
+
+What is the purpose of the cache object?
+
+The cache object is used to copy a profile director to a temporary directory or pre-defined directory.
+The cache object is used to set an empty profile directory, which is useful when you want to start LibreOffice with a clean profile.
+The cache object can be used to disable shared extension.
+
+This can be very useful when you are running LibreOffice in a headless mode and there is an extension that has a dialog popup for a new profile.
+I found this to be the case with the APSO extension. On one environment the extension was installed for Shared Users.
+When running LibreOffice in headless mode on a new profile the extension would try popup a dialog. This would result in LibreOffice hanging headless mode.
+The solution was to disable the shared extension with the cache object.
+
+How to disable shared extensions?
+
+In this example the shares extensions are disabled by setting the ``no_shared_ext`` parameter to ``True``.
+Under the hood the cache object will set environment var ``UNO_SHARED_PACKAGES_CACHE`` for LibreOffice to an empty temporary directory.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.conn.cache import Cache
+
+        def main():
+            with Lo.Loader(
+                Lo.ConnectSocket(),
+                cache_obj=Cache(no_shared_ext=True),
+            ) as loader:
+                # do work and then loader will be closed automatically.
+                pass
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+How to copy default profile directory to a temporary directory?
+
+In this example by creating an instance of the :py:class:`~.conn.cache.Cache` class and not setting any parameters the users profile directory (if found) is copied to a temporary directory.
+Then when LibreOffice is started its profile directory is set to the temporary directory. This gives a way to make changes for the session without affecting the users main profile.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.conn.cache import Cache
+
+        def main():
+            with Lo.Loader(
+                Lo.ConnectSocket(headless=True),
+                cache_obj=Cache(),
+            ) as loader:
+                # do work and then loader will be closed automatically.
+                pass
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+How to copy custom profile directory to a temporary directory?
+
+By default the profile is copied to a temporary directory. If you want to copy a custom profile to be copied then you can set the profile path.
+On Linux for example the profile path is typically ``~/.config/libreoffice/4``.
+
+With this example the profile directory is copied to a temporary directory from ``/path/to/profile`` and used when LibreOffice is started.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.conn.cache import Cache
+
+        def main():
+            with Lo.Loader(
+                Lo.ConnectSocket(headless=True),
+                cache_obj=Cache(profile_path="/path/to/profile"),
+            ) as loader:
+                # do work and then loader will be closed automatically.
+                pass
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+How to use a clean profile directory?
+
+If the ``profile_path`` is set to an empty string then a clean profile is generated and used. This is favorable in most cases.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.conn.cache import Cache
+
+        def main():
+            with Lo.Loader(
+                Lo.ConnectSocket(headless=True),
+                cache_obj=Cache(profile_path=""),
+            ) as loader:
+                # do work and then loader will be closed automatically.
+                pass
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+What is the recommended setting for headless?
+
+Setting the ``profile_path`` to an empty string and ``no_shared_ext`` to ``True`` is the recommended setting for headless mode.
+This will disable shared extensions and create a clean profile directory.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.conn.cache import Cache
+
+        def main():
+            with Lo.Loader(
+                Lo.ConnectSocket(headless=True),
+                cache_obj=Cache(profile_path="", no_shared_ext=True),
+            ) as loader:
+                # do work and then loader will be closed automatically.
+                pass
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
 .. _ch02_clossing_office:
 
 2.2 Closing Down/Killing Office
@@ -279,12 +473,52 @@ As a consequence, :py:meth:`Lo.close_office` may actually call ``terminate()`` a
 While developing/debugging code, it's quite easy to inadvertently trigger a runtime exception in the Office API.
 In the worst case, this can cause your program to exit without calling :py:meth:`Lo.close_office`.
 This will leave an extraneous Office process running in the OS, which should be killed. The easiest way is with |dsearch|_
-``loproc --kill``.
+``loproc --kill``. As of version `0.47.19` internally |odev| watches the subprocess that LibreOffice is started on and terminates it when the main process is terminated.
+
+.. _ch02_2_context_manager:
+
+Using a Context Manager
+-----------------------
+
+When using the context manager it is not necessary to call :py:meth:`Lo.close_office`. This context manager will take care of closing office.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from ooodev.loader.lo import Lo
+        from ooodev.calc import CalcDoc
+
+
+        def main():
+            with Lo.Loader(Lo.ConnectPipe()) as loader:
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
+                sheet["A1"].value = 10
+                doc.msgbox("All done")
+                doc.close()
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 .. _ch02_open_doc:
 
 2.3 Opening a Document
 ======================
+
+.. _ch02_3_open_doc_using_lo:
+
+
+2.3.1 Using Lo Methods
+----------------------
 
 The general format of a program that opens a document, manipulates it in some way, and then saves it, is:
 
@@ -359,10 +593,64 @@ but some of the important ones are listed in :numref:`ch02tbl_some_doc_prop`
     StartPresentation    Starts showing a slide presentation immediately after loading the document   
     ==================== =============================================================================
 
+.. _ch02_3_open_doc_using_classes:
+
+2.3.2 Using the Classes such as CalcDoc
+---------------------------------------
+
+The :py:class:`~.calc.CalcDoc`, :py:class:`~.write.WriteDoc`, :py:class:`~.draw.DrawDoc`, :py:class:`~.draw.ImpressDoc` classes can be used to open a document.
+These classes all implement the same methods for creating, opening, saving, and closing a documents.
+
+For this example we will use the :py:class:`~.calc.CalcDoc` class to open a Calc document.
+
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from __future__ import annotations
+        from ooodev.loader.lo import Lo
+        from ooodev.calc import CalcDoc
+        from pathlib import Path
+
+
+        def main():
+            pth = Path.cwd() / "example.ods"
+            doc = None
+            try:
+                loader = Lo.load_office(connector=Lo.ConnectPipe())
+                doc = CalcDoc.open_doc(fnm=pth, visible=True)
+                doc.msgbox("All done")
+                doc.close()
+            except Exception as e:
+                print(f"Error: {e}")
+            finally:
+                if doc:
+                    doc.close()
+                Lo.close_office()
+
+
+        if __name__ == "__main__":
+            main()
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
+
+
 .. _ch02_create_doc:
 
 2.4 Creating a Document
 =======================
+
+
+.. _ch02_4_create_doc_using_lo:
+
+2.4.1 Using Lo Methods
+----------------------
 
 The general format of a program that creates a new document, manipulates it in some way, and then saves it, is:
 
@@ -449,6 +737,58 @@ A lot of older code still uses the XMultiServiceFactory_ service manager, so bot
 
 Another difference between the managers is that the XMultiComponentFactory_ manager is available as soon as Office is loaded,
 while the XMultiServiceFactory_ manager is initialized only when a document is loaded or created.
+
+
+.. _ch02_4_create_doc_using_classes:
+
+2.4.2 Using the Classes such as CalcDoc
+---------------------------------------
+
+The :py:class:`~.calc.CalcDoc`, :py:class:`~.write.WriteDoc`, :py:class:`~.draw.DrawDoc`, :py:class:`~.draw.ImpressDoc` classes can be used to create a document.
+
+These classes all implement the same methods for creating, opening, saving, and closing a documents.
+
+For this example we will use the :py:class:`~.calc.CalcDoc` class to create a Calc document.
+
+.. tabs::
+
+    .. code-tab:: python
+
+        from __future__ import annotations
+        from ooodev.loader.lo import Lo
+        from ooodev.calc import CalcDoc
+        from pathlib import Path
+
+
+        def main():
+            pth = Path.cwd()  / "example.ods"
+            doc = None
+            try:
+                loader = Lo.load_office(connector=Lo.ConnectPipe())
+                doc = CalcDoc.create_doc(visible=True)
+                sheet = doc.sheets[0]
+                sheet["A1"].value = 10
+                doc.msgbox("All done")
+                doc.save_doc(pth)
+                doc.close()
+            except Exception as e:
+                print(f"Error: {e}")
+            finally:
+                if doc:
+                    doc.close()
+                Lo.close_office()
+
+
+        if __name__ == "__main__":
+            main()
+
+
+    .. only:: html
+
+        .. cssclass:: tab-none
+
+            .. group-tab:: None
+
 
 .. _ch02_save_doc:
 
