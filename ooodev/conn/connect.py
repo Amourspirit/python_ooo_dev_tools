@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING, cast
+import atexit
 import contextlib
 import os
 import time
@@ -14,6 +15,7 @@ from com.sun.star.connection import NoConnectException  # type: ignore
 from ooodev.conn import connectors
 from ooodev.conn import cache
 from ooodev.utils.sys_info import SysInfo
+from ooodev.io.log.named_logger import NamedLogger
 
 
 if TYPE_CHECKING:
@@ -46,6 +48,8 @@ class ConnectBase(ABC):
         # start openoffice process with python to use with pyuno using subprocess
         # see https://tinyurl.com/y5y66462
         self._ctx = cast(XComponentContext, None)
+        self._log = NamedLogger(self.__class__.__name__)
+        self._log.debug("ConnectBase.__init__")
 
     def __eq__(self, other: object) -> bool:
         return NotImplemented
@@ -116,6 +120,11 @@ class ConnectBase(ABC):
         """Returns False"""
         return False
 
+    @property
+    def log(self) -> NamedLogger:
+        """Gets the logger"""
+        return self._log
+
 
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""
@@ -159,6 +168,7 @@ class LoBridgeCommon(ConnectBase):
 
     def _connect(self):
         # see also: _connect_alternative()
+        self.log.debug("Connecting")
         conn_str = self._get_connection_str()
 
         end_time = time.time() + self._timeout
@@ -190,11 +200,14 @@ class LoBridgeCommon(ConnectBase):
                 last_ex = None
                 break
             except NoConnectException as e:  # pylint: disable=invalid-name
+                self.log.debug(f"Connection Error: {e}")
                 last_ex = e
                 time.sleep(self._conn_try_sleep)
 
         if last_ex is not None:
+            self.log.error(f"Connection Error: {last_ex}")
             raise last_ex
+        self.log.info("Connection Established")
 
     def _connect_alternative(self):
         # this method is not currently used.
@@ -202,6 +215,7 @@ class LoBridgeCommon(ConnectBase):
         # This is basically the connect method from Lo.Java
         # it has been tested with local and remote connections and works.
         # Works with Pip and Socket connections.
+        self.log.debug("Connecting")
         conn_str = self._get_connection_identifier()
         # conn_str = "socket,host=localhost,port=2002"
 
@@ -257,12 +271,38 @@ class LoBridgeCommon(ConnectBase):
                 time.sleep(self._conn_try_sleep)
 
         if last_ex is not None:
+            self.log.error(f"Connection Error: {last_ex}")
             raise last_ex
+        self.log.info("Connection Established")
 
     def _popen_from_args(self, args: List[str], shutdown: bool):
         # modified in version 0.12.1
         #  preexec_fn=os.setsid was removed from subprocess.Popen
         # see: https://pastebin.com/tJDwiwvx
+
+        def cleanup():
+            # Copilot Comment for cleanup
+            # The cleanup function is registered with atexit.register(cleanup), ensuring that it will be called when the main process exits.
+            # The cleanup function terminates the subprocesses if they are running.
+            # The preexec_fn=os.setsid argument is used on Unix-like systems to set the process group ID,
+            # which allows you to terminate the entire process group.
+            self.log.debug("Cleanup popen for LibreOffice")
+            try:
+                if hasattr(self, "_soffice_process") and self._soffice_process:
+                    self._soffice_process.terminate()
+                    self._soffice_process.wait()
+                    self.log.debug(f"Cleanup() Terminated soffice process. shutdown: {shutdown}")
+            except Exception:
+                self.log.exception(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown}")
+            try:
+                if hasattr(self, "_soffice_process_shutdown") and self._soffice_process_shutdown:
+                    self._soffice_process_shutdown.terminate()
+                    self._soffice_process_shutdown.wait()
+                    self.log.debug(f"Cleanup() Terminated soffice process. shutdown: {shutdown}")
+            except Exception:
+                self.log.exception(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown}")
+
+        atexit.register(cleanup)
 
         if shutdown:
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
@@ -286,6 +326,7 @@ class LoBridgeCommon(ConnectBase):
             #     args, env=self._environment, preexec_fn=os.setsid
             # )
             cmd_str = " ".join(args)
+            self.log.debug(f"Starting LibreOffice: {cmd_str}")
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
                 self._soffice_process = subprocess.Popen(cmd_str, shell=True, env=self._environment)
             else:
@@ -357,6 +398,7 @@ class LoBridgeCommon(ConnectBase):
                 # os.kill(pid, signal.SIGKILL)  # type: ignore
         except Exception as e:  # pylint: disable=invalid-name
             # print(e)
+            self.log.exception("Error in kill_soffice")
             raise e
 
     @property
@@ -447,7 +489,9 @@ class LoDirectStart(ConnectBase):
         Raises:
             NoConnectException: if unable to obtain a connection to soffice
         """
+        self.log.debug("connect() Connecting")
         self._ctx = uno.getComponentContext()
+        self.log.info("connect() Connection Established")
 
     def kill_soffice(self) -> None:
         """
@@ -501,6 +545,7 @@ class LoPipeStart(LoBridgeCommon):
         Raises:
             NoConnectException: If unable to connect
         """
+        self.log.debug("connect() Connecting")
         self._cache.copy_cache_to_profile()
         if self._connector.start_office:
             self._popen()
@@ -512,8 +557,10 @@ class LoPipeStart(LoBridgeCommon):
             if self._opened_office:
                 self.kill_soffice()
             self._opened_office = False
+            self.log.exception("connect() Connection Error")
             raise e
         self._cache.cache_profile()
+        self.log.info("connect() Connection Established")
 
     def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
         connector = cast(
@@ -549,7 +596,11 @@ class LoPipeStart(LoBridgeCommon):
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
+            self.log.debug(f"Using cache: {self._cache.user_profile}")
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
+        if self._cache.no_share_path:
+            self.log.debug("Disabling Shared Extensions")
+            args.append(f'-env:UNO_SHARED_PACKAGES_CACHE="{self._cache.no_share_path.as_uri()}"')
 
         args.append(f'{prefix}"pipe,name={self._connector.pipe};urp;"')  # type: ignore
 
@@ -607,6 +658,7 @@ class LoSocketStart(LoBridgeCommon):
         Raises:
             NoConnectException: If unable to connect
         """
+        self.log.debug("connect() Connecting")
         self._cache.copy_cache_to_profile()
         if self._connector.start_office:
             self._popen()
@@ -618,8 +670,10 @@ class LoSocketStart(LoBridgeCommon):
             if self._opened_office:
                 self.kill_soffice()
             self._opened_office = False
+            self.log.exception("connect() Connection Error")
             raise e
         self._cache.cache_profile()
+        self.log.info("connect() Connection Established")
 
     def _get_bridge(self, local_factory: XMultiComponentFactory, local_ctx: XComponentContext) -> XBridge:
         connector = cast(
@@ -657,7 +711,11 @@ class LoSocketStart(LoBridgeCommon):
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
+            self.log.debug(f"Using cache: {self._cache.user_profile}")
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
+        if self._cache.no_share_path:
+            self.log.debug("Disabling Shared Extensions")
+            args.append(f'-env:UNO_SHARED_PACKAGES_CACHE="{self._cache.no_share_path.as_uri()}"')
 
         args.append(f'{prefix}"socket,host={self._connector.host},port={self._connector.port},tcpNoDelay=1;urp;"')  # type: ignore
 

@@ -7,6 +7,7 @@ import shutil
 import __main__
 from pathlib import Path
 from typing import overload
+import uno
 from ooodev.utils.sys_info import SysInfo
 
 # do not import from type_var here.
@@ -194,6 +195,25 @@ def get_lo_path() -> Path:
                 p_sf = Path(os.path.realpath(s)).parent
             else:
                 p_sf = Path(s).parent
+
+        if p_sf is None:
+            # try to find path from uno python path
+            # uno.py usually lives in the same directory as soffice
+            pp_pth = find_program_directory(uno.__file__)
+            if pp_pth is not None:
+                p_sf = pp_pth / "soffice.bin"
+                if not p_sf.exists() or not p_sf.is_file():
+                    p_sf = None
+
+        if p_sf is None:
+            # try to find path from python path
+            # if working in an embedded python environment, if possible.
+            pp_pth = find_program_directory(os.__file__)
+            if pp_pth is not None:
+                p_sf = pp_pth / "soffice.bin"
+                if not p_sf.exists() or not p_sf.is_file():
+                    p_sf = None
+
         if p_sf is None:
             p_sf = Path("/usr/bin/soffice")
             if not p_sf.exists() or not p_sf.is_file():
@@ -205,6 +225,23 @@ def get_lo_path() -> Path:
         if not p_sf.is_dir():
             raise NotADirectoryError("LibreOffice source is not a Directory")
         return p_sf
+
+
+def find_program_directory(start_path: str) -> Path | None:
+    """
+    Finds the program directory in the path.
+
+    Args:
+        start_path (str): Path to start search from.
+
+    Returns:
+        Path | None: Path to program directory or None if not found.
+    """
+    path = Path(start_path)
+    for parent in path.parents:
+        if parent.name == "program":
+            return parent
+    return None
 
 
 def get_lo_python_ex() -> str:
