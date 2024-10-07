@@ -135,7 +135,7 @@ class LoInst(EventsPartial):
         self._singleton_instance = kwargs.get("is_singleton", False)
         self._opt = LoOptions() if opt is None else opt
         if self._singleton_instance:
-            # only set the log level if thi instance is the ooodev.loader.lo.Lo instance
+            # only set the log level if this instance is the ooodev.loader.lo.Lo instance
             logger.set_log_level(self._opt.log_level)
         if self._singleton_instance:
             self._logger = NamedLogger(f"{self.__class__.__name__} - Root")
