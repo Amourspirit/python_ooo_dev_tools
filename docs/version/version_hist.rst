@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.47.19
+===============
+
+Updated the ``ooodev.conn.cache.py`` module to make is much simpler to open instance of LibreOffice with or without Extensions and the ability to open and close LibreOffice without also closing an existing LibreOffice instance.
+
+Updated the ``ooodev.conn.connect.py`` module to be more robust when connecting and closing LibreOffice.
+
+
 Version 0.47.18
 ===============
 

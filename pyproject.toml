@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.47.18"
+version = "0.47.19"
 
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
@@ -81,7 +81,7 @@ sphinx-design = "^0.5.0"
 
 
 [tool.poetry.group.dev_extra.dependencies]
-numpy = "<=1.24"
+verr = ">=1.1.2"
 
 [tool.pytest.ini_options]
 testpaths = [

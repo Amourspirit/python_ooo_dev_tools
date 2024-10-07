@@ -81,6 +81,15 @@ def remove_readonly(func, path, excinfo):
         pass
 
 
+def _is_test_running_on_github():
+    return os.getenv("GITHUB_ACTIONS") == "true"
+
+
+@pytest.fixture(scope="session")
+def is_test_running_on_github():
+    return _is_test_running_on_github()
+
+
 @pytest.fixture(scope="session")
 def tmp_path_session():
     result = Path(tempfile.mkdtemp())  # type: ignore
@@ -176,48 +185,83 @@ def soffice_env():
 
 # region Loader methods
 def _get_loader_pipe_default(
-    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
+    headless: bool,
+    soffice: str,
+    working_dir: Any,
+    no_shared_ext: bool,
+    profile_path: str | None = None,
+    env_vars: Optional[Dict[str, str]] = None,
 ) -> XComponentLoader:
     dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
+    is_gh = _is_test_running_on_github()
+    if is_gh:
+        cache_obj = mCache.Cache(use_cache=False)
+    else:
+        cache_obj = mCache.Cache(working_dir=working_dir, no_shared_ext=no_shared_ext)
+        if profile_path is not None:
+            cache_obj.profile_path = profile_path
     return Lo.load_office(
         connector=connectors.ConnectPipe(headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible),
-        cache_obj=mCache.Cache(working_dir=working_dir),
+        cache_obj=cache_obj,
         opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
 
 def _get_loader_socket_default(
-    headless: bool, soffice: str, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
+    headless: bool,
+    soffice: str,
+    working_dir: Any,
+    no_shared_ext: bool,
+    profile_path: str | None = None,
+    env_vars: Optional[Dict[str, str]] = None,
 ) -> XComponentLoader:
     dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
     host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
     port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
+    is_gh = _is_test_running_on_github()
+    if is_gh:
+        cache_obj = mCache.Cache(use_cache=False)
+    else:
+        cache_obj = mCache.Cache(working_dir=working_dir, no_shared_ext=no_shared_ext)
+        if profile_path is not None:
+            cache_obj.profile_path = profile_path
     return Lo.load_office(
         connector=connectors.ConnectSocket(
             host=host, port=port, headless=headless, soffice=soffice, env_vars=env_vars, invisible=not visible
         ),
-        cache_obj=mCache.Cache(working_dir=working_dir),
+        cache_obj=cache_obj,
         opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
 
 def _get_loader_socket_no_start(
-    headless: bool, working_dir: Any, env_vars: Optional[Dict[str, str]] = None
+    headless: bool,
+    working_dir: Any,
+    no_shared_ext: bool,
+    profile_path: str | None = None,
+    env_vars: Optional[Dict[str, str]] = None,
 ) -> XComponentLoader:
     dynamic = os.environ.get("ODEV_TEST_OPT_DYNAMIC", "") == "1"
     host = os.environ.get("ODEV_TEST_CONN_SOCKET_HOST", "localhost")
     port = int(os.environ.get("ODEV_TEST_CONN_SOCKET_PORT", 2002))
     verbose = os.environ.get("ODEV_TEST_OPT_VERBOSE", "1") == "1"
     visible = os.environ.get("ODEV_TEST_OPT_VISIBLE", "") == "1"
+    is_gh = _is_test_running_on_github()
+    if is_gh:
+        cache_obj = mCache.Cache(use_cache=False)
+    else:
+        cache_obj = mCache.Cache(working_dir=working_dir, no_shared_ext=no_shared_ext)
+        if profile_path is not None:
+            cache_obj.profile_path = profile_path
     return Lo.load_office(
         connector=connectors.ConnectSocket(
             host=host, port=port, headless=headless, start_office=False, env_vars=env_vars, invisible=not visible
         ),
-        cache_obj=mCache.Cache(working_dir=working_dir),
+        cache_obj=cache_obj,
         opt=LoOptions(verbose=verbose, dynamic=dynamic),
     )
 
@@ -232,15 +276,29 @@ def loader(tmp_path_session, run_headless, soffice_path, soffice_env, set_log_fi
     if test_socket == "1":
         if connect_kind == "no_start":
             loader = _get_loader_socket_no_start(
-                headless=run_headless, working_dir=tmp_path_session, env_vars=soffice_env
+                headless=run_headless,
+                working_dir=tmp_path_session,
+                env_vars=soffice_env,
+                no_shared_ext=True,
+                profile_path="",
             )
         else:
             loader = _get_loader_socket_default(
-                headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
+                headless=run_headless,
+                soffice=soffice_path,
+                working_dir=tmp_path_session,
+                env_vars=soffice_env,
+                no_shared_ext=True,
+                profile_path="",
             )
     else:
         loader = _get_loader_pipe_default(
-            headless=run_headless, soffice=soffice_path, working_dir=tmp_path_session, env_vars=soffice_env
+            headless=run_headless,
+            soffice=soffice_path,
+            working_dir=tmp_path_session,
+            env_vars=soffice_env,
+            no_shared_ext=True,
+            profile_path="",
         )
     set_log_file("test.log")
     yield loader
