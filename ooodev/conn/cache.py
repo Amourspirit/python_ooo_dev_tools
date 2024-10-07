@@ -171,7 +171,7 @@ class Cache:
         try:
             return self._profile_path
         except AttributeError:
-            self._cache_path = self._get_profile_path()
+            self._profile_path = self._get_profile_path()
             self._log.debug(f"Cache.cache_path: {self._profile_path}")
         return self._profile_path
 
