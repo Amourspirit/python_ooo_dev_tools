@@ -1,3 +1,4 @@
+abortable
 Addin
 Addon
 argparse
@@ -77,6 +78,7 @@ PETA
 PICO
 preformatted
 PropertyValue
+pythonscript
 RangeObj
 RangeValues
 Refreshable

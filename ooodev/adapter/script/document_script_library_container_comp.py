@@ -155,6 +155,9 @@ class DocumentScriptLibraryContainerComp(
         # this it not actually called as __new__ is overridden
         pass
 
+    def __bool__(self) -> bool:
+        return True
+
     # endregion Overrides
 
     # region Properties

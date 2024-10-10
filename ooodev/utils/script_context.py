@@ -4,7 +4,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import uno
-import os
 from com.sun.star.script.provider import XScriptContext
 from ooodev.mock import mock_g
 
