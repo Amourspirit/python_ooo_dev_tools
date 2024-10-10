@@ -38,9 +38,9 @@ def getPackageName2PathMap(sfa, storageType):
     pythonscript.log.debug("pythonscript: getPackageName2PathMap end getDeployedPackages (" + str(len(packages)) + ")")
 
     for pkg in packages:
-        pythonscript.log.debug("inspecting package " + pkg.Name + "(" + pkg.Identifier.Value + ")")
-        transientPathElement = pythonscript.penultimateElement(pkg.URL)
-        j = pythonscript.expandUri(pkg.URL)
+        pythonscript.log.debug("inspecting package " + pkg.Name + "(" + pkg.Identifier.Value + ")")  # type: ignore
+        transientPathElement = pythonscript.penultimateElement(pkg.URL)  # type: ignore
+        j = pythonscript.expandUri(pkg.URL)  # type: ignore
         paths = pythonscript.getPathsFromPackage(j, sfa)
         if len(paths) > 0:
             # map package name to url, we need this later
@@ -160,8 +160,6 @@ class PythonScriptProvider(UnoPythonScriptProvider):
         isPackage = storageType.endswith(":uno_packages")
 
         try:
-            #            urlHelper = ctx.ServiceManager.createInstanceWithArgumentsAndContext(
-            #                "com.sun.star.script.provider.ScriptURIHelper", (LANGUAGENAME, storageType), ctx)
             urlHelper = pythonscript.MyUriHelper(ctx, storageType)
             pythonscript.log.debug("got urlHelper " + str(urlHelper))
 

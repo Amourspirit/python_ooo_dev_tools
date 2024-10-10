@@ -15,7 +15,7 @@ def test_calc_script(loader) -> None:
         assert py_script
         scp = py_script.shared_script_provider
         assert scp is not None
-        assert scp.uno_packages_sp
+        assert scp.uno_packages_sp is not None
     finally:
         if doc:
             doc.close()
