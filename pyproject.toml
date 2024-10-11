@@ -35,7 +35,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 ooouno = ">=3.0.0"
-typing-extensions = ">=4.12"
+typing-extensions = ">=4.12.2"
 
 
 [[tool.poetry.source]]

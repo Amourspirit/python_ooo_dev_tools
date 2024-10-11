@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Sequence
 import sys
 from contextlib import contextmanager
 import uno
@@ -8,8 +9,18 @@ from ooodev.uno_helper.py_script import python_script
 from ooodev.uno_helper.importer.importer_file import ImporterFile
 from ooodev.loader.lo import Lo
 
+try:
+    from typing import override  # type: ignore  # Python 3.12+
+except ImportError:
+    from typing_extensions import override  # For Python versions below 3.12
+
+if TYPE_CHECKING:
+    import types
+    from importlib.machinery import ModuleSpec
+
 
 class ImporterUserScript(ImporterFile):
+    @override
     def __init__(self):
         self._sp = None
         pv = self._get_script_provider()
@@ -27,7 +38,10 @@ class ImporterUserScript(ImporterFile):
                 self._sp.uno_packages_sp = None
         return self._sp
 
-    def find_spec(self, fullname, path, target=None):
+    @override
+    def find_spec(
+        self, fullname: str, path: Sequence[str] | None, target: types.ModuleType | None = None
+    ) -> ModuleSpec | None:
         if fullname.startswith("com."):
             return None
         return super().find_spec(fullname, path, target)

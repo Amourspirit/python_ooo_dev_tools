@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Sequence
 import importlib.abc
 import importlib.util
 import os
@@ -7,12 +8,18 @@ from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlparse
 
+if TYPE_CHECKING:
+    import types
+    from importlib.machinery import ModuleSpec
+
 
 class ImporterFile(importlib.abc.MetaPathFinder, importlib.abc.Loader):
-    def __init__(self, module_path):
+    def __init__(self, module_path: str):
         self.module_path = module_path
 
-    def find_spec(self, fullname, path, target=None):
+    def find_spec(
+        self, fullname: str, path: Sequence[str] | None, target: types.ModuleType | None = None
+    ) -> ModuleSpec | None:
         # Build the path to the module file
         module_name = fullname.rsplit(".", 1)[-1]
         filename = os.path.join(self.module_path, f"{module_name}.py")
@@ -20,11 +27,11 @@ class ImporterFile(importlib.abc.MetaPathFinder, importlib.abc.Loader):
             return importlib.util.spec_from_file_location(fullname, filename, loader=self)
         return None
 
-    def create_module(self, spec):
+    def create_module(self, spec: ModuleSpec):
         # Use default module creation
         return None
 
-    def exec_module(self, module):
+    def exec_module(self, module: types.ModuleType):
         # Execute the module's code
         module_name = module.__name__.rsplit(".", 1)[-1]
         filename = os.path.join(self.module_path, f"{module_name}.py")

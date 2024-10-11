@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Sequence
 import sys
 from contextlib import contextmanager
 import uno
@@ -6,8 +7,18 @@ import uno
 from ooodev.uno_helper.importer.importer_file import ImporterFile
 from ooodev.loader.lo import Lo
 
+try:
+    from typing import override  # type: ignore  # Python 3.12+
+except ImportError:
+    from typing_extensions import override  # For Python versions below 3.12
+
+if TYPE_CHECKING:
+    import types
+    from importlib.machinery import ModuleSpec
+
 
 class ImporterUserExtScript(ImporterFile):
+    @override
     def __init__(self, ext_name: str):
         """
         Initializes the ImporterUserExtScript instance.
@@ -39,7 +50,10 @@ class ImporterUserExtScript(ImporterFile):
                 return True
         return False
 
-    def find_spec(self, fullname, path, target=None):
+    @override
+    def find_spec(
+        self, fullname: str, path: Sequence[str] | None, target: types.ModuleType | None = None
+    ) -> ModuleSpec | None:
         if fullname.startswith("com."):
             return None
         return super().find_spec(fullname, path, target)
