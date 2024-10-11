@@ -7,8 +7,8 @@ if __name__ == "__main__":
 
 from ooodev.write import WriteDoc
 from ooodev.calc import CalcDoc
-from ooodev.uno_helper.importer import importer_shared_script_context
-from ooodev.uno_helper.importer import importer_doc_script_context
+from ooodev.uno_helper.importer import importer_shared_script
+from ooodev.uno_helper.importer import importer_doc_script
 
 
 # angle implements BaseIntValue so this test all dunder methods.
@@ -20,7 +20,7 @@ def test_import_shared(loader) -> None:
     # LibreOffice has a python script named Capitalise in the shared folder
     doc = None
     try:
-        with importer_shared_script_context():
+        with importer_shared_script():
             import Capitalise  # type: ignore
         assert "Capitalise" in sys.modules
         del sys.modules["Capitalise"]
@@ -42,7 +42,7 @@ def test_import_doc(loader, copy_fix_calc) -> None:
     try:
         fnm = copy_fix_calc("calc_embedded_mod_hello.ods")
         doc = CalcDoc.open_doc(fnm=fnm, loader=loader)
-        with importer_doc_script_context():
+        with importer_doc_script():
             import mod_hello  # type: ignore
         assert "mod_hello" in sys.modules
         assert hasattr(mod_hello, "say_hello")

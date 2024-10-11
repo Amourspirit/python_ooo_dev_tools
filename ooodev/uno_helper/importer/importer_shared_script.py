@@ -48,7 +48,7 @@ class ImporterSharedScript(ImporterFile):
 
 
 @contextmanager
-def importer_shared_script_context():
+def importer_shared_script():
     """
     Context manager that adds ImporterUserScript to sys.meta_path
     and removes it after the context is exited.

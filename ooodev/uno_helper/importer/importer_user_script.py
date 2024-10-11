@@ -48,7 +48,7 @@ class ImporterUserScript(ImporterFile):
 
 
 @contextmanager
-def importer_user_script_context():
+def importer_user_script():
     """
     Context manager that adds ImporterUserScript to sys.meta_path
     and removes it after the context is exited.

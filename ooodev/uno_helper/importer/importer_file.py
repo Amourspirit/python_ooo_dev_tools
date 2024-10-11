@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 if TYPE_CHECKING:
     import types
     from importlib.machinery import ModuleSpec
+    from ooodev.utils.type_var import PathOrStr
 
 
 class ImporterFile(importlib.abc.MetaPathFinder, importlib.abc.Loader):
@@ -55,12 +56,15 @@ class ImporterFile(importlib.abc.MetaPathFinder, importlib.abc.Loader):
 
 
 @contextmanager
-def importer_file_context(module_path: str):
+def importer_file(module_path: PathOrStr):
     """
     Context manager that adds ImporterUserScript to sys.meta_path
     and removes it after the context is exited.
+
+    Args:
+        module_path (PathOrStr): The path to the module to import.
     """
-    importer = ImporterFile(module_path=module_path)
+    importer = ImporterFile(module_path=str(Path(module_path)))
     sys.meta_path.insert(0, importer)
     try:
         yield

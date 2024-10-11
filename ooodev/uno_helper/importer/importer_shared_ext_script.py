@@ -61,7 +61,7 @@ class ImporterSharedExtScript(ImporterFile):
 
 
 @contextmanager
-def importer_shared_ext_script_context(ext_name: str):
+def importer_shared_ext_script(ext_name: str):
     """
     Context manager that adds ImporterSharedExtScript to sys.meta_path
     and removes it after the context is exited.

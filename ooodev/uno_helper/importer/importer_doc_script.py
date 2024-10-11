@@ -8,7 +8,7 @@ import uno
 # import pythonscript  # type: ignore
 from ooodev.uno_helper.importer.importer_file import ImporterFile
 from ooodev.loader.lo import Lo
-from ooodev.io.sfa import Sfa
+from ooodev.io.sfa.sfa import Sfa
 
 try:
     from typing import override  # type: ignore  # Python 3.12+
@@ -56,7 +56,7 @@ class ImporterDocScript(ImporterFile):
 
 
 @contextmanager
-def importer_doc_script_context():
+def importer_doc_script():
     """
     Context manager that adds ImporterUserScript to sys.meta_path
     and removes it after the context is exited.

@@ -60,7 +60,7 @@ class ImporterUserExtScript(ImporterFile):
 
 
 @contextmanager
-def importer_user_ext_script_context(ext_name: str):
+def importer_user_ext_script(ext_name: str):
     """
     Context manager that adds ImporterUserExtScript to sys.meta_path
     and removes it after the context is exited.
