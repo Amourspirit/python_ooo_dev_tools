@@ -44,19 +44,19 @@ class KeyHandler(AdapterBase, XKeyHandler):
             subscriber.addKeyHandler(self)
 
     # region XKeyListener
-    def keyPressed(self, event: KeyEvent) -> None:
+    def keyPressed(self, event: KeyEvent) -> None:  # type: ignore
         """
         is invoked when a key has been pressed.
         """
         self._trigger_event("keyPressed", event)
 
-    def keyReleased(self, event: KeyEvent) -> None:
+    def keyReleased(self, event: KeyEvent) -> None:  # type: ignore
         """
         is invoked when a key has been released.
         """
         self._trigger_event("keyReleased", event)
 
-    def disposing(self, event: EventObject) -> None:
+    def disposing(self, event: EventObject) -> None:  # type: ignore
         """
         Gets called when the broadcaster is about to be disposed.
 

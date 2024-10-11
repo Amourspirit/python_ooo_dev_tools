@@ -40,3 +40,13 @@ class DocCommonPartialT(Protocol):
             NamedLogger: The logger.
         """
         ...
+
+    @property
+    def component(self) -> Any:
+        """
+        Gets the component.
+
+        Returns:
+            Any: The component.
+        """
+        ...

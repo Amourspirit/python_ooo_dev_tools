@@ -2,6 +2,36 @@
 Version History
 ***************
 
+Version 0.48.0
+==============
+
+Added new ``ooodev.uno_helper.importer`` namespace that contains modules and classes for importing python scripts from User, Shared, Extension and Document locations.
+
+See the :ref:`ns_uno_helper_importer` docs.
+
+In this example the ``importer_shared_script`` module is used to import the ``Capitalise`` module from the Shared location.
+
+.. code-block:: python
+
+    from ooodev.uno_helper.importer import importer_shared_script
+
+    def main():
+        with importer_shared_script():
+            import Capitalise
+
+In this example the ``importer_doc_script`` module is used to import the ``mod_hello`` module from the documents embedded scripts.
+The the ``say_hello()`` function is called.
+
+.. code-block:: python
+
+    from ooodev.uno_helper.importer import importer_doc_script
+
+    def main():
+        with importer_doc_script() as importer:
+            import mod_hello
+
+        mod_hello.say_hello()
+
 Version 0.47.19
 ===============
 
