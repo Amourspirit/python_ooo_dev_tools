@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 import pytest
-from pathlib import Path
+import sys
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -12,9 +12,6 @@ from ooodev.utils.info import Info
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 from ooodev.utils.selection import WordTypeEnum
-
-from com.sun.star.text import XTextDocument
-from com.sun.star.text import XTextRange
 
 
 if TYPE_CHECKING:
@@ -28,7 +25,10 @@ if TYPE_CHECKING:
 #                       Demonstrates a pythonic way of enumerating paragraphs and sentences.
 #                       I found count_Sentences to not work, got something like 1500 sentences on scandalStart.odt, Way too high
 
+# on windows getting Fatal Python error: Aborted even though the test runs fine when run by itself.
 
+
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows in a group")
 def test_writer_scandal_start(loader, copy_fix_writer):
     visible = True
     delay = 2000

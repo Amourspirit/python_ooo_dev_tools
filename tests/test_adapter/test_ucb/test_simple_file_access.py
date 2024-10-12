@@ -18,7 +18,7 @@ def test_simple_file_access(loader, tmp_path_session: Path) -> None:
     pth.mkdir(exist_ok=True)
     pth = pth / "test.txt"
 
-    with open(pth, "w") as f:
+    with open(pth, "w", encoding="utf-8") as f:
         f.write("Hello World" + "\n")
 
     assert pth.exists()
@@ -46,7 +46,7 @@ def test_simple_file_access(loader, tmp_path_session: Path) -> None:
         txt_out_stream.close_output()
 
     assert pth.exists()
-    with open(pth, "r") as f:
+    with open(pth, "r", encoding="utf-8") as f:
         assert f.read() == "\n".join(strings) + "\n"
 
     in_stream = TextInputStreamComp.from_lo()

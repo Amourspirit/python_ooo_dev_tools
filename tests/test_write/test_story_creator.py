@@ -4,7 +4,7 @@ Write 10 forumlae into a new Text doc and save as a pdf file.
 
 from typing import List
 import pytest
-import random
+import sys
 from pathlib import Path
 
 if __name__ == "__main__":
@@ -26,7 +26,10 @@ from com.sun.star.text import XTextCursor
 from ooo.dyn.style.line_spacing import LineSpacing
 from ooo.dyn.style.line_spacing_mode import LineSpacingMode
 
+# on windows getting Fatal Python error: Aborted even though the test runs fine when run by itself.
 
+
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows in a group")
 def test_story_creator(loader, copy_fix_writer, tmp_path_fn):
     visible = True
     delay = 4_000

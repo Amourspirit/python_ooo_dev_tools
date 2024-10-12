@@ -145,6 +145,9 @@ class DocumentDialogLibraryContainerComp(
         # this it not actually called as __new__ is overridden
         pass
 
+    def __bool__(self) -> bool:
+        return True
+
     # region Properties
     @property
     def component(self) -> DocumentDialogLibraryContainer:

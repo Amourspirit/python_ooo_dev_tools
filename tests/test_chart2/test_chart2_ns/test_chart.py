@@ -11,6 +11,7 @@ import uno
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
 from ooodev.utils.kind.chart2_types import ChartTypes
+from com.sun.star.document import MacroExecMode
 
 try:
     from ooodev.office.chart2 import Chart2
@@ -34,7 +35,7 @@ def test_insert_chart(loader, copy_fix_calc) -> None:
 
     fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
 
-    doc = CalcDoc.open_doc(fix_path)
+    doc = CalcDoc.open_doc(fnm=fix_path, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE_NO_WARN)  # type: ignore
     try:
         sheet = doc.sheets[0]
         if not Lo.bridge_connector.headless:

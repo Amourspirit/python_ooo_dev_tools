@@ -1,5 +1,8 @@
 from __future__ import annotations
+import contextlib
 from typing import Any, cast, TYPE_CHECKING
+from urllib.parse import urlparse
+from pathlib import Path
 import uno
 import unohelper
 from ooodev.loader import lo as mLo
@@ -13,18 +16,8 @@ from ooodev.adapter.io.text_output_stream_comp import TextOutputStreamComp
 from ooodev.adapter.io.text_input_stream_comp import TextInputStreamComp
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.adapter.ucb.simple_file_access_comp import SimpleFileAccessComp
+from ooodev.uno_helper.py_script import python_script
 
-try:
-    import pythonscript
-except ImportError:
-    import pythonloader
-
-    pythonscript = None
-    for url, module in pythonloader.g_loadedComponents.iteritems():
-        if url.endswith("script-provider-for-python/pythonscript.py"):
-            pythonscript = module
-    if pythonscript is None:
-        raise Exception("Unable to find the pythonscript module.")
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -64,29 +57,27 @@ class PythonScript(LoInstPropsPartial):
         self._ctx = lo_inst.get_context()
         self._doc = doc
         self._doc_uri = None
+        self._shared_script_path: Path | None = None
+        self._user_script_path: Path | None = None
 
         self._logger = NamedLogger(self.__class__.__name__)
 
+    def __bool__(self) -> bool:
+        return True
+
     def _join_url(self, base, name, name_encode=True):
         """Join name to base URL."""
-        if name_encode:
-            _name = name
-        else:
-            _name = unohelper.systemPathToFileUrl(name)
-        if base.endswith("/"):
-            return base + _name
-        return base + "/" + _name
+        _name = name if name_encode else unohelper.systemPathToFileUrl(name)
+        return base + _name if base.endswith("/") else f"{base}/{_name}"
 
     def _get_document_uri(self, doc: XComponent):
         """Get document transient URI."""
         transient_doc = TransientDocumentsDocumentContentFactoryComp.from_lo(self.lo_inst)
 
-        try:
+        with contextlib.suppress(Exception):
             content = transient_doc.create_document_content(doc)  # type: ignore
-            id = content.get_identifier()
-            return id.getContentIdentifier()
-        except Exception:
-            pass
+            c_id = content.get_identifier()
+            return c_id.getContentIdentifier()
 
     def _get_doc_uri(self):
         """Returns internal uri for the current document."""
@@ -100,14 +91,11 @@ class PythonScript(LoInstPropsPartial):
             doc = self._doc.ScriptContainer  # type: ignore
         except AttributeError:
             # some sub-documents don't support XScriptInvocationContext
-            try:
+            with contextlib.suppress(AttributeError):
                 if self._doc.Parent:  # type: ignore
                     doc = self._doc.Parent  # type: ignore
-            except AttributeError:
-                pass
-        uri = self._get_document_uri(doc)
-        if uri:
-            self._allow_macro_execution = doc.AllowMacroExecution
+        if uri := self._get_document_uri(doc):  # type: ignore
+            self._allow_macro_execution = doc.AllowMacroExecution  # type: ignore
             self._doc_uri = uri.rstrip("/")
             return self._doc_uri
         return ""
@@ -115,7 +103,7 @@ class PythonScript(LoInstPropsPartial):
     def _get_user_script_provider(self):
         """Get the user script provider."""
         if self._user_sp is None:
-            PythonScriptProvider = pythonscript.PythonScriptProvider
+            PythonScriptProvider = python_script.PythonScriptProvider  # type: ignore
             self._user_sp = PythonScriptProvider(self._ctx, "user")
             try:
                 self._user_sp.uno_packages_sp = PythonScriptProvider(self._ctx, "user:uno_packages")
@@ -126,7 +114,7 @@ class PythonScript(LoInstPropsPartial):
     def _get_shared_script_provider(self):
         """Get the share script provider."""
         if self._share_sp is None:
-            PythonScriptProvider = pythonscript.PythonScriptProvider
+            PythonScriptProvider = python_script.PythonScriptProvider  # type: ignore
             self._share_sp = PythonScriptProvider(self._ctx, "share")
             try:
                 self._share_sp.uno_packages_sp = PythonScriptProvider(self._ctx, "share:uno_packages")
@@ -138,7 +126,7 @@ class PythonScript(LoInstPropsPartial):
         """Get the document script provider."""
         if self._document_sp is None:
             doc = self._get_doc_uri()
-            PythonScriptProvider = pythonscript.PythonScriptProvider
+            PythonScriptProvider = python_script.PythonScriptProvider  # type: ignore
             self._document_sp = PythonScriptProvider(self._ctx, doc)
             # don't create a default PythonScriptProvider instance due to bug https://bugs.documentfoundation.org/show_bug.cgi?id=105609
             # self.document_sp = default_sp.setdefault(self.doc, PythonScriptProvider(self.ctx, self.doc))
@@ -159,9 +147,9 @@ class PythonScript(LoInstPropsPartial):
         """
         if node is None:
             node = self.document_script_provider.dirBrowseNode
-        if isinstance(node, pythonscript.PythonScriptProvider):
+        if isinstance(node, python_script.PythonScriptProvider):  # type: ignore
             node = node.dirBrowseNode
-        elif not isinstance(node, pythonscript.DirBrowseNode):
+        elif not isinstance(node, python_script.DirBrowseNode):  # type: ignore
             self._logger.debug("file_exist(): Invalid node type.")
             return False
         name = filename
@@ -187,9 +175,9 @@ class PythonScript(LoInstPropsPartial):
         """
         if node is None:
             node = self.document_script_provider.dirBrowseNode
-        if isinstance(node, pythonscript.PythonScriptProvider):
+        if isinstance(node, python_script.PythonScriptProvider):  # type: ignore
             node = node.dirBrowseNode
-        elif not isinstance(node, pythonscript.DirBrowseNode):
+        elif not isinstance(node, python_script.DirBrowseNode):  # type: ignore
             self._logger.debug("delete_file(): Invalid node type.")
             return False
         name = filename
@@ -205,33 +193,13 @@ class PythonScript(LoInstPropsPartial):
 
     def _get_sfa(self) -> SimpleFileAccessComp:
         """Get SimpleFileAccessComp instance."""
-        sfa = SimpleFileAccessComp.from_lo(self.lo_inst)
-        return sfa
+        return SimpleFileAccessComp.from_lo(self.lo_inst)
 
     def _create_string_node(self, node: str) -> DotDict:
         """Get string node."""
         sfa = self._get_sfa()
         s = f"{self._get_doc_uri()}/Scripts/python/{node.lstrip('/')}"
         return DotDict(rootUrl=s, provCtx=DotDict(sfa=sfa.component))
-
-    # def _create_tempfile(self, node):
-    #     """ Copy embedded script to temporary folder."""
-    #     try:
-    #         self.adddoceventlistener()
-    #         if not self.tempdir:
-    #             TP = self.smgr.createInstanceWithContext(
-    #                         "com.sun.star.io.TempFile", self.ctx)
-    #             self.tempdir = base_url(TP.Uri)
-    #         path = node.uri.replace(self.DOC_PROTOCOL + ':/', '')
-    #         filepath = join_url(self.tempdir, path)
-    #         dirpath = '/'.join(filepath.split('/')[:-1])
-    #         sfa = node.provCtx.sfa
-    #         sfa.createFolder(dirpath)
-    #         sfa.copy(node.uri, filepath)
-    #         tempfiles[node.uri] = filepath
-    #         return filepath
-    #     except Exception as e:
-    #         raise ErrorAsMessage("_create_tempfile\n\n"+str(e))
 
     def write_file(self, filename: str, content: str, node: Any = None, mode: str = "w") -> None:
         """
@@ -252,13 +220,13 @@ class PythonScript(LoInstPropsPartial):
 
         if node is None:
             node = self.document_script_provider.dirBrowseNode
-        if isinstance(node, pythonscript.PythonScriptProvider):
+        if isinstance(node, python_script.PythonScriptProvider):  # type: ignore
             node = node.dirBrowseNode
         elif isinstance(node, str):
             node = self._create_string_node(node)
         elif isinstance(node, DotDict):
             pass
-        elif not isinstance(node, pythonscript.DirBrowseNode):
+        elif not isinstance(node, python_script.DirBrowseNode):  # type: ignore
             self._logger.debug("write_file(): Invalid node type.")
             return
         name = filename
@@ -318,13 +286,13 @@ class PythonScript(LoInstPropsPartial):
         """
         if node is None:
             node = self.document_script_provider.dirBrowseNode
-        if isinstance(node, pythonscript.PythonScriptProvider):
+        if isinstance(node, python_script.PythonScriptProvider):  # type: ignore
             node = node.dirBrowseNode
         elif isinstance(node, str):
             node = self._create_string_node(node)
         elif isinstance(node, DotDict):
             pass
-        elif not isinstance(node, pythonscript.DirBrowseNode):
+        elif not isinstance(node, python_script.DirBrowseNode):  # type: ignore
             self._logger.debug("read_file(): Invalid node type.")
             return ""
         name = filename
@@ -394,6 +362,49 @@ class PythonScript(LoInstPropsPartial):
         except SyntaxError:
             self._logger.error("test_compile_python(): Syntax error.", exc_info=True)
             raise
+
+    def _uri_to_path(self, file_uri: str) -> Path:
+        """
+        Converts a file URI to a regular file path.
+
+        Args:
+            file_uri (str): The file URI to convert.
+
+        Returns:
+            Path: The regular file path.
+        """
+        parsed_uri = urlparse(file_uri)
+        return Path(parsed_uri.path)
+
+    def get_shared_script_path(self) -> Path:
+        """
+        Retrieves the shared script path.
+
+        Returns:
+            Path: The path to the shared script such as ``/usr/lib/libreoffice/share/Scripts/python``.
+
+        .. versionadded:: 0.48.0
+        """
+
+        if self._shared_script_path is None:
+            pv = self.shared_script_provider
+            self._shared_script_path = self._uri_to_path(pv.dirBrowseNode.rootUrl)
+        return self._shared_script_path
+
+    def get_user_script_path(self) -> Path:
+        """
+        Retrieves the path to the user's script directory.
+
+        Returns:
+            Path: The path to the user's script directory such as ``~/.config/libreoffice/4/user/Scripts/python``
+
+        .. versionadded:: 0.48.0
+        """
+
+        if self._user_script_path is None:
+            pv = self.user_script_provider
+            self._user_script_path = self._uri_to_path(pv.dirBrowseNode.rootUrl)
+        return self._user_script_path
 
     @property
     def document_script_provider(self):

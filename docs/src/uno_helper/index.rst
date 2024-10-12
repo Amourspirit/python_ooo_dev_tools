@@ -7,3 +7,4 @@ uno_helper
     :titlesonly:
     
     base_class/index
+    importer/index

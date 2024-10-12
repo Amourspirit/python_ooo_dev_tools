@@ -1,7 +1,11 @@
+import pytest
 import sys
 from pathlib import Path
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
 from ooodev.utils.file_io import FileIO
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -14,7 +18,7 @@ import pytest
         ("", ""),
     ],
 )
-def test_make_dir(input, dir, tmp_path) -> None:
+def test_make_dir(input, dir, tmp_path, loader) -> None:
     p = Path(tmp_path, input)
     dp = Path(tmp_path, dir)
     result = FileIO.make_directory(p)
@@ -30,7 +34,7 @@ def test_make_dir(input, dir, tmp_path) -> None:
         ("file:///var/log/myfile.txt", "/var/log/myfile.txt"),
     ],
 )
-def test_linux_url_to_path(input: str, expected: str) -> None:
+def test_linux_url_to_path(input: str, expected: str, loader) -> None:
     result = FileIO.url_to_path(input)
     ep = Path(expected)
     assert result == ep
@@ -45,7 +49,7 @@ def test_linux_url_to_path(input: str, expected: str) -> None:
         ("file:///d:/myfile.txt", "d:/myfile.txt"),
     ],
 )
-def test_win_url_to_path(input: str, expected: str) -> None:
+def test_win_url_to_path(input: str, expected: str, loader) -> None:
     # result = FileIO.url_to_path(input)
     result = FileIO.uri_to_path(input)
     ep = Path(expected)
@@ -55,14 +59,14 @@ def test_win_url_to_path(input: str, expected: str) -> None:
     assert result == ep
 
 
-@pytest.mark.skipif(sys.platform != "win32", reason="only runs on windows")
-@pytest.mark.parametrize(
-    "input, expected",
-    [("c:/user/myfile.txt", "file:///c:/user/myfile.txt"), ("d:/myfile.txt", "file:///d:/myfile.txt")],
-)
-def test_win_path_to_url(input: str, expected: str) -> None:
-    result = FileIO.fnm_to_url(input)
-    assert result.casefold() == expected.casefold()
+# @pytest.mark.skipif(sys.platform != "win32", reason="only runs on windows")
+# @pytest.mark.parametrize(
+#     "input, expected",
+#     [("c:/user/myfile.txt", "file:///c:/user/myfile.txt"), ("d:/myfile.txt", "file:///d:/myfile.txt")],
+# )
+# def test_win_path_to_url(input: str, expected: str) -> None:
+#     result = FileIO.fnm_to_url(input)
+#     assert result.casefold() == expected.casefold()
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows")
@@ -70,7 +74,7 @@ def test_win_path_to_url(input: str, expected: str) -> None:
     "input, expected",
     [("/home/user/myfile.txt", "file:///home/user/myfile.txt"), ("/home/myfile.txt", "file:///home/myfile.txt")],
 )
-def test_win_path_to_url(input: str, expected: str) -> None:
+def test_win_path_to_url(input: str, expected: str, loader) -> None:
     result = FileIO.fnm_to_url(input)
     assert result.casefold() == expected.casefold()
 
@@ -79,7 +83,7 @@ def test_win_path_to_url(input: str, expected: str) -> None:
     "input, expected",
     [("/home/user/myfile.txt", "myfile.txt"), ("/home/myPic.jpeg", "myPic.jpeg"), ("", "")],
 )
-def test_get_fnm(input: str, expected: str) -> None:
+def test_get_fnm(input: str, expected: str, loader) -> None:
     result = FileIO.get_fnm(input)
     assert result == expected
 
@@ -88,7 +92,7 @@ def test_get_fnm(input: str, expected: str) -> None:
     "input",
     ["myfile.txt", "myPic.jpeg"],
 )
-def test_is_openable(input, tmp_path) -> None:
+def test_is_openable(input, tmp_path, loader) -> None:
     p = Path(tmp_path, input)
     p.touch()  # create fiele
     result = FileIO.is_openable(p)
@@ -99,71 +103,66 @@ def test_is_openable(input, tmp_path) -> None:
     "input",
     ["myfile.txt", "myPic.jpeg"],
 )
-def test_not_is_openable(input, tmp_path) -> None:
+def test_not_is_openable(input, tmp_path, loader) -> None:
     p = Path(tmp_path, input)
     result = FileIO.is_openable(p)
-    assert result == False
+    assert result is False
 
 
 @pytest.mark.parametrize(
     "input,expected",
     [("myfile.txt", True), ("myPic.jpeg", True), (Path("somepath"), True), ("", False), (None, False)],
 )
-def test_is_valid_path_or_str(input, expected: bool) -> None:
+def test_is_valid_path_or_str(input, expected: bool, loader) -> None:
     result = FileIO.is_valid_path_or_str(input)
     assert result == expected
 
 
-def test_is_exist_file(tmp_path) -> None:
+def test_is_exist_file(tmp_path, loader) -> None:
     p = Path(tmp_path, "myfile.txt")
     p.touch()
     result = FileIO.is_exist_file(p)
     assert result
 
 
-def test_is_exist_file_dir(tmp_path) -> None:
+def test_is_exist_file_dir(tmp_path, loader) -> None:
     result = FileIO.is_exist_file(tmp_path)
     assert result == False
 
 
-def test_is_exist_file_invalid_path() -> None:
+def test_is_exist_file_invalid_path(loader) -> None:
     with pytest.raises(ValueError):
         result = FileIO.is_exist_file("", True)
 
 
-def test_is_exist_file_not_file(tmp_path) -> None:
+def test_is_exist_file_not_file(tmp_path, loader) -> None:
     with pytest.raises(ValueError):
         result = FileIO.is_exist_file(tmp_path, True)
 
 
-def test_is_exist_file_not_exist(tmp_path) -> None:
+def test_is_exist_file_not_exist(tmp_path, loader) -> None:
     p = Path(tmp_path, "random.txt")
     with pytest.raises(FileNotFoundError):
         result = FileIO.is_exist_file(p, True)
 
 
-def test_is_exist_dir(tmp_path) -> None:
+def test_is_exist_dir(tmp_path, loader) -> None:
     result = FileIO.is_exist_dir(tmp_path)
     assert result
 
 
-def test_is_exist_dir_not_exist(tmp_path) -> None:
-    result = FileIO.is_exist_dir(Path(tmp_path, "nope"))
-    assert result == False
-
-
-def test_is_exist_dir_invalid_path() -> None:
+def test_is_exist_dir_invalid_path(loader) -> None:
     with pytest.raises(ValueError):
         result = FileIO.is_exist_dir("", True)
 
 
-def test_is_exist_dir_not_exist(tmp_path) -> None:
+def test_is_exist_dir_not_exist(tmp_path, loader) -> None:
     p = Path(tmp_path, "nope")
     with pytest.raises(FileNotFoundError):
         result = FileIO.is_exist_dir(p, True)
 
 
-def test_create_and_del_tmp_file() -> None:
+def test_create_and_del_tmp_file(loader) -> None:
     tmp_file = FileIO.create_temp_file("jpeg")
     p = Path(tmp_file)
     assert p.exists()
@@ -172,7 +171,7 @@ def test_create_and_del_tmp_file() -> None:
     assert p.exists() == False
 
 
-def test_save_str() -> None:
+def test_save_str(loader) -> None:
     tmp_file = FileIO.create_temp_file("txt")
     s = "hello world"
     p = Path(tmp_file)
@@ -185,7 +184,7 @@ def test_save_str() -> None:
     assert f_txt == s
 
 
-def test_save_bytes() -> None:
+def test_save_bytes(loader) -> None:
     tmp_file = FileIO.create_temp_file("bin")
     p = Path(tmp_file)
     assert p.exists()
@@ -198,7 +197,7 @@ def test_save_bytes() -> None:
     assert b_val == b
 
 
-def test_save_array(bond_movies_table) -> None:
+def test_save_array(bond_movies_table, loader) -> None:
     tmp_file = FileIO.create_temp_file("txt")
     try:
         FileIO.save_array(tmp_file, bond_movies_table)
@@ -209,7 +208,7 @@ def test_save_array(bond_movies_table) -> None:
         FileIO.delete_file(tmp_file)
 
 
-def test_append_to() -> None:
+def test_append_to(loader) -> None:
     tmp_file = FileIO.create_temp_file("txt")
     try:
         s = "Hello World"
@@ -225,7 +224,7 @@ def test_append_to() -> None:
         FileIO.delete_file(tmp_file)
 
 
-def test_uri_absolute() -> None:
+def test_uri_absolute(loader) -> None:
     input = "file:///C:/Program%20Files/LibreOffice/program/../share/gallery/sounds/apert2.wav"
     expected = "file:///C:/Program%20Files/LibreOffice/share/gallery/sounds/apert2.wav"
     result = FileIO.uri_absolute(input)

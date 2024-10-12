@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.47.19"
+version = "0.48.0"
 
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
@@ -35,7 +35,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 ooouno = ">=3.0.0"
-typing-extensions = ">=4.12"
+typing-extensions = ">=4.12.2"
 
 
 [[tool.poetry.source]]
