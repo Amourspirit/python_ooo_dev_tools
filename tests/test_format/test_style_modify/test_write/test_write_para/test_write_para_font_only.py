@@ -26,13 +26,17 @@ def test_write(loader, para_text) -> None:
         cursor = Write.get_cursor(doc)
         Write.append_para(cursor=cursor, text=para_text)
 
-        style = FontOnly(name=InnerFontOnly.default.prop_name, size=18.0, style_name=StyleParaKind.CAPTION)
+        font_instance = InnerFontOnly.default  # type: ignore
+
+        name = font_instance.prop_name
+        assert name is not None
+        style = FontOnly(name=name, size=18.0, style_name=StyleParaKind.CAPTION)
         style.apply(doc)
         props = style.get_style_props(doc)
-        assert props.getPropertyValue("CharFontName") == InnerFontOnly.default.prop_name
+        assert props.getPropertyValue("CharFontName") == name
 
         f_style = FontOnly.from_style(doc=doc, style_name=style.prop_style_name)
-        assert f_style.prop_inner.prop_name == InnerFontOnly.default.prop_name
+        assert f_style.prop_inner.prop_name == name
         assert f_style.prop_inner.prop_size is not None
         assert f_style.prop_inner.prop_size.value == 18.0
         Lo.delay(delay)

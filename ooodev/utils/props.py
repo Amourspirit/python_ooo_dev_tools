@@ -7,6 +7,7 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, Dict, List, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload, Union
+from attr import has
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
@@ -1129,6 +1130,14 @@ class Props:
             Otherwise, the ``default`` value is returned if property is not found.
         """
         try:
+            # On Windows 10 with LibreOffice 24.8.1.2 some properties such as for chart get property EmbeddedObject fails.
+            # ps.getPropertyValue(name) was returning None even though the property exists.
+            # This is a workaround for that issue.
+            if hasattr(obj, name):
+                result = getattr(obj, name)
+                if result is None and default is not gUtil.NULL_OBJ:
+                    return default
+                return result
             if mInfo.Info.is_type_interface(obj, "com.sun.star.beans.XPropertySet"):
                 ps = cast(XPropertySet, obj)
             else:

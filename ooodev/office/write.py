@@ -4,7 +4,7 @@
 # region Imports
 from __future__ import annotations
 import contextlib
-from typing import Any, TYPE_CHECKING, Iterable, List, Sequence, cast, overload, Union
+from typing import Any, TYPE_CHECKING, Iterable, List, Optional, Sequence, cast, overload, Union
 import re
 import uno
 from com.sun.star.awt import FontWeight
@@ -220,10 +220,31 @@ class Write(mSel.Selection):
 
     @overload
     @classmethod
+    def open_doc(cls, fnm: PathOrStr, *, loader: XComponentLoader) -> XTextDocument: ...
+
+    @overload
+    @classmethod
     def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader) -> XTextDocument: ...
 
+    @overload
     @classmethod
-    def open_doc(cls, fnm: PathOrStr | None = None, loader: XComponentLoader | None = None) -> XTextDocument:
+    def open_doc(cls, fnm: PathOrStr, loader: XComponentLoader, props: Iterable[PropertyValue]) -> XTextDocument: ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, fnm: PathOrStr, *, props: Iterable[PropertyValue]) -> XTextDocument: ...
+
+    @overload
+    @classmethod
+    def open_doc(cls, *, props: Iterable[PropertyValue]) -> XTextDocument: ...
+
+    @classmethod
+    def open_doc(
+        cls,
+        fnm: PathOrStr | None = None,
+        loader: XComponentLoader | None = None,
+        props: Optional[Iterable[PropertyValue]] = None,
+    ) -> XTextDocument:
         """
         Opens or creates a Text (Writer) document.
 
@@ -255,6 +276,9 @@ class Write(mSel.Selection):
 
         Attention:
             :py:meth:`Lo.open_doc <.utils.lo.Lo.open_doc>` method is called along with any of its events.
+
+        .. versionchanged:: 0.48.0
+            added new arg props
         """
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(Write.open_doc.__qualname__)
@@ -264,11 +288,24 @@ class Write(mSel.Selection):
             raise mEx.CancelEventError(cargs)
         fnm = cast("PathOrStr", cargs.event_data["fnm"])
         if fnm:
-            doc = mLo.Lo.open_doc(fnm=fnm) if loader is None else mLo.Lo.open_doc(fnm=fnm, loader=loader)
+            if props is None:
+                doc = mLo.Lo.open_doc(fnm=fnm) if loader is None else mLo.Lo.open_doc(fnm=fnm, loader=loader)
+            else:
+                doc = (
+                    mLo.Lo.open_doc(fnm=fnm)
+                    if loader is None
+                    else mLo.Lo.open_doc(fnm=fnm, loader=loader, props=props)
+                )
         elif loader is None:
-            doc = cls.create_doc()
+            if props is None:
+                doc = cls.create_doc()
+            else:
+                doc = cls.create_doc(props=props)
         else:
-            doc = cls.create_doc(loader=loader)
+            if props is None:
+                doc = cls.create_doc(loader=loader)
+            else:
+                doc = cls.create_doc(loader=loader, props=props)
 
         if not cls.is_text(doc):
             mLo.Lo.print(f"Not a text document; closing '{fnm}'")
@@ -379,8 +416,18 @@ class Write(mSel.Selection):
     @staticmethod
     def create_doc(loader: XComponentLoader) -> XTextDocument: ...
 
+    @overload
     @staticmethod
-    def create_doc(loader: XComponentLoader | None = None) -> XTextDocument:
+    def create_doc(loader: XComponentLoader, props: Iterable[PropertyValue]) -> XTextDocument: ...
+
+    @overload
+    @staticmethod
+    def create_doc(*, props: Iterable[PropertyValue]) -> XTextDocument: ...
+
+    @staticmethod
+    def create_doc(
+        loader: XComponentLoader | None = None, props: Optional[Iterable[PropertyValue]] = None
+    ) -> XTextDocument:
         """
         Creates a new Writer Text Document.
 
@@ -388,6 +435,7 @@ class Write(mSel.Selection):
 
         Args:
             loader (XComponentLoader): Component Loader.
+            props (Iterable[PropertyValue]): Property values.
 
         Returns:
             XTextDocument: Text Document.
@@ -403,6 +451,9 @@ class Write(mSel.Selection):
 
         Attention:
             :py:meth:`Lo.create_doc <.utils.lo.Lo.create_doc>` method is called along with any of its events.
+
+        .. versionchanged:: 0.48.0
+            added new arg props
         """
         cargs = CancelEventArgs(Write.create_doc.__qualname__)
         cargs.event_data = {"loader": loader}
@@ -410,9 +461,15 @@ class Write(mSel.Selection):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
         if loader:
-            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+            if props is None:
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader)
+            else:
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, loader=loader, props=props)
         else:
-            doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
+            if props is None:
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER)
+            else:
+                doc = mLo.Lo.create_doc(doc_type=mLo.Lo.DocTypeStr.WRITER, props=props)
         _Events().trigger(WriteNamedEvent.DOC_CREATED, EventArgs.from_args(cargs))
         return mLo.Lo.qi(XTextDocument, doc, True)
 

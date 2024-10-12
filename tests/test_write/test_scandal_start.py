@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, cast
+import sys
 import pytest
 from pathlib import Path
 
@@ -7,6 +8,8 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 import uno
+from com.sun.star.document import MacroExecMode
+
 from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.office.write import Write
@@ -28,14 +31,20 @@ if TYPE_CHECKING:
 #                       Demonstrates a pythonic way of enumerating paragraphs and sentences.
 #                       I found count_Sentences to not work, got something like 1500 sentences on scandalStart.odt, Way too high
 
+# on windows getting Fatal Python error: Aborted even though the test runs fine when run by itself.
 
+
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows in a group")
 def test_writer_scandal_start(loader, copy_fix_writer):
+    from ooodev.utils.props import Props
+
     visible = True
     delay = 2000
 
     # text file opens with each new line being considered a paragraph break.
     test_doc = copy_fix_writer("scandalStart.odt")
-    doc = Write.open_doc(test_doc, loader)
+    props = Props.make_props(Hidden=True, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE_NO_WARN)
+    doc = Write.open_doc(fnm=test_doc, loader=loader, props=props)
     try:
         if visible:
             GUI.set_visible(visible, doc)
@@ -95,5 +104,5 @@ def enumerate_text_sections(doc: XTextDocument):
                 ps = para_section.getString()
                 # s = s & oParSection.TextPortionType & ":"
                 s = f"{s}{para_section.TextPortionType}:"
-        print(s)
+        # print(s)
     return p_count, w_count, parts_count

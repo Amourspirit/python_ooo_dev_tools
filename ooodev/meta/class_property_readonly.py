@@ -1,4 +1,4 @@
-class ClassPropertyReadonly(property):
+class ClassPropertyReadonly:
     """
     Class Property. Use with ``@classmethod``.
 
@@ -17,6 +17,9 @@ class ClassPropertyReadonly(property):
         This class doesn't actually work for setters, only getters.
     """
 
-    # https://stackoverflow.com/a/1383402/1171746
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()  # type: ignore
+    def __init__(self, fget):
+        self.fget = fget
+
+    def __get__(self, instance, owner):
+        return self.fget.__get__(None, owner)()
+        # return self.fget(owner)

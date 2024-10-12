@@ -1,4 +1,5 @@
 import pytest
+import sys
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
@@ -8,7 +9,10 @@ from ooodev.loader.lo import Lo
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 
+# on windows getting Fatal Python error: Aborted even though the test runs fine when run by itself.
 
+
+@pytest.mark.skipif(sys.platform == "win32", reason="does not run on windows in a group")
 def test_num_style(loader):
     """
     This test requires Write to be visible.

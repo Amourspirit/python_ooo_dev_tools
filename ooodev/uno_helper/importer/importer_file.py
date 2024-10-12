@@ -5,8 +5,8 @@ import importlib.util
 import os
 import sys
 from contextlib import contextmanager
-from pathlib import Path
-from urllib.parse import urlparse
+
+from ooodev.utils import file_io as mFileIO
 
 if TYPE_CHECKING:
     import types
@@ -51,8 +51,10 @@ class ImporterFile(importlib.abc.MetaPathFinder, importlib.abc.Loader):
         Returns:
             str: The regular file path.
         """
-        parsed_uri = urlparse(file_uri)
-        return str(Path(parsed_uri.path))
+        p = mFileIO.FileIO.uri_to_path(file_uri)
+        if p:
+            return str(p)
+        return ""
 
 
 @contextmanager

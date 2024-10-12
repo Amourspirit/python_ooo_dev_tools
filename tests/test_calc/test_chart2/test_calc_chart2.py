@@ -5,6 +5,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
     pytest.main([__file__])
+    
 try:
     from ooodev.office.chart2 import Chart2
 except ImportError:
@@ -12,6 +13,7 @@ except ImportError:
 from ooodev.utils.info import Info
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.color import StandardColor
+from com.sun.star.document import MacroExecMode
 
 
 def test_insert_chart2(loader, copy_fix_calc) -> None:
@@ -24,7 +26,7 @@ def test_insert_chart2(loader, copy_fix_calc) -> None:
     # testing each overload.
     from ooodev.calc import CalcDoc
 
-    doc = CalcDoc.open_doc(fix_path)
+    doc = CalcDoc.open_doc(fnm=fix_path, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE_NO_WARN)  # type: ignore
     try:
         sheet = doc.sheets[0]
         rng_obj = sheet.rng("A2:B8")

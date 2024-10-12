@@ -5,6 +5,7 @@ from enum import Enum
 import uno
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
+from com.sun.star.document import MacroExecMode
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.calc import Calc
@@ -13,6 +14,7 @@ from ooodev.utils.file_io import FileIO
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.type_var import PathOrStr
+from ooodev.conn.cache import Cache
 
 
 class ChartKind(str, Enum):
@@ -38,12 +40,14 @@ class ChartViews:
         self._chart_name = ChartViews._CHART_NAME + str(int(random() * 10_000))
 
     def main(self) -> None:
-        loader = Lo.load_office(Lo.ConnectPipe())
+        loader = Lo.load_office(Lo.ConnectPipe(), cache_obj=Cache(profile_path="", no_shared_ext=True))
 
         try:
-            doc = Calc.open_doc(fnm=self._data_fnm, loader=loader)
-            GUI.set_visible(is_visible=True, odoc=doc)
-            sheet = Calc.get_sheet(doc=doc, index=0)
+            doc = Calc.open_doc(
+                fnm=self._data_fnm, loader=loader, MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE_NO_WARN
+            )  # type: ignore
+            GUI.set_visible(visible=True, doc=doc)
+            sheet = Calc.get_sheet(doc=doc, idx=0)
 
             if self._chart_kind == ChartKind.AREA:
                 self._area_chart(doc=doc, sheet=sheet)

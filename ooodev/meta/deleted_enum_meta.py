@@ -46,7 +46,7 @@ class DeletedUnoEnumMeta(UnoEnumMeta):
 
     def __getattribute__(cls, name: str) -> Any:
         # object.__getattribute__ must be used here or a recursion error will be raised.
-        restricted = object.__getattribute__(cls, "_get_deleted_attribs")()
+        restricted = object.__getattribute__(cls, "_get_deleted_attribs").__func__()
         if name in restricted:  # type: ignore
             cls_name = cls.__name__
             accessed_via = f"Enum {cls_name!r}"

@@ -5,6 +5,7 @@ import uno
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
+from com.sun.star.document import MacroExecMode
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.calc import Calc
@@ -26,6 +27,7 @@ from ooodev.utils.kind.data_point_lable_placement_kind import DataPointLabelPlac
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
 from ooodev.utils.type_var import PathOrStr
+from ooodev.conn.cache import Cache
 
 from ooo.dyn.awt.font_weight import FontWeight
 from ooo.dyn.chart.time_increment import TimeIncrement
@@ -73,12 +75,12 @@ class Chart2View:
     def main(self) -> None:
         opt = Lo.Options(verbose=True)
         if self._soffice:
-            loader = Lo.load_office(Lo.ConnectPipe(soffice=self._soffice), opt=opt)
+            loader = Lo.load_office(Lo.ConnectPipe(soffice=self._soffice), opt=opt, cache_obj=Cache(profile_path="", no_shared_ext=True))
         else:
-            loader = Lo.load_office(Lo.ConnectPipe(), opt=opt)
+            loader = Lo.load_office(Lo.ConnectPipe(), opt=opt, cache_obj=Cache(profile_path="", no_shared_ext=True))
 
         try:
-            doc = Calc.open_doc(fnm=self._data_fnm, loader=loader)
+            doc = Calc.open_doc(fnm=self._data_fnm, loader=loader,  MacroExecutionMode=MacroExecMode.ALWAYS_EXECUTE_NO_WARN) # type: ignore
             GUI.set_visible(visible=True, doc=doc)
             sheet = Calc.get_sheet(doc=doc, idx=0)
 

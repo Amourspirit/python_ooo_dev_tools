@@ -1,7 +1,7 @@
 .. _ns_uno_helper_importer_doc_script:
 
-Module ImporterDocScript
-========================
+Module importer_doc_script
+==========================
 
 Function: importer_doc_script
 -----------------------------
