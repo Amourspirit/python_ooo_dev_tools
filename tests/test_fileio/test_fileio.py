@@ -1,7 +1,11 @@
+import pytest
 import sys
 from pathlib import Path
+
+if __name__ == "__main__":
+    pytest.main([__file__])
+
 from ooodev.utils.file_io import FileIO
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -30,7 +34,7 @@ def test_make_dir(input, dir, tmp_path, loader) -> None:
         ("file:///var/log/myfile.txt", "/var/log/myfile.txt"),
     ],
 )
-def test_linux_url_to_path(input: str, expected: str, laoder) -> None:
+def test_linux_url_to_path(input: str, expected: str, loader) -> None:
     result = FileIO.url_to_path(input)
     ep = Path(expected)
     assert result == ep
