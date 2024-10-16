@@ -7,7 +7,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, Dict, List, Iterable, Optional, Sequence, Tuple, TYPE_CHECKING, cast, overload, Union
-from attr import has
 import uno
 
 from com.sun.star.beans import PropertyAttribute  # const
