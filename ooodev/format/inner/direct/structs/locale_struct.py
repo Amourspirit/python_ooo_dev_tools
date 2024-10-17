@@ -8,7 +8,6 @@ Module for ``LocaleStruct`` struct.
 from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
-import uno
 from ooo.dyn.lang.locale import Locale
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -221,7 +220,7 @@ class LocaleStruct(StructBase):
             obj2 = oth.get_uno_struct()
         if getattr(oth, "typeName", None) == "com.sun.star.lang.Locale":
             obj2 = cast(Locale, oth)
-        if not obj2 is None:
+        if obj2 is not None:
             obj1 = self.get_uno_struct()
             return obj1.Country == obj2.Country and obj1.Language == obj2.Language and obj1.Variant == obj2.Variant
         return NotImplemented

@@ -6,14 +6,11 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.image.transparency import (
     Gradient,
     GradientStyle,
     Angle,
-    Intensity,
     IntensityRange,
-    Offset,
 )
 from ooodev.format.writer.direct.image.area import Color
 from ooodev.format.writer.direct.image.options import Names

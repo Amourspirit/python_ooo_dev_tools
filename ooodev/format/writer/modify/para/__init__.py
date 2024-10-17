@@ -1,1 +1,5 @@
-from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind as StyleParaKind
+from ooodev.format.writer.style.para.kind.style_para_kind import (
+    StyleParaKind as StyleParaKind,
+)
+
+import uno  # noqa # type: ignore

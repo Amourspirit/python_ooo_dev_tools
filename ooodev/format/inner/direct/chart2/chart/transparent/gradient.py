@@ -7,7 +7,6 @@ Module for Fill Gradient Color.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, overload, TYPE_CHECKING
-import uno
 from com.sun.star.lang import XMultiServiceFactory
 from com.sun.star.chart2 import XChartDocument
 

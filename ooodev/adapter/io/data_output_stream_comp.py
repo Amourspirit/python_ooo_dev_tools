@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.io import XDataOutputStream
 
 from ooodev.adapter.component_prop import ComponentProp

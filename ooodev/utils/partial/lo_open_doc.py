@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Iterable, TYPE_CHECKING, overload
-import uno
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.doc_type import DocType

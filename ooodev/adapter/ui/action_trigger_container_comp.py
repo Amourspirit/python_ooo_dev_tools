@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.container.index_container_comp import IndexContainerComp
 from ooodev.adapter.lang.multi_service_factory_partial import MultiServiceFactoryPartial

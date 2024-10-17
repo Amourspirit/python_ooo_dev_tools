@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.inner.direct.write.para.border.padding import Padding as InnerPadding

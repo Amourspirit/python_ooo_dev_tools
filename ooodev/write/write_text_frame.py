@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic
-import uno
 from com.sun.star.drawing import XShape
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement

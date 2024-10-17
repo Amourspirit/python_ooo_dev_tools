@@ -4,11 +4,8 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.frame.type import (
     Size,
-    RelativeKind,
-    RelativeSize,
     AbsoluteSize,
     Position,
     HoriOrient,

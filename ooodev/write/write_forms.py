@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import overload, TYPE_CHECKING
-import uno
 from com.sun.star.form import XForm
 
 from ooodev.adapter.form.forms_comp import FormsComp

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from logging import info
 from typing import Any, TYPE_CHECKING
 
 from com.sun.star.ui import XModuleUIConfigurationManagerSupplier

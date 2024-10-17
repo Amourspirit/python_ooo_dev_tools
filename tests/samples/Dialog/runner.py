@@ -1,8 +1,7 @@
 from __future__ import annotations
 import datetime
-from typing import Any, TYPE_CHECKING, cast, Tuple, Protocol, TypeVar
+from typing import Any, TYPE_CHECKING, cast, Tuple
 from pathlib import Path
-import uno  # pylint: disable=unused-import
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
@@ -19,11 +18,9 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.utils.color import StandardColor
 from ooodev.dialog.dl_control.ctl_date_field import CtlDateField
 from ooodev.dialog import TriStateKind
-from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
-from ooodev.utils.partial.gui_partial import GuiPartial
 from ooodev.utils.kind.align_kind import AlignKind
 from ooodev.utils.info import Info
-from ooodev.units import UnitAppFontHeight, UnitAppFontWidth, UnitAppFontX, UnitAppFontY
+from ooodev.units import UnitAppFontHeight
 
 if TYPE_CHECKING:
     from com.sun.star.awt import ItemEvent
@@ -32,7 +29,6 @@ if TYPE_CHECKING:
     from com.sun.star.beans import PropertyChangeEvent
     from ooodev.dialog.dl_control.ctl_button import CtlButton
     from ooodev.dialog.dl_control.ctl_check_box import CtlCheckBox
-    from ooodev.dialog.dl_control.ctl_combo_box import CtlComboBox
     from ooodev.dialog.dl_control.ctl_scroll_bar import CtlScrollBar
     from ooodev.dialog.dl_control.ctl_dialog import CtlDialog
     from ooodev.dialog.dl_control.ctl_base import DialogControlBase

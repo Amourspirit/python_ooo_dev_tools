@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.awt.time_field_partial import TimeFieldPartial
 from ooodev.adapter.awt.uno_control_edit_comp import UnoControlEditComp
 

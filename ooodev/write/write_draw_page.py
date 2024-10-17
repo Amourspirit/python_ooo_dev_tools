@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
 
 
 from ooodev.adapter.drawing.generic_draw_page_comp import GenericDrawPageComp

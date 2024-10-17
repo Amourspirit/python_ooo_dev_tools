@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any
 from enum import Enum
-import uno  # pylint: disable=no-name-in-module
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.data_type.offset import Offset
 from ooodev.utils.data_type.color_range import ColorRange

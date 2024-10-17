@@ -2,7 +2,6 @@
 # pylint: disable=unnecessary-pass
 # pylint: disable=unused-import
 from __future__ import annotations
-import uno
 from ooodev.format.inner.direct.write.fill.area.fill_color import FillColor
 from ooodev.utils import color as mColor
 

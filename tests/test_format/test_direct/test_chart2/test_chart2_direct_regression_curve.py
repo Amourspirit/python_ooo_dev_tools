@@ -7,7 +7,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
@@ -24,29 +23,16 @@ from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.format.chart2.direct.title.area import (
     Color as ChartTitleBgColor,
-    Gradient as ChartTitleBgGradient,
-    Hatch as ChartTitleBgHatch,
-    Img as ChartTitleBgImg,
-    Pattern as ChartTitleBgPattern,
-    PresetGradientKind,
-    PresetHatchKind,
-    PresetImageKind,
-    PresetPatternKind,
 )
 from ooodev.format.chart2.direct.title.font import Font as TitleFont
 from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind
-from ooodev.format.chart2.direct.title.position_size import Position as TitlePosition
 from ooodev.format.chart2.direct.general.numbers import Numbers, NumberFormatIndexEnum
 
-from ooodev.utils.color import CommonColor, StandardColor
+from ooodev.utils.color import CommonColor
 from ooodev.utils.info import Info
-from ooodev.units import UnitMM100
-from ooodev.format.chart2.direct.title.alignment import Orientation as TitleOrientation
-from ooodev.format.chart2.direct.title.alignment import Direction as TitleDirection, DirectionModeKind
 
 if TYPE_CHECKING:
-    from com.sun.star.chart2 import Title
-    from com.sun.star.style import CharacterProperties
+    pass
 
 
 def test_calc_set_styles_title(loader, copy_fix_calc) -> None:

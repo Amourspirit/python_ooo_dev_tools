@@ -13,3 +13,5 @@ from .font_only import FontOnly as FontOnly
 from .font_effects import FontEffects as FontEffects
 
 __all__ = ["FontEffects", "FontOnly"]
+
+import uno  # noqa # type: ignore

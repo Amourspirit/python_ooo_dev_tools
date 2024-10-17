@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uno
 from com.sun.star.lang import XComponent
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum

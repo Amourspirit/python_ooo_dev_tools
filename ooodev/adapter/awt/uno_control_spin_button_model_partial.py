@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum
 from ooodev.utils.color import Color
 from ooodev.utils.kind.border_kind import BorderKind

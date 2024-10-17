@@ -1,14 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.frame import XStatusListener
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
-    from com.sun.star.frame import XDispatch
     from com.sun.star.lang import EventObject
     from com.sun.star.frame import FeatureStateEvent
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Generic, TypeVar
-import uno
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 from ooodev.events.args.key_val_args import KeyValArgs

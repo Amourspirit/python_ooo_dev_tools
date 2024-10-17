@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.component_prop import ComponentProp
 from com.sun.star.container import XEnumerationAccess
 from com.sun.star.container import XContainer

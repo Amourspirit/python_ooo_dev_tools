@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import sys
-import uno
 from com.sun.star.gallery import XGalleryItem
 from ooodev.loader.lo import Lo
 from gallery import Gallery

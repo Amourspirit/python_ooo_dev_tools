@@ -1,8 +1,7 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.awt import XEnhancedMouseClickHandler
 from ooodev.adapter.adapter_base import AdapterBase
 from ooodev.events.args.generic_args import GenericArgs

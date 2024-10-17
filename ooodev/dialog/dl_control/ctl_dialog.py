@@ -1,7 +1,6 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, overload, Tuple, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from com.sun.star.awt import XToolkit2
 from com.sun.star.awt import XControlContainer
 from com.sun.star.awt import XWindowPeer

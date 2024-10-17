@@ -3,7 +3,6 @@ from typing import Any, TYPE_CHECKING, Callable
 import time
 import threading
 import contextlib
-import uno
 import unohelper
 from com.sun.star.sheet import XRangeSelectionListener
 

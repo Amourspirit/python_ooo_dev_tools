@@ -6,7 +6,6 @@ Draw Style Spacing.
 
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
-import uno
 
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind
 from ooodev.format.draw.style.lookup import FamilyGraphics

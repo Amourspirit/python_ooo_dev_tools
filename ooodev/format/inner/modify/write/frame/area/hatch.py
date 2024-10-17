@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch

@@ -4,15 +4,11 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.page.area import Color
 from ooodev.format.writer.modify.page.transparency import (
     Gradient,
-    WriterStylePageKind,
-    Intensity,
     IntensityRange,
     Angle,
-    Offset,
     GradientStyle,
 )
 from ooodev.format import Styler

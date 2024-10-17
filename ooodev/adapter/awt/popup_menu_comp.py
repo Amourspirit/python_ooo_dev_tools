@@ -1,9 +1,7 @@
 from __future__ import annotations
-from re import T
 from typing import Any, cast, TYPE_CHECKING, Callable
 
 import contextlib
-import uno
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 

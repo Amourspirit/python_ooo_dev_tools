@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from ooodev.mock import mock_g
 from ooodev.adapter.text.text_content_comp import TextContentComp

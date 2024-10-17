@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Tuple
-import uno
 from ooo.dyn.chart.chart_axis_arrange_order_type import ChartAxisArrangeOrderType
 
 from ooodev.format.inner.kind.format_kind import FormatKind

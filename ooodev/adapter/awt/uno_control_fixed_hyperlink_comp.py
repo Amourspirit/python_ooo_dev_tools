@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.fixed_hyperlink_partial import FixedHyperlinkPartial
 from ooodev.adapter.awt.layout_constrains_partial import LayoutConstrainsPartial

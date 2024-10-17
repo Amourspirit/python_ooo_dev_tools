@@ -42,6 +42,7 @@ class Session(metaclass=StaticProperty):
     See Also:
         - `Importing Python Modules <https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html>`_
         - `Getting Session Information <https://help.libreoffice.org/latest/lo/text/sbasic/python/python_session.html>`_
+        - :ref:`ns_uno_helper_importer`
     """
 
     # https://help.libreoffice.org/latest/lo/text/sbasic/python/python_import.html

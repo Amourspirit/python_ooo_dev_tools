@@ -1,11 +1,10 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import datetime
-import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
 
-from ooodev.dialog import Dialogs, BorderKind
+from ooodev.dialog import BorderKind
 from ooodev.dialog.msgbox import MsgBox, MessageBoxResultsEnum, MessageBoxType
 from ooodev.dialog.search.tree_search import RuleDataInsensitive
 from ooodev.dialog.search.tree_search import RuleTextInsensitive
@@ -14,9 +13,7 @@ from ooodev.dialog.search.tree_search.search_tree import SearchTree
 from ooodev.events.args.event_args import EventArgs
 from ooodev.calc import CalcDoc
 from ooodev.loader import lo as mLo
-from ooodev.gui.gui import GUI
 from ooodev.utils.date_time_util import DateUtil
-from ooodev.dialog.partial.create_dialog_partial import CreateDialogPartial
 
 
 if TYPE_CHECKING:

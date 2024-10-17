@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 import contextlib
 from logging import DEBUG
-import uno
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 

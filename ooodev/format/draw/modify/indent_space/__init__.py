@@ -4,3 +4,5 @@ from .indent import Indent as Indent
 from .line_spacing import LineSpacing as LineSpacing
 
 __all__ = ["Indent", "LineSpacing", "Spacing"]
+
+import uno  # noqa # type: ignore

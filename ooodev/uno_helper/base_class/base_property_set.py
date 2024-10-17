@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.beans import XPropertySet
 from ooodev.uno_helper.base_class.base import Base
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from enum import Enum
 from typing import Tuple, cast
-import uno
 from ooo.dyn.chart.data_label_placement import DataLabelPlacement
 from ooodev.format.inner.kind.format_kind import FormatKind
 

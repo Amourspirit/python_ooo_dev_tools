@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 
 from ooodev.format.writer.style.page.kind.writer_style_page_kind import WriterStylePageKind
 from ooodev.format.inner.direct.structs.side import Side

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.scroll_bar_partial import ScrollBarPartial
 

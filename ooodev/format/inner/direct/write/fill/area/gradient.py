@@ -12,7 +12,6 @@ Module for Paragraph Gradient Color.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload
 
-import uno
 from ooo.dyn.drawing.fill_style import FillStyle
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.awt.gradient import Gradient as UNOGradient

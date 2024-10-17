@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, overload, Tuple, List, Sequence
-import os
 import uno
 from com.sun.star.xml.dom import XNode
 from com.sun.star.xml.dom import XNodeList

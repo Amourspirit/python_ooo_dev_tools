@@ -1,14 +1,9 @@
-import os
 import pytest
-from pathlib import Path
-from typing import cast
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.loader.lo import Lo
-from ooodev.exceptions import ex
 from ooodev.units.convert.converter import Converter
 from ooodev.units.convert.unit_area_kind import UnitAreaKind
 from ooodev.units.convert.unit_length_kind import UnitLengthKind

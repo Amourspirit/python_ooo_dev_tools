@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Tuple
-import uno
 from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
 from ooo.dyn.lang.locale import Locale

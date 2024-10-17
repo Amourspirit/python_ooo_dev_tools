@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING, Union
 
-import uno
 import unohelper
 from com.sun.star.sheet import XRangeSelectionChangeListener
 from ooo.dyn.table.cell_content_type import CellContentType

@@ -5,7 +5,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.calc import CalcDoc
 from ooodev.utils.helper.dot_dict import DotDict
 

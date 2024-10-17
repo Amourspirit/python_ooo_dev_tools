@@ -6,7 +6,6 @@ import datetime
 from typing import TYPE_CHECKING, Any, Iterable, Type
 
 # pylint: disable=unused-import
-import uno
 
 from com.sun.star.awt import XControl
 

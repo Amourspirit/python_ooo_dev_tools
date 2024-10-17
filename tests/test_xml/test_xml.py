@@ -1,7 +1,5 @@
 from pathlib import Path
 import pytest
-import uno
-from ooo.dyn.xml.dom.node_type import NodeType
 from ooodev.io.xml.xml import XML
 
 # from ooodev.office.write import Write

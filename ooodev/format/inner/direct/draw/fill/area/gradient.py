@@ -3,7 +3,6 @@ from __future__ import annotations
 
 # pylint: disable=unused-import
 # pylint: disable=abstract-method
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as FillGradient

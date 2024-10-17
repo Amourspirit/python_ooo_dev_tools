@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.awt import XMessageBoxFactory
 from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum
 from ooo.dyn.awt.message_box_type import MessageBoxType

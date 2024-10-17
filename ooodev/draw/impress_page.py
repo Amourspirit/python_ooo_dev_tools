@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import TypeVar, Generic
-import uno
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.draw.draw_page import DrawPage

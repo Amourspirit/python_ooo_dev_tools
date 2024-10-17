@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Any, Dict, Tuple, Type, cast, overload, TypeVar
 
-import uno
 from ooo.dyn.table.shadow_format import ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation
 

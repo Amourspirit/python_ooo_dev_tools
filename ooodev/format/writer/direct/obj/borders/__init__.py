@@ -1,4 +1,3 @@
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.format.inner.direct.structs.side import BorderLineKind as BorderLineKind
@@ -9,3 +8,5 @@ from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct as Sha
 from ooodev.format.inner.direct.write.para.border.sides import Sides as Sides
 
 __all__ = ["Padding", "Shadow", "Sides"]
+
+import uno  # noqa # type: ignore

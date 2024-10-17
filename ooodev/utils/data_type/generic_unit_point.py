@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Generic, TypeVar, Union
-import uno
 from com.sun.star.awt import Point
 
 from ooodev.units.unit_convert import UnitLength

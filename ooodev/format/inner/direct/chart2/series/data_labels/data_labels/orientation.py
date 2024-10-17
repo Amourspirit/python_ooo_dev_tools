@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, Tuple
-import uno
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs
 
 from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind

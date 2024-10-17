@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.glue_point2 import GluePoint2
 from ooo.dyn.awt.point import Point
 
@@ -11,7 +10,6 @@ from ooodev.adapter.struct_base import StructBase
 from ooodev.events.events import Events
 from ooodev.utils import info as mInfo
 from ooodev.units.unit_mm100 import UnitMM100
-from ooodev.utils.data_type.generic_unit_point import GenericUnitPoint
 
 if TYPE_CHECKING:
     from ooo.dyn.drawing.escape_direction import EscapeDirection

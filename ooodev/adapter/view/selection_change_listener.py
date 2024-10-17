@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.frame import XModel
 from com.sun.star.view import XSelectionChangeListener
 from com.sun.star.view import XSelectionSupplier

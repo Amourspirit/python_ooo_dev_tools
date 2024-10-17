@@ -5,7 +5,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.page.header import Header
 from ooodev.format.writer.direct.page.header.area import Color
 from ooodev.format.writer.direct.char.font import Font

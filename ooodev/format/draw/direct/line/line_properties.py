@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.format.inner.direct.chart2.chart.borders.line_properties import LineProperties as LineProps
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind
 from ooodev.format.inner.preset.preset_border_line import get_preset_border_line_props

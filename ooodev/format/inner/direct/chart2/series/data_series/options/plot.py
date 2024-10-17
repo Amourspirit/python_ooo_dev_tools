@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast
-import uno
 from ooo.dyn.chart.missing_value_treatment import MissingValueTreatment
 from com.sun.star.chart2 import XChartDocument
 

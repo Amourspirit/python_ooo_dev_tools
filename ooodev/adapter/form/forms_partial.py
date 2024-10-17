@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.form import XForms
 
 from ooodev.exceptions import ex as mEx
@@ -15,7 +14,6 @@ from ooodev.adapter.lang.component_partial import ComponentPartial
 
 
 if TYPE_CHECKING:
-    from com.sun.star.form import XForm
     from ooodev.utils.type_var import UnoInterface
 
 

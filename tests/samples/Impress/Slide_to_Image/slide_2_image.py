@@ -2,7 +2,6 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-import uno
 from ooodev.office.draw import Draw
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.images_lo import ImagesLo

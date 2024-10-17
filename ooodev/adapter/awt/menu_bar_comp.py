@@ -1,16 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.awt import XMenuBar
 from ooodev.adapter._helper.builder import builder_helper
-from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
-from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.awt.menu_bar_partial import MenuBarPartial
 from ooodev.adapter.awt.menu_events import MenuEvents
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
-from ooodev.events.args.listener_event_args import ListenerEventArgs
 
 if TYPE_CHECKING:
     from com.sun.star.awt import MenuBar

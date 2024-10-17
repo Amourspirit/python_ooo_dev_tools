@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.xml.xpath import XXPathAPI
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.xml.xpath.x_path_api_partial import XPathAPIPartial

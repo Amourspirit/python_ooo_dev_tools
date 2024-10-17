@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from ooodev.mock import mock_g
-import uno
 from com.sun.star.frame import XTerminateListener
 
 if mock_g.DOCS_BUILDING:

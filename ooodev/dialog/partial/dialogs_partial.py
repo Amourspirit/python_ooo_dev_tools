@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, List, Tuple, Type
 
 # pylint: disable=unused-import
-import uno
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlContainer
 from com.sun.star.awt import XTopWindow

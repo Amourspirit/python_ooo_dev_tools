@@ -3,7 +3,6 @@ from typing import Any, TYPE_CHECKING
 import re
 import contextlib
 
-import uno
 from com.sun.star.awt.tree import XMutableTreeNode
 
 from ooodev.loader import lo as mLo

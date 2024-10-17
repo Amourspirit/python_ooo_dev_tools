@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.color import Color

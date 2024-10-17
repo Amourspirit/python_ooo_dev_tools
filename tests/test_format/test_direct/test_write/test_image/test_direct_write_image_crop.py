@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.format.writer.direct.image.crop import ImageCrop, CropOpt, Size, SizeMM
 from ooodev.units.unit_mm import UnitMM

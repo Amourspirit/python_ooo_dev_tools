@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, cast
-import uno
 from ooo.dyn.chart2.legend_position import LegendPosition
 
 from ooodev.exceptions import ex as mEx

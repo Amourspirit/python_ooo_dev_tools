@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
-import uno
 import contextlib
 
 from com.sun.star.chart2 import XChartTypeContainer

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
-import uno
 
 from ooodev.events.gbl_named_event import GblNamedEvent
 from ooodev.events.partial.events_partial import EventsPartial

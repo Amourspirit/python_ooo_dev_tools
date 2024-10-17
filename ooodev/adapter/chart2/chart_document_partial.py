@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.chart2 import XChartDocument
 
 from ooodev.adapter.frame.model_partial import ModelPartial

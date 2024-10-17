@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 from typing import Tuple, overload
 
-import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart import XAxisXSupplier
 from com.sun.star.chart import XAxisYSupplier

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps

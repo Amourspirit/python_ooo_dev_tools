@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.format.inner.direct.draw.shape.text.animation.scroll_through import ScrollThrough as TextScrollThrough
 
 if TYPE_CHECKING:

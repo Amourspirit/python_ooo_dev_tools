@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
 import os
-import uno  # pylint: disable=unused-import
 
 # com.sun.star.awt.Selection
 from ooo.dyn.awt.selection import Selection

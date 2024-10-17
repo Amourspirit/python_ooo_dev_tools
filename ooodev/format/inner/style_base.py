@@ -8,7 +8,13 @@
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.lang import XMultiServiceFactory
@@ -620,7 +626,7 @@ class StyleBase(metaclass=MetaStyle):
         new_class = self.__class__(**kwargs)
         new_class._prop_parent = self._prop_parent
         # pylint: disable=unused-variable
-        if data_values := self._get_properties():
+        if self._get_properties():
             # it is possible that that a new instance will have different property names then the current instance.
             # This can happen because this class inherits from MetaStyle.
             # if ne contains a _props attribute (tuple of prop names) then use them to remap keys.
@@ -1080,6 +1086,7 @@ class StyleMulti(StyleBase):
 
     # region Update Methods
 
+    @override
     def set_update_obj(self, obj: Any) -> None:
         """
         Sets the update object for the styles instances.
@@ -1092,6 +1099,7 @@ class StyleMulti(StyleBase):
         for style, _ in styles.values():
             style.set_update_obj(obj)
 
+    @override
     def update(self, **kwargs: Any) -> bool:
         """
         Applies the styles to the update object.
@@ -1115,6 +1123,7 @@ class StyleMulti(StyleBase):
         """Calls super apply directly"""
         super().apply(obj, **kwargs)
 
+    @override
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance and all other internal style instances.
@@ -1147,7 +1156,8 @@ class StyleMulti(StyleBase):
     @overload
     def copy(self: TStyleMulti, **kwargs) -> TStyleMulti: ...
 
-    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:
+    @override
+    def copy(self: TStyleMulti, **kwargs) -> TStyleMulti:  # type: ignore
         """Gets a copy of instance as a new instance"""
         # pylint: disable=protected-access
         instance_copy = super().copy(**kwargs)
@@ -1252,6 +1262,7 @@ class StyleMulti(StyleBase):
     # endregion Internal Methods
 
     # region Methods
+    @override
     def backup(self, obj: Any) -> None:
         """
         Backs up Attributes that are to be changed by apply.
@@ -1286,6 +1297,7 @@ class StyleMulti(StyleBase):
         finally:
             self._all_attributes = True
 
+    @override
     def restore(self, obj: Any, clear: bool = False) -> None:
         """
         Restores ``obj`` properties from backed up setting if any exist.
@@ -1314,6 +1326,7 @@ class StyleMulti(StyleBase):
             style, _ = info
             style.restore(obj=obj, clear=clear)
 
+    @override
     def get_attrs(self) -> Tuple[str, ...]:
         """
         Gets the attributes that are slated for change in the current instance
@@ -1364,11 +1377,13 @@ class StyleMulti(StyleBase):
     # region Properties
 
     @property
+    @override
     def prop_has_attribs(self) -> bool:
         """Gets If instance has any attributes set."""
         return len(self._dv) + len(self._styles) > 0
 
     @property
+    @override
     def prop_has_backup(self) -> bool:
         """Gets If instance or any added style has backup data set."""
         result = False
@@ -1437,6 +1452,7 @@ class StyleModifyMulti(StyleMulti):
     @overload
     def apply(self, obj: Any, **kwargs) -> None: ...
 
+    @override
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies padding to ``obj``
@@ -1476,7 +1492,8 @@ class StyleModifyMulti(StyleMulti):
     @overload
     def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti: ...
 
-    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:
+    @override
+    def copy(self: _TStyleModifyMulti, **kwargs) -> _TStyleModifyMulti:  # type: ignore
         """Gets a copy of instance as a new instance"""
         inst_copy = super().copy(**kwargs)
         inst_copy.prop_style_name = self.prop_style_name
@@ -1522,6 +1539,7 @@ class StyleModifyMulti(StyleMulti):
 
     # region Properties
     @property
+    @override
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         try:

@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 from enum import Enum
 
-import uno
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, Angle, DrawingGradientKind, DrawingHatchingKind, DrawingBitmapKind

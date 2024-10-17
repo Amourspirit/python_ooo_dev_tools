@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
 
-import uno  # pylint: disable=unused-import
 from com.sun.star.lang import XEventListener
 
 # pylint: disable=useless-import-alias

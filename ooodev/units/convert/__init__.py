@@ -29,3 +29,5 @@ __all__ = [
     "UnitVolumeKind",
     "Converter",
 ]
+
+import uno  # noqa # type: ignore

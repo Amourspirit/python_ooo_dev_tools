@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TypeVar, Generic, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.utils import info as mInfo

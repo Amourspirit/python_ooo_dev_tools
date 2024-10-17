@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Set, Tuple
-import uno
 from ooo.dyn.drawing.text_animation_kind import TextAnimationKind
 
 from ooodev.format.inner.kind.format_kind import FormatKind

@@ -1,4 +1,5 @@
 # pylint: disable=wrong-import-order
+
 # region dialogs
 from ooo.dyn.awt.push_button_type import PushButtonType as PushButtonType
 from ooo.dyn.awt.pos_size import PosSizeEnum as PosSizeEnum
@@ -24,11 +25,17 @@ from ooodev.dialog.input import Input as Input
 # endregion input
 
 # region msgbox
-from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum as MessageBoxResultsEnum
-from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum as MessageBoxButtonsEnum
+from ooo.dyn.awt.message_box_results import (
+    MessageBoxResultsEnum as MessageBoxResultsEnum,
+)
+from ooo.dyn.awt.message_box_buttons import (
+    MessageBoxButtonsEnum as MessageBoxButtonsEnum,
+)
 from ooo.dyn.awt.message_box_type import MessageBoxType as MessageBoxType
 from ooodev.dialog.msgbox import MsgBox as MsgBox
 
 # endregion msgbox
 
 __all__ = ["Dialogs", "Dialog"]
+
+import uno  # noqa # type: ignore

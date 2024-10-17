@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Type
 import contextlib
-import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XNamed

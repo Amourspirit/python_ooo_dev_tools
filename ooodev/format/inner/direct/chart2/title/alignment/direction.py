@@ -1,7 +1,6 @@
 from __future__ import annotations
 from enum import Enum
 from typing import Tuple, cast
-import uno
 from ooo.dyn.text.writing_mode2 import WritingMode2
 from ooo.dyn.text.writing_mode2 import WritingMode2Enum
 

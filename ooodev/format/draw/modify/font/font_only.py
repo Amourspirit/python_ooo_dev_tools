@@ -7,7 +7,6 @@ Font Only Style for Draw Documents
 # region Imports
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
-import uno
 
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang

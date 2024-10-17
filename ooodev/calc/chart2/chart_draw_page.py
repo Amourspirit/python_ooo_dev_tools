@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial

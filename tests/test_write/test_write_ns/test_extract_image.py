@@ -1,14 +1,11 @@
-import os
 import pytest
 from pathlib import Path
-from typing import cast
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
 
 
-from ooodev.loader.lo import Lo
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 from ooodev.utils.images_lo import ImagesLo

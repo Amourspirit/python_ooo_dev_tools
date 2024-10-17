@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from ooodev.mock import mock_g
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -142,7 +141,5 @@ class TableChart(
 
 
 if mock_g.FULL_IMPORT:
-    from com.sun.star.drawing import XDrawPageSupplier
-    from com.sun.star.embed import XComponentSupplier
     from .chart_shape import ChartShape
     from .chart_draw_page import ChartDrawPage

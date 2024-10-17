@@ -4,14 +4,10 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.units.unit_convert import UnitConvert
 from ooodev.format.writer.direct.frame.type import (
     Anchor,
     AnchorKind,
     Size,
-    RelativeKind,
-    RelativeSize,
     AbsoluteSize,
     Position,
     HoriOrient,
@@ -23,7 +19,6 @@ from ooodev.format.writer.direct.frame.type import (
 )
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.units.unit_mm import UnitMM
 from ooodev.office.write import Write

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import NamedTuple, TYPE_CHECKING
 
-import uno
 from com.sun.star.awt.tree import XTreeEditListener
 from com.sun.star.awt.tree import XTreeNode
 

@@ -5,13 +5,11 @@ from pathlib import Path
 
 if __name__ == "__main__":
     pytest.main([__file__])
-import uno
 
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport
 from ooodev.draw import Draw, DrawDoc
 from ooodev.draw import DrawNamedEvent
-from ooodev.draw.filter.export_jpg import ExportJpgT
 from ooodev.draw.filter.export_png import ExportPngT
 
 # from ooodev.draw.export.page_jpg import PageJpg

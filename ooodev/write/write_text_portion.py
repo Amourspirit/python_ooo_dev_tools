@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TypeVar, Generic, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.text.text_portion_comp import TextPortionComp
 from ooodev.format.inner.style_partial import StylePartial

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, overload, TypeVar, Type, Any, Tuple
-import uno
 from ooo.dyn.drawing.text_horizontal_adjust import TextHorizontalAdjust
 from ooo.dyn.drawing.text_vertical_adjust import TextVerticalAdjust
 

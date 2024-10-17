@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.format.inner.direct.write.fill.area.img import Img as FillImg
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind
 

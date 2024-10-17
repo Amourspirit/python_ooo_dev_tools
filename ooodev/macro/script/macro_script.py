@@ -3,7 +3,6 @@ from typing import Any, cast, overload, Tuple
 import threading
 import contextlib
 from functools import lru_cache
-import uno
 from com.sun.star.script.provider import XScript
 from com.sun.star.uno import XInterface
 

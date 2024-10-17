@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, Tuple, overload
-import uno
 
 from ooo.dyn.beans.property_value import PropertyValue
 from ooodev.utils.builder.default_builder import DefaultBuilder

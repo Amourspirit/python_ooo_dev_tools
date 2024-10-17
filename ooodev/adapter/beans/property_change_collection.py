@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Dict, TypedDict
-import uno
 from com.sun.star.beans import XPropertySet
 
 from ooodev.events.args.generic_args import GenericArgs

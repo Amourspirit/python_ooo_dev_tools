@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING, Tuple, TypeVar, Generic, Generator
-import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 from ooo.dyn.table.cell_content_type import CellContentType
 

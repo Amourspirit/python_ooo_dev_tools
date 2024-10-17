@@ -4,13 +4,11 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.frame.area import Img, PresetImageKind, SizeMM
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.office.draw import Draw
-from ooodev.units.unit_mm import UnitMM
 
 
 def test_write(loader) -> None:

@@ -12,7 +12,6 @@
 from __future__ import annotations
 import math
 
-import uno
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum

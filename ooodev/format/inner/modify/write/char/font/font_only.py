@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.format.inner.direct.write.char.font.font_only import FontOnly as InnerFontOnly

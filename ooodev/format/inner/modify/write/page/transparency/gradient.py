@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Any
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as InnerGradient

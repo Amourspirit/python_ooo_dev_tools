@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial

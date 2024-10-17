@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from com.sun.star.text import XSimpleText
 from ooo.dyn.text.control_character import ControlCharacterEnum

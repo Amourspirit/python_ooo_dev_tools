@@ -1,6 +1,7 @@
-import uno
 from ooo.dyn.sheet.general_function import GeneralFunction as GeneralFunction
-from ooo.dyn.sheet.solver_constraint_operator import SolverConstraintOperator as SolverConstraintOperator
+from ooo.dyn.sheet.solver_constraint_operator import (
+    SolverConstraintOperator as SolverConstraintOperator,
+)
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
 
 from ooodev.utils.data_type.cell_obj import CellObj as CellObj
@@ -22,7 +23,9 @@ from ooodev.calc.calc_sheet import CalcSheet as CalcSheet
 from ooodev.calc.calc_sheet_view import CalcSheetView as CalcSheetView
 from ooodev.calc.calc_sheets import CalcSheets as CalcSheets
 from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage as SpreadsheetDrawPage
-from ooodev.calc.spreadsheet_draw_pages import SpreadsheetDrawPages as SpreadsheetDrawPages
+from ooodev.calc.spreadsheet_draw_pages import (
+    SpreadsheetDrawPages as SpreadsheetDrawPages,
+)
 
 __all__ = [
     "CalcCell",
@@ -39,3 +42,5 @@ __all__ = [
     "SpreadsheetDrawPage",
     "SpreadsheetDrawPages",
 ]
+
+import uno  # noqa # type: ignore

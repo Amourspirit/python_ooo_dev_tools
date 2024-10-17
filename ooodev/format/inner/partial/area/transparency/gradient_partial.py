@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.inner.style_factory import area_transparency_gradient_factory

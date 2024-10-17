@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any, cast, Iterable, TYPE_CHECKING
 import datetime
 
-import uno
 from com.sun.star.form import XForms
 from com.sun.star.container import XChild
 from com.sun.star.awt import XControl

@@ -6,11 +6,9 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.chart2 import XDataSeries
 from com.sun.star.chart import XAxisYSupplier
-from com.sun.star.chart2 import XDiagramProvider
 
 try:
     from ooodev.office.chart2 import Chart2
@@ -26,7 +24,6 @@ from ooodev.format.chart2.direct.series.data_series.options import LegendEntry a
 from ooodev.format.chart2.direct.series.data_series.options import MissingValueKind
 from ooodev.format.chart2.direct.series.data_series.options import Orientation
 from ooodev.units import Angle
-from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.utils.kind.chart2_types import ChartTypes

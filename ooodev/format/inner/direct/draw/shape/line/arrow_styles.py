@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Tuple, overload, Any, TYPE_CHECKING, TypeVar, Type
-import uno
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind

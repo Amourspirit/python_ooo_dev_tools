@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from ooodev.mock.mock_g import DOCS_BUILDING
 from ooodev.format.proto.area.abstract_fill_color_t import AbstractFillColor
 

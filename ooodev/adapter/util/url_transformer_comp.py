@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.util import XURLTransformer
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.util.url_transformer_partial import URLTransformerPartial

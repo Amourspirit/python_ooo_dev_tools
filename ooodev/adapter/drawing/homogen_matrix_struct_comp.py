@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.homogen_matrix import HomogenMatrix
 from ooo.dyn.drawing.homogen_matrix_line import HomogenMatrixLine
 

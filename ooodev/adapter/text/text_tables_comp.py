@@ -1,13 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTables  # service
-    from com.sun.star.text import TextTable  # service
 
 
 class TextTablesComp(IndexAccessComp["TextTable"], NameAccessPartial["TextTable"]):

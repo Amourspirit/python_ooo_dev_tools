@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.awt import XToolkit3
 from ooodev.adapter.awt.font_mapping_use_partial import FontMappingUsePartial

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Callable, TYPE_CHECKING
-import uno
 
 from ooodev.events.draw_named_event import DrawNamedEvent
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport

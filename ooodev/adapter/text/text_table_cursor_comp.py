@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement

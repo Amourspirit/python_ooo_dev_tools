@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.text.word_cursor_partial import WordCursorPartial
 from ooodev.format.inner.style_partial import StylePartial

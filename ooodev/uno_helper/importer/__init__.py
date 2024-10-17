@@ -5,9 +5,15 @@ from .importer_shared_script import importer_shared_script as importer_shared_sc
 from .importer_user_script import ImporterUserScript as ImporterUserScript
 from .importer_user_script import importer_user_script as importer_user_script
 from .importer_user_ext_script import ImporterUserExtScript as ImporterUserExtScript
-from .importer_user_ext_script import importer_user_ext_script as importer_user_ext_script
-from .importer_shared_ext_script import ImporterSharedExtScript as ImporterSharedExtScript
-from .importer_shared_ext_script import importer_shared_ext_script as importer_shared_ext_script
+from .importer_user_ext_script import (
+    importer_user_ext_script as importer_user_ext_script,
+)
+from .importer_shared_ext_script import (
+    ImporterSharedExtScript as ImporterSharedExtScript,
+)
+from .importer_shared_ext_script import (
+    importer_shared_ext_script as importer_shared_ext_script,
+)
 from .importer_doc_script import ImporterDocScript as ImporterDocScript
 from .importer_doc_script import importer_doc_script as importer_doc_script
 
@@ -25,3 +31,5 @@ __all__ = [
     "ImporterDocScript",
     "importer_doc_script",
 ]
+
+import uno  # noqa # type: ignore

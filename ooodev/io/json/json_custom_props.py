@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from pathlib import Path
 import contextlib
-import uno
 from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.io.json.doc_json_file import DocJsonFile
@@ -52,7 +50,7 @@ class JsonCustomProps:
         try:
             result = self._json_doc.read_json(self._name)
             return result.get("data", {})
-        except Exception as e:
+        except Exception:
             self._log.error(f"Error reading JSON file: {self._name}. Returning empty dictionary.", exc_info=True)
             return {}
 

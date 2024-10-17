@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.format.inner.common.props.hf_props import HfProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.modify.write.page.header.header import Header

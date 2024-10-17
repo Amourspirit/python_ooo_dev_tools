@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.format.inner.partial.factory_styler import FactoryStyler
 
 if TYPE_CHECKING:

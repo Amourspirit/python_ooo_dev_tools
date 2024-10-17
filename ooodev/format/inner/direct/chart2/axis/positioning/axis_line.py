@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from ooo.dyn.chart.chart_axis_position import ChartAxisPosition
 
 from ooodev.events.args.key_val_cancel_args import KeyValCancelArgs

@@ -1,11 +1,10 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write

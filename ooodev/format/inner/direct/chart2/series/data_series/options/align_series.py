@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, overload, NamedTuple
-import uno
 from com.sun.star.chart2 import XChartDocument
 
 from ooodev.format.inner.kind.format_kind import FormatKind

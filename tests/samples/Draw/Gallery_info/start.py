@@ -1,10 +1,7 @@
 from __future__ import annotations
-import sys
-import uno
 from ooodev.loader.lo import Lo
 from ooodev.utils.gallery import Gallery, SearchMatchKind, GalleryKind, SearchByKind
 from ooodev.exceptions.ex import GalleryNotFoundError
-from ooodev.utils.info import Info
 
 
 class GalleryInfo:

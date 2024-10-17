@@ -2,7 +2,6 @@ from __future__ import annotations
 from pathlib import Path
 import tempfile
 
-import uno
 from com.sun.star.frame import XComponentLoader
 
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum

@@ -1,11 +1,10 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 from ooodev.format.calc.direct.cell.cell_protection import CellProtection
 from ooodev.format import Styler
@@ -13,7 +12,7 @@ from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 
 if TYPE_CHECKING:
-    from com.sun.star.table import CellProperties  # service
+    pass  # service
 
 
 def test_calc(loader) -> None:

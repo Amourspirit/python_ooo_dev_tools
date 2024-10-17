@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Generic, Type, TypeVar, TYPE_CHECKING
-import uno
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.units.unit_mm100 import UnitMM100

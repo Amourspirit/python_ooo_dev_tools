@@ -6,7 +6,6 @@ Module for managing shape paragraph alignment.
 
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-import uno
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum as ParagraphVertAlignEnum
 

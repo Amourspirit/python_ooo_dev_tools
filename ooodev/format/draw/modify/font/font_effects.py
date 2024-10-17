@@ -6,7 +6,6 @@ Font Effects Style for Draw Documents
 # region Imports
 from __future__ import annotations
 from typing import cast, Any
-import uno
 
 from ooo.dyn.awt.font_relief import FontReliefEnum
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum

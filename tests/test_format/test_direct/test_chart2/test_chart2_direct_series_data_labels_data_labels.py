@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooo.dyn.chart2.data_point_label import DataPointLabel
 
 try:
@@ -20,12 +19,10 @@ from ooodev.format.chart2.direct.series.data_labels.data_labels import PercentFo
 from ooodev.format.chart2.direct.series.data_labels.data_labels import TextAttribs
 from ooodev.format.chart2.direct.series.data_labels.data_labels import AttribOptions
 from ooodev.format.chart2.direct.series.data_labels.data_labels import PlacementKind, SeparatorKind
-from ooodev.format.chart2.direct.series.data_labels.data_labels import NumberFormatEnum, NumberFormatIndexEnum
+from ooodev.format.chart2.direct.series.data_labels.data_labels import NumberFormatIndexEnum
 from ooodev.format.chart2.direct.series.data_labels.data_labels import Orientation, DirectionModeKind
-from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
-from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.loader.lo import Lo
 
 

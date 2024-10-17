@@ -4,7 +4,6 @@ This class is a partial class for ``com.sun.star.table.CellProperties`` service.
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 
 from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp

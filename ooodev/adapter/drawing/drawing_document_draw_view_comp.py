@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
-import uno
 from ooo.dyn.awt.point import Point
 
 from ooodev.adapter.frame.controller_comp import ControllerComp

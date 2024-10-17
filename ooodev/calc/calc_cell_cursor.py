@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, List, TYPE_CHECKING, overload
-import uno
 
 from com.sun.star.table import XCellRange
 

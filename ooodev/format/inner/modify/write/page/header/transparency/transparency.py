@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, Type, TypeVar
-import uno
 from ooodev.format.inner.common.props.transparent_transparency_props import TransparentTransparencyProps
 from ooodev.format.inner.direct.write.fill.transparent.transparency import Transparency as InnerTransparency
 from ooodev.format.inner.kind.format_kind import FormatKind

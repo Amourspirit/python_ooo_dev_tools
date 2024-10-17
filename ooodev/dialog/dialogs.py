@@ -43,7 +43,6 @@ from ooodev.units.unit_app_font_height import UnitAppFontHeight
 from ooodev.units.unit_app_font_width import UnitAppFontWidth
 from ooodev.units.unit_app_font_x import UnitAppFontX
 from ooodev.units.unit_app_font_y import UnitAppFontY
-from ooodev.utils.kind.point_size_kind import PointSizeKind
 from ooodev.utils import info as mInfo
 from ooodev.utils.date_time_util import DateUtil
 from ooodev.utils.kind.align_kind import AlignKind as AlignKind

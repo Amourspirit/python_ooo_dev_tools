@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.format.inner.modify.write.fill.area.img import Img as FillImg
 from ooodev.utils.data_type.size_mm import SizeMM

@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import cast, TYPE_CHECKING
-import uno
+from typing import TYPE_CHECKING
 from ooo.dyn.form.form_component_type import FormComponentType
 
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement

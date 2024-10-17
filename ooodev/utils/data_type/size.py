@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TypeVar, Type, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.size import Size as UnoSize
 from ooodev.utils.data_type.generic_size import GenericSize
 

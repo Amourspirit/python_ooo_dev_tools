@@ -11,11 +11,9 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
-from ooodev.utils.kind.chart2_types import ChartTypes
 
 try:
     from ooodev.office.chart2 import Chart2
@@ -44,8 +42,7 @@ from ooodev.utils.info import Info
 from ooodev.units import Angle
 
 if TYPE_CHECKING:
-    from com.sun.star.chart2 import Title
-    from com.sun.star.style import CharacterProperties
+    pass
 
 
 def test_calc_set_styles_chart(loader, copy_fix_calc) -> None:

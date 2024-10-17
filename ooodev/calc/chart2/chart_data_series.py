@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, List, TypeVar, Generic
-import uno
 from com.sun.star.chart2.data import XDataSource
 
 from ooodev.mock import mock_g

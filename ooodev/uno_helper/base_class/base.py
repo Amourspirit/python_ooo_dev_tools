@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any
-import uno
 import unohelper
 from com.sun.star.uno import XInterface
 

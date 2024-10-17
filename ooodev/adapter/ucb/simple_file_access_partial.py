@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
 import datetime
-import uno
 from com.sun.star.ucb import XSimpleFileAccess
 
 from ooodev.exceptions import ex as mEx

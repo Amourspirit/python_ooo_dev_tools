@@ -3,7 +3,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import contextlib
-import uno
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from ooodev.loader import lo as mLo
 from ooodev.utils.comp.prop import Prop
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial

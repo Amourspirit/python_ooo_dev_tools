@@ -5,7 +5,6 @@ This class is a partial class for ``com.sun.star.table.CellProperties`` service.
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.container import XNameContainer
 
 from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2Enum

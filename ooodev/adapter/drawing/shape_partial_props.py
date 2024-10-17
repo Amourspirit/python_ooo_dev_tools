@@ -8,12 +8,10 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
 
-import uno
 from ooodev.adapter.style.style_comp import StyleComp
 from ooodev.adapter.drawing.homogen_matrix3_struct_comp import HomogenMatrix3StructComp
 from ooodev.utils import info as mInfo
 from ooodev.events.events import Events
-from ooodev.utils import info as mInfo
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import Shape  # service

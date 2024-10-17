@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, List, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.style.style_families_comp import StyleFamiliesComp
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial

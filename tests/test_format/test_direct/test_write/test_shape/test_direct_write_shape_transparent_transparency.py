@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.shape.transparency import Transparency, Intensity
 from ooodev.format.writer.direct.shape.area import Pattern, PresetPatternKind
 from ooodev.format import Styler

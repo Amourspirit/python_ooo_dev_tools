@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, Tuple, cast
+from typing import Tuple, cast
 from enum import IntFlag
-import uno
 
 # com.sun.star.chart2.TickmarkStyle
 from ooo.dyn.chart2.tickmark_style import TickmarkStyle

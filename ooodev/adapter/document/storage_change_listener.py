@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.document import XStorageChangeListener
 
 from ooodev.events.args.event_args import EventArgs

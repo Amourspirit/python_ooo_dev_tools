@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.adapter.form.component.data_form_comp import DataFormComp
 from ooodev.form.partial.form_partial import FormPartial

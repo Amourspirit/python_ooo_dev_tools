@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TypeVar, Generic, Union, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.size import Size as UnoSize
 
 

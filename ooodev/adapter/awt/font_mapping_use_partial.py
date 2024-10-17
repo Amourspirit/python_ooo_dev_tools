@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 
 from com.sun.star.awt import XFontMappingUse
 

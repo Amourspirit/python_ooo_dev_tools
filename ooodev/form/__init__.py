@@ -1,7 +1,8 @@
-import uno
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
-from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum as MouseWheelBehaviorEnum
+from ooo.dyn.awt.mouse_wheel_behavior import (
+    MouseWheelBehaviorEnum as MouseWheelBehaviorEnum,
+)
 from ooo.dyn.form.form_component_type import FormComponentType as FormComponentType
 from ooo.dyn.form.list_source_type import ListSourceType as ListSourceType
 
@@ -16,3 +17,5 @@ from ooodev.utils.kind.time_format_kind import TimeFormatKind as TimeFormatKind
 from ooodev.utils.kind.tri_state_kind import TriStateKind as TriStateKind
 
 __all__ = ["Forms"]
+
+import uno  # noqa # type: ignore

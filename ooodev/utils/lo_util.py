@@ -34,7 +34,7 @@ def get_soffice_install_path() -> Path:
         ):
             try:
                 value = winreg.QueryValue(winreg.HKEY_LOCAL_MACHINE, _key)
-            except Exception as detail:
+            except Exception:
                 value = ""
                 # _errMess = "%s" % detail
             else:

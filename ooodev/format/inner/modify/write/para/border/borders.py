@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.direct.write.para.border.borders import Borders as InnerBorders
 from ooodev.format.inner.direct.write.para.border.padding import Padding

@@ -5,7 +5,6 @@ from pathlib import Path
 
 if __name__ == "__main__":
     pytest.main([__file__])
-import uno
 
 from ooodev.events.args.cancel_event_args_export import CancelEventArgsExport
 from ooodev.events.args.event_args_export import EventArgsExport

@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.kind.format_kind import FormatKind

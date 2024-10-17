@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING, Set
-import uno
+from typing import Any, TYPE_CHECKING, Set
 from com.sun.star.frame import XDispatch
 
 from ooodev.events.args.generic_args import GenericArgs

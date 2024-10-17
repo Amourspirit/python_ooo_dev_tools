@@ -10,14 +10,24 @@ from ooodev.units.angle import Angle as Angle
 from ooodev.utils.data_type.image_offset import ImageOffset as ImageOffset
 from ooodev.utils.data_type.intensity import Intensity as Intensity
 from ooodev.utils.data_type.poly_sides import PolySides as PolySides
-from ooodev.utils.dispatch.shape_dispatch_kind import ShapeDispatchKind as ShapeDispatchKind
+from ooodev.utils.dispatch.shape_dispatch_kind import (
+    ShapeDispatchKind as ShapeDispatchKind,
+)
 from ooodev.utils.kind.drawing_bitmap_kind import DrawingBitmapKind as DrawingBitmapKind
-from ooodev.utils.kind.drawing_gradient_kind import DrawingGradientKind as DrawingGradientKind
-from ooodev.utils.kind.drawing_hatching_kind import DrawingHatchingKind as DrawingHatchingKind
+from ooodev.utils.kind.drawing_gradient_kind import (
+    DrawingGradientKind as DrawingGradientKind,
+)
+from ooodev.utils.kind.drawing_hatching_kind import (
+    DrawingHatchingKind as DrawingHatchingKind,
+)
 from ooodev.utils.kind.drawing_layer_kind import DrawingLayerKind as DrawingLayerKind
-from ooodev.utils.kind.drawing_name_space_kind import DrawingNameSpaceKind as DrawingNameSpaceKind
+from ooodev.utils.kind.drawing_name_space_kind import (
+    DrawingNameSpaceKind as DrawingNameSpaceKind,
+)
 from ooodev.utils.kind.drawing_shape_kind import DrawingShapeKind as DrawingShapeKind
-from ooodev.utils.kind.drawing_slide_show_kind import DrawingSlideShowKind as DrawingSlideShowKind
+from ooodev.utils.kind.drawing_slide_show_kind import (
+    DrawingSlideShowKind as DrawingSlideShowKind,
+)
 from ooodev.utils.kind.glue_points_kind import GluePointsKind as GluePointsKind
 from ooodev.utils.kind.graphic_style_kind import GraphicStyleKind as GraphicStyleKind
 from ooodev.utils.kind.presentation_kind import PresentationKind as PresentationKind
@@ -57,3 +67,5 @@ __all__ = [
     "MasterDrawPage",
     "ShapeCollection",
 ]
+
+import uno  # noqa # type: ignore

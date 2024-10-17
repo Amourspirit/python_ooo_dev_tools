@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 from com.sun.star.awt import XBitmap
 
 from ooodev.format.inner.direct.write.para.area.pattern import Pattern as InnerPattern

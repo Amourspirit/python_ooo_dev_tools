@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.reflection import XTypeDescription
 from ooo.dyn.uno.type_class import TypeClass

@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING
 
 # pylint: wrong-import-position
-import uno
 
 from com.sun.star.drawing import XDrawPagesSupplier
 from com.sun.star.frame import XModel
@@ -1324,4 +1323,4 @@ class CalcDoc(
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.calc.sheet.range_selector import RangeSelector
+    pass

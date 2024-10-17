@@ -1,5 +1,4 @@
 import pytest
-import uno
 from ooodev.io.zip.zip import ZIP
 from ooodev.write import WriteDoc
 

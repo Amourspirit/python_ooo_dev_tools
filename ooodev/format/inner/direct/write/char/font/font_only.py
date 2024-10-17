@@ -34,7 +34,7 @@ else:
 # endregion Import
 
 if mock_g.DOCS_BUILDING:
-    from ooodev.meta.static_prop import static_prop
+    pass
 
 _TFontOnly = TypeVar("_TFontOnly", bound="FontOnly")
 _TFontLang = TypeVar("_TFontLang", bound="FontLang")

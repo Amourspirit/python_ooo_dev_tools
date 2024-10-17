@@ -5,7 +5,6 @@ This class is a partial class for ``com.sun.star.util.Shape.SearchDescriptor`` s
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
-import uno
 
 
 if TYPE_CHECKING:

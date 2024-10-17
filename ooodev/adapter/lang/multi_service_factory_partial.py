@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
-import uno
 
 from com.sun.star.lang import XMultiServiceFactory
 from ooo.dyn.beans.property_value import PropertyValue

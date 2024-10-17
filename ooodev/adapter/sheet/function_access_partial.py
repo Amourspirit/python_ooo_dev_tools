@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XFunctionAccess
 
 from ooodev.exceptions import ex as mEx

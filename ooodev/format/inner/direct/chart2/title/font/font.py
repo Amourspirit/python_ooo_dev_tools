@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, cast
-import uno
 
 from ooo.dyn.awt.char_set import CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum

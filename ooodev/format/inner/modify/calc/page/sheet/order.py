@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import NamedTuple
-import uno
 
 from ooodev.exceptions import ex as mEx
 from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind

@@ -6,17 +6,14 @@ import sys
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.loader.lo import Lo
-from ooodev.utils.info import Info
 from ooodev.write import Write
 from ooodev.write import WriteDoc
 from ooodev.utils.selection import WordTypeEnum
 
 
 if TYPE_CHECKING:
-    from com.sun.star.text import Paragraph  # service
-    from com.sun.star.text import TextPortion  # service
+    pass  # service
 
 # Other resources:  https://flylib.com/books/en/4.290.1.130/1/
 #                       OOME_4_0.pdf pg: 393

@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
 from ooodev.format.writer.modify.page.header.borders import Shadow, ShadowLocation
 from ooodev.gui.gui import GUI

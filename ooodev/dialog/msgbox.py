@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast
-import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt import XToolkit2
 

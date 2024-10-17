@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.awt import XAdjustmentListener
 
 from ooodev.events.args.generic_args import GenericArgs

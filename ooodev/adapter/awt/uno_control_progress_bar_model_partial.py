@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from ooodev.utils.color import Color
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.adapter.awt.uno_control_model_partial import UnoControlModelPartial

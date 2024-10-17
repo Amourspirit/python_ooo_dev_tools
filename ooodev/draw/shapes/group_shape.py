@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.awt.size import Size
 from ooo.dyn.awt.point import Point
 

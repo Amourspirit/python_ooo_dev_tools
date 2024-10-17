@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.frame.notifying_dispatch_partial import NotifyingDispatchPartial

@@ -54,7 +54,7 @@ hypothesis = ">=6.75.3"
 thefuzz = ">=0.19.0"
 python-Levenshtein = ">=0.20.7"
 lo-dev-search = {version = ">=2.0.2", platform = "linux"}
-ruff = ">=0.1.9"
+ruff = ">=0.6.9"
 black = {extras = ["d"], version = ">=24"}
 oooenv = ">=0.2.4"
 pytest-mock = ">=3.10"
@@ -64,6 +64,7 @@ sphobjinv = "^2.3.1"
 ooo-dev-odh = "^0.1.6"
 pydeps = "^1.12.18"
 oooscript = "^1.1.4"
+pytest-ruff = "^0.4.1"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -128,6 +129,9 @@ exclude = ["tests",
 
 # https://docs.astral.sh/ruff/configuration/
 [tool.ruff]
+
+line-length = 119
+target-version = "py38"
 exclude = [
     ".bzr",
     ".direnv",
@@ -142,18 +146,24 @@ exclude = [
     ".ruff_cache",
     ".svn",
     ".tox",
-    ".venv",
     "__pypackages__",
     "_build",
     "buck-out",
     "build",
     "dist",
     "node_modules",
+    ".venv",
     "venv",
     "tmp",
 ]
-line-length = 119
-target-version = "py38"
+src = ["ooodev"]
+
+[tool.ruff.lint]
+exclude = ["tmp", ".devcontainer", ".githooks", ".github", ".hypothesis", ".idea", ".pytest_cache", ".venv", ".vscode", "cmds", "dist", "docs"]
+
+[tool.ruff.lint.pylint]
+max-args = 10
+max-returns = 10
 
 [tool.pydeps]
 max_bacon = 2

@@ -8,6 +8,12 @@ from __future__ import annotations
 from typing import Any, Tuple, Type, cast, TypeVar, overload, TYPE_CHECKING
 import math
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.text.graphic_crop import GraphicCrop
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -71,7 +77,7 @@ class CropOpt(CropStruct):
     # region dunder methods
     def __eq__(self, oth: object) -> bool:
         result = super().__eq__(oth)
-        if result == False:
+        if not result:
             return False
         if isinstance(oth, CropOpt):
             return self.prop_keep_scale == oth.prop_keep_scale
@@ -302,7 +308,8 @@ class ImageCrop(StyleMulti):
     @overload
     def copy(self: _TImageCrop, **kwargs) -> _TImageCrop: ...
 
-    def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:
+    @override
+    def copy(self: _TImageCrop, **kwargs) -> _TImageCrop:  # type: ignore
         """Gets a copy of instance as a new instance"""
         cp = super().copy(**kwargs)
         cp._img_size = self._img_size
@@ -318,6 +325,7 @@ class ImageCrop(StyleMulti):
     @overload
     def apply(self, obj: Any, **kwargs) -> None: ...
 
+    @override
     def apply(self, obj: Any, **kwargs) -> None:
         """
         Applies style of current instance.
@@ -339,16 +347,16 @@ class ImageCrop(StyleMulti):
         crop = self.prop_crop_opt
         if crop is None:
             sz = None
-            if not self.prop_img_size is None:
+            if self.prop_img_size is not None:
                 sz = self._rule_no_crop_image()
-            elif not self.prop_img_scale is None:
+            elif self.prop_img_scale is not None:
                 sz = self._rule_no_crop_scale_no_image(orig_size)
         else:
             if crop.prop_keep_scale:
                 sz = self._get_keep_scale_value(orig_size)
             else:
                 sz = self._rule_crop_keep_image(orig_size)
-        if not sz is None:
+        if sz is not None:
             self._set(self._props.height, sz.height)
             self._set(self._props.width, sz.width)
         super().apply(obj, **kwargs)
@@ -474,6 +482,7 @@ class ImageCrop(StyleMulti):
 
     # region Properties
     @property
+    @override
     def prop_format_kind(self) -> FormatKind:
         """Gets the kind of style"""
         try:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Any
 
-import uno
 import unohelper
 from com.sun.star.util import XModifyListener
 from com.sun.star.sheet import XSpreadsheetDocument

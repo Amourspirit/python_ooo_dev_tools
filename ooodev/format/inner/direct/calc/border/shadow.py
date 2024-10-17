@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs

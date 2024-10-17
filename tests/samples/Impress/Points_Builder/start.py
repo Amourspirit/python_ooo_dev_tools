@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pathlib import Path
 from ooodev.utils.file_io import FileIO
 from points_builder import PointsBuilder
 import sys

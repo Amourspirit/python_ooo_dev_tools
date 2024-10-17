@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
-import uno
 
 # com.sun.star.style.NumberingType
 from ooo.dyn.style.numbering_type import NumberingTypeEnum

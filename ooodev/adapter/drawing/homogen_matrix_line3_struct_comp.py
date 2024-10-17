@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.homogen_matrix_line3 import HomogenMatrixLine3
 
 from ooodev.adapter.struct_base import StructBase

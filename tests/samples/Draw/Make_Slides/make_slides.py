@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.lang import XComponent
 from com.sun.star.drawing import XShape
@@ -9,7 +8,6 @@ from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, 
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw, DrawingShapeKind, LineStyle
 from ooodev.gui.gui import GUI
-from ooodev.utils.props import Props
 from ooodev.utils.gallery import Gallery
 
 

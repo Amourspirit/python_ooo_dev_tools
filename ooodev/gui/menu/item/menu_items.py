@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.beans import PropertyValue
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.service import Service

@@ -79,7 +79,6 @@ def test_basic_sort(loader) -> None:
 def test_data_sort(loader) -> None:
     # https://wiki.openoffice.org/wiki/Documentation/OOo3_User_Guides/Calc_Guide/Sorting
 
-    import uno
     from com.sun.star.table import TableSortField
     from com.sun.star.util import XSortable
     from com.sun.star.view import XSelectionSupplier

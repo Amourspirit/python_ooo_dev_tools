@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.direct.write.para.border.shadow import Shadow as InnerShadow

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uno
 from com.sun.star.drawing import XDrawPage
 
 # from ooodev.utils.info import Info

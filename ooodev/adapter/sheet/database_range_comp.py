@@ -1,13 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XDatabaseRange
 
 from ooodev.adapter.component_prop import ComponentProp
 
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
-from ooodev.adapter.sheet.named_range_comp import NamedRangeComp
 from ooodev.adapter.sheet.database_range_partial import DatabaseRangePartial
 from ooodev.adapter.sheet.cell_range_referrer_partial import CellRangeReferrerPartial
 from ooodev.adapter.beans.property_set_partial import PropertySetPartial

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic, overload
 import contextlib
-import uno
 from com.sun.star.text import XTextRange
 
 from ooodev.adapter.text.relative_text_content_insert_partial import RelativeTextContentInsertPartial

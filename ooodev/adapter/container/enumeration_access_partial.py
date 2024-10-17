@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Generic, TypeVar
-import uno
 from com.sun.star.container import XEnumerationAccess
 
 from ooodev.utils.type_var import UnoInterface

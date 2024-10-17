@@ -7,3 +7,5 @@ from .options import Options as Options
 from .service import Service as Service
 
 __all__ = ["CLSID", "DocType", "DocTypeStr", "LoInst", "LoLoader", "Options", "Service"]
+
+import uno  # noqa # type: ignore

@@ -4,20 +4,13 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 from ooodev.format.impress.modify.area import (
     Img,
     PresetImageKind,
-    ImgStyleKind,
     SizeMM,
-    SizePercent,
-    Offset,
-    OffsetColumn,
-    OffsetRow,
-    RectanglePoint,
 )
 
 from ooo.dyn.drawing.fill_style import FillStyle

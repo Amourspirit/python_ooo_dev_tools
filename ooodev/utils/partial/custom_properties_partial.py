@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-import uno
 import unohelper
 from com.sun.star.lang import XComponent
 from com.sun.star.container import XContainerListener

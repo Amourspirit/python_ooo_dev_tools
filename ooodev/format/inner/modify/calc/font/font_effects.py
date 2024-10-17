@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Tuple
-import uno
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
 from ooo.dyn.style.case_map import CaseMapEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum

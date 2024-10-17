@@ -2,7 +2,6 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.awt import XMouseClickHandler
 
 from ooodev.events.args.event_args import EventArgs as EventArgs

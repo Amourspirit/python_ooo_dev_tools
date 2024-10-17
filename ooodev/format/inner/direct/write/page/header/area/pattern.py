@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple
-import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps

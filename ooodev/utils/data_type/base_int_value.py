@@ -48,7 +48,7 @@ class BaseIntValue:
         try:
             i = int(other)  # type: ignore
             return i == self.value
-        except Exception as e:
+        except Exception:
             return False
 
     def __sub__(self: _BaseIntValue, other: object) -> _BaseIntValue:

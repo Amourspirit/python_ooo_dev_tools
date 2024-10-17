@@ -1,17 +1,16 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 # from ooodev.format.inner.direct.write.para.area.hatch import Hatch, PresetHatchKind, HatchStyle, Angle
-from ooodev.format.writer.direct.para.area import Hatch, PresetHatchKind, HatchStyle, Angle
+from ooodev.format.writer.direct.para.area import Hatch, PresetHatchKind, HatchStyle
 from ooodev.utils.color import StandardColor
 
 from ooo.dyn.drawing.fill_style import FillStyle

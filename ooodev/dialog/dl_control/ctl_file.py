@@ -1,8 +1,6 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import contextlib
-import uno  # pylint: disable=unused-import
 
 from ooodev.mock import mock_g
 from ooodev.adapter.awt.text_events import TextEvents

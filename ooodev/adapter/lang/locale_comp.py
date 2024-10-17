@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.lang.locale import Locale
 from ooodev.adapter.struct_base import StructBase
 

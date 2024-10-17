@@ -6,7 +6,6 @@
 from __future__ import annotations
 from typing import Tuple
 
-import uno
 from com.sun.star.text import XTextDocument
 from com.sun.star.container import XNameAccess
 from com.sun.star.beans import XPropertySet

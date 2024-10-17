@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Set, Tuple, cast, overload, Sequence, TYPE_CHECKING
-import uno
+from typing import Any, List, Tuple, cast, overload, Sequence, TYPE_CHECKING
 
 from com.sun.star.drawing import XDrawPageSupplier
 from com.sun.star.sheet import XSheetCellRange
@@ -4049,5 +4048,4 @@ class CalcSheet(
 if mock_g.FULL_IMPORT:
     from ooodev.calc.spreadsheet_draw_page import SpreadsheetDrawPage
     from ooodev.calc.calc_charts import CalcCharts
-    from ooodev.calc.calc_sheet_id import CalcSheetId
     from ooodev.calc.cell.sheet_cell_custom_properties import SheetCellCustomProperties

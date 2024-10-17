@@ -1,12 +1,10 @@
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 
 from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
 from ooodev.format.inner.direct.calc.background.color import Color as InnerColor
-from ooodev.format.inner.direct.calc.alignment.properties import TextDirectionKind
 from ooodev.utils import color as mColor
 from ooodev.utils.color import StandardColor
 

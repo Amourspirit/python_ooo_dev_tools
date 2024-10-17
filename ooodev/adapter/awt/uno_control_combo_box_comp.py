@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.awt.combo_box_partial import ComboBoxPartial
 from ooodev.adapter.awt.uno_control_edit_comp import UnoControlEditComp
 

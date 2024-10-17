@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic, Sequence, TYPE_CHECKING
-import uno
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
 
 from ooodev.adapter.text.text_tables_comp import TextTablesComp
 from ooodev.loader import lo as mLo

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.inner.direct.structs.tab_stop_struct import TabStopStruct
 
 # from ooodev.format.inner.direct.write.para.tabs import Tabs

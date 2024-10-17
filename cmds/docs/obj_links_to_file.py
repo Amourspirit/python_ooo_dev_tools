@@ -4,7 +4,6 @@ from subprocess import run
 import pathlib
 import os
 import sys
-from contextlib import redirect_stdout
 ROOT_PATH = pathlib.Path(__file__).parent.parent.parent
 DOCS_PATH = ROOT_PATH / 'docs'
 

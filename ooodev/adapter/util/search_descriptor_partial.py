@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from com.sun.star.util import XSearchDescriptor
 
 from ooodev.adapter.beans.property_set_partial import PropertySetPartial

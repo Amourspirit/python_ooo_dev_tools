@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import List
 
-import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.exceptions import ex as mEx
 from ooodev.office.draw import Draw

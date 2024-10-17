@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Callable, Tuple
-import uno
 from com.sun.star.awt import XMenuBar
 from ooo.dyn.awt.menu_item_type import MenuItemType
 

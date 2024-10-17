@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.drop_caps import DropCaps, StyleCharKind, StyleParaKind
 from ooodev.format.inner.direct.structs.drop_cap_struct import DropCapStruct
 from ooodev.gui.gui import GUI

@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Tuple, Type
-import uno
 from com.sun.star.lang import XComponent
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
 from ooo.dyn.lang.locale import Locale

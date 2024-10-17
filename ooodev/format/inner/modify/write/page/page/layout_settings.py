@@ -2,7 +2,6 @@
 from __future__ import annotations
 from ast import Tuple
 from typing import Any, cast
-import uno
 from ooo.dyn.style.page_style_layout import PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 

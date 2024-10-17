@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.style.drop_cap_format import DropCapFormat
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100

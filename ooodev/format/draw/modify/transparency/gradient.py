@@ -6,7 +6,6 @@ Draw Fill Transparency Gradient.
 
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
-import uno
 
 from ooo.dyn.awt.gradient_style import GradientStyle
 

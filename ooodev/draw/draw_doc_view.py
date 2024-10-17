@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.adapter.drawing.drawing_document_draw_view_comp import DrawingDocumentDrawViewComp
 from ooodev.draw.draw_page import DrawPage

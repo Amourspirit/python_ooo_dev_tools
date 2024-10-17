@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.text import XTextRange
 
@@ -72,4 +71,4 @@ class TextRangePartial:
     # endregion Methods
 
 
-from ooodev.adapter.text import text_range_comp as mTextRangeComp
+from ooodev.adapter.text import text_range_comp as mTextRangeComp  # noqa # type: ignore

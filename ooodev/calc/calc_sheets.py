@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.sheet import XSpreadsheet
 
 from ooodev.adapter.container.element_index_partial import ElementIndexPartial
@@ -23,7 +22,6 @@ from ooodev.calc import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheets
-    from com.sun.star.sheet import Spreadsheet  # service
     from ooodev.calc.calc_doc import CalcDoc
 
 

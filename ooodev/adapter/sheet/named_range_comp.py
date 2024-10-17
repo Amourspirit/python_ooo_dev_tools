@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XNamedRange
 
 from ooodev.adapter._helper.builder import builder_helper

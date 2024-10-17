@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic
-import uno
 from com.sun.star.drawing import XShapes
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -327,9 +326,8 @@ class DrawPage(
     # endregion Properties
 
 
-from ooodev.draw.shape_collection import ShapeCollection
-from ooodev.draw.shapes.group_shape import GroupShape
+from ooodev.draw.shape_collection import ShapeCollection  # noqa # type: ignore
+from ooodev.draw.shapes.group_shape import GroupShape  # noqa # type: ignore
 
 if mock_g.FULL_IMPORT:
-    from ooodev.draw.export.page_jpg import PageJpg
-    from ooodev.draw.export.page_png import PagePng
+    pass

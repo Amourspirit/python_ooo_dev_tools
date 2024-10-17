@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.awt.tree import XTreeDataModel
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase

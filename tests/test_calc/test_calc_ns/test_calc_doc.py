@@ -182,7 +182,6 @@ def test_insert_remove_sheet(loader) -> None:
 
 
 def test_calc_sheet(loader) -> None:
-    from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
 
     doc = CalcDoc.create_doc(loader)
@@ -263,7 +262,6 @@ def test_move_sheet(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.calc import Calc
     from ooodev.calc import CalcDoc
-    from ooodev.utils.data_type.range_obj import RangeObj
 
     doc = Calc.create_doc(loader)
     try:
@@ -418,7 +416,6 @@ def test_delete_row(loader) -> None:
 
 
 def test_insert_col(loader) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -455,7 +452,6 @@ def test_del_col(loader) -> None:
 
 
 def test_insert_cells_down_rng(loader) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -475,7 +471,6 @@ def test_insert_cells_down_rng(loader) -> None:
 
 
 def test_insert_cells_right(loader) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -495,7 +490,6 @@ def test_insert_cells_right(loader) -> None:
 
 
 def test_delete_cells_down(loader) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None
@@ -515,7 +509,6 @@ def test_delete_cells_down(loader) -> None:
 
 
 def test_delete_cells_left(loader) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.calc import CalcDoc
 
     assert loader is not None

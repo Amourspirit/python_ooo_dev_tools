@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any
-import uno
 from ooodev.adapter.lang.type_provider_partial import TypeProviderPartial
 from ooodev.adapter.lang.service_info_partial import ServiceInfoPartial
 from ooodev.adapter.uno.weak_partial import WeakPartial

@@ -9,7 +9,6 @@ from pathlib import Path
 
 if __name__ == "__main__":
     pytest.main([__file__])
-import uno
 
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write

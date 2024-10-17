@@ -4,7 +4,6 @@ import contextlib
 from typing import Any, TYPE_CHECKING, Generator, cast, overload
 from dataclasses import dataclass, field
 from weakref import ref
-import uno
 
 from ooodev.events.event_singleton import _Events
 from ooodev.events.args.cancel_event_args import CancelEventArgs
@@ -986,7 +985,7 @@ class RangeObj:
     # endregion properties
 
 
-from ooodev.utils.data_type import row_obj as mRowObj
-from ooodev.utils.data_type import col_obj as mColObj
-from ooodev.utils.data_type import cell_obj as mCellObj
-from ooodev.utils.data_type import range_values as mRngValues
+from ooodev.utils.data_type import row_obj as mRowObj  # noqa # type: ignore
+from ooodev.utils.data_type import col_obj as mColObj  # noqa # type: ignore
+from ooodev.utils.data_type import cell_obj as mCellObj  # noqa # type: ignore
+from ooodev.utils.data_type import range_values as mRngValues  # noqa # type: ignore

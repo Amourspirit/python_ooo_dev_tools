@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XFunctionAccess
 
 from ooodev.adapter.sheet.function_access_partial import FunctionAccessPartial

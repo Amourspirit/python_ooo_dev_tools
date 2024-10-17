@@ -16,7 +16,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
 from typing import overload
-import uno
 from com.sun.star.gallery import XGalleryItem
 from com.sun.star.gallery import XGalleryTheme
 from com.sun.star.gallery import XGalleryThemeProvider

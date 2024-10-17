@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar
-import uno
 
 from ooodev.format.inner.common.props.border_props import BorderProps
 from ooodev.format.inner.direct.structs.side import Side

@@ -6,7 +6,6 @@ from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.utils.builder.init_kind import InitKind
 from ooodev.utils.builder.check_kind import CheckKind
 from ooodev.adapter.awt.enhanced_mouse_click_events import EnhancedMouseClickEvents
-from ooodev.adapter.awt.key_events import KeyEvents
 from ooodev.adapter.awt.mouse_click_events import MouseClickEvents
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -28,7 +27,6 @@ from ooodev.adapter.awt.key_handler_events import KeyHandlerEvents
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
-    from com.sun.star.sheet import SpreadsheetViewPane  # service
 
 
 class _SpreadsheetViewComp(spreadsheet_view_pane_comp._SpreadsheetViewPaneComp):

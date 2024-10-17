@@ -112,7 +112,7 @@ class FileIO:
         # sourcery skip: raise-from-previous-error, raise-specific-error
         try:
             return cls.uri_to_path(uri_fnm=url)
-        except Exception as e:
+        except Exception:
             raise Exception(f"Could not parse '{url}'")
 
     @classmethod

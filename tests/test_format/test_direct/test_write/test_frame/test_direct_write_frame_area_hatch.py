@@ -4,9 +4,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.format.writer.direct.frame.area import Hatch, HatchStyle, PresetHatchKind
-from ooodev.utils.color import StandardColor
+from ooodev.format.writer.direct.frame.area import Hatch, PresetHatchKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write

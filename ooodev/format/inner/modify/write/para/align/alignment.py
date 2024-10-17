@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
 
