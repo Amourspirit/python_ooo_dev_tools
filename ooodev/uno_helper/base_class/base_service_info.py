@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Tuple
-import uno
 from com.sun.star.lang import XServiceInfo
 
 

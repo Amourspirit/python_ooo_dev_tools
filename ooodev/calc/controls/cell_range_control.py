@@ -1,13 +1,11 @@
 from __future__ import annotations
-import uno
-from typing import cast, Any, Iterable, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Tuple
 from ooodev.calc.controls.sheet_control_base import SheetControlBase
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import Shape  # service
     from ooodev.calc.calc_cell_range import CalcCellRange
     from ooodev.loader.inst.lo_inst import LoInst
 

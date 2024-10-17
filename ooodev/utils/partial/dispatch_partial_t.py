@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, overload, Iterable, TYPE_CHECKING
-import uno
 
 if TYPE_CHECKING:
     from com.sun.star.frame import XFrame

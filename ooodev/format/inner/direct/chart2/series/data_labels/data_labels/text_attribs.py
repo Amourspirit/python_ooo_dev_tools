@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Type, Tuple
-import uno
 
 from ooodev.format.inner.direct.structs.data_point_label_struct import DataPointLabelStruct
 from ooodev.format.inner.kind.format_kind import FormatKind

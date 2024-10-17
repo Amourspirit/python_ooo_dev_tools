@@ -4,7 +4,6 @@ import contextlib
 from random import random
 from typing import Any, List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
-import uno
 
 # XChartTypeTemplate import error in LO 7.4.0 to 7.4.3, Corrected in Lo 7.5
 from com.sun.star.beans import XPropertySet

@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import annotations
 import os
-from typing import Any, TYPE_CHECKING
+from typing import Any
 import uno
 
 _DOCS_BUILDING = os.environ.get("DOCS_BUILDING", None) == "True"

@@ -8,7 +8,6 @@
 from __future__ import annotations
 from typing import Any, Dict, NamedTuple, Tuple, TYPE_CHECKING, Type, TypeVar, cast, overload
 import contextlib
-import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XNameContainer
 from com.sun.star.lang import XMultiServiceFactory

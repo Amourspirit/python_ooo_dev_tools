@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.adapter.io.pipe_comp import PipeComp
 from ooodev.adapter.io.text_input_stream_comp import TextInputStreamComp
 from ooodev.adapter.io.text_output_stream_comp import TextOutputStreamComp

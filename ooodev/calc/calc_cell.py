@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING
-import uno
 from com.sun.star.uno import RuntimeException
 
 from ooodev.mock import mock_g

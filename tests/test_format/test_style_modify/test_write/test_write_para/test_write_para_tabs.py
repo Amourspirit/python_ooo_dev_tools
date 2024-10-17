@@ -1,18 +1,17 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.format.writer.modify.para.tabs import StyleParaKind, Tabs, TabAlign, FillCharKind
+from ooodev.format.writer.modify.para.tabs import StyleParaKind, Tabs, TabAlign
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 if TYPE_CHECKING:
-    from com.sun.star.style import ParagraphProperties  # service
+    pass  # service
 
 
 def test_write(loader, para_text) -> None:

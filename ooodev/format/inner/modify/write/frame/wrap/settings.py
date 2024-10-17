@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 from ooo.dyn.text.wrap_text_mode import WrapTextMode
 
 from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti

@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.frame.options import Align, VertAdjustKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

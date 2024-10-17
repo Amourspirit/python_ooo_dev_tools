@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 
-import uno
 from com.sun.star.frame import XController2
 from ooodev.adapter.frame.controller_partial import ControllerPartial
 from ooodev.adapter.awt.window_comp import WindowComp

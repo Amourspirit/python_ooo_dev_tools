@@ -1,7 +1,5 @@
 from __future__ import annotations
-from re import M
-from typing import Any, cast, TYPE_CHECKING, Tuple
-import uno
+from typing import Any, TYPE_CHECKING, Tuple
 
 from com.sun.star.lang import XMultiComponentFactory
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
-import uno
 from ooodev.adapter.ucb.simple_file_access_comp import SimpleFileAccessComp
 from ooodev.adapter.io.pipe_comp import PipeComp
 from ooodev.adapter.io.text_output_stream_comp import TextOutputStreamComp

@@ -4,7 +4,6 @@ Module for managing shape paragraph alignment.
 .. versionadded:: 0.17.8
 """
 from __future__ import annotations
-import uno
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust
 
 from ooodev.format.inner.direct.write.para.align.alignment import LastLineKind

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Type
-import uno
 from com.sun.star.packages.zip import XZipFileAccess2
 from ooodev.adapter.io.input_stream_comp import InputStreamComp
 
@@ -10,7 +9,6 @@ from ooodev.adapter.packages.zip.zip_file_access_partial import ZipFileAccessPar
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.io import XInputStream
     from ooodev.utils.type_var import UnoInterface
 
 

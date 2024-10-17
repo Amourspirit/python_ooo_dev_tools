@@ -1,6 +1,6 @@
 from typing import Any
 import pytest
-from hypothesis import given, example, settings
+from hypothesis import given, settings
 from hypothesis.strategies import text, characters, integers
 
 

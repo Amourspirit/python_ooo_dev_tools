@@ -3,7 +3,6 @@ import contextlib
 from typing import Any, cast, TYPE_CHECKING
 from urllib.parse import urlparse
 from pathlib import Path
-import uno
 import unohelper
 from ooodev.loader import lo as mLo
 from ooodev.io.log.named_logger import NamedLogger

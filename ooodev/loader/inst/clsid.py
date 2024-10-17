@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from enum import Enum
 
 # region CLSIDs for Office documents

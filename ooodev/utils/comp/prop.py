@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
-import uno
 from com.sun.star.beans import XPropertySet
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
 from ooodev.utils.partial.prop_partial import PropPartial

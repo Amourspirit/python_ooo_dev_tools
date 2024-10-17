@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, Dict, TYPE_CHECKING
+from typing import Any, Dict, TYPE_CHECKING
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.events.args.listener_event_args import ListenerEventArgs

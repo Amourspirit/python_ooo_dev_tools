@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XNamedRanges
 from ooo.dyn.sheet.named_range_flag import NamedRangeFlagEnum
 from ooo.dyn.sheet.border import Border
@@ -13,7 +12,6 @@ from ooodev.adapter.container.name_access_partial import NameAccessPartial
 if TYPE_CHECKING:
     from com.sun.star.table import CellAddress
     from com.sun.star.table import CellRangeAddress
-    from ooodev.adapter.sheet.named_range_comp import NamedRangeComp
     from ooodev.utils.type_var import UnoInterface
 
 

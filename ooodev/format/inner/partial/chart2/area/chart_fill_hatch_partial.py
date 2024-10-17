@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle
 
 from ooodev.calc.chart2.partial.chart_doc_prop_partial import ChartDocPropPartial

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from typing import TYPE_CHECKING, Tuple
 from ooodev.calc.controls.sheet_control_base import SheetControlBase
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial

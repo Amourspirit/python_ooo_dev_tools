@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, cast
-import uno  # pylint: disable=unused-import
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType

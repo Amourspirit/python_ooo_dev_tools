@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
@@ -18,7 +17,6 @@ try:
 except ImportError:
     Chart2 = None
 
-from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.utils.info import Info
 from ooodev.utils.kind.zoom_kind import ZoomKind

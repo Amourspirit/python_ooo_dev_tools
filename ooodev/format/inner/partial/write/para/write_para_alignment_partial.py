@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.args.event_args import EventArgs

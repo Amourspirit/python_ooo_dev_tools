@@ -4,11 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.format.writer.modify.page.borders import Padding, WriterStylePageKind
+from ooodev.format.writer.modify.page.borders import Padding
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
-from ooodev.utils.color import StandardColor
 from ooodev.office.write import Write
 
 

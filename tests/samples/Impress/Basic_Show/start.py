@@ -1,6 +1,5 @@
 import sys
 from ooodev.utils.file_io import FileIO
-from pathlib import Path
 from basic_show import BasicShow
 
 # region maind()

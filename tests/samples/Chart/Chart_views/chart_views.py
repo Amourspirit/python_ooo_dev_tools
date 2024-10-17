@@ -2,7 +2,6 @@ from __future__ import annotations
 from random import random
 from enum import Enum
 
-import uno
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
 from com.sun.star.document import MacroExecMode

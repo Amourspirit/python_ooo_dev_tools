@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooo.dyn.awt.char_set import CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum
 from ooo.dyn.awt.font_slant import FontSlant

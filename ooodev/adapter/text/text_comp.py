@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.component_base import ComponentBase
 
@@ -9,7 +8,6 @@ from ooodev.adapter.text.text_partial import TextPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import Text
-    from com.sun.star.text import Paragraph
 
 
 class TextComp(ComponentBase, EnumerationAccessPartial["Paragraph"], TextPartial):

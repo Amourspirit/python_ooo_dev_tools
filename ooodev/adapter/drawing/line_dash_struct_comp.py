@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.drawing.line_dash import LineDash
 from ooo.dyn.drawing.dash_style import DashStyle
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.text.table_column_separator import TableColumnSeparator
 from ooodev.adapter.struct_base import StructBase
 

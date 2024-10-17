@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import cast
 
-import uno
 
 from ooodev.format.writer.style.char.kind.style_char_kind import StyleCharKind
 from ooodev.format.inner.modify.write.char.char_style_base_multi import CharStyleBaseMulti

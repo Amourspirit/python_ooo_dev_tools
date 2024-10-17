@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
-import uno
 
 from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner import style_factory

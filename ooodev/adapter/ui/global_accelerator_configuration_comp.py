@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.ui import XAcceleratorConfiguration
 
 from ooodev.adapter._helper.builder import builder_helper

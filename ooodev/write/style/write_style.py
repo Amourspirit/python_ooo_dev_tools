@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.adapter.style.style_comp import StyleComp

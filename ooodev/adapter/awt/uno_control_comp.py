@@ -6,7 +6,6 @@ from ooodev.adapter.awt.control_partial import ControlPartial
 from ooodev.adapter.awt.window_partial import WindowPartial
 from ooodev.adapter.awt.view_partial import ViewPartial
 from ooodev.units.size_pos_px import SizePosPX
-from ooodev.units.unit_px import UnitPX
 
 if TYPE_CHECKING:
     from com.sun.star.awt import UnoControl

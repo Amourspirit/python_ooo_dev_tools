@@ -2,7 +2,6 @@ from __future__ import annotations
 import contextlib
 from dataclasses import dataclass
 from typing import cast, TYPE_CHECKING
-import uno
 from ooo.dyn.table.cell_address import CellAddress
 
 from ooodev.loader import lo as mLo

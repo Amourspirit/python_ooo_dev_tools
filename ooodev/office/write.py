@@ -6,7 +6,6 @@ from __future__ import annotations
 import contextlib
 from typing import Any, TYPE_CHECKING, Iterable, List, Optional, Sequence, cast, overload, Union
 import re
-import uno
 from com.sun.star.awt import FontWeight
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XEnumerationAccess

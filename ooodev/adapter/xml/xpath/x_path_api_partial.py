@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.xml.xpath import XXPathAPI
 
 from ooodev.exceptions import ex as mEx
@@ -11,7 +10,6 @@ from ooodev.adapter.xml.dom.node_list_comp import NodeListComp
 if TYPE_CHECKING:
     from com.sun.star.xml.xpath import XXPathObject
     from com.sun.star.xml.dom import XNode
-    from com.sun.star.xml.dom import XNodeList
     from com.sun.star.xml.xpath import XXPathExtension
     from ooodev.utils.type_var import UnoInterface
 

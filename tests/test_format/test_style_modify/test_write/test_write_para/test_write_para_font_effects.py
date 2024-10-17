@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.font import FontEffects, FontLine, FontUnderlineEnum, StyleParaKind
 from ooodev.utils.color import StandardColor, Color
 from ooodev.loader.lo import Lo

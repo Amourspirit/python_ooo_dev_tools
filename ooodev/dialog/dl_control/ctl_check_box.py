@@ -1,7 +1,6 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
 from ooodev.mock import mock_g

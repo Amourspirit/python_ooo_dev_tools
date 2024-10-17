@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as FillPattern
 
 if TYPE_CHECKING:

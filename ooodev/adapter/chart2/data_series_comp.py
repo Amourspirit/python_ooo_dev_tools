@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.chart2 import XDataSeries
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement

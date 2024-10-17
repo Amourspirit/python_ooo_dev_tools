@@ -56,3 +56,5 @@ __all__ = [
     "UnitPT",
     "UnitPX",
 ]
+
+import uno  # noqa # type: ignore

@@ -6,7 +6,6 @@ Module for Fill Transparency.
 
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, overload
-import uno
 from ooo.dyn.style.page_style_layout import PageStyleLayout as PageStyleLayout
 from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
 

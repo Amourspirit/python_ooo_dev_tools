@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.beans import PropertyValue
 
 from ooodev.adapter.container.name_access_comp import NameAccessComp

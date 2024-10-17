@@ -9,3 +9,6 @@ __version__ = "0.48.1"
 
 def get_version() -> str:
     return __version__
+
+
+import uno  # noqa # type: ignore

@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any
 from abc import ABC
 
-import uno  # pylint: disable=unused-import
 from ooodev.events.args.generic_args import GenericArgs
 
 

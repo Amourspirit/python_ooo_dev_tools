@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 from com.sun.star.awt import XBitmap
 
 from ooodev.format.inner.preset.preset_pattern import PresetPatternKind

@@ -1,10 +1,8 @@
-from unicodedata import name
 import pytest
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
-import uno
 
 from com.sun.star.text import XTextDocument
 from com.sun.star.util import XSearchable
@@ -73,6 +71,6 @@ def italicize_all(doc: XTextDocument, phrase: str, color: Color) -> int:
 
                 Props.set_properties(obj=match_tr, names=("CharColor", "CharPosture"), vals=(color, FontSlant.ITALIC))
 
-    except Exception as e:
+    except Exception:
         raise
     return result

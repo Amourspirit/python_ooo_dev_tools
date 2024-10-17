@@ -1,22 +1,16 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, cast
-import uno  # pylint: disable=unused-import
-from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XDialog
 
 from ooo.dyn.awt.pos_size import PosSize
 
-from ooodev.dialog import Dialogs, BorderKind, OrientationKind
+from ooodev.dialog import BorderKind, OrientationKind
 from ooodev.events.args.event_args import EventArgs
 from ooodev.calc import CalcDoc
 from ooodev.loader import lo as mLo
-from ooodev.gui.gui import GUI
 from ooodev.utils.table_helper import TableHelper
 
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlDialog
-    from com.sun.star.awt import UnoControlDialogModel
     from com.sun.star.awt.tab import TabPageActivatedEvent
     from com.sun.star.awt.grid import GridSelectionEvent
 

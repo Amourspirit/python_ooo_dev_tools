@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-from enum import Enum
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.reflection.constant_type_description_partial import ConstantTypeDescriptionPartial
 

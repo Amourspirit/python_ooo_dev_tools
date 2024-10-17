@@ -1,9 +1,7 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
-import uno
 
 from ooodev.mock import mock_g
-from ooodev.draw.shapes.draw_shape import DrawShape
 from ooodev.draw.shapes.const import KNOWN_SHAPES
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
@@ -131,15 +129,4 @@ class ShapeFactoryPartial(Generic[_T], OfficeDocumentPropPartial):
 
 if mock_g.FULL_IMPORT:
     # pylint: disable=unused-import
-    from ooodev.draw.shapes.closed_bezier_shape import ClosedBezierShape
-    from ooodev.draw.shapes.connector_shape import ConnectorShape
-    from ooodev.draw.shapes.ellipse_shape import EllipseShape
-    from ooodev.draw.shapes.graphic_object_shape import GraphicObjectShape
-    from ooodev.draw.shapes.line_shape import LineShape
-    from ooodev.draw.shapes.ole2_shape import OLE2Shape
-    from ooodev.draw.shapes.open_bezier_shape import OpenBezierShape
-    from ooodev.draw.shapes.poly_line_shape import PolyLineShape
-    from ooodev.draw.shapes.poly_polygon_shape import PolyPolygonShape
-    from ooodev.draw.shapes.rectangle_shape import RectangleShape
-    from ooodev.draw.shapes.text_shape import TextShape
-    from ooodev.write.write_text_frame import WriteTextFrame
+    pass

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from com.sun.star.table import XTableRows
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial

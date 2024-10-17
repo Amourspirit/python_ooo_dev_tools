@@ -250,14 +250,8 @@ class ChartDiagram(
 
 
 if mock_g.FULL_IMPORT:
-    from com.sun.star.chart2 import XFormattedString
-    from com.sun.star.chart2 import XTitle
-    from com.sun.star.chart2 import XTitled
-    from ooo.dyn.drawing.fill_style import FillStyle
-    from ooo.dyn.drawing.line_style import LineStyle
     from .chart_floor import ChartFloor
     from .chart_legend import ChartLegend
     from .chart_title import ChartTitle
     from .chart_wall import ChartWall
     from .coordinate.coordinate_general import CoordinateGeneral
-    from .coordinate.coordinate_system import CoordinateSystem

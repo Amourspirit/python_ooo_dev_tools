@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.format.inner.direct.draw.shape.text.animation.scroll_back_forth import (
     ScrollBackForth as TextScrollBackForth,
 )

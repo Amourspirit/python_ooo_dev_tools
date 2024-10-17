@@ -31,5 +31,5 @@ class PolySides(BaseIntValue):
         try:
             i = int(other)  # type: ignore
             return i == self.value
-        except Exception as e:
+        except Exception:
             return False

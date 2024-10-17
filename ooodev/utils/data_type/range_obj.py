@@ -4,7 +4,6 @@ import contextlib
 from typing import Any, TYPE_CHECKING, Generator, cast, overload
 from dataclasses import dataclass, field
 from weakref import ref
-import uno
 
 from ooodev.events.event_singleton import _Events
 from ooodev.events.args.cancel_event_args import CancelEventArgs

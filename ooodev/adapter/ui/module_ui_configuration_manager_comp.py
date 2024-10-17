@@ -1,10 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-import uno
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
-from ooodev.adapter.ui.accelerator_configuration_partial import AcceleratorConfigurationPartial
 from ooodev.adapter.ui.ui_configuration_events import UIConfigurationEvents
 from ooodev.adapter.ui.module_ui_configuration_manager2_partial import ModuleUIConfigurationManager2Partial
 

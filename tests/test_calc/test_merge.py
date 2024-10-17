@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import List
 import pytest
 
 if __name__ == "__main__":

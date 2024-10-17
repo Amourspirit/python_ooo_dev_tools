@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.awt.rectangle import Rectangle
 from ooodev.adapter.struct_base import StructBase
 from ooodev.utils.data_type.intensity import Intensity

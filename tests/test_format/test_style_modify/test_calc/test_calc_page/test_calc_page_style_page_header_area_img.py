@@ -4,11 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.calc.modify.page.header import Header, CalcStylePageKind
 from ooodev.format.calc.modify.page.header.area import Img, PresetImageKind
 from ooodev.format import Styler
-from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc

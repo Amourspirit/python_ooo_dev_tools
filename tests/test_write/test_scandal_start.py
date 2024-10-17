@@ -1,13 +1,11 @@
 from typing import TYPE_CHECKING, cast
 import sys
 import pytest
-from pathlib import Path
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from com.sun.star.document import MacroExecMode
 
 from ooodev.loader.lo import Lo

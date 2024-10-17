@@ -7,7 +7,6 @@ Module for managing paragraph Line Spacing.
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-import uno
 from ooo.dyn.style.line_spacing import LineSpacing as UnoLineSpacing
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs

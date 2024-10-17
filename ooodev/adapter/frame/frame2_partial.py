@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.frame import XFrame2
 
 from ooodev.adapter.frame.layout_manager_comp import LayoutManagerComp

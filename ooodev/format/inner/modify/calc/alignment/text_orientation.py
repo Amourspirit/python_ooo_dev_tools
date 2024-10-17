@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 
 from ooodev.units.angle import Angle
 from ooodev.format.inner.modify.calc.cell_style_base_multi import CellStyleBaseMulti

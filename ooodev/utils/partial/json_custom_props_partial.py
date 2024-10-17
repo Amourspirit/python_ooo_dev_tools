@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.helper.dot_dict import DotDict
 from ooodev.io.json.json_custom_props import JsonCustomProps

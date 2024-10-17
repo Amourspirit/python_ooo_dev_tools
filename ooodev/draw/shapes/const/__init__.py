@@ -13,3 +13,5 @@ KNOWN_SHAPES = set(
         "com.sun.star.drawing.TextShape",
     ]
 )
+
+import uno  # noqa # type: ignore

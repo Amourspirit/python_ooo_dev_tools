@@ -1,11 +1,9 @@
 from __future__ import annotations
-from typing import cast
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.page.page import LayoutSettings, PageStyleLayout, NumberingTypeEnum, StyleParaKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

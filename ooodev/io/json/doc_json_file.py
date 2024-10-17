@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from pathlib import Path
 import json
 from ooodev.io.sfa.sfa import Sfa

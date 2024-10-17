@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, Any
 from functools import lru_cache
-import uno
 from com.sun.star.script.provider import XScript
 from com.sun.star.uno import XInterface
 

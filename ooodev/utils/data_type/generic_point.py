@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TypeVar, Generic, Union, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.point import Point as UnoPoint
 
 # See Also: https://github.com/Amourspirit/python_ooo_dev_tools/issues/640

@@ -2,7 +2,6 @@ from __future__ import annotations
 import contextlib
 from typing import Any, cast, overload, TYPE_CHECKING
 from dataclasses import dataclass
-import uno
 from ooo.dyn.table.cell_range_address import CellRangeAddress
 
 from ooodev.loader import lo as mLo

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.form import XForm
 
 from ooodev.form.controls.form_ctl_hidden import FormCtlHidden

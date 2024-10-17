@@ -6,7 +6,6 @@ Draw Style Line Spacing.
 
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
-import uno
 
 from ooodev.format.draw.direct.para.indent_spacing.line_spacing import LineSpacing as InnerLineSpacing
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind

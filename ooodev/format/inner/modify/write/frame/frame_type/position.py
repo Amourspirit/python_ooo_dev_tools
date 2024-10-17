@@ -7,7 +7,6 @@ Module for Fill Transparency.
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 
 from ooodev.format.inner.direct.write.frame.frame_type.position import Horizontal
 from ooodev.format.inner.direct.write.frame.frame_type.position import Position as InnerPosition

@@ -3,10 +3,8 @@
 # See Also: https://fivedots.coe.psu.ac.th/~ad/jlop/
 from __future__ import annotations
 import contextlib
-import os
 from typing import cast, overload, TYPE_CHECKING
 from enum import IntEnum
-import uno
 
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XIndexAccess

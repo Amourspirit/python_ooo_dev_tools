@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum

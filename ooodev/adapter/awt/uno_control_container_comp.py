@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.uno_control_container_partial import UnoControlContainerPartial
 from ooodev.adapter.awt.control_container_partial import ControlContainerPartial

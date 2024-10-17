@@ -25,5 +25,5 @@ class ImageOffset(BaseFloatValue):
         try:
             i = float(other)  # type: ignore
             return math.isclose(i, self.value)
-        except Exception as e:
+        except Exception:
             return False

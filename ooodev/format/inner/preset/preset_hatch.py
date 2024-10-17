@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any
 from enum import Enum
-import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 from ooodev.utils.color import StandardColor
 

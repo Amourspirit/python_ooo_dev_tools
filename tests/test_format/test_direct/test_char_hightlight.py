@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.char.highlight import Highlight
 from ooodev.format import CommonColor
 from ooodev.gui.gui import GUI
@@ -13,8 +12,6 @@ from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 from ooodev.format.writer.direct.char.font import (
     Font,
-    FontUnderlineEnum,
-    FontFamilyEnum,
 )
 
 if TYPE_CHECKING:

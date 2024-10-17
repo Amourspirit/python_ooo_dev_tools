@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial

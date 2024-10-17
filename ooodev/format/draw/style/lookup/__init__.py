@@ -105,3 +105,6 @@ class FamilyGraphics(NamedTuple):
     def get_family_name() -> str:
         """Gets Family Name for lookup"""
         return "graphics"
+
+
+import uno  # noqa # type: ignore

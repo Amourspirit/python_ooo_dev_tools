@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from com.sun.star.lang import XEventListener
 
 from ooodev.mock import mock_g

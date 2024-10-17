@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.reflection import XTypeDescriptionEnumerationAccess
 from ooo.dyn.reflection.type_description_search_depth import TypeDescriptionSearchDepth

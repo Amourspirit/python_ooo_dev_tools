@@ -12,7 +12,6 @@ import contextlib
 import os
 from typing import Any, cast, Iterable, List, Optional, overload, Sequence, Tuple, TYPE_CHECKING, Type
 
-import uno  # pylint: disable=W0611
 from com.sun.star.beans import XPropertySet  # pylint: disable=E0611
 from com.sun.star.frame import XComponentLoader  # noqa E0611
 from com.sun.star.frame import XDesktop  # noqa

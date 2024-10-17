@@ -725,15 +725,7 @@ class ChartDoc(
 
 
 if mock_g.FULL_IMPORT:
-    from com.sun.star.chart2 import XChartType
-    from com.sun.star.chart2 import XFormattedString
     from com.sun.star.chart2 import XRegressionCurve
-    from com.sun.star.chart2 import XRegressionCurveContainer
-    from com.sun.star.chart2 import XTitle
-    from com.sun.star.chart2 import XTitled
-    from ooo.dyn.chart.error_bar_style import ErrorBarStyle
-    from ooo.dyn.lang.locale import Locale
-    from ooodev.utils.kind.chart2_data_role_kind import DataRoleKind
     from .chart_axis import ChartAxis
     from .chart_data_series import ChartDataSeries
     from .chart_diagram import ChartDiagram

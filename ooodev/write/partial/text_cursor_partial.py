@@ -1,13 +1,12 @@
 from __future__ import annotations
 from typing import Sequence, overload, TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from ooodev.mock import mock_g
 from ooodev.adapter.drawing.graphic_object_shape_comp import GraphicObjectShapeComp
 from ooodev.office import write as mWrite
 from ooodev.loader import lo as mLo
 from ooodev.utils import selection as mSelection
-from ooodev.utils.color import Color, CommonColor
+from ooodev.utils.color import Color
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.proto.component_proto import ComponentT

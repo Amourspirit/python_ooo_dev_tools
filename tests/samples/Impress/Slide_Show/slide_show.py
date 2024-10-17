@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uno
 from ooodev.dialog.msgbox import MsgBox, MessageBoxType, MessageBoxButtonsEnum, MessageBoxResultsEnum
 from ooodev.office.draw import Draw, FadeEffect, AnimationSpeed, DrawingGradientKind, DrawingSlideShowKind
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch

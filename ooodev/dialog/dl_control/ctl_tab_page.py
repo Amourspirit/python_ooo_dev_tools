@@ -1,7 +1,6 @@
 # region imports
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 
 from ooodev.adapter.container.container_events import ContainerEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs

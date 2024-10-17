@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Any, cast, Tuple, TYPE_CHECKING
 from pathlib import Path
-import uno
 from ooo.dyn.embed.element_modes import ElementModes
 
 from ooodev.utils.type_var import PathOrStr

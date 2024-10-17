@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Sequence, TYPE_CHECKING
-import uno
 from com.sun.star.uno import XInterface
 from com.sun.star.text import XTextRange
 from ooodev.adapter.util.property_replace_comp import PropertyReplaceComp

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.area import Color
 from ooodev.format.writer.modify.para.transparency import Gradient, IntensityRange, GradientStyle
 from ooodev.units import Angle

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType

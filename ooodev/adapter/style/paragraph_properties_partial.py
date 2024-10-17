@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 from ooo.dyn.text.paragraph_vert_align import ParagraphVertAlignEnum
 
 from ooodev.units.unit_mm100 import UnitMM100

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.awt import XUnitConversion
 
 from ooodev.adapter.awt.unit_conversion_partial import UnitConversionPartial

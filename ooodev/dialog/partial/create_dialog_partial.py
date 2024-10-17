@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.message_box_type import MessageBoxType
 from ooo.dyn.awt.message_box_buttons import MessageBoxButtonsEnum
 from ooo.dyn.awt.message_box_results import MessageBoxResultsEnum
@@ -278,4 +277,3 @@ class CreateDialogPartial:
 
 if mock_g.FULL_IMPORT:
     from ooodev.dialog.dialog import Dialog
-    from ooodev.dialog.input import Input

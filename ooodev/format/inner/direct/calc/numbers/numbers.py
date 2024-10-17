@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import overload
 from typing import Any, Tuple, Type, TypeVar
-import uno
 from com.sun.star.beans import XPropertySet
 from com.sun.star.lang import XComponent
 from com.sun.star.util import XNumberFormatsSupplier

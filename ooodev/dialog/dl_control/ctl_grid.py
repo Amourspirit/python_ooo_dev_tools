@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Any, cast, Iterable, Sequence, TYPE_CHECKING, Tuple
 import contextlib
-import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
 from ooo.dyn.style.horizontal_alignment import HorizontalAlignment as HorizontalAlignment

@@ -52,7 +52,6 @@ def test_writer_lines(loader, tmp_path):
 def test_open_no_loader(loader, fix_writer_path):
     from ooodev.loader.lo import Lo
     from ooodev.office.write import Write
-    from ooodev.gui.gui import GUI
 
     test_doc = fix_writer_path("hello_sunny.odt")
     doc = Write.open_doc(test_doc)

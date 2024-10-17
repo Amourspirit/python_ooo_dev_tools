@@ -3,7 +3,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Iterable, List, overload, Any
-import uno
 
 from com.sun.star.accessibility import XAccessible
 from com.sun.star.awt import PosSize  # const

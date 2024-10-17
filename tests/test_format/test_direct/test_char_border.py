@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.char.borders import Borders, BorderLineKind, Side, LineSize
 from ooodev.format import CommonColor
 from ooodev.gui.gui import GUI

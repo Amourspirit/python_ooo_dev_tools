@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, Any
-import uno
 from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.awt.gradient_style import GradientStyle
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
-import uno
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder

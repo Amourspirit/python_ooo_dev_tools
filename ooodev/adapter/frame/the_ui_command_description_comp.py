@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container import name_access_partial
@@ -9,7 +8,6 @@ from ooodev.adapter.ui.module_ui_command_description_comp import ModuleUICommand
 
 if TYPE_CHECKING:
     from com.sun.star.frame import theUICommandDescription  # singleton
-    from com.sun.star.ui import ModuleUICommandDescription
     from ooodev.loader.inst.lo_inst import LoInst
 
 

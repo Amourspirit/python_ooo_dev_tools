@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 try:
     from ooodev.office.chart2 import Chart2

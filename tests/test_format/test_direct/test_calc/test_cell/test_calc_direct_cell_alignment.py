@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooo.dyn.table.cell_vert_justify2 import CellVertJustify2
 from ooo.dyn.table.cell_hori_justify import CellHoriJustify
 
@@ -17,7 +16,6 @@ from ooodev.units.unit_mm100 import UnitMM100
 
 if TYPE_CHECKING:
     from com.sun.star.table import CellProperties  # service
-    from com.sun.star.table import CellRange  # service
 
 
 def test_calc(loader) -> None:

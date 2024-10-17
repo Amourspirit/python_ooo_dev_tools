@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.adapter.util.search_descriptor_comp import SearchDescriptorComp
 from ooodev.adapter.util.replace_descriptor_partial import ReplaceDescriptorPartial
 

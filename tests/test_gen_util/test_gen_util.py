@@ -1,4 +1,3 @@
-from multiprocessing import allow_connection_pickling
 import pytest
 from typing import Iterable
 from ooodev.utils import gen_util

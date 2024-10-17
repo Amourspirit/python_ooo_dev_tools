@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.xml.dom import XNodeList
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.xml.dom.node_list_partial import NodeListPartial

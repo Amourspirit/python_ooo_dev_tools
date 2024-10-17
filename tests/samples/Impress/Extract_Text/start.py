@@ -1,6 +1,5 @@
 import sys
 from ooodev.utils.file_io import FileIO
-from pathlib import Path
 from extract_text import ExtractText
 
 # region maind()

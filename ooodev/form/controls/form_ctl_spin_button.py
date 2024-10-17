@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-import uno
 from ooo.dyn.awt.mouse_wheel_behavior import MouseWheelBehaviorEnum as MouseWheelBehaviorEnum
 from ooodev.adapter.awt.adjustment_events import AdjustmentEvents
 from ooodev.adapter.form.reset_events import ResetEvents

@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import cast, Any, Iterable, TYPE_CHECKING, Tuple
 import datetime
-import uno
 from com.sun.star.drawing import XControlShape
 from ooodev.utils.kind.border_kind import BorderKind
 from ooodev.utils.kind.date_format_kind import DateFormatKind
@@ -40,7 +39,6 @@ if TYPE_CHECKING:
     from ooodev.form.controls.form_ctl_list_box import FormCtlListBox
     from ooodev.form.controls.form_ctl_group_box import FormCtlGroupBox
     from ooodev.form.controls.form_ctl_image_button import FormCtlImageButton
-    from ooodev.form.controls.form_ctl_list_box import FormCtlListBox
     from ooodev.form.controls.form_ctl_numeric_field import FormCtlNumericField
     from ooodev.form.controls.form_ctl_pattern_field import FormCtlPatternField
     from ooodev.form.controls.form_ctl_radio_button import FormCtlRadioButton

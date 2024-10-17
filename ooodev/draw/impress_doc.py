@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, List, overload
-import uno
 
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.util.modify_events import ModifyEvents

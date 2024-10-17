@@ -1,12 +1,10 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 from com.sun.star.container import XNamed
 from com.sun.star.sheet import XCellAddressable
 from com.sun.star.sheet import XCellRangeAddressable
 
-from ooodev.events.args.event_args import EventArgs
 from ooodev.loader import lo as mLo
 from ooodev.utils import info as mInfo
 from ooodev.loader.inst.lo_inst import LoInst

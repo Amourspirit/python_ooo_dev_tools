@@ -1,13 +1,11 @@
 from __future__ import annotations
-from typing import cast
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format import Styler
-from ooodev.format.calc.modify.page.page import LayoutSettings, PageStyleLayout, NumberingTypeEnum, CalcStylePageKind
+from ooodev.format.calc.modify.page.page import LayoutSettings, PageStyleLayout, NumberingTypeEnum
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Literal, TYPE_CHECKING
-import uno
 from com.sun.star.awt.tree import XMutableTreeNode
 
 from ooodev.loader import lo as mLo

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, TYPE_CHECKING
-import uno
 
 from ooodev.uno_helper.base_class.base_property_set import BasePropertySet
 from ooodev.uno_helper.base_class.base_service_info import BaseServiceInfo

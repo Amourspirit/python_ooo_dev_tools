@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
-import uno
 
 from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent
@@ -10,7 +9,6 @@ from ooodev.events.args.event_args import EventArgs
 from ooodev.exceptions import ex as mEx
 from ooodev.events.style_named_event import StyleNameEvent
 
-from ooodev.mock.mock_g import DOCS_BUILDING
 
 if TYPE_CHECKING:  # or DOCS_BUILDING:
     from ooodev.format.inner.direct.chart2.legend.position.position import Position

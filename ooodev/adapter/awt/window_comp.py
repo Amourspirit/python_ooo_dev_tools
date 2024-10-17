@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.awt.window_partial import WindowPartial
 from ooodev.adapter.component_base import ComponentBase

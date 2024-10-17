@@ -18,7 +18,6 @@ def _test_spell_failing(loader):
         speller = Lo.create_instance_mcf(XSpellChecker, "com.sun.star.linguistic2.SpellChecker")
     Getting speller this way works.
     """
-    import uno
     from ooodev.loader.lo import Lo
     from com.sun.star.linguistic2 import XLinguServiceManager2
     from com.sun.star.lang import Locale  # struct class
@@ -42,7 +41,6 @@ def test_spell2(loader):
     This test requires Write to be visible.
     If not visible then Write.is_anything_selected() will return false every time.
     """
-    import uno
     from ooodev.loader.lo import Lo
     from com.sun.star.lang import Locale  # struct class
     from com.sun.star.linguistic2 import XSpellChecker

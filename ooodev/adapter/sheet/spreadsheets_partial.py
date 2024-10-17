@@ -5,7 +5,6 @@ from com.sun.star.sheet import XSpreadsheets
 from ooodev.adapter.container.name_container_partial import NameContainerPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.sheet import Spreadsheet  # service
     from ooodev.utils.type_var import UnoInterface
 
 

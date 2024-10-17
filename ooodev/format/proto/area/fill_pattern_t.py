@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, overload, TYPE_CHECKING
-import uno
 
 
 from ooodev.mock.mock_g import DOCS_BUILDING

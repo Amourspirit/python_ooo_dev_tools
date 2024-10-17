@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 from ooodev.utils.file_io import FileIO
 from custom_show import CustomShow
 

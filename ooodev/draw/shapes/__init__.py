@@ -33,3 +33,5 @@ __all__ = [
     "ShapeTextCursor",
     "TextShape",
 ]
+
+import uno  # noqa # type: ignore

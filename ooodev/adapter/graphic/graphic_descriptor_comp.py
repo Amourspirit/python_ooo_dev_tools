@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
-import uno
 from ooo.dyn.awt.size import Size
 
 from ooodev.adapter.beans.property_set_comp import PropertySetComp

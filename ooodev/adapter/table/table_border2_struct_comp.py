@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.table.table_border2 import TableBorder2
 from ooo.dyn.table.border_line2 import BorderLine2
 

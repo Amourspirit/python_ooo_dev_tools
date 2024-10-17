@@ -2,7 +2,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, cast, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 import unohelper
 from com.sun.star.uno import XInterface
 from com.sun.star.beans import XPropertySet

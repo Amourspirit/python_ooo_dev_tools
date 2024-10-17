@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.area import Gradient, PresetGradientKind, StyleParaKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

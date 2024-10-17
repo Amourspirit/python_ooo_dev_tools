@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, overload, TYPE_CHECKING
-import uno
 from com.sun.star.drawing import XShape
 from com.sun.star.awt import Rectangle
 

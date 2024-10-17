@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from com.sun.star.ucb import XSimpleFileAccess3
 
 from ooodev.adapter.component_prop import ComponentProp

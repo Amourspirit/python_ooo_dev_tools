@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.area import Color
 from ooodev.format.writer.modify.para.transparency import Transparency, Intensity
 from ooodev.format.styler import Styler
@@ -15,7 +14,6 @@ from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
 
 if TYPE_CHECKING:
-    from com.sun.star.style import ParagraphProperties  # service
     from com.sun.star.drawing import FillProperties  # service
 
 

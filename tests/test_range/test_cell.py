@@ -1,6 +1,5 @@
 from copy import copy
 import pytest
-from typing import cast
 
 if __name__ == "__main__":
     pytest.main([__file__])

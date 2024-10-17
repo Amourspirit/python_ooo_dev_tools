@@ -1,7 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
-from com.sun.star.ucb import XContent
 from com.sun.star.io import XStream
 
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial

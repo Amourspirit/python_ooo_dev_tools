@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format import Styler
 from ooodev.format.calc.modify.page.borders import Padding, CalcStylePageKind
 from ooodev.gui.gui import GUI

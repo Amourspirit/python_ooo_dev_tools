@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, overload, TypeVar, Type, Any, Set
-import uno
 from ooo.dyn.drawing.text_animation_kind import TextAnimationKind
 
 from ooodev.exceptions import ex as mEx

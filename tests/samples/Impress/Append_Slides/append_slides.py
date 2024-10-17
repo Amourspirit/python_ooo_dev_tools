@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.drawing import XDrawPages
 from com.sun.star.lang import XComponent
 

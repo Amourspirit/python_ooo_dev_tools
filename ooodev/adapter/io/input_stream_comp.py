@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast
-import uno
 from com.sun.star.io import XInputStream
 
 from ooodev.adapter.component_prop import ComponentProp

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 
-import uno
 from com.sun.star.beans import XPropertiesChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs

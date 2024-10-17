@@ -3,7 +3,6 @@ from __future__ import annotations
 # pylint: disable=invalid-name, unused-import
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.awt.tree import XTreeDataModelListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase

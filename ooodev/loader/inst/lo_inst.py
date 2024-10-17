@@ -101,7 +101,6 @@ if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
     from ooodev.utils.type_var import T
     from ooodev.utils.type_var import Table
-    from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
 else:
     PathOrStr = Any
     UnoInterface = Any
@@ -1732,7 +1731,7 @@ class LoInst(EventsPartial):
             self._logger.debug(f"inspect() method was found: {method is not None}")
             params = [[obj, title]]
             method.invoke(inspector, params)
-        except Exception as e:
+        except Exception:
             self._logger.exception("Could not access Inspector")
 
     def mri_inspect(self, obj: object) -> None:
@@ -2372,5 +2371,4 @@ class LoInst(EventsPartial):
 __all__ = ("LoInst",)
 
 if mock_g.FULL_IMPORT:
-    from ooodev.adapter.awt.unit_conversion_comp import UnitConversionComp
-    from ooodev.adapter.util.the_path_settings_comp import ThePathSettingsComp
+    pass

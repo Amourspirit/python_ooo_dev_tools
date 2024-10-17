@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Tuple
 
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct

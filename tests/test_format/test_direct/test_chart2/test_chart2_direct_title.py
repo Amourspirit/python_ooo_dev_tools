@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
@@ -23,12 +22,8 @@ from ooodev.format.chart2.direct.title.area import (
     Color as ChartTitleBgColor,
     Gradient as ChartTitleBgGradient,
     Hatch as ChartTitleBgHatch,
-    Img as ChartTitleBgImg,
-    Pattern as ChartTitleBgPattern,
     PresetGradientKind,
     PresetHatchKind,
-    PresetImageKind,
-    PresetPatternKind,
 )
 from ooodev.format.chart2.direct.title.font import Font as TitleFont
 from ooodev.format.chart2.direct.title.borders import LineProperties as TitleBorderLineProperties, BorderLineKind

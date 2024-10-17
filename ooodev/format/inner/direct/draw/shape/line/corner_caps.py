@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Tuple, overload, Any, TypeVar, Type
-import uno
 
 from ooo.dyn.drawing.line_joint import LineJoint
 from ooo.dyn.drawing.line_cap import LineCap

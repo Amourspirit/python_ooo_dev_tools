@@ -1,8 +1,5 @@
 from __future__ import annotations
 import pytest
-from typing import cast
-import uno
-from com.sun.star.container import XNamed
 
 if __name__ == "__main__":
     pytest.main([__file__])

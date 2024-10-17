@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.modify.write.page.header.area.color import Color as HeaderColor

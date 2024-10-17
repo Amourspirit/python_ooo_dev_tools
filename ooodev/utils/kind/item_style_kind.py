@@ -1,5 +1,3 @@
-import uno
-from com.sun.star.ui import ItemStyle
 from enum import IntFlag
 
 

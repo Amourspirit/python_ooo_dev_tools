@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic, overload, Tuple
-import uno
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.text import XText
 from com.sun.star.drawing import XShape

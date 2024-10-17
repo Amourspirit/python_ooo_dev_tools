@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from ooodev.format.inner.direct.write.para.outline_list import OutlineList, LevelKind, StyleListKind
 from ooodev.format.writer.direct.para.outline_list import Outline, LineNum, ListStyle, LevelKind, StyleListKind

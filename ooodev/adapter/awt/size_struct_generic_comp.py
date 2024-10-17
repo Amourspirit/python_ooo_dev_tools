@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Generic, Type, TypeVar, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.size import Size
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100

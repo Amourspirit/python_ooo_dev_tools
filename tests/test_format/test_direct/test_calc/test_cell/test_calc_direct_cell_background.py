@@ -5,15 +5,10 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.calc.direct.cell.background import Color
 from ooodev.format.calc.direct.cell.borders import (
     Borders,
-    Shadow,
     Side,
-    BorderLineKind,
-    ShadowLocation,
-    Padding,
 )
 from ooodev.format import CommonColor, Styler
 from ooodev.gui.gui import GUI

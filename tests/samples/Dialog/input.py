@@ -1,7 +1,4 @@
-from typing import TYPE_CHECKING, cast
-import uno  # pylint: disable=unused-import
-from com.sun.star.awt import XControlModel
-from com.sun.star.awt import XDialog
+from typing import TYPE_CHECKING
 
 from ooo.dyn.awt.pos_size import PosSize
 from ooo.dyn.awt.push_button_type import PushButtonType
@@ -13,7 +10,7 @@ from ooodev.office.calc import Calc
 
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import UnoControlDialog
+    pass
 
 
 class Input:

@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Sequence
 import sys
 from contextlib import contextmanager
 import importlib.util
-import uno
 
 # import pythonscript  # type: ignore
 from ooodev.uno_helper.importer.importer_file import ImporterFile

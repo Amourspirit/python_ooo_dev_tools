@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.table.shadow_format import ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation
 from ooodev.adapter.struct_base import StructBase

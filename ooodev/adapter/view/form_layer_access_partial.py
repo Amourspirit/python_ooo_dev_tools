@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from com.sun.star.view import XFormLayerAccess
 
 from ooodev.adapter.view.control_access_partial import ControlAccessPartial

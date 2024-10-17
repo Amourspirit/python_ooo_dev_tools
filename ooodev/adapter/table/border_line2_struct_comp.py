@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooo.dyn.table.border_line2 import BorderLine2
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum
 from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp

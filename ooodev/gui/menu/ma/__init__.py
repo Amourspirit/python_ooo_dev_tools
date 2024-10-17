@@ -4,3 +4,5 @@ from .ma_item import MAItem as MAItem
 from .ma_creator import MACreator as MACreator
 
 __all__ = ["MAPopup", "MAProcessor", "MAItem", "MACreator"]
+
+import uno  # noqa # type: ignore

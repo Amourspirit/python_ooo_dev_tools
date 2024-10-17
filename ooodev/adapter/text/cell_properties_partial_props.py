@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooo.dyn.style.graphic_location import GraphicLocation
 from ooo.dyn.text.vert_orientation import VertOrientationEnum

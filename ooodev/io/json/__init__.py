@@ -3,3 +3,5 @@ from .json_custom_props import JsonCustomProps as JsonCustomProps
 from .doc_json_file import DocJsonFile as DocJsonFile
 
 __all__ = ["JsonEncoder", "JsonCustomProps", "DocJsonFile"]
+
+import uno  # noqa # type: ignore

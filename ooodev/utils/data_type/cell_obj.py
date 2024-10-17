@@ -3,7 +3,6 @@ import contextlib
 from typing import cast, overload, TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
-import uno
 from ooo.dyn.table.cell_address import CellAddress
 
 from ooodev.loader import lo as mLo

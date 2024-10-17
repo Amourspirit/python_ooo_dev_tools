@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
-import uno
+from typing import Any, TYPE_CHECKING
 
 from com.sun.star.beans import XPropertySetOption
 
@@ -8,7 +7,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
-    from com.sun.star.beans import Property  # struct
     from ooodev.utils.type_var import UnoInterface
 
 

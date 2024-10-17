@@ -1,5 +1,4 @@
 import pytest
-import uno
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":

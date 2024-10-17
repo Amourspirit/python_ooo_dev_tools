@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 
 from ooodev.format.inner.direct.write.char.highlight.highlight import Highlight as InnerHighlight
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti

@@ -3,7 +3,6 @@ from __future__ import annotations
 # pylint: disable=invalid-name, unused-import
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.ui import XContextMenuInterceptor
 from ooo.dyn.ui.context_menu_interceptor_action import ContextMenuInterceptorAction
 from ooodev.events.args.generic_args import GenericArgs

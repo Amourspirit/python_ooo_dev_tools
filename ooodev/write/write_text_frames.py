@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Sequence, TYPE_CHECKING
-import uno
 
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil

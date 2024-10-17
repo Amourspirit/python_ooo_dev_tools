@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.form.submission import XSubmissionVetoListener
 
 from ooo.dyn.util.veto_exception import VetoException

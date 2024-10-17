@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
-import uno
 
 from com.sun.star.table import XTableCharts
 from ooodev.adapter.container.name_access_partial import NameAccessPartial

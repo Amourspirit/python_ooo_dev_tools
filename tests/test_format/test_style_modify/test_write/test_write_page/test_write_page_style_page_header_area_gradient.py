@@ -4,11 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.format.writer.modify.page.header import Header, WriterStylePageKind
+from ooodev.format.writer.modify.page.header import Header
 from ooodev.format.writer.modify.page.header.area import Gradient, PresetGradientKind
 from ooodev.format import Styler
-from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write

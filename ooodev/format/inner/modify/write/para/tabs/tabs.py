@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 
 from ooo.dyn.style.tab_align import TabAlign
 from ooodev.format.inner.direct.structs.tab_stop_struct import FillCharKind

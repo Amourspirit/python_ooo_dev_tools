@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.adapter.drawing.line_dash_struct_comp import LineDashStructComp
 from ooodev.units.unit_mm100 import UnitMM100

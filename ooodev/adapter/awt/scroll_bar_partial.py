@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.awt import XScrollBar
 from ooo.dyn.awt.scroll_bar_orientation import ScrollBarOrientationEnum

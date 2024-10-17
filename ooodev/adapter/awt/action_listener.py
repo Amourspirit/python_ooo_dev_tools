@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
 
-import uno
 from com.sun.star.awt import XActionListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase

@@ -21,3 +21,5 @@ __all__ = [
     "RuleTextSensitive",
     "SearchTree",
 ]
+
+import uno  # noqa # type: ignore

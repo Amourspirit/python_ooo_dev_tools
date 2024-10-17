@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import List
 
-import uno
 from ooodev.office.draw import Draw
 from ooodev.utils.dispatch.draw_view_dispatch import DrawViewDispatch
 from ooodev.utils.file_io import FileIO

@@ -4,7 +4,6 @@ from typing import Any, cast, Dict, List, Type, Tuple, Set, TYPE_CHECKING
 import importlib
 import types
 
-import uno
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.lang import XTypeProvider
 

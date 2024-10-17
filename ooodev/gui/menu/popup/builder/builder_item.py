@@ -1,7 +1,5 @@
 from __future__ import annotations
-from re import sub
 from typing import Dict, List, Any
-import uno
 from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
 
 from ooodev.gui.menu.popup.builder.item import Item

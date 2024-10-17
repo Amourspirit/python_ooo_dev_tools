@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from com.sun.star.container import NoSuchElementException
 from com.sun.star.container import ElementExistException
 from com.sun.star.lang import IllegalArgumentException
@@ -86,7 +85,7 @@ class NameContainerImpl(Base, XNameContainer):
             raise ElementExistException(f"Element '{name}' already exists", self)
         try:
             self._dict[name] = element
-        except Exception as e:
+        except Exception:
             raise IllegalArgumentException(f"Error inserting element '{name}'", self, 0)
 
     def removeByName(self, name: str) -> None:

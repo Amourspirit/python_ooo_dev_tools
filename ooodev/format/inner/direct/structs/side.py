@@ -10,7 +10,6 @@ import contextlib
 from typing import Any, Tuple, cast, overload, Type, TypeVar, TYPE_CHECKING
 from enum import Enum, IntEnum
 
-import uno
 from ooo.dyn.table.border_line import BorderLine
 from ooo.dyn.table.border_line_style import BorderLineStyle
 from ooo.dyn.table.border_line2 import BorderLine2

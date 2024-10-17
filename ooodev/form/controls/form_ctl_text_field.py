@@ -3,7 +3,6 @@ from typing import Any, cast, TYPE_CHECKING
 import contextlib
 import os
 
-import uno
 from ooo.dyn.awt.line_end_format import LineEndFormatEnum as LineEndFormatEnum
 from ooo.dyn.awt.selection import Selection
 

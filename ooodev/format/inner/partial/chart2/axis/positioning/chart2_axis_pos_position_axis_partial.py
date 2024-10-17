@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import chart2_axis_pos_position_axis_factory
 from ooodev.events.partial.events_partial import EventsPartial

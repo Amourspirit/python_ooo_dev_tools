@@ -5,9 +5,8 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format import Styler
-from ooodev.format.calc.modify.cell.numbers import Numbers, NumberFormatEnum, NumberFormatIndexEnum, StyleCellKind
+from ooodev.format.calc.modify.cell.numbers import Numbers, NumberFormatIndexEnum, StyleCellKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.calc import Calc

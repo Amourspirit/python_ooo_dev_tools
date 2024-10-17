@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Generic
-import uno
 
 from ooodev.draw.partial.draw_shape_partial import DrawShapePartial
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement

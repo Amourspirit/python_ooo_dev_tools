@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, Tuple, List, TYPE_CHECKING
+from typing import Any, Tuple, TYPE_CHECKING
 import contextlib
-import uno
 from com.sun.star.beans import PropertyValue
 from ooo.dyn.util.url import URL
 

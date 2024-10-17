@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from com.sun.star.form import XDatabaseParameterBroadcaster2
 from ooodev.adapter.form.database_parameter_broadcaster_partial import DatabaseParameterBroadcasterPartial
 

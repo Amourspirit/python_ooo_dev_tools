@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from com.sun.star.text import XTextViewCursor
 
@@ -331,5 +330,3 @@ class WriteTextViewCursor(
 
 if mock_g.FULL_IMPORT:
     from ooodev.write.style.direct.character_styler import CharacterStyler
-    from .export.page_png import PagePng
-    from .export.page_jpg import PageJpg

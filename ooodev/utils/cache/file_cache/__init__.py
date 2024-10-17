@@ -3,3 +3,5 @@ from .pickle_cache import PickleCache as PickleCache
 from .text_cache import TextCache as TextCache
 
 __all__ = ["CacheBase", "PickleCache", "TextCache"]
+
+import uno  # noqa # type: ignore

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.utils.kind.form_component_kind import FormComponentKind
 

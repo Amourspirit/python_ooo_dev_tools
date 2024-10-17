@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 from ooo.dyn.style.graphic_location import GraphicLocation
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.text.hori_orientation import HoriOrientationEnum

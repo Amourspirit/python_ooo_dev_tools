@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple, cast, Type, TypeVar
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind

@@ -4,7 +4,6 @@ from typing import Union
 import os
 import sys
 import shutil
-import __main__
 from pathlib import Path
 from typing import overload
 import uno

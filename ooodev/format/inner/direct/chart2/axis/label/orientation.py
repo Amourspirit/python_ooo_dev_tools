@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Tuple
-import uno
 
 from ooodev.format.inner.direct.chart2.title.alignment.direction import DirectionModeKind
 from ooodev.format.inner.kind.format_kind import FormatKind

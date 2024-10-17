@@ -5,7 +5,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.page.page import Margins
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

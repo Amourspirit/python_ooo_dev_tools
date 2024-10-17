@@ -9,7 +9,6 @@ from __future__ import annotations
 import contextlib
 from typing import Any, Tuple, cast, Type, TypeVar, overload
 
-import uno
 from com.sun.star.beans import XPropertySet
 from ooo.dyn.style.tab_align import TabAlign
 from ooo.dyn.style.tab_stop import TabStop

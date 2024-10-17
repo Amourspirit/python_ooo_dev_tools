@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.direct.write.char.border.shadow import Shadow as InnerShadow

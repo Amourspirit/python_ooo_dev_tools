@@ -89,16 +89,16 @@ class InnerBorders(StyleMulti):
         bdr_btm = None
 
         if border_side is None:
-            if not right is None:
+            if right is not None:
                 bdr_right = right.copy(_cattribs=self._get_bdr_right_cattribs())
 
-            if not left is None:
+            if left is not None:
                 bdr_left = left.copy(_cattribs=self._get_bdr_left_cattribs())
 
-            if not top is None:
+            if top is not None:
                 bdr_top = top.copy(_cattribs=self._get_bdr_top_cattribs())
 
-            if not bottom is None:
+            if bottom is not None:
                 bdr_btm = bottom.copy(_cattribs=self._get_bdr_btm_cattribs())
         else:
             bdr_right = border_side.copy(_cattribs=self._get_bdr_right_cattribs())
@@ -107,21 +107,21 @@ class InnerBorders(StyleMulti):
             bdr_btm = border_side.copy(_cattribs=self._get_bdr_btm_cattribs())
 
         super().__init__(**init_vals)
-        if not padding_fmt is None:
+        if padding_fmt is not None:
             self._set_style("padding", padding_fmt)
-        if not shadow_fmt is None:
+        if shadow_fmt is not None:
             self._set_style("shadow", shadow_fmt)
-        if not diag_dn is None:
+        if diag_dn is not None:
             self._set_style("diag_dn", diag_dn)
-        if not diag_up is None:
+        if diag_up is not None:
             self._set_style("diag_up", diag_up)
-        if not bdr_right is None:
+        if bdr_right is not None:
             self._set_style("bdr_right", bdr_right)
-        if not bdr_left is None:
+        if bdr_left is not None:
             self._set_style("bdr_left", bdr_left)
-        if not bdr_top is None:
+        if bdr_top is not None:
             self._set_style("bdr_top", bdr_top)
-        if not bdr_btm is None:
+        if bdr_btm is not None:
             self._set_style("bdr_btm", bdr_btm)
 
     # endregion init

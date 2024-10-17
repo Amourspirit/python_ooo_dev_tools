@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.format.inner.direct.write.char.font.font_position import CharSpacingKind
 from ooodev.format.inner.direct.write.char.font.font_position import FontPosition as InnerFontPosition

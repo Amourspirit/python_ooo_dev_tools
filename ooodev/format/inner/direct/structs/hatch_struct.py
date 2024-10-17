@@ -8,7 +8,6 @@ Module for ``Hatch`` struct.
 from __future__ import annotations
 from typing import Any, Tuple, Type, cast, overload, TypeVar, TYPE_CHECKING
 
-import uno
 from ooo.dyn.drawing.hatch import Hatch
 from ooo.dyn.drawing.hatch_style import HatchStyle
 

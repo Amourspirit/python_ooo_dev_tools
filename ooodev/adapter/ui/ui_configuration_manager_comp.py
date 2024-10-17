@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
-import uno
-from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.ui.ui_configuration_manager_partial import UIConfigurationManagerPartial
 

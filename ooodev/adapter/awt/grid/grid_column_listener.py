@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.awt.grid import XGridColumnListener
 
 from ooodev.events.args.generic_args import GenericArgs

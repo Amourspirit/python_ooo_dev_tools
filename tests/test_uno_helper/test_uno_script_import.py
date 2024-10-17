@@ -21,7 +21,7 @@ def test_import_shared(loader) -> None:
     doc = None
     try:
         with importer_shared_script():
-            import Capitalise  # type: ignore
+            import Capitalise  # noqa # type: ignore
         assert "Capitalise" in sys.modules
         del sys.modules["Capitalise"]
     finally:

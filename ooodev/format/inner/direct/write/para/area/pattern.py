@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-import uno
 from com.sun.star.awt import XBitmap
 from ooo.dyn.style.graphic_location import GraphicLocation
 

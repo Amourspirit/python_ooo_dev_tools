@@ -3,3 +3,5 @@ from .tlru_cache import TLRUCache as TLRUCache
 from .time_cache import TimeCache as TimeCache
 
 __all__ = ["LRUCache", "TLRUCache", "TimeCache"]
+
+import uno  # noqa # type: ignore

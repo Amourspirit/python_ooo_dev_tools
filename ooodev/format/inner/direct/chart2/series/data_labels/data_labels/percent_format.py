@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, Dict, Tuple, overload
-import uno
 from com.sun.star.chart2 import XChartDocument
 
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum

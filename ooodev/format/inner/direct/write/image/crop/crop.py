@@ -339,16 +339,16 @@ class ImageCrop(StyleMulti):
         crop = self.prop_crop_opt
         if crop is None:
             sz = None
-            if not self.prop_img_size is None:
+            if self.prop_img_size is not None:
                 sz = self._rule_no_crop_image()
-            elif not self.prop_img_scale is None:
+            elif self.prop_img_scale is not None:
                 sz = self._rule_no_crop_scale_no_image(orig_size)
         else:
             if crop.prop_keep_scale:
                 sz = self._get_keep_scale_value(orig_size)
             else:
                 sz = self._rule_crop_keep_image(orig_size)
-        if not sz is None:
+        if sz is not None:
             self._set(self._props.height, sz.height)
             self._set(self._props.width, sz.width)
         super().apply(obj, **kwargs)

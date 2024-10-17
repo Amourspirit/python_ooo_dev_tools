@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, cast, TYPE_CHECKING
-import uno
 
 from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind
 from ooodev.format.inner.common.props.border_props import BorderProps

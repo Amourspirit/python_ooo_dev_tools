@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from com.sun.star.drawing import XShapeGroup
 
 from ooodev.adapter.drawing.shape_partial import ShapePartial

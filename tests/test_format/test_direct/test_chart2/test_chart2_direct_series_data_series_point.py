@@ -6,11 +6,9 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # from com.sun.star.lang import XMultiServiceFactory
 # from com.sun.star.container import XNameContainer
-from ooodev.utils.kind.chart2_types import ChartTypes
 
 try:
     from ooodev.office.chart2 import Chart2

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, Callable, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 import uno
 from com.sun.star.frame import XStorable
 

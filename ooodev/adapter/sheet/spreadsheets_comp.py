@@ -7,7 +7,6 @@ from ooodev.adapter.sheet.spreadsheets_partial import SpreadsheetsPartial
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import Spreadsheets  # service
-    from com.sun.star.sheet import Spreadsheet  # service
 
 
 class SpreadsheetsComp(

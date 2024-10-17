@@ -1,7 +1,6 @@
 from __future__ import annotations
 from enum import Enum
 
-import uno
 from com.sun.star.chart2 import XChartDocument
 from com.sun.star.sheet import XSpreadsheet
 from com.sun.star.sheet import XSpreadsheetDocument
@@ -14,14 +13,12 @@ from ooodev.office.chart2 import (
     Chart2ControllerLock,
     Angle,
     DataPointLabelTypeKind,
-    DataPointGeometry3DEnum,
     CurveKind,
     mEx,
 )
 from ooodev.utils.color import CommonColor
 from ooodev.utils.file_io import FileIO
 from ooodev.gui.gui import GUI
-from ooodev.utils.kind.axis_kind import AxisKind
 from ooodev.utils.kind.chart2_types import ChartTypes
 from ooodev.utils.kind.data_point_lable_placement_kind import DataPointLabelPlacementKind
 from ooodev.loader.lo import Lo

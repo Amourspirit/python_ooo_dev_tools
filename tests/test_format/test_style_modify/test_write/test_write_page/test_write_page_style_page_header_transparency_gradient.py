@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.page.header import Header
 from ooodev.format.writer.modify.page.header.area import Color
 from ooodev.format.writer.modify.page.header.transparency import Gradient, GradientStyle, Angle, IntensityRange

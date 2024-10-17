@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.sheet.spreadsheet_view_objects_mode import SpreadsheetViewObjectsModeEnum
 from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 

@@ -1,8 +1,6 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
+from typing import Any, TYPE_CHECKING
 
-import uno
-from ooo.dyn.frame.command_group import CommandGroupEnum
 from com.sun.star.frame import XTitleChangeBroadcaster
 
 from ooodev.exceptions import ex as mEx

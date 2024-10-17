@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import warnings
-import uno
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.deployment.package_manager_factory_partial import PackageManagerFactoryPartial
 

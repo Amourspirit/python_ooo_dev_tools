@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, overload, TYPE_CHECKING, TypeVar, Generic, ClassVar
-import uno
 from com.sun.star.frame import XComponentLoader
 from com.sun.star.util import XCloseable
 from com.sun.star.frame import XModule

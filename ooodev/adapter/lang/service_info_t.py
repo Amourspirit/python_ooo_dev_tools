@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Tuple, Protocol
-import uno
 
 
 class ServiceInfoT(Protocol):

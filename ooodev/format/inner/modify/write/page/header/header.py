@@ -1,6 +1,5 @@
 # region Import
 from __future__ import annotations
-import uno
 from typing import Any, Tuple, cast, Type, TypeVar
 from ooodev.format.inner.common.abstract.abstract_hf import AbstractHF
 from ooodev.format.inner.common.props.hf_props import HfProps

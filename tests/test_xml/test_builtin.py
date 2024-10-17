@@ -1,6 +1,5 @@
 from pathlib import Path
 import pytest
-from unittest.mock import patch
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":

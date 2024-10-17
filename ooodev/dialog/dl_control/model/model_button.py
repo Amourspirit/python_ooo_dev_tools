@@ -3,7 +3,6 @@ from typing import Any, TYPE_CHECKING
 import contextlib
 from pathlib import Path
 from ooodev.adapter.awt.uno_control_button_model_partial import UnoControlButtonModelPartial
-from ooodev.adapter.awt.uno_control_dialog_element_partial import UnoControlDialogElementPartial
 from ooodev.utils.partial.model_prop_partial import ModelPropPartial
 from ooodev.utils.file_io import FileIO
 from ooodev.utils.type_var import PathOrStr

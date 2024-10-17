@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TypeVar, Tuple
-import uno
 
 from ooodev.format.inner.common.props.title_alignment_orientation_props import TitleAlignmentOrientationProps
 from ooodev.format.inner.kind.format_kind import FormatKind

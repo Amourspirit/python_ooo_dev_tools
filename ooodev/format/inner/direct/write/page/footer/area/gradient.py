@@ -1,7 +1,5 @@
 # region Import
 from __future__ import annotations
-from typing import Tuple
-import uno
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.write.page.header.area.gradient import Gradient as HeaderGradient

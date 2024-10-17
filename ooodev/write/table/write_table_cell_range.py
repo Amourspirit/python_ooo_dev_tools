@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, overload, Generator, TYPE_CHECKING, Tuple, Sequence
-import uno
 from com.sun.star.lang import IndexOutOfBoundsException
 
 # from ooodev.mock import mock_g
@@ -27,7 +26,6 @@ if TYPE_CHECKING:
     from ooodev.utils.data_type.range_values import RangeValues
     from ooodev.proto.component_proto import ComponentT
     from ooodev.utils.data_type.cell_obj import CellObj
-    from ooodev.write.table.write_table_row import WriteTableRow
 
 
 class WriteTableCellRange(

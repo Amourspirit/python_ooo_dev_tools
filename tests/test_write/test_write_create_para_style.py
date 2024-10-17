@@ -4,8 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

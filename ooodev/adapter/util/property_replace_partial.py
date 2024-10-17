@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.util import XPropertyReplace
 
 from ooodev.adapter.util.replace_descriptor_partial import ReplaceDescriptorPartial

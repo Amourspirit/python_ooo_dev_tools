@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
-import uno
 
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
@@ -1128,6 +1127,4 @@ class CalcCellRange(
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.office.chart2 import Chart2
-    from ooodev.calc.export.range_jpg import RangeJpg
-    from ooodev.calc.export.range_png import RangePng
+    pass

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 
 from ooodev.adapter.container.name_container_comp import NameContainerComp
 from ooodev.adapter.style.style_comp import StyleComp

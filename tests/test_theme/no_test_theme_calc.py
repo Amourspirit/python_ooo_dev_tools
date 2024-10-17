@@ -1,6 +1,5 @@
 from __future__ import annotations
 import pytest
-from os import getenv
 
 if __name__ == "__main__":
     pytest.main([__file__])

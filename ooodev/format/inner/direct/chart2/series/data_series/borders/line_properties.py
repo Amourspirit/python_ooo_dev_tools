@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, NamedTuple, TypeVar, Type
-import uno
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.preset.preset_border_line import BorderLineKind, get_preset_series_border_line_props

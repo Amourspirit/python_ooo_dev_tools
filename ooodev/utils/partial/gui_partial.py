@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
-import uno
 from com.sun.star.awt import XTopWindow2
 from com.sun.star.awt import XWindow2
 from com.sun.star.frame import XController

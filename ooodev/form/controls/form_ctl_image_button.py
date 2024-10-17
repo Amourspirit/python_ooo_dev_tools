@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from pathlib import Path
-import uno
 
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 from ooodev.adapter.form.approve_action_events import ApproveActionEvents

@@ -153,7 +153,7 @@ class PythonScriptProvider(UnoPythonScriptProvider):
                     .createDocumentContent(doc)
                 )
                 storageType = content.getIdentifier().getContentIdentifier()
-            except Exception as e:
+            except Exception:
                 text = pythonscript.lastException2String()
                 pythonscript.log.error(text)
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.drawing.hatch_style import HatchStyle
 

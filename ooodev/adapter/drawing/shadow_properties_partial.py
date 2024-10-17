@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.events.events import Events
 from ooodev.utils.data_type.intensity import Intensity
