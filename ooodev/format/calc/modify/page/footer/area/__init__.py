@@ -1,3 +1,5 @@
+import uno  # noqa # type: ignore
+
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 
 from ooodev.format.calc.style.page.kind.calc_style_page_kind import (
@@ -15,10 +17,8 @@ from ooodev.format.inner.common.format_types.offset_row import OffsetRow as Offs
 from ooodev.format.inner.common.format_types.offset_column import (
     OffsetColumn as OffsetColumn,
 )
-from ooodev.format.inner.modify.calc.page.footer.area.color import Color as InnerColor
+from ooodev.format.inner.modify.calc.page.footer.area.color import Color as InnerColor  # noqa # type: ignore
 from ooodev.format.inner.modify.calc.page.footer.area.color import Color as Color
 from ooodev.format.inner.modify.calc.page.footer.area.img import Img as Img
 
 __all__ = ["Color", "Img"]
-
-import uno  # noqa # type: ignore

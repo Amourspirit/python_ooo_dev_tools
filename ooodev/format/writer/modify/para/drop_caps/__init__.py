@@ -1,8 +1,9 @@
+import uno  # noqa # type: ignore
 from ooodev.format.inner.modify.write.para.drop_cap.drop_caps import (
     DropCaps as DropCaps,
 )
 from ooodev.format.inner.direct.write.para.drop_cap.drop_caps import (
-    DropCaps as InnerDropCaps,
+    DropCaps as InnerDropCaps,  # noqa # type: ignore
 )
 from ooodev.format.writer.style.char.kind.style_char_kind import (
     StyleCharKind as StyleCharKind,
@@ -12,5 +13,3 @@ from ooodev.format.writer.style.para.kind.style_para_kind import (
 )
 
 __all__ = ["DropCaps"]
-
-import uno  # noqa # type: ignore

@@ -1493,7 +1493,7 @@ class Info(metaclass=StaticProperty):
         if not obj:
             return
         from ooodev.utils.kind.enum_helper import EnumHelper
-
+        name = ""
         try:
             if isinstance(obj, str):
                 name = obj
@@ -1869,11 +1869,11 @@ class Info(metaclass=StaticProperty):
         print(f"  Autoload URL: {dps.AutoloadURL}")
         print(f"  Default Target: {dps.DefaultTarget}")
 
-        l = dps.Language
+        dps_lang = dps.Language
         loc = [
-            "unknown" if len(l.Language) == 0 else l.Language,
-            "unknown" if len(l.Country) == 0 else l.Country,
-            "unknown" if len(l.Variant) == 0 else l.Variant,
+            "unknown" if len(dps_lang.Language) == 0 else dps_lang.Language,
+            "unknown" if len(dps_lang.Country) == 0 else dps_lang.Country,
+            "unknown" if len(dps_lang.Variant) == 0 else dps_lang.Variant,
         ]
         print(f"  Locale: {'; '.join(loc)}")
 

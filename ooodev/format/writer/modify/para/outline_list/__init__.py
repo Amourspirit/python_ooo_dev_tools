@@ -14,7 +14,7 @@ from ooodev.format.inner.modify.write.para.outline_list.list_style import (
     ListStyle as ListStyle,
 )
 from ooodev.format.inner.direct.write.para.outline_list.outline import (
-    Outline as InnerOutline,
+    Outline as InnerOutline,  # noqa: F401
 )
 from ooodev.format.inner.modify.write.para.outline_list.outline import (
     Outline as Outline,

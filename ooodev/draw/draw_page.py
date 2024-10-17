@@ -326,8 +326,8 @@ class DrawPage(
     # endregion Properties
 
 
-from ooodev.draw.shape_collection import ShapeCollection
-from ooodev.draw.shapes.group_shape import GroupShape
+from ooodev.draw.shape_collection import ShapeCollection  # noqa # type: ignore
+from ooodev.draw.shapes.group_shape import GroupShape  # noqa # type: ignore
 
 if mock_g.FULL_IMPORT:
     pass

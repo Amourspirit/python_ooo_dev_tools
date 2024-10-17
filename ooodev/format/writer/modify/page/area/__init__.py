@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 from ooo.dyn.drawing.rectangle_point import RectanglePoint as RectanglePoint
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
@@ -14,13 +15,13 @@ from ooodev.format.inner.modify.write.page.area.color import Color as Color
 from ooodev.format.inner.modify.write.page.area.color import InnerColor as InnerColor
 from ooodev.format.inner.modify.write.page.area.gradient import Gradient as Gradient
 from ooodev.format.inner.direct.write.fill.area.gradient import (
-    Gradient as InnerGradient,
+    Gradient as InnerGradient,  # noqa # type: ignore
 )
 from ooodev.format.inner.modify.write.page.area.hatch import Hatch as Hatch
-from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch
+from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch  # noqa # type: ignore
 from ooodev.format.inner.modify.write.page.area.img import Img as Img
-from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg
-from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern
+from ooodev.format.inner.direct.write.fill.area.img import Img as InnerImg  # noqa # type: ignore
+from ooodev.format.inner.direct.write.fill.area.pattern import Pattern as InnerPattern  # noqa # type: ignore
 from ooodev.format.inner.modify.write.page.area.pattern import Pattern as Pattern
 from ooodev.format.inner.preset.preset_gradient import (
     PresetGradientKind as PresetGradientKind,
@@ -41,5 +42,3 @@ from ooodev.utils.data_type.offset import Offset as Offset
 from ooodev.utils.data_type.size_mm import SizeMM as SizeMM
 
 __all__ = ["Color", "Gradient", "Hatch", "Img", "Pattern"]
-
-import uno  # noqa # type: ignore

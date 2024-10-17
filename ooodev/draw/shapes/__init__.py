@@ -1,4 +1,5 @@
-import ooodev.draw.shapes.shape_base
+import uno  # noqa # type: ignore
+import ooodev.draw.shapes.shape_base  # noqa # type: ignore
 from .closed_bezier_shape import ClosedBezierShape as ClosedBezierShape
 from .connector_shape import ConnectorShape as ConnectorShape
 from .draw_shape import DrawShape as DrawShape
@@ -33,5 +34,3 @@ __all__ = [
     "ShapeTextCursor",
     "TextShape",
 ]
-
-import uno  # noqa # type: ignore

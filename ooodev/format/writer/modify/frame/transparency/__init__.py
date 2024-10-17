@@ -1,10 +1,11 @@
+import uno  # noqa # type: ignore
 from ooo.dyn.awt.gradient_style import GradientStyle as GradientStyle
 
 from ooodev.format.inner.modify.write.frame.transparent.gradient import (
     Gradient as Gradient,
 )
 from ooodev.format.inner.direct.write.fill.transparent.transparency import (
-    Transparency as InnerTransparency,
+    Transparency as InnerTransparency,  # noqa # type: ignore
 )
 from ooodev.format.inner.modify.write.frame.transparent.transparency import (
     Transparency as Transparency,
@@ -18,5 +19,3 @@ from ooodev.utils.data_type.intensity_range import IntensityRange as IntensityRa
 from ooodev.utils.data_type.offset import Offset as Offset
 
 __all__ = ["Gradient", "Transparency"]
-
-import uno  # noqa # type: ignore

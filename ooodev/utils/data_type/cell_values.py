@@ -153,4 +153,4 @@ class CellValues:
         return CellValues(col=col, row=row, sheet_idx=idx)
 
 
-from ooodev.utils.data_type import cell_obj as mCellObj
+from ooodev.utils.data_type import cell_obj as mCellObj  # noqa # type: ignore

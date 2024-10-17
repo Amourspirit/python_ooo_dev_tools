@@ -180,7 +180,7 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
             if not FileIO.is_valid_path_or_str(value):
                 raise ValueError(f"Invalid path or str: {value}")
             self.model.ImageURL = FileIO.fnm_to_url(value)
-        except:
+        except Exception:
             self.model.ImageURL = ""
 
     @property

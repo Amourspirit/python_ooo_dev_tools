@@ -713,11 +713,11 @@ def hsl_to_rgb(c: HSL) -> RGB:
     Returns:
         rgb: instance containing red, green, blue
     """
-    h = c.hue
-    l = c.lightness
-    s = c.saturation
+    hue = c.hue
+    lightness = c.lightness
+    saturation = c.saturation
 
-    t = colorsys.hls_to_rgb(h=h, l=l, s=s)
+    t = colorsys.hls_to_rgb(h=hue, l=lightness, s=saturation)
     return RGB(
         red=round(t[0] * MAX_COLOR),
         green=round(t[1] * MAX_COLOR),
@@ -790,12 +790,12 @@ def hsv_to_hsl(c: HSV) -> HSL:
     Returns:
         HSL: instance containing hue, saturation, lightness
     """
-    h = c.hue
-    s = c.saturation
-    v = c.value
-    l = 0.5 * v * (2 - s)
-    s = v * s / (1 - math.fabs(2 * l - 1))
-    return HSL(h, s, l)
+    hue = c.hue
+    saturation = c.saturation
+    value = c.value
+    lightness = 0.5 * value * (2 - saturation)
+    saturation = value * saturation / (1 - math.fabs(2 * lightness - 1))
+    return HSL(hue, saturation, lightness)
 
 
 def hsl_to_hsv(c: HSL) -> HSV:
@@ -808,12 +808,12 @@ def hsl_to_hsv(c: HSL) -> HSV:
     Returns:
         HSV: instance containing hue, saturation, value
     """
-    h = c.hue
-    s = c.saturation
-    l = c.lightness
-    v = (2 * l + s * (1 - math.fabs(2 * l - 1))) / 2
-    s = 2 * (v - l) / v
-    return HSV(h, s, v)
+    hue = c.hue
+    saturation = c.saturation
+    lightness = c.lightness
+    v = (2 * lightness + saturation * (1 - math.fabs(2 * lightness - 1))) / 2
+    saturation = 2 * (v - lightness) / v
+    return HSV(hue, saturation, v)
 
 
 def rgb_to_hex(rgb: RGB) -> str:
@@ -866,13 +866,11 @@ def int_to_rgb(rgb_int: int) -> RGB:
 
 
 @overload
-def lighten(rgb_color: int, percent: int | float) -> RGB:
-    ...
+def lighten(rgb_color: int, percent: int | float) -> RGB: ...
 
 
 @overload
-def lighten(rgb_color: RGB, percent: int | float) -> RGB:
-    ...
+def lighten(rgb_color: RGB, percent: int | float) -> RGB: ...
 
 
 def lighten(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
@@ -896,21 +894,19 @@ def lighten(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
     _rgb = int_to_rgb(rgb_color) if isinstance(rgb_color, int) else rgb_color
     c_hsl = rgb_to_hsl(_rgb)
     amt = (percent * ((1 - c_hsl.lightness) * 100)) / 100
-    l = c_hsl.lightness
-    l += amt / 100
-    increase = clamp(l, 0, 1)
+    lightness = c_hsl.lightness
+    lightness += amt / 100
+    increase = clamp(lightness, 0, 1)
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, increase)
     return hsl_to_rgb(c2_hsl)
 
 
 @overload
-def darken(rgb_color: int, percent: int | float) -> RGB:
-    ...
+def darken(rgb_color: int, percent: int | float) -> RGB: ...
 
 
 @overload
-def darken(rgb_color: RGB, percent: int | float) -> RGB:
-    ...
+def darken(rgb_color: RGB, percent: int | float) -> RGB: ...
 
 
 def darken(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
@@ -934,9 +930,9 @@ def darken(rgb_color: Union[RGB, int], percent: int | float) -> RGB:
     _rgb = int_to_rgb(rgb_color) if isinstance(rgb_color, int) else rgb_color
     c_hsl = rgb_to_hsl(_rgb)
     amt = (percent * (c_hsl.lightness * 100)) / 100
-    l = c_hsl.lightness
-    l -= amt / 100
-    decrease = clamp(l, 0, 1)
+    lightness = c_hsl.lightness
+    lightness -= amt / 100
+    decrease = clamp(lightness, 0, 1)
     c2_hsl = HSL(c_hsl.hue, c_hsl.saturation, decrease)
     return hsl_to_rgb(c2_hsl)
 

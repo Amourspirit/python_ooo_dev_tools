@@ -71,4 +71,4 @@ class TextRangePartial:
     # endregion Methods
 
 
-from ooodev.adapter.text import text_range_comp as mTextRangeComp
+from ooodev.adapter.text import text_range_comp as mTextRangeComp  # noqa # type: ignore

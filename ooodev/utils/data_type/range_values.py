@@ -532,6 +532,6 @@ class RangeValues:
     # endregion contains()
 
 
-from ooodev.utils.data_type import cell_obj as mCellObj
-from ooodev.utils.data_type import cell_values as mCellVals
-from ooodev.utils.data_type import range_obj as mRngObj
+from ooodev.utils.data_type import cell_obj as mCellObj  # noqa # type: ignore
+from ooodev.utils.data_type import cell_values as mCellVals  # noqa # type: ignore
+from ooodev.utils.data_type import range_obj as mRngObj  # noqa # type: ignore

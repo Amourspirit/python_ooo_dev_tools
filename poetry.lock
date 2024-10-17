@@ -1601,6 +1601,21 @@ pytest = ">=5.0"
 dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
+name = "pytest-ruff"
+version = "0.4.1"
+description = "pytest plugin to check ruff requirements."
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "pytest_ruff-0.4.1-py3-none-any.whl", hash = "sha256:69acd5b2ba68d65998c730b5b4d656788193190e45f61a53aa66ef8b390634a4"},
+    {file = "pytest_ruff-0.4.1.tar.gz", hash = "sha256:2c9a30f15f384c229c881b52ec86cfaf1e79d39530dd7dd5f2d6aebe278f7eb7"},
+]
+
+[package.dependencies]
+pytest = ">=5"
+ruff = ">=0.0.242"
+
+[[package]]
 name = "python-dotenv"
 version = "0.21.1"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -2678,4 +2693,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "904a03805a548d74d0db753f5931bd0b96b0c1bab90816a08cfe901fd9374541"
+content-hash = "39a64383b21fd9cb0b1cd0c503ffefe305ac0c1d92aa840da95c4e1ce06e9056"

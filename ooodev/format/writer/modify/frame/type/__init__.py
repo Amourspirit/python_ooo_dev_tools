@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import (
     AnchorKind as AnchorKind,
 )
@@ -30,20 +31,18 @@ from ooodev.format.inner.direct.write.image.image_type.size import (
 )
 from ooodev.format.inner.modify.write.frame.frame_type.anchor import Anchor as Anchor
 from ooodev.format.inner.direct.write.frame.frame_type.anchor import (
-    Anchor as InnerAnchor,
+    Anchor as InnerAnchor,  # noqa # type: ignore
 )
 from ooodev.format.inner.direct.write.frame.frame_type.position import (
-    Position as InnerPosition,
+    Position as InnerPosition,  # noqa # type: ignore
 )
 from ooodev.format.inner.modify.write.frame.frame_type.position import (
     Position as Position,
 )
-from ooodev.format.inner.direct.write.frame.frame_type.size import Size as InnerSize
+from ooodev.format.inner.direct.write.frame.frame_type.size import Size as InnerSize  # noqa # type: ignore
 from ooodev.format.inner.modify.write.frame.frame_type.size import Size as Size
 from ooodev.format.writer.style.frame.style_frame_kind import (
     StyleFrameKind as StyleFrameKind,
 )
 
 __all__ = ["Anchor", "Position", "Size"]
-
-import uno  # noqa # type: ignore

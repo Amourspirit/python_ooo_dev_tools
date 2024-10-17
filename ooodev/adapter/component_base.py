@@ -63,5 +63,5 @@ class ComponentBase(ABC):
 
 
 # Leave this import here to avoid circular imports.
-from ooodev.utils import info as mInfo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo  # noqa # type: ignore
+from ooodev.exceptions import ex as mEx  # noqa # type: ignore

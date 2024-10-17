@@ -559,7 +559,7 @@ class CellObj:
     # endregion properties
 
 
-from ooodev.utils.data_type import cell_values as mCellVals
-from ooodev.utils.data_type import col_obj as mCol
-from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.data_type import row_obj as mRow
+from ooodev.utils.data_type import cell_values as mCellVals  # noqa # type: ignore
+from ooodev.utils.data_type import col_obj as mCol  # noqa # type: ignore
+from ooodev.utils.data_type import range_obj as mRngObj  # noqa # type: ignore
+from ooodev.utils.data_type import row_obj as mRow  # noqa # type: ignore

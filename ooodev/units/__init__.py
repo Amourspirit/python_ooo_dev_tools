@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from .angle import Angle as Angle
 from .angle_unit_obj import AngleUnitT as AngleUnitT
 from .angle10 import Angle10 as Angle10
@@ -16,7 +17,7 @@ from .unit_inch1000 import UnitInch1000 as UnitInch1000
 from .unit_mm import UnitMM as UnitMM
 from .unit_mm10 import UnitMM10 as UnitMM10
 from .unit_mm100 import UnitMM100 as UnitMM100
-from .unit_obj import UnitT as UnitObj
+from .unit_obj import UnitT as UnitObj  # noqa # type: ignore
 from .unit_obj import UnitT as UnitT
 from .unit_pt import UnitPT as UnitPT
 from .unit_px import UnitPX as UnitPX
@@ -56,5 +57,3 @@ __all__ = [
     "UnitPT",
     "UnitPX",
 ]
-
-import uno  # noqa # type: ignore

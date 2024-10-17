@@ -1000,8 +1000,8 @@ class TextCursorPartial(Generic[_T]):
 
 # avoid circular imports
 
-from ooodev.write import write_text_content as mWriteTextContent
-from ooodev.write import write_text_frame as mWriteTextFrame
+from ooodev.write import write_text_content as mWriteTextContent  # noqa # type: ignore
+from ooodev.write import write_text_frame as mWriteTextFrame  # noqa # type: ignore
 
 if mock_g.FULL_IMPORT:
-    from ooodev.write.table.write_table import WriteTable
+    from ooodev.write.table.write_table import WriteTable  # noqa # type: ignore

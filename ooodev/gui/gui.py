@@ -1080,7 +1080,7 @@ class GUI:
         if top2 is None:
             mLo.Lo.print("Unable to get top window (2)")
             return
-        if top2.IsMinimized == False:
+        if top2.IsMinimized is False:
             cls.set_visible(visible=True, doc=odoc)
             top2.IsMinimized = True
 

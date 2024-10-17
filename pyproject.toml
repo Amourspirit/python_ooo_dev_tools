@@ -64,6 +64,7 @@ sphobjinv = "^2.3.1"
 ooo-dev-odh = "^0.1.6"
 pydeps = "^1.12.18"
 oooscript = "^1.1.4"
+pytest-ruff = "^0.4.1"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -158,7 +159,6 @@ exclude = [
 src = ["ooodev"]
 
 [tool.ruff.lint]
-allowed-unused-imports = ["uno", "unohelper"]
 exclude = ["tmp", ".devcontainer", ".githooks", ".github", ".hypothesis", ".idea", ".pytest_cache", ".venv", ".vscode", "cmds", "dist", "docs"]
 
 [tool.ruff.lint.pylint]

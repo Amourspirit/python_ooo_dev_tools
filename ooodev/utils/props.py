@@ -1706,7 +1706,7 @@ class Props:
             # and does not have a getPropertySetInfo() method
             return hasattr(obj, name)
 
-    has_property = has
+    has_property = has  # noqa # type: ignore
 
     @classmethod
     def show_doc_type_props(cls, type: str) -> None:
