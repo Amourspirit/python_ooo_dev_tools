@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMenuBar
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
@@ -88,6 +95,7 @@ class MenuBarComp(_MenuBarComp, MenuBarPartial, ServiceInfoPartial, MenuEvents):
     # region Properties
 
     @property
+    @override
     def component(self) -> MenuBar:
         """MenuBar Component"""
         # pylint: disable=no-member

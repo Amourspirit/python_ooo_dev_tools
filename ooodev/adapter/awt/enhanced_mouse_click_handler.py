@@ -2,9 +2,16 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XEnhancedMouseClickHandler
 from ooodev.adapter.adapter_base import AdapterBase
 from ooodev.events.args.generic_args import GenericArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 
 if TYPE_CHECKING:
@@ -45,19 +52,52 @@ class EnhancedMouseClickHandler(AdapterBase, XEnhancedMouseClickHandler):
                 subscriber.addEnhancedMouseClickHandler(self)
 
     # region XEnhancedMouseClickHandler
-    def mousePressed(self, event: EnhancedMouseEvent) -> None:
+    @override
+    def mousePressed(self, e: EnhancedMouseEvent) -> bool:
         """
         Event is invoked when a mouse button has been pressed on a window.
-        """
-        self._trigger_event("mousePressed", event)
 
-    def mouseReleased(self, event: EnhancedMouseEvent) -> None:
+        Note:
+            When ``mousePressed`` event is invoked it will contain a :py:class:`~ooodev.events.args.cancel_event_args.CancelEventArgs`
+            instance as the trigger event. When the event is triggered the ``CancelEventArgs.cancel`` can be set to ``True``
+            to cancel the action. Also if canceled the ``CancelEventArgs.handled`` can be set to ``True`` to indicate that the action
+            should be performed. The ``CancelEventArgs.event_data`` will contain the original ``com.sun.star.awt.EnhancedMouseEvent``
+            that triggered the update.
+        """
+        cancel_args = CancelEventArgs(self.__class__.__qualname__)
+        cancel_args.event_data = e
+        self._trigger_direct_event("mousePressed", cancel_args)
+        if cancel_args.cancel:
+            if CancelEventArgs.handled:
+                # if the cancel event was handled then we return True to indicate that the update should be performed
+                return True
+            return False
+        return True
+
+    @override
+    def mouseReleased(self, e: EnhancedMouseEvent) -> bool:
         """
         Event is invoked when a mouse button has been released on a window.
-        """
-        self._trigger_event("mouseReleased", event)
 
-    def disposing(self, event: EventObject) -> None:
+        Note:
+            When ``mouseReleased`` event is invoked it will contain a :py:class:`~ooodev.events.args.cancel_event_args.CancelEventArgs`
+            instance as the trigger event. When the event is triggered the ``CancelEventArgs.cancel`` can be set to ``True``
+            to cancel the action. Also if canceled the ``CancelEventArgs.handled`` can be set to ``True`` to indicate that the action
+            should be performed. The ``CancelEventArgs.event_data`` will contain the original ``com.sun.star.awt.EnhancedMouseEvent``
+            that triggered the update.
+        """
+        cancel_args = CancelEventArgs(self.__class__.__qualname__)
+        cancel_args.event_data = e
+        self._trigger_direct_event("mouseReleased", cancel_args)
+        if cancel_args.cancel:
+            if CancelEventArgs.handled:
+                # if the cancel event was handled then we return True to indicate that the update should be performed
+                return True
+            return False
+        return True
+
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -69,6 +109,6 @@ class EnhancedMouseClickHandler(AdapterBase, XEnhancedMouseClickHandler):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XEnhancedMouseClickHandler

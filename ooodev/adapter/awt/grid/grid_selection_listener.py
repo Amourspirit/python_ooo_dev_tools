@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt.grid import XGridSelectionListener
 from com.sun.star.awt.grid import XGridRowSelection
 
@@ -34,13 +40,15 @@ class GridSelectionListener(AdapterBase, XGridSelectionListener):
             subscriber.addSelectionListener(self)
 
     # region XGridSelectionListener
-    def selectionChanged(self, event: GridSelectionEvent) -> None:
+    @override
+    def selectionChanged(self, gridSelectionEvent: GridSelectionEvent) -> None:
         """
         Invoked after a selection was changed.
         """
-        self._trigger_event("selectionChanged", event)
+        self._trigger_event("selectionChanged", gridSelectionEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -52,6 +60,6 @@ class GridSelectionListener(AdapterBase, XGridSelectionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XGridSelectionListener

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt.grid import XGridColumnListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -33,13 +39,15 @@ class GridColumnListener(AdapterBase, XGridColumnListener):
         super().__init__(trigger_args=trigger_args)
 
     # region XGridColumnListener
+    @override
     def columnChanged(self, event: GridColumnEvent) -> None:
         """
         Invoked after a column was modified.
         """
         self._trigger_event("columnChanged", event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -51,6 +59,6 @@ class GridColumnListener(AdapterBase, XGridColumnListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XGridColumnListener

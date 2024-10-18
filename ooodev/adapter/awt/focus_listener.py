@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XFocusListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -40,19 +46,22 @@ class FocusListener(AdapterBase, XFocusListener):
 
     # region XFocusListener
 
-    def focusGained(self, event: FocusEvent) -> None:
+    @override
+    def focusGained(self, e: FocusEvent) -> None:
         """
         is invoked when a window gains the keyboard focus.
         """
-        self._trigger_event("focusGained", event)
+        self._trigger_event("focusGained", e)
 
-    def focusLost(self, event: FocusEvent) -> None:
+    @override
+    def focusLost(self, e: FocusEvent) -> None:
         """
         is invoked when a window loses the keyboard focus.
         """
-        self._trigger_event("focusLost", event)
+        self._trigger_event("focusLost", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -64,6 +73,6 @@ class FocusListener(AdapterBase, XFocusListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XFocusListener

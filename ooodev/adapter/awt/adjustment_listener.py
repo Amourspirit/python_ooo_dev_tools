@@ -1,6 +1,13 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XAdjustmentListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -38,13 +45,15 @@ class AdjustmentListener(AdapterBase, XAdjustmentListener):
                 subscriber.addAdjustmentListener(self)
 
     # region XAdjustmentListener
-    def adjustmentValueChanged(self, event: AdjustmentEvent) -> None:
+    @override
+    def adjustmentValueChanged(self, rEvent: AdjustmentEvent) -> None:
         """
         Event is invoked when the adjustment has changed.
         """
-        self._trigger_event("adjustmentValueChanged", event)
+        self._trigger_event("adjustmentValueChanged", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -56,6 +65,6 @@ class AdjustmentListener(AdapterBase, XAdjustmentListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XAdjustmentListener

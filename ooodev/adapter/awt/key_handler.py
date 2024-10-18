@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.adapter.adapter_base import AdapterBase
 from ooodev.events.args.generic_args import GenericArgs
@@ -43,19 +49,22 @@ class KeyHandler(AdapterBase, XKeyHandler):
             subscriber.addKeyHandler(self)
 
     # region XKeyListener
-    def keyPressed(self, event: KeyEvent) -> None:  # type: ignore
+    @override
+    def keyPressed(self, aEvent: KeyEvent) -> None:  # type: ignore
         """
         is invoked when a key has been pressed.
         """
-        self._trigger_event("keyPressed", event)
+        self._trigger_event("keyPressed", aEvent)
 
-    def keyReleased(self, event: KeyEvent) -> None:  # type: ignore
+    @override
+    def keyReleased(self, aEvent: KeyEvent) -> None:  # type: ignore
         """
         is invoked when a key has been released.
         """
-        self._trigger_event("keyReleased", event)
+        self._trigger_event("keyReleased", aEvent)
 
-    def disposing(self, event: EventObject) -> None:  # type: ignore
+    @override
+    def disposing(self, Source: EventObject) -> None:  # type: ignore
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -67,6 +76,6 @@ class KeyHandler(AdapterBase, XKeyHandler):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XKeyListener

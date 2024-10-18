@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.rectangle import Rectangle
 from ooodev.adapter.struct_base import StructBase
 from ooodev.utils.data_type.intensity import Intensity
@@ -33,12 +40,15 @@ class RectangleStructComp(StructBase[Rectangle]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_awt_Rectangle_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_awt_Rectangle_changed"
 
+    @override
     def _copy(self, src: Rectangle | None = None) -> Rectangle:
         if src is None:
             src = self.component
