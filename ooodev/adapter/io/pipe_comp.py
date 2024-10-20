@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.io import XPipe
 
 
@@ -31,6 +38,7 @@ class PipeComp(ComponentProp, PipePartial, ConnectablePartial):
         ConnectablePartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.io.Pipe",)

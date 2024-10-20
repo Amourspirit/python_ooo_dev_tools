@@ -34,12 +34,12 @@ class GradientStructComp(StructBase[Gradient]):
 
     def __init__(self, component: Gradient, prop_name: str, event_provider: EventsT | None = None) -> None:
         """
-                Constructor
-        0
-                Args:
-                    component (Gradient): Gradient.
-                    prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
-                    event_provider (EventsT, optional): Event Provider.
+        Constructor
+
+        Args:
+            component (Gradient): Gradient.
+            prop_name (str): Property Name. This value is assigned to the ``prop_name`` of ``event_data``.
+            event_provider (EventsT, optional): Event Provider.
         """
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 

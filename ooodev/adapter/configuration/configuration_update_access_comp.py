@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
@@ -33,7 +40,7 @@ class _ConfigurationUpdateAccessComp(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a ConfigurationUpdateAccessComp class
         return ConfigurationUpdateAccessComp
 
@@ -88,6 +95,7 @@ class ConfigurationUpdateAccessComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> ConfigurationUpdateAccess:
         """ConfigurationUpdateAccess Component"""
         # pylint: disable=no-member

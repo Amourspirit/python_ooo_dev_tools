@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.container import XContainerListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -34,25 +40,29 @@ class ContainerListener(AdapterBase, XContainerListener):
             subscriber.addContainerListener(self)
 
     # region XContainerListener
-    def elementInserted(self, event: ContainerEvent) -> None:
+    @override
+    def elementInserted(self, Event: ContainerEvent) -> None:
         """
         Event is invoked when a container has inserted an element.
         """
-        self._trigger_event("elementInserted", event)
+        self._trigger_event("elementInserted", Event)
 
-    def elementRemoved(self, event: ContainerEvent) -> None:
+    @override
+    def elementRemoved(self, Event: ContainerEvent) -> None:
         """
         Event is invoked when a container has removed an element.
         """
-        self._trigger_event("elementRemoved", event)
+        self._trigger_event("elementRemoved", Event)
 
-    def elementReplaced(self, event: ContainerEvent) -> None:
+    @override
+    def elementReplaced(self, Event: ContainerEvent) -> None:
         """
         Event is invoked when a container has replaced an element.
         """
-        self._trigger_event("elementReplaced", event)
+        self._trigger_event("elementReplaced", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -64,6 +74,6 @@ class ContainerListener(AdapterBase, XContainerListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XContainerListener

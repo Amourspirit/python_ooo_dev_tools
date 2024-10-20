@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XResetListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -37,7 +43,8 @@ class ResetListener(AdapterBase, XResetListener):
         if subscriber:
             subscriber.addResetListener(self)
 
-    def approveReset(self, event: EventObject) -> bool:
+    @override
+    def approveReset(self, rEvent: EventObject) -> bool:
         """
         Event is invoked is invoked before a component is reset.
 
@@ -57,7 +64,7 @@ class ResetListener(AdapterBase, XResetListener):
             that triggered the update.
         """
         cancel_args = CancelEventArgs(self.__class__.__qualname__)
-        cancel_args.event_data = event
+        cancel_args.event_data = rEvent
         self._trigger_direct_event("approveReset", cancel_args)
         if cancel_args.cancel:
             if CancelEventArgs.handled:
@@ -66,7 +73,8 @@ class ResetListener(AdapterBase, XResetListener):
             return False
         return True
 
-    def resetted(self, event: EventObject) -> None:
+    @override
+    def resetted(self, rEvent: EventObject) -> None:
         """
         Event is invoked when a component has been reset.
 
@@ -76,9 +84,10 @@ class ResetListener(AdapterBase, XResetListener):
         Returns:
             None:
         """
-        self._trigger_event("approveReset", event)
+        self._trigger_event("approveReset", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -96,4 +105,4 @@ class ResetListener(AdapterBase, XResetListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

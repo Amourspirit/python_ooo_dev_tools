@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.lang.event_events import EventEvents
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -47,6 +54,7 @@ class ControlShapeComp(
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.ControlShape",)
@@ -54,6 +62,7 @@ class ControlShapeComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> ControlShape:
         """Control Shape Component"""
         # pylint: disable=no-member

@@ -54,7 +54,7 @@ hypothesis = ">=6.75.3"
 thefuzz = ">=0.19.0"
 python-Levenshtein = ">=0.20.7"
 lo-dev-search = {version = ">=2.0.2", platform = "linux"}
-ruff = ">=0.6.9"
+ruff = ">=0.7.0"
 black = {extras = ["d"], version = ">=24"}
 oooenv = ">=0.2.4"
 pytest-mock = ">=3.10"
@@ -129,8 +129,8 @@ exclude = ["tests",
 
 # https://docs.astral.sh/ruff/configuration/
 [tool.ruff]
-
 line-length = 119
+
 target-version = "py38"
 exclude = [
     ".bzr",

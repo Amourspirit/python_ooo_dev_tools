@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ucb import XContentProvider
 
 from ooodev.adapter.component_prop import ComponentProp
@@ -26,7 +33,6 @@ if TYPE_CHECKING:
 
 
 class _TransientDocumentsContentProviderComp(ComponentProp):
-
     def __init__(self, component: XContentProvider) -> None:
         """
         Constructor
@@ -40,6 +46,7 @@ class _TransientDocumentsContentProviderComp(ComponentProp):
         # ContentProviderPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.ucb.TransientDocumentsContentProvider",)
@@ -63,7 +70,9 @@ class _TransientDocumentsContentProviderComp(ComponentProp):
 
         if lo_inst is None:
             lo_inst = mLo.Lo.current_lo
-        inst = lo_inst.create_instance_mcf(XContentProvider, "com.sun.star.ucb.TransientDocumentsContentProvider", raise_err=True)  # type: ignore
+        inst = lo_inst.create_instance_mcf(
+            XContentProvider, "com.sun.star.ucb.TransientDocumentsContentProvider", raise_err=True
+        )  # type: ignore
         return cls(inst)
 
     # endregion Static Methods
@@ -82,20 +91,21 @@ class _TransientDocumentsContentProviderComp(ComponentProp):
 
     # region Properties
     @property
+    @override
     def component(self) -> TransientDocumentsContentProvider:
         """TransientDocumentsContentProvider Component"""
         # pylint: disable=no-member
         return cast("TransientDocumentsContentProvider", self._ComponentBase__get_component())  # type: ignore
 
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a TransientDocumentsContentProviderComp class
         return TransientDocumentsContentProviderComp
 
     # endregion Properties
 
 
-class TransientDocumentsContentProviderComp(
+class TransientDocumentsContentProviderComp(  # type: ignore
     _TransientDocumentsContentProviderComp,
     ContentProviderPartial,
     TransientDocumentsDocumentContentFactoryPartial,
@@ -118,7 +128,6 @@ class TransientDocumentsContentProviderComp(
     # pylint: disable=unused-argument
 
     def __new__(cls, component: XContentProvider, *args, **kwargs):
-
         new_class = type("TransientDocumentsContentProviderComp", (_TransientDocumentsContentProviderComp,), {})
 
         builder = get_builder(component)

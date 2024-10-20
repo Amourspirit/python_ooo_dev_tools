@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XTerminateListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -43,15 +49,17 @@ class TerminateListener(AdapterBase, XTerminateListener):
         if subscriber:
             subscriber.addTerminateListener(self)
 
-    def notifyTermination(self, event: EventObject) -> None:
+    @override
+    def notifyTermination(self, Event: EventObject) -> None:
         """
         Is called when the master environment is finally terminated.
 
         No veto will be accepted then.
         """
-        self._trigger_event("notifyTermination", event)
+        self._trigger_event("notifyTermination", Event)
 
-    def queryTermination(self, event: EventObject) -> None:
+    @override
+    def queryTermination(self, Event: EventObject) -> None:
         """
         Is called when the master environment (e.g., desktop) is about to terminate.
 
@@ -60,9 +68,10 @@ class TerminateListener(AdapterBase, XTerminateListener):
         Raises:
             TerminationVetoException: ``TerminationVetoException``
         """
-        self._trigger_event("queryTermination", event)
+        self._trigger_event("queryTermination", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -74,4 +83,4 @@ class TerminateListener(AdapterBase, XTerminateListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

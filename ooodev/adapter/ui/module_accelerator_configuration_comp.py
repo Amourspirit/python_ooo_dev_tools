@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.ui.accelerator_configuration_partial import AcceleratorConfigurationPartial
@@ -41,6 +48,7 @@ class ModuleAcceleratorConfigurationComp(ComponentBase, AcceleratorConfiguration
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by mTextRangePartial.TextRangePartial
@@ -55,6 +63,7 @@ class ModuleAcceleratorConfigurationComp(ComponentBase, AcceleratorConfiguration
         self.component.createWithModuleIdentifier(module_identifier)
 
     @property
+    @override
     def component(self) -> ModuleAcceleratorConfiguration:
         """ModuleAcceleratorConfiguration Component"""
         # pylint: disable=no-member

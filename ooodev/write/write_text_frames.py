@@ -7,7 +7,7 @@ from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.adapter.text.text_frames import TextFramesComp
+from ooodev.adapter.text.text_frames_comp import TextFramesComp
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial

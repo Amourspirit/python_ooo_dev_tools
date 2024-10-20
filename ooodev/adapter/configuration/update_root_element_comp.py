@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
@@ -28,7 +34,7 @@ class _UpdateRootElementComp(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a UpdateRootElementComp class
         return UpdateRootElementComp
 
@@ -81,6 +87,7 @@ class UpdateRootElementComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> UpdateRootElement:
         """UpdateRootElement Component"""
         # pylint: disable=no-member

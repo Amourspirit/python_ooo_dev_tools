@@ -4,7 +4,7 @@
     "restructuredtext.preview.scrollPreviewWithEditor": false,
     "restructuredtext.preview.scrollEditorWithPreview": false,
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.formatOnPaste": false,
         "editor.formatOnSaveMode": "file"

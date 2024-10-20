@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.chart import XChartDataChangeEventListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -33,16 +39,18 @@ class ChartDataChangeEventListener(AdapterBase, XChartDataChangeEventListener):
         if subscriber:
             subscriber.addChartDataChangeEventListener(self)
 
-    def chartDataChanged(self, event: ChartDataChangeEvent) -> None:
+    @override
+    def chartDataChanged(self, aEvent: ChartDataChangeEvent) -> None:
         """
         Event is invoked when chart data changes in value or structure.
 
         This interface must be implemented by components that wish to get notified of changes in chart data.
         They can be registered at an ``XChartData`` component.
         """
-        self._trigger_event("chartDataChanged", event)
+        self._trigger_event("chartDataChanged", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -53,4 +61,4 @@ class ChartDataChangeEventListener(AdapterBase, XChartDataChangeEventListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XUpdateListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -37,7 +43,8 @@ class UpdateListener(AdapterBase, XUpdateListener):
         if subscriber:
             subscriber.addUpdateListener(self)
 
-    def approveUpdate(self, event: EventObject) -> bool:
+    @override
+    def approveUpdate(self, aEvent: EventObject) -> bool:
         """
         Event is invoked to check the current data.
 
@@ -57,7 +64,7 @@ class UpdateListener(AdapterBase, XUpdateListener):
             that triggered the update.
         """
         cancel_args = CancelEventArgs(self.__class__.__qualname__)
-        cancel_args.event_data = event
+        cancel_args.event_data = aEvent
         self._trigger_direct_event("approveUpdate", cancel_args)
         if cancel_args.cancel:
             if CancelEventArgs.handled:
@@ -66,7 +73,8 @@ class UpdateListener(AdapterBase, XUpdateListener):
             return False
         return True
 
-    def updated(self, event: EventObject) -> None:
+    @override
+    def updated(self, aEvent: EventObject) -> None:
         """
         Event is invoked when an object has finished processing the updates and the data has been successfully written.
 
@@ -76,9 +84,10 @@ class UpdateListener(AdapterBase, XUpdateListener):
         Returns:
             None:
         """
-        self._trigger_event("updated", event)
+        self._trigger_event("updated", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -96,4 +105,4 @@ class UpdateListener(AdapterBase, XUpdateListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

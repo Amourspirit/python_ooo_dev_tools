@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.document import XDocumentEventListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -35,13 +41,15 @@ class DocumentEventListener(AdapterBase, XDocumentEventListener):
         if subscriber:
             subscriber.addDocumentEventListener(self)
 
-    def documentEventOccured(self, event: DocumentEvent) -> None:
+    @override
+    def documentEventOccured(self, Event: DocumentEvent) -> None:
         """
         Event is invoked when a document event occurred
         """
-        self._trigger_event("documentEventOccured", event)
+        self._trigger_event("documentEventOccured", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -52,4 +60,4 @@ class DocumentEventListener(AdapterBase, XDocumentEventListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

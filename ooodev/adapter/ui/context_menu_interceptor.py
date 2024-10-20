@@ -3,6 +3,12 @@ from __future__ import annotations
 # pylint: disable=invalid-name, unused-import
 from typing import Any, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ui import XContextMenuInterceptor
 from ooo.dyn.ui.context_menu_interceptor_action import ContextMenuInterceptorAction
 from ooodev.events.args.generic_args import GenericArgs
@@ -39,14 +45,15 @@ class ContextMenuInterceptor(AdapterBase, XContextMenuInterceptor):
 
     # region XContextMenuInterceptor
 
-    def notifyContextMenuExecute(self, event: ContextMenuExecuteEvent) -> ContextMenuInterceptorAction:
+    @override
+    def notifyContextMenuExecute(self, aEvent: ContextMenuExecuteEvent) -> ContextMenuInterceptorAction:  # type: ignore
         """
         notifies the interceptor about the request to execute a ContextMenu.
 
         The interceptor has to decide whether the menu should be executed with or without being modified or may ignore the call.
         """
         event_data = ContextMenuInterceptorEventData(
-            event=ContextMenuExecuteEventComp(event), action=ContextMenuInterceptorAction.IGNORED
+            event=ContextMenuExecuteEventComp(aEvent), action=ContextMenuInterceptorAction.IGNORED
         )
         event_args = EventArgsGeneric(source=self, event_data=event_data)
         self._trigger_direct_event("notifyContextMenuExecute", event_args)  # type: ignore

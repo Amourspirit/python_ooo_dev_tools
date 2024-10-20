@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.sheet import XRangeSelectionChangeListener
 
 from ooodev.adapter.adapter_base import AdapterBase
@@ -33,13 +39,15 @@ class RangeSelectionChangeListener(AdapterBase, XRangeSelectionChangeListener):
         if subscriber:
             subscriber.addRangeSelectionChangeListener(self)
 
-    def descriptorChanged(self, event: RangeSelectionEvent) -> None:
+    @override
+    def descriptorChanged(self, aEvent: RangeSelectionEvent) -> None:
         """
         Event is invoked when the selected range is changed while range selection is active.
         """
-        self._trigger_event("descriptorChanged", event)
+        self._trigger_event("descriptorChanged", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -50,4 +58,4 @@ class RangeSelectionChangeListener(AdapterBase, XRangeSelectionChangeListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Tuple
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.text.text_section_partial import TextSectionPartial
 
@@ -28,12 +35,14 @@ class TextSectionComp(ComponentBase, TextSectionPartial):
         TextSectionPartial.__init__(self, component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by TextSectionPartial
         return ()  # ("com.sun.star.text.TextSection",)
 
-    def get_child_sections(self) -> Tuple[TextSectionComp, ...]:
+    @override
+    def get_child_sections(self) -> Tuple[TextSectionComp, ...]:  # type: ignore
         """
         Gets all text sections that are children of this text section (recursive).
         """
@@ -47,6 +56,7 @@ class TextSectionComp(ComponentBase, TextSectionPartial):
 
     # region Properties
     @property
+    @override
     def component(self) -> TextSection:
         """TextSection Component"""
         # pylint: disable=no-member

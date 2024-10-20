@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
@@ -17,7 +24,6 @@ if TYPE_CHECKING:
 
 
 class _AcceleratorConfigurationComp(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -68,6 +74,7 @@ class AcceleratorConfigurationComp(
         pass
 
     @property
+    @override
     def component(self) -> XAcceleratorConfiguration:
         """XAcceleratorConfiguration Component"""
         # pylint: disable=no-member

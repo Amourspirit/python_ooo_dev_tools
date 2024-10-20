@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import contextlib
 from ooo.dyn.awt.size import Size
 
@@ -35,7 +42,8 @@ class GraphicDescriptorComp(PropertySetComp):
     # endregion Overrides
     # region Properties
     @property
-    def component(self) -> GraphicDescriptor:
+    @override
+    def component(self) -> GraphicDescriptor:  # type: ignore
         """GraphicDescriptor Component"""
         # pylint: disable=no-member
         return cast("GraphicDescriptor", self._ComponentBase__get_component())  # type: ignore

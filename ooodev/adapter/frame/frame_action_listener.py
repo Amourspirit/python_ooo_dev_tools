@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XFrameActionListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -35,13 +41,15 @@ class FrameActionListener(AdapterBase, XFrameActionListener):
         if subscriber is not None:
             subscriber.addFrameActionListener(self)
 
-    def frameAction(self, event: FrameActionEvent) -> None:
+    @override
+    def frameAction(self, Action: FrameActionEvent) -> None:
         """
         Is invoked whenever any action occurs to a component within a frame.
         """
-        self._trigger_event("frameAction", event)
+        self._trigger_event("frameAction", Action)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -53,4 +61,4 @@ class FrameActionListener(AdapterBase, XFrameActionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

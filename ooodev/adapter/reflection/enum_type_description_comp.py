@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from enum import Enum
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.reflection.enum_type_description_partial import EnumTypeDescriptionPartial
@@ -26,6 +33,7 @@ class EnumTypeDescriptionComp(ComponentProp, EnumTypeDescriptionPartial):
         EnumTypeDescriptionPartial.__init__(self, component=component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by TypeDescriptionEnumerationPartial
@@ -127,6 +135,7 @@ class EnumTypeDescriptionComp(ComponentProp, EnumTypeDescriptionPartial):
 
     # region Properties
     @property
+    @override
     def component(self) -> XEnumTypeDescription:
         """XEnumTypeDescription Component"""
         # pylint: disable=no-member

@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.text.table_column_separator import TableColumnSeparator
 from ooodev.adapter.struct_base import StructBase
 
@@ -35,15 +42,19 @@ class TableColumnSeparatorStructComp(StructBase[TableColumnSeparator]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_text_TableColumnSeparator_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_text_TableColumnSeparator_changed"
 
+    @override
     def _get_prop_name(self) -> str:
         return self._prop_name
 
+    @override
     def _copy(self, src: TableColumnSeparator | None = None) -> TableColumnSeparator:
         if src is None:
             src = self.component

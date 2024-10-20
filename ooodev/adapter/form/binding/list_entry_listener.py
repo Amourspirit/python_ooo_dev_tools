@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form.binding import XListEntryListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -35,7 +41,8 @@ class ListEntryListener(AdapterBase, XListEntryListener):
 
     # region XListEntryListener
 
-    def allEntriesChanged(self, event: EventObject) -> None:
+    @override
+    def allEntriesChanged(self, Source: EventObject) -> None:
         """
         Notifies the listener that all entries of the list have changed.
 
@@ -43,27 +50,31 @@ class ListEntryListener(AdapterBase, XListEntryListener):
         ``XListEntrySource.getAllListEntries()`` method of the event source
         (which is denoted by com.sun.star.lang.EventObject.Source).
         """
-        self._trigger_event("allEntriesChanged", event)
+        self._trigger_event("allEntriesChanged", Source)
 
-    def entryChanged(self, event: ListEntryEvent) -> None:
+    @override
+    def entryChanged(self, Source: ListEntryEvent) -> None:
         """
         Notifies the listener that a single entry in the list has change,
         """
-        self._trigger_event("entryChanged", event)
+        self._trigger_event("entryChanged", Source)
 
-    def entryRangeInserted(self, event: ListEntryEvent) -> None:
+    @override
+    def entryRangeInserted(self, Source: ListEntryEvent) -> None:
         """
         Notifies the listener that a range of entries has been inserted into the list,
         """
-        self._trigger_event("entryRangeInserted", event)
+        self._trigger_event("entryRangeInserted", Source)
 
-    def entryRangeRemoved(self, event: ListEntryEvent) -> None:
+    @override
+    def entryRangeRemoved(self, Source: ListEntryEvent) -> None:
         """
         Notifies the listener that a range of entries has been removed from the list,
         """
-        self._trigger_event("entryRangeRemoved", event)
+        self._trigger_event("entryRangeRemoved", Source)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -75,6 +86,6 @@ class ListEntryListener(AdapterBase, XListEntryListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XListEntryListener

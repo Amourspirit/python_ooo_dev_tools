@@ -2,6 +2,12 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.chart2.data.data_provider_partial import DataProviderPartial
 
@@ -27,6 +33,7 @@ class DataProviderComp(ComponentBase, DataProviderPartial):
         DataProviderPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by DataSourcePartial
@@ -35,6 +42,7 @@ class DataProviderComp(ComponentBase, DataProviderPartial):
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> DataProvider:
         """DataProvider Component"""
         # pylint: disable=no-member

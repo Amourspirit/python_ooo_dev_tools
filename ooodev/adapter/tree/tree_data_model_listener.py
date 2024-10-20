@@ -1,7 +1,11 @@
 from __future__ import annotations
-
-# pylint: disable=invalid-name, unused-import
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from com.sun.star.awt.tree import XTreeDataModelListener
 from ooodev.events.args.generic_args import GenericArgs
@@ -35,7 +39,8 @@ class TreeDataModelListener(AdapterBase, XTreeDataModelListener):
 
     # region XTreeDataModelListener
 
-    def treeNodesChanged(self, event: TreeDataModelEvent) -> None:
+    @override
+    def treeNodesChanged(self, Event: TreeDataModelEvent) -> None:
         """
         Event is invoked after a node (or a set of siblings) has changed in some way.
 
@@ -47,18 +52,20 @@ class TreeDataModelListener(AdapterBase, XTreeDataModelListener):
         To indicate the root has changed, TreeDataModelEvent.Nodes will contain the root
         node and ``TreeDataModelEvent.ParentNode`` will be empty.
         """
-        self._trigger_event("treeNodesChanged", event)
+        self._trigger_event("treeNodesChanged", Event)
 
-    def treeNodesInserted(self, event: TreeDataModelEvent) -> None:
+    @override
+    def treeNodesInserted(self, Event: TreeDataModelEvent) -> None:
         """
         Invoked after nodes have been inserted into the tree.
 
         Use ``TreeDataModelEvent.ParentNode`` to get the parent of the new node(s).
         ``TreeDataModelEvent.Nodes`` contains the new node(s).
         """
-        self._trigger_event("treeNodesInserted", event)
+        self._trigger_event("treeNodesInserted", Event)
 
-    def treeNodesRemoved(self, event: TreeDataModelEvent) -> None:
+    @override
+    def treeNodesRemoved(self, Event: TreeDataModelEvent) -> None:
         """
         Invoked after nodes have been removed from the tree.
 
@@ -68,18 +75,20 @@ class TreeDataModelListener(AdapterBase, XTreeDataModelListener):
         Use ``TreeDataModelEvent.ParentNode`` to get the former parent of the deleted node(s).
         ``TreeDataModelEvent.Nodes`` contains the removed node(s).
         """
-        self._trigger_event("treeNodesRemoved", event)
+        self._trigger_event("treeNodesRemoved", Event)
 
-    def treeStructureChanged(self, event: TreeDataModelEvent) -> None:
+    @override
+    def treeStructureChanged(self, Event: TreeDataModelEvent) -> None:
         """
         Invoked after the tree has drastically changed structure from a given node down.
 
         Use ``TreeDataModelEvent.ParentNode`` to get the node which structure has changed.
         ``TreeDataModelEvent.Nodes`` is empty.
         """
-        self._trigger_event("treeStructureChanged", event)
+        self._trigger_event("treeStructureChanged", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -91,6 +100,6 @@ class TreeDataModelListener(AdapterBase, XTreeDataModelListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XTreeDataModelListener

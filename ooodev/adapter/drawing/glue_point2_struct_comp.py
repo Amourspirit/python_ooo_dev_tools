@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.drawing.glue_point2 import GluePoint2
 from ooo.dyn.awt.point import Point
 
@@ -53,12 +60,15 @@ class GluePoint2StructComp(StructBase[GluePoint2]):
         self._event_provider.subscribe_event("generic_com_sun_star_awt_Point_changed", self._fn_on_comp_struct_changed)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_drawing_GluePoint2_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_drawing_GluePoint2_changed"
 
+    @override
     def _copy(self, src: GluePoint2 | None = None) -> GluePoint2:
         def copy_point(point: Point) -> Point:
             return Point(X=point.X, Y=point.Y)

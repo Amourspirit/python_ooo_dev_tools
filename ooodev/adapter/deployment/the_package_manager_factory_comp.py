@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import warnings
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.deployment.package_manager_factory_partial import PackageManagerFactoryPartial
@@ -34,6 +41,7 @@ class ThePackageManagerFactoryComp(ComponentBase, PackageManagerFactoryPartial):
         PackageManagerFactoryPartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ()
@@ -67,6 +75,7 @@ class ThePackageManagerFactoryComp(ComponentBase, PackageManagerFactoryPartial):
 
     # region Properties
     @property
+    @override
     def component(self) -> thePackageManagerFactory:
         """thePackageManagerFactory Component"""
         # pylint: disable=no-member

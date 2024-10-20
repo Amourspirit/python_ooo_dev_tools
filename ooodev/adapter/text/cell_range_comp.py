@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.text.cell_range_partial_props import CellRangePartialProps
@@ -50,6 +56,7 @@ class CellRangeComp(
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.CellRange",)
@@ -58,7 +65,8 @@ class CellRangeComp(
 
     # region Properties
     @property
-    def component(self) -> CellRange:
+    @override
+    def component(self) -> CellRange:  # type: ignore
         """CellRange Component"""
         # pylint: disable=no-member
         return cast("CellRange", self._ComponentBase__get_component())  # type: ignore

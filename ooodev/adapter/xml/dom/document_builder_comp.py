@@ -1,5 +1,13 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+
 from com.sun.star.xml.dom import XDocumentBuilder
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.xml.dom.document_builder_partial import DocumentBuilderPartial
@@ -28,6 +36,7 @@ class DocumentBuilderComp(ComponentProp, DocumentBuilderPartial):
         DocumentBuilderPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.xml.dom.DocumentBuilder",)
@@ -58,6 +67,7 @@ class DocumentBuilderComp(ComponentProp, DocumentBuilderPartial):
 
     # region Properties
     @property
+    @override
     def component(self) -> DocumentBuilder:
         """DocumentBuilder Component"""
         # pylint: disable=no-member
