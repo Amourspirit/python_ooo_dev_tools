@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.util import XModifyListener
 from com.sun.star.util import XModifyBroadcaster
 
@@ -46,7 +51,8 @@ class ModifyListener(AdapterBase, XModifyListener):
         mb = mLo.Lo.qi(XModifyBroadcaster, doc, True)
         mb.addModifyListener(self)
 
-    def modified(self, event: EventObject) -> None:
+    @override
+    def modified(self, aEvent: EventObject) -> None:
         """
         Is called when something changes in the object.
 
@@ -55,9 +61,10 @@ class ModifyListener(AdapterBase, XModifyListener):
         The source of the event may be the content of the object to which the listener
         is registered.
         """
-        self._trigger_event("modified", event)
+        self._trigger_event("modified", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -69,4 +76,4 @@ class ModifyListener(AdapterBase, XModifyListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,6 +1,5 @@
 # coding: utf-8
 from __future__ import annotations
-import uno
 import unohelper
 from typing import Tuple
 from com.sun.star.datatransfer import XTransferable

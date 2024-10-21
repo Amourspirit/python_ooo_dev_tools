@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XPaintListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -38,14 +43,16 @@ class PaintListener(AdapterBase, XPaintListener):
             subscriber.addPaintListener(self)
 
     # region XPaintListener
-    def windowPaint(self, event: PaintEvent) -> None:
+    @override
+    def windowPaint(self, e: PaintEvent) -> None:
         """
         Is invoked when a region of the window became invalid, e.g.
         when another window has been moved away.
         """
-        self._trigger_event("windowPaint", event)
+        self._trigger_event("windowPaint", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -57,6 +64,6 @@ class PaintListener(AdapterBase, XPaintListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XPaintListener

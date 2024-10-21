@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XItemListListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -36,7 +41,8 @@ class ItemListListener(AdapterBase, XItemListListener):
         if subscriber:
             subscriber.addItemListListener(self)
 
-    def allItemsRemoved(self, event: EventObject) -> None:
+    @override
+    def allItemsRemoved(self, Event: EventObject) -> None:
         """
         Event is invoked when the list has been completely cleared, i.e. after an invocation of ``XItemList.removeAllItems()``
 
@@ -46,9 +52,10 @@ class ItemListListener(AdapterBase, XItemListListener):
         Returns:
             None:
         """
-        self._trigger_event("allItemsRemoved", event)
+        self._trigger_event("allItemsRemoved", Event)
 
-    def itemListChanged(self, event: EventObject) -> None:
+    @override
+    def itemListChanged(self, Event: EventObject) -> None:
         """
         Event is invoked when the changes to the item list which occurred are too complex to be notified in single events.
 
@@ -61,9 +68,10 @@ class ItemListListener(AdapterBase, XItemListListener):
         Returns:
             None:
         """
-        self._trigger_event("itemListChanged", event)
+        self._trigger_event("itemListChanged", Event)
 
-    def listItemInserted(self, event: ItemListEvent) -> None:
+    @override
+    def listItemInserted(self, Event: ItemListEvent) -> None:
         """
         Event is invoked when an item is inserted into the list.
 
@@ -73,9 +81,10 @@ class ItemListListener(AdapterBase, XItemListListener):
         Returns:
             None:
         """
-        self._trigger_event("listItemInserted", event)
+        self._trigger_event("listItemInserted", Event)
 
-    def listItemModified(self, event: ItemListEvent) -> None:
+    @override
+    def listItemModified(self, Event: ItemListEvent) -> None:
         """
         Event is invoked when an item in the list is modified, i.e. its text or image changed.
 
@@ -85,9 +94,10 @@ class ItemListListener(AdapterBase, XItemListListener):
         Returns:
             None:
         """
-        self._trigger_event("listItemModified", event)
+        self._trigger_event("listItemModified", Event)
 
-    def listItemRemoved(self, event: ItemListEvent) -> None:
+    @override
+    def listItemRemoved(self, Event: ItemListEvent) -> None:
         """
         Event is invoked when an item is removed from the list.
 
@@ -97,9 +107,10 @@ class ItemListListener(AdapterBase, XItemListListener):
         Returns:
             None:
         """
-        self._trigger_event("listItemRemoved", event)
+        self._trigger_event("listItemRemoved", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets invoked when the broadcaster is about to be disposed.
 
@@ -117,4 +128,4 @@ class ItemListListener(AdapterBase, XItemListListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,6 +1,5 @@
 # region Imports
 from __future__ import annotations
-import uno
 
 from ooodev.utils import props as mProps
 from ooodev.exceptions import ex as mEx

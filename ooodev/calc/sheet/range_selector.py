@@ -3,7 +3,13 @@ from typing import Any, TYPE_CHECKING, Callable
 import time
 import threading
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import unohelper
 from com.sun.star.sheet import XRangeSelectionListener
 
@@ -27,7 +33,6 @@ _SELECTION_RESULT = None
 
 
 class RangeSelector(EventsPartial):
-
     class _ExampleRangeListener(XRangeSelectionListener, EventsPartial, unohelper.Base):
         def __init__(
             self, view: CalcSheetView, auto_remove_listener: bool, single_cell_mode: bool, initial_value: str
@@ -43,12 +48,13 @@ class RangeSelector(EventsPartial):
             self.initial_value = initial_value
             self._removed = False
 
-        def done(self, event: RangeSelectionEvent):
-            if event.RangeDescriptor:
+        @override
+        def done(self, aEvent: RangeSelectionEvent):
+            if aEvent.RangeDescriptor:
                 dd = DotDict(
                     state="done",
-                    result=event.RangeDescriptor,
-                    event=event,
+                    result=aEvent.RangeDescriptor,
+                    event=aEvent,
                     view=self.view,
                     rng_obj=None,
                     single_cell_mode=self.single_cell_mode,
@@ -57,7 +63,7 @@ class RangeSelector(EventsPartial):
                 dd = DotDict(
                     state="aborted",
                     result="",
-                    event=event,
+                    event=aEvent,
                     view=self.view,
                     rng_obj=None,
                     single_cell_mode=self.single_cell_mode,
@@ -75,12 +81,13 @@ class RangeSelector(EventsPartial):
                 self._removed = True
             self.trigger_event("AfterPopupRangeSelection", eargs)
 
-        def aborted(self, event: RangeSelectionEvent):
+        @override
+        def aborted(self, aEvent: RangeSelectionEvent):
             eargs = EventArgs(self)
             dd = DotDict(
                 state="aborted",
                 result="aborted",
-                event=event,
+                event=aEvent,
                 view=self.view,
                 rng_obj=None,
                 single_cell_mode=self.single_cell_mode,
@@ -92,7 +99,8 @@ class RangeSelector(EventsPartial):
                 self._removed = True
             self.trigger_event("AfterPopupRangeSelection", eargs)
 
-        def disposing(self, event: EventObject):
+        @override
+        def disposing(self, Source: EventObject):
             pass
 
         def subscribe_range_select(self, cb: Callable[[Any, Any], None]) -> None:

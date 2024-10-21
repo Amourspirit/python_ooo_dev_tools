@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.view import XScreenCursor
 
 from ooodev.exceptions import ex as mEx

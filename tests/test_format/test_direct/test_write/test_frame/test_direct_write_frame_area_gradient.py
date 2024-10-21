@@ -4,19 +4,13 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.frame.area import (
     Gradient,
-    GradientStyle,
     PresetGradientKind,
-    Offset,
-    ColorRange,
-    IntensityRange,
 )
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.write import Write
-from ooodev.utils.color import StandardColor
 from ooodev.units.unit_mm import UnitMM
 
 

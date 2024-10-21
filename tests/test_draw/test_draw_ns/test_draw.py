@@ -5,7 +5,6 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from ooodev.draw import Draw, DrawDoc, ImpressDoc
-from ooodev.loader.lo import Lo
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
 
 

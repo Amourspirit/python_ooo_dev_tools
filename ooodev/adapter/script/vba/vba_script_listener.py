@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.script.vba import XVBAScriptListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -36,7 +41,8 @@ class VBAScriptListener(AdapterBase, XVBAScriptListener):
         if subscriber:
             subscriber.addVBAScriptListener(self)
 
-    def notifyVBAScriptEvent(self, event: VBAScriptEvent) -> None:
+    @override
+    def notifyVBAScriptEvent(self, Event: VBAScriptEvent) -> None:
         """
         Event is invoked when the object is about to be reloaded.
 
@@ -49,9 +55,10 @@ class VBAScriptListener(AdapterBase, XVBAScriptListener):
         Returns:
             None:
         """
-        self._trigger_event("notifyVBAScriptEvent", event)
+        self._trigger_event("notifyVBAScriptEvent", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -63,4 +70,4 @@ class VBAScriptListener(AdapterBase, XVBAScriptListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

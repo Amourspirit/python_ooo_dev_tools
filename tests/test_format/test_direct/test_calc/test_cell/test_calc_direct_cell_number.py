@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.calc.direct.cell.numbers import Numbers, NumberFormatEnum, NumberFormatIndexEnum
 from ooodev.format import Styler
 from ooodev.gui.gui import GUI

@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMouseMotionListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -38,22 +43,25 @@ class MouseMotionListener(AdapterBase, XMouseMotionListener):
             subscriber.addMouseMotionListener(self)
 
     # region XMouseMotionListener
-    def mouseDragged(self, event: MouseEvent) -> None:
+    @override
+    def mouseDragged(self, e: MouseEvent) -> None:
         """
         Is invoked when a mouse button is pressed on a window and then dragged.
 
         Mouse drag events will continue to be delivered to the window where the first event originated until the mouse button is released
         (regardless of whether the mouse position is within the bounds of the window).
         """
-        self._trigger_event("mouseDragged", event)
+        self._trigger_event("mouseDragged", e)
 
-    def mouseMoved(self, event: MouseEvent) -> None:
+    @override
+    def mouseMoved(self, e: MouseEvent) -> None:
         """
         Is invoked when the mouse pointer has been moved on a window (with no buttons down).
         """
-        self._trigger_event("mouseMoved", event)
+        self._trigger_event("mouseMoved", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -65,6 +73,6 @@ class MouseMotionListener(AdapterBase, XMouseMotionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XMouseMotionListener

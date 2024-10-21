@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
@@ -18,7 +24,6 @@ if TYPE_CHECKING:
 
 
 class _LayoutManager(ComponentProp):
-
     # region Dunder Methods
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
@@ -81,7 +86,7 @@ class _LayoutManager(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a LayoutManager class
         return LayoutManager
 
@@ -153,6 +158,7 @@ class LayoutManager(
     # region Properties
 
     @property
+    @override
     def component(self) -> UnoLayoutManager:
         """LayoutManager Component"""
         # pylint: disable=no-member

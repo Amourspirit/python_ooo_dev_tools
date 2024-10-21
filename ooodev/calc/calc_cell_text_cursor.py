@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 
 from ooodev.adapter.text.text_cursor_comp import TextCursorComp

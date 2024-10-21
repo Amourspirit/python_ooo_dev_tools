@@ -2,7 +2,12 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
 
-import uno  # pylint: disable=unused-import
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.lang import XEventListener
 
 # pylint: disable=useless-import-alias
@@ -42,7 +47,8 @@ class EventListener(AdapterBase, XEventListener):
             with contextlib.suppress(AttributeError):
                 subscriber.addEventListener(self)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -53,4 +59,4 @@ class EventListener(AdapterBase, XEventListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

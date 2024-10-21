@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, cast
-import uno
 
 from ooodev.format.calc.style.cell.kind.style_cell_kind import StyleCellKind
 from ooodev.format.inner.direct.structs.cell_protection_struct import CellProtectionStruct

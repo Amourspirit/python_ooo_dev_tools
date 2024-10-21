@@ -14,7 +14,7 @@ def test_create_doc_events_no_loader(loader):
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
-    from ooodev.events.lo_events import Events, event_ctx, is_meth_event
+    from ooodev.events.lo_events import Events, event_ctx
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.exceptions import ex as mEx
 
@@ -73,7 +73,7 @@ def test_create_doc_events(loader):
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
-    from ooodev.events.lo_events import Events, event_ctx, is_meth_event
+    from ooodev.events.lo_events import Events, event_ctx
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.exceptions import ex as mEx
 
@@ -134,7 +134,7 @@ def test_get_sheet(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
-    from ooodev.events.lo_events import event_ctx, is_meth_event
+    from ooodev.events.lo_events import event_ctx
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.gui.gui import GUI
 
@@ -243,7 +243,7 @@ def test_insert_sheet(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.cancel_event_args import CancelEventArgs
     from ooodev.events.args.event_args import EventArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     on_firing = False
@@ -286,7 +286,7 @@ def test_remove_sheet(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     on_firing = False
@@ -404,7 +404,7 @@ def test_move_sheet(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     on_firing = False
@@ -557,7 +557,7 @@ def test_get_set_active_sheet(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     on_firing = False
@@ -655,9 +655,8 @@ def test_goto_cell(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.dispatch_cancel_args import DispatchCancelArgs
     from ooodev.events.args.dispatch_args import DispatchArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.lo_named_event import LoNamedEvent
-    from ooodev.events.event_singleton import _Events
 
     # from ooodev.loader.inst.lo_inst import LoInst
 
@@ -951,7 +950,7 @@ def test_delete_row(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     # from ooodev.gui.gui import GUI
@@ -1000,7 +999,7 @@ def test_insert_column(loader) -> None:
     from ooodev.office.calc import Calc
     from ooodev.events.args.calc.sheet_cancel_args import SheetCancelArgs
     from ooodev.events.args.calc.sheet_args import SheetArgs
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
 
     # from ooodev.gui.gui import GUI
@@ -1049,7 +1048,7 @@ def test_insert_column(loader) -> None:
 def test_insert_cells_down(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_args import CellArgs
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
@@ -1136,7 +1135,7 @@ def test_insert_cells_down_positional(loader) -> None:
 def test_insert_cells_right(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_args import CellArgs
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
@@ -1189,7 +1188,7 @@ def test_insert_cells_right(loader) -> None:
 def test_delete_cells_down(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_args import CellArgs
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
@@ -1317,7 +1316,7 @@ def test_clear_cells(loader) -> None:
     from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc, CellFlagsEnum
     from ooodev.gui.gui import GUI
-    from ooodev.events.lo_events import Events, is_meth_event
+    from ooodev.events.lo_events import Events
     from ooodev.events.calc_named_event import CalcNamedEvent
     from ooodev.events.args.calc.cell_args import CellArgs
     from ooodev.events.args.calc.cell_cancel_args import CellCancelArgs
@@ -1909,12 +1908,12 @@ def test_set_array_by_cell(loader) -> None:
         arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
         rng = TableHelper.make_column_name(arr_size)
         # keyword args
-        Calc.set_array(sheet=sheet, name=f"A1", values=arr)
+        Calc.set_array(sheet=sheet, name="A1", values=arr)
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
         # positional args
-        Calc.set_array(arr, sheet, f"A1")
+        Calc.set_array(arr, sheet, "A1")
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
@@ -1922,7 +1921,7 @@ def test_set_array_by_cell(loader) -> None:
         arr_size = 12
         arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, 3.14))
         rng = TableHelper.make_column_name(arr_size)
-        Calc.set_array(sheet=sheet, name=f"A1", values=arr)
+        Calc.set_array(sheet=sheet, name="A1", values=arr)
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == 3.14
     finally:
@@ -2084,7 +2083,7 @@ def test_get_array(loader) -> None:
         arr_size = 8
         arr = TableHelper.to_2d_tuple(TableHelper.make_2d_array(arr_size, arr_size, arr_cb))
         rng = TableHelper.make_column_name(arr_size)
-        Calc.set_array(sheet=sheet, name=f"A1", values=arr)
+        Calc.set_array(sheet=sheet, name="A1", values=arr)
         val = Calc.get_num(sheet, f"{rng}{arr_size}")
         assert val == float(arr_size * arr_size)
 
@@ -2156,7 +2155,6 @@ def test_get_float_array(loader) -> None:
             return "1"
         return str(int(prev_val) + 1)
 
-    from ooodev.loader.lo import Lo
     from ooodev.office.calc import Calc
 
     # from ooodev.gui.gui import GUI

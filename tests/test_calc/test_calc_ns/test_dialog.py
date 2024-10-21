@@ -1,7 +1,6 @@
 from __future__ import annotations
 import pytest
-from typing import Any, cast
-import uno
+from typing import Any
 from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.gbl_named_event import GblNamedEvent
 

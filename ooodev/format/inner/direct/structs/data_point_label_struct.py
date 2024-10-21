@@ -2,7 +2,6 @@
 from __future__ import annotations
 import contextlib
 from typing import Any, Tuple, Type, cast, overload, TypeVar
-import uno
 from ooo.dyn.chart2.data_point_label import DataPointLabel
 
 from ooodev.exceptions import ex as mEx

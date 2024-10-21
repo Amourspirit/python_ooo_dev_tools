@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.shape_partial import ShapePartial
 from ooodev.adapter.drawing.shape_descriptor_partial import ShapeDescriptorPartial
@@ -34,6 +41,7 @@ class ShapeComp(
         ShapePropertiesPartial.__init__(self, component=component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return (
@@ -44,6 +52,7 @@ class ShapeComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> Shape:
         """Shape Component"""
         # pylint: disable=no-member

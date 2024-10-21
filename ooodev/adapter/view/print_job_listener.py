@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.view import XPrintJobListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -43,13 +48,15 @@ class PrintJobListener(AdapterBase, XPrintJobListener):
         if subscriber:
             subscriber.addPrintJobListener(self)
 
-    def printJobEvent(self, event: PrintJobEvent) -> None:
+    @override
+    def printJobEvent(self, Event: PrintJobEvent) -> None:
         """
         Informs the user about the creation or the progress of a PrintJob.
         """
-        self._trigger_event("printJobEvent", event)
+        self._trigger_event("printJobEvent", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -61,4 +68,4 @@ class PrintJobListener(AdapterBase, XPrintJobListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

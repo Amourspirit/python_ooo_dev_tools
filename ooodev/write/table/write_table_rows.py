@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.text.table_rows_comp import TableRowsComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
@@ -11,8 +17,8 @@ from ooodev.write.table.partial.write_table_prop_partial import WriteTablePropPa
 
 if TYPE_CHECKING:
     from com.sun.star.table import XTableRows
-    from com.sun.star.text import TextTableRow  # service
     from ooodev.write.table.write_table import WriteTable
+    from com.sun.star.text import TextTableRow  # noqa # type: ignore
 
 
 class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["TextTableRow"], LoInstPropsPartial):
@@ -30,7 +36,8 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["
         LoInstPropsPartial.__init__(self, lo_inst=owner.lo_inst)
         TableRowsComp.__init__(self, component=component)  # type: ignore
 
-    def __next__(self) -> WriteTableRow:
+    @override
+    def __next__(self) -> WriteTableRow:  # type: ignore
         """
         Gets the next row.
 
@@ -39,7 +46,8 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["
         """
         return WriteTableRow(owner=self, component=super().__next__())
 
-    def __getitem__(self, key: int) -> WriteTableRow:
+    @override
+    def __getitem__(self, key: int) -> WriteTableRow:  # type: ignore
         """
         Gets the form at the specified index.
 
@@ -71,7 +79,8 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["
         self.remove_by_index(key)
 
     # region IndexAccessPartial overrides
-    def get_by_index(self, idx: int) -> WriteTableRow:
+    @override
+    def get_by_index(self, idx: int) -> WriteTableRow:  # type: ignore
         """
         Gets the row at the specified index.
 
@@ -103,6 +112,7 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["
 
     # region TableRowsPartial Overrides
 
+    @override
     def insert_by_index(self, idx: int, count: int = 1) -> None:
         """
         Inserts rows at the specified index.
@@ -118,6 +128,7 @@ class WriteTableRows(WriteDocPropPartial, WriteTablePropPartial, TableRowsComp["
         index = self._get_index(idx, allow_greater=True)
         self.component.insertByIndex(index, count)
 
+    @override
     def remove_by_index(self, idx: int, count: int = 1) -> None:
         """
         Removes columns from the specified index.

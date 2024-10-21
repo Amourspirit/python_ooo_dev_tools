@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, List, Tuple, overload, Sequence, TYPE_CHECKING, TypeVar, Generic, Union
-import uno
 
 
 from com.sun.star.drawing import XDrawPage
@@ -1302,4 +1301,4 @@ from ooodev.draw.shapes.rectangle_shape import RectangleShape
 from ooodev.draw.shapes.text_shape import TextShape
 
 if mock_g.FULL_IMPORT:
-    from ooodev.draw.shapes.partial.shape_factory_partial import ShapeFactoryPartial
+    pass

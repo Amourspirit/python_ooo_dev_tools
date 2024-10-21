@@ -73,7 +73,7 @@ class BaseFloatValue:
         try:
             i = float(other)  # type: ignore
             return math.isclose(i, self.value)
-        except Exception as e:
+        except Exception:
             return False
 
     def __sub__(self: _TBaseFloatValue, other: object) -> _TBaseFloatValue:

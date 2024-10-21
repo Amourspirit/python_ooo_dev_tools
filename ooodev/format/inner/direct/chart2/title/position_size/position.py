@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any
-import uno
 
 from ooodev.format.inner.direct.chart2.position_size.position import Position as ChartShapePosition
 from ooodev.units.unit_obj import UnitT

@@ -6,3 +6,5 @@ from .style_para_index_kind import StyleParaIndexKind as StyleParaIndexKind
 from .style_para_list_kind import StyleParaListKind as StyleParaListKind
 from .style_para_special_kind import StyleParaSpecialKind as StyleParaSpecialKind
 from .style_para_text_kind import StyleParaTextKind as StyleParaTextKind
+
+import uno  # noqa # type: ignore

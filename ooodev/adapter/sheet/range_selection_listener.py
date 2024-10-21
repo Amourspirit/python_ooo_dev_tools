@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.sheet import XRangeSelectionListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -38,19 +43,22 @@ class RangeSelectionListener(AdapterBase, XRangeSelectionListener):
         if subscriber:
             subscriber.addRangeSelectionListener(self)
 
-    def aborted(self, event: RangeSelectionEvent) -> None:
+    @override
+    def aborted(self, aEvent: RangeSelectionEvent) -> None:
         """
         Event is invoked when range selection is aborted.
         """
-        self._trigger_event("aborted", event)
+        self._trigger_event("aborted", aEvent)
 
-    def done(self, event: RangeSelectionEvent) -> None:
+    @override
+    def done(self, aEvent: RangeSelectionEvent) -> None:
         """
         Event is invoked when range selection is completed.
         """
-        self._trigger_event("done", event)
+        self._trigger_event("done", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -61,4 +69,4 @@ class RangeSelectionListener(AdapterBase, XRangeSelectionListener):
         This method is called for every listener registration of derived listener
         interfaced, not only for registrations at ``XComponent``.
         """
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

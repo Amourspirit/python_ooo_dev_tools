@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XGridControlListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -39,6 +44,7 @@ class GridControlListener(AdapterBase, XGridControlListener):
         if subscriber:
             subscriber.addGridControlListener(self)
 
+    @override
     def columnChanged(self, event: EventObject) -> None:
         """
         Event is invoked the current column in a grid control changed.
@@ -51,7 +57,8 @@ class GridControlListener(AdapterBase, XGridControlListener):
         """
         self._trigger_event("columnChanged", event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -69,4 +76,4 @@ class GridControlListener(AdapterBase, XGridControlListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

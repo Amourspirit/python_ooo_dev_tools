@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XToolkit2
 
 from ooodev.adapter.component_base import ComponentBase
@@ -85,6 +91,7 @@ class ToolkitComp(ComponentBase, Toolkit2Partial, FocusEvents, TopWindowEvents, 
     # region Properties
 
     @property
+    @override
     def component(self) -> Toolkit:
         """Toolkit Component"""
         # pylint: disable=no-member

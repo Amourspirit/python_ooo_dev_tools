@@ -4,12 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.obj.options import Names
 from ooodev.format.writer.direct.obj.type import (
     Size,
-    RelativeKind,
-    RelativeSize,
     AbsoluteSize,
     Position,
     HoriOrient,
@@ -21,7 +18,6 @@ from ooodev.format.writer.direct.obj.type import (
 )
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
-from ooodev.utils.images_lo import ImagesLo
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.office.write import Write
 

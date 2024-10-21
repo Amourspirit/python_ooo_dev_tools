@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.gui.menu.menu import Menu
 from ooodev.gui.menu.ma.ma_popup import MAPopup
@@ -34,6 +40,7 @@ class MenuApp(MAPopup):
         """
         super().__init__(app=app, node=self.NODE, lo_inst=lo_inst)
 
+    @override
     def __getitem__(self, index: int | str | MenuLookupKind) -> Menu:
         """
         Index access.

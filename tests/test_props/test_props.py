@@ -52,7 +52,6 @@ def test_prop_value_to_string(loader) -> None:
 def test_prop_url(loader, fix_writer_path):
     from ooodev.utils.props import Props
     from ooodev.loader.lo import Lo
-    from ooodev.utils.gen_util import NULL_OBJ
     from com.sun.star.frame import XModel
 
     test_doc = fix_writer_path("scandalStart.odt")

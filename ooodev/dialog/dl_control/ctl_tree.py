@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import defaultdict
 import contextlib
 from typing import Any, List, cast, Sequence, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 
 from com.sun.star.awt.tree import XMutableTreeDataModel
 from ooo.dyn.view.selection_type import SelectionType  # enum
@@ -338,7 +337,7 @@ class CtlTree(DialogControlBase, TreeControlModelPartial, SelectionChangeEvents,
                 seq_lst = get_lst(seq, str_vals)
                 node, data = seq_lst[:2]
                 t = t[node]
-                if data is not None and not CtlTree.DATA_VALUE_KEY in t:
+                if data is not None and CtlTree.DATA_VALUE_KEY not in t:
                     t[CtlTree.DATA_VALUE_KEY] = data
 
         root = tree()

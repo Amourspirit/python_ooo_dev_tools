@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooo.dyn.chart.chart_axis_label_position import ChartAxisLabelPosition
 from ooodev.format.inner.partial.default_factor_styler import DefaultFactoryStyler
 from ooodev.format.inner.style_factory import chart2_axis_pos_label_position_factory

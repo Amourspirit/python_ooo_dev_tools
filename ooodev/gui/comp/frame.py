@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
@@ -20,7 +26,6 @@ if TYPE_CHECKING:
 
 
 class _Frame(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -95,7 +100,7 @@ class _Frame(ComponentProp):
     # endregion Frame2Partial Overrides
 
 
-class Frame(
+class Frame(  # type: ignore
     _Frame,
     frame2_partial.Frame2Partial,
     FrameActionEvents,
@@ -152,6 +157,7 @@ class Frame(
     # region Properties
 
     @property
+    @override
     def component(self) -> UnoFrame:
         """Frame Component"""
         # pylint: disable=no-member

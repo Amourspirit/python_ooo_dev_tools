@@ -1,7 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.mock import mock_g
-import uno
 from com.sun.star.frame import XTerminateListener
 
 if mock_g.DOCS_BUILDING:
@@ -22,6 +28,7 @@ class XTerminateAdapter(unohelper.Base, XTerminateListener):  # type: ignore
         `API XTerminateListener <https://api.libreoffice.org/docs/idl/ref/interfacecom_1_1sun_1_1star_1_1frame_1_1XTerminateListener.html>`_
     """
 
+    @override
     def notifyTermination(self, Event: EventObject) -> None:
         """
         is called when the master environment is finally terminated.
@@ -30,6 +37,7 @@ class XTerminateAdapter(unohelper.Base, XTerminateListener):  # type: ignore
         """
         pass
 
+    @override
     def queryTermination(self, Event: EventObject) -> None:
         """
         is called when the master environment (e.g., desktop) is about to terminate.
@@ -41,7 +49,8 @@ class XTerminateAdapter(unohelper.Base, XTerminateListener):  # type: ignore
         """
         pass
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         gets called when the broadcaster is about to be disposed.
 

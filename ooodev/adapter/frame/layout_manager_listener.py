@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XLayoutManagerListener
 from ooo.dyn.frame.layout_manager_events import LayoutManagerEventsEnum
 
@@ -46,19 +51,21 @@ class LayoutManagerListener(AdapterBase, XLayoutManagerListener):
         if subscriber is not None:
             subscriber.addLayoutManagerEventListener(self)
 
-    def layoutEvent(self, source: EventObject, layout_event: int, info: Any) -> None:
+    @override
+    def layoutEvent(self, aSource: EventObject, eLayoutEvent: int, aInfo: Any) -> None:
         """
         Event is invoked when a layout manager has made a certain operation.
         """
         event = EventArgs(self)
-        if layout_event is None:
+        if eLayoutEvent is None:
             layout_enum = None
         else:
-            layout_enum = LayoutManagerEventsEnum(layout_event)
-        event.event_data = {"source": source, "layout_event": layout_enum, "info": info}
+            layout_enum = LayoutManagerEventsEnum(eLayoutEvent)
+        event.event_data = {"source": aSource, "layout_event": layout_enum, "info": aInfo}
         self._trigger_direct_event("layoutEvent", event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -70,4 +77,4 @@ class LayoutManagerListener(AdapterBase, XLayoutManagerListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

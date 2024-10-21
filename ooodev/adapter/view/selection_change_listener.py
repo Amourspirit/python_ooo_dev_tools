@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XModel
 from com.sun.star.view import XSelectionChangeListener
 from com.sun.star.view import XSelectionSupplier
@@ -48,15 +53,17 @@ class SelectionChangeListener(AdapterBase, XSelectionChangeListener):
             return
         supp.addSelectionChangeListener(self)
 
-    def selectionChanged(self, event: EventObject) -> None:
+    @override
+    def selectionChanged(self, aEvent: EventObject) -> None:
         """
         Is called when the selection changes.
 
         You can get the new selection via XSelectionSupplier from ``com.sun.star.lang.EventObject.Source``.
         """
-        self._trigger_event("selectionChanged", event)
+        self._trigger_event("selectionChanged", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -68,4 +75,4 @@ class SelectionChangeListener(AdapterBase, XSelectionChangeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

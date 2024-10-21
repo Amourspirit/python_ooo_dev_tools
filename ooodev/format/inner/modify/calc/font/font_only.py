@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import cast, Tuple
-import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.units.unit_obj import UnitT

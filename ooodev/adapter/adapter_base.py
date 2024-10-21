@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 # pylint: disable=unused-import, useless-import-alias
-import uno
 from ooodev.events.args.event_args import EventArgs
 from ooodev.events.args.event_args import AbstractEvent
 from ooodev.events.lo_events import Events

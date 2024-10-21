@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 from ooodev.format.inner.direct.draw.shape.line.arrow_styles import ArrowStyles as DrawShapeLineArrowStyles

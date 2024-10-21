@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Set, TYPE_CHECKING
 
-import uno
 
 from ooodev.io.log import logging as logger
 from ooodev.calc.cell.custom_prop_clean import CustomPropClean

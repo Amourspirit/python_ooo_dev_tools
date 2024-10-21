@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.size import Size
 from ooodev.adapter.struct_base import StructBase
 
@@ -33,12 +39,15 @@ class SizeStructComp(StructBase[Size]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_awt_Size_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_awt_Size_changed"
 
+    @override
     def _copy(self, src: Size | None = None) -> Size:
         if src is None:
             src = self.component

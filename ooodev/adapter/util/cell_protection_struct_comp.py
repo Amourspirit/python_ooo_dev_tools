@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.util.cell_protection import CellProtection
 
 from ooodev.adapter.component_base import ComponentBase
@@ -41,6 +47,7 @@ class CellProtectionStructComp(ComponentBase):
         self._prop_name = prop_name
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # PropertySetPartial will validate

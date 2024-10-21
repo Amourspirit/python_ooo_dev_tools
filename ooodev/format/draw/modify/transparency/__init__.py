@@ -10,3 +10,5 @@ from .gradient import Gradient as Gradient
 from .transparency import Transparency as Transparency
 
 __all__ = ["Gradient", "Transparency"]
+
+import uno  # noqa # type: ignore

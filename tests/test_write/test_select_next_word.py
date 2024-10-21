@@ -4,7 +4,6 @@ import sys
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from com.sun.star.document import MacroExecMode
 
 from ooodev.loader.lo import Lo

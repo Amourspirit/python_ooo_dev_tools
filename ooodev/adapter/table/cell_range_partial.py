@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.table import XCellRange
 
@@ -38,14 +37,14 @@ class CellRangePartial:
         self.__component = component
 
     # region XCellRange
-    def get_cell_by_position(self, column: int, row: int) -> XCell:
+    def get_cell_by_position(self, col: int, row: int) -> XCell:
         """
         Returns a single cell within the range.
 
         Raises:
             com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
         """
-        return self.__component.getCellByPosition(column, row)
+        return self.__component.getCellByPosition(col, row)
 
     def get_cell_range_by_name(self, rng: str) -> XCellRange:
         """

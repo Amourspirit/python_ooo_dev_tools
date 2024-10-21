@@ -7,7 +7,6 @@ Module for Fill Properties Fill Pattern.
 from __future__ import annotations
 import contextlib
 from typing import Any, Tuple, overload, Type, TypeVar, TYPE_CHECKING
-import uno
 
 from ooo.dyn.drawing.fill_style import FillStyle
 

@@ -1,4 +1,3 @@
-import uno
 from ooo.dyn.table.border_line import BorderLine as BorderLine
 from ooo.dyn.table.border_line2 import BorderLine2 as BorderLine2
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
@@ -11,3 +10,5 @@ from ooodev.format.inner.direct.write.para.border.shadow import Shadow as Shadow
 from ooodev.format.inner.direct.write.para.border.borders import Borders as Borders
 
 __all__ = ["Padding", "Shadow", "Borders"]
+
+import uno  # noqa # type: ignore

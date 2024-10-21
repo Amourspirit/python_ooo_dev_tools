@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.ui import XUIConfigurationPersistence
 
 from ooodev.utils.builder.default_builder import DefaultBuilder

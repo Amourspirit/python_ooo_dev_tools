@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from pathlib import Path
 import contextlib
-import uno  # pylint: disable=unused-import
 
 # pylint: disable=useless-import-alias
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum

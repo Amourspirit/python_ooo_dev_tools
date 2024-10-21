@@ -4,8 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
@@ -14,7 +12,7 @@ from ooodev.office.write import Write
 from ooodev.units import UnitMM100
 from ooodev.format.writer.direct.char.font import FontOnly as DirectFontOnly
 from ooodev.format.writer.direct.char.highlight import Highlight as DirectHighlight
-from ooodev.format.writer.modify.char.font import FontEffects as ModifyFontEffects, FontOnly as ModifyFontOnly
+from ooodev.format.writer.modify.char.font import FontOnly as ModifyFontOnly
 from ooodev.format.writer.modify.char.highlight import Highlight as ModifyHighlight
 from ooodev.format.writer.style.char import Char as StyleChar
 from ooodev.utils.color import StandardColor

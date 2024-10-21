@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.adapter.awt.gradient_struct_comp import GradientStructComp
 from ooodev.adapter.drawing.hatch_struct_comp import HatchStructComp

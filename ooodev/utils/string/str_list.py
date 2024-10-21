@@ -1,6 +1,6 @@
 from __future__ import annotations
 import contextlib
-from typing import Any, Iterable, overload, Generator
+from typing import Any, Iterable, overload
 
 
 class StrList:

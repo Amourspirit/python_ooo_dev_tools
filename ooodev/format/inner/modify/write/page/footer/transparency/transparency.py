@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.format.inner.common.props.transparent_transparency_props import TransparentTransparencyProps
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.modify.write.page.header.transparency.transparency import Transparency as HeaderTransparency

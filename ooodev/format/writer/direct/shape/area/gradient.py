@@ -5,7 +5,6 @@
 # region Import
 from __future__ import annotations
 
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.utils.color import Color
 from ooodev.units.angle import Angle as Angle

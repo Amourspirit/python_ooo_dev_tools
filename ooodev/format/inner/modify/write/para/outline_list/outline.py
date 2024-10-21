@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 
 from ooodev.format.inner.direct.write.para.outline_list.outline import LevelKind
 from ooodev.format.inner.direct.write.para.outline_list.outline import Outline as InnerOutline

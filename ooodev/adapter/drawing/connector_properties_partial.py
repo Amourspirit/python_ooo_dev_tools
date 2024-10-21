@@ -1,7 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
-import contextlib
-import uno
+from typing import TYPE_CHECKING
 
 from ooodev.units.unit_mm100 import UnitMM100
 

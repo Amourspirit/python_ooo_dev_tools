@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.util import XCloseListener
 from ooodev.events.args.key_val_args import KeyValArgs
 
@@ -39,7 +44,7 @@ class CloseListener(AdapterBase, XCloseListener):
         if subscriber:
             subscriber.addCloseListener(self)
 
-    def notifyClosing(self, event: EventObject) -> None:
+    def notifyClosing(self, Source: EventObject) -> None:
         """
         Is invoked when the listened object is closed really.
 
@@ -50,9 +55,9 @@ class CloseListener(AdapterBase, XCloseListener):
         If the event ``com.sun.star.lang.XEventListener.disposing()`` occurred before it must be accepted too.
         There exist no chance for a disagreement any more.
         """
-        self._trigger_event("notifyClosing", event)
+        self._trigger_event("notifyClosing", Source)
 
-    def queryClosing(self, event: EventObject, gets_ownership: bool) -> None:
+    def queryClosing(self, Source: EventObject, GetsOwnership: bool) -> None:
         """
         Is invoked when somewhere tries to close listened object
 
@@ -83,11 +88,11 @@ class CloseListener(AdapterBase, XCloseListener):
             The event data is a ``KeyValArgs`` instance with the following properties:
             ``key=gets_ownership``, ``value=gets_ownership`` and ``event_data=event``.
         """
-        kv_args = KeyValArgs(self, key="gets_ownership", value=gets_ownership)
-        kv_args.event_data = event
+        kv_args = KeyValArgs(self, key="gets_ownership", value=GetsOwnership)
+        kv_args.event_data = Source
         self._trigger_event("queryClosing", kv_args)
 
-    def disposing(self, event: EventObject) -> None:
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets invoked when the broadcaster is about to be disposed.
 
@@ -99,4 +104,4 @@ class CloseListener(AdapterBase, XCloseListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

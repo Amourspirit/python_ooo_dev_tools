@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Tuple
-from unittest import result
+from typing import Any, TYPE_CHECKING
 
 from com.sun.star.ui import XModuleUIConfigurationManager
 

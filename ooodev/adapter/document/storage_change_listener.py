@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.document import XStorageChangeListener
 
 from ooodev.events.args.event_args import EventArgs
@@ -37,7 +42,8 @@ class StorageChangeListener(AdapterBase, XStorageChangeListener):
         if subscriber:
             subscriber.addStorageChangeListener(self)
 
-    def notifyStorageChange(self, document: XInterface, storage: XStorage) -> None:
+    @override
+    def notifyStorageChange(self, xDocument: XInterface, xStorage: XStorage) -> None:
         """
         Event is invoked when document switches to another storage.
 
@@ -48,5 +54,5 @@ class StorageChangeListener(AdapterBase, XStorageChangeListener):
         - ``storage``: The new storage that the document is being switched to.
         """
         args = EventArgs(self)
-        args.event_data = {"document": document, "storage": storage}
+        args.event_data = {"document": xDocument, "storage": xStorage}
         self._trigger_event("notifyStorageChange", args)

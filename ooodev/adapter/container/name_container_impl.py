@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from com.sun.star.container import NoSuchElementException
 from com.sun.star.container import ElementExistException
 from com.sun.star.lang import IllegalArgumentException
@@ -9,6 +8,10 @@ from ooodev.uno_helper.base_class.base import Base
 
 
 class NameContainerImpl(Base, XNameContainer):
+    """
+    Class that implements XNameContainer Component.
+    """
+
     def __init__(self, element_type: Any):
         self._dict = {}
         self._element_type = element_type
@@ -29,16 +32,16 @@ class NameContainerImpl(Base, XNameContainer):
     # endregion XElementAccess
 
     # region XNameAccess
-    def getByName(self, name: str) -> Any:
+    def getByName(self, aName: str) -> Any:
         """
 
         Raises:
             com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
             com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
         """
-        if name not in self._dict:
-            raise NoSuchElementException(f"Element '{name}' not found", self)
-        return self._dict[name]
+        if aName not in self._dict:
+            raise NoSuchElementException(f"Element '{aName}' not found", self)
+        return self._dict[aName]
 
     def getElementNames(self) -> Tuple[str, ...]:
         """
@@ -46,16 +49,16 @@ class NameContainerImpl(Base, XNameContainer):
         """
         return tuple(self._dict.keys())
 
-    def hasByName(self, name: str) -> bool:
+    def hasByName(self, aName: str) -> bool:
         """
         In many cases the next call is XNameAccess.getByName(). You should optimize this case.
         """
-        return name in self._dict
+        return aName in self._dict
 
     # endregion XNameAccess
 
     # region XNameReplace
-    def replaceByName(self, name: str, element: Any) -> None:
+    def replaceByName(self, aName: str, aElement: Any) -> None:
         """
         replaces the element with the specified name with the given element.
 
@@ -64,14 +67,14 @@ class NameContainerImpl(Base, XNameContainer):
             com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
             com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
         """
-        if name not in self._dict:
-            raise NoSuchElementException(f"Element '{name}' not found", self)
-        self._dict[name] = element
+        if aName not in self._dict:
+            raise NoSuchElementException(f"Element '{aName}' not found", self)
+        self._dict[aName] = aElement
 
     # endregion XNameReplace
 
     # region XNameContainer
-    def insertByName(self, name: str, element: Any) -> None:
+    def insertByName(self, aName: str, aElement: Any) -> None:
         """
         inserts the given element at the specified name.
 
@@ -80,16 +83,16 @@ class NameContainerImpl(Base, XNameContainer):
             com.sun.star.container.ElementExistException: ``ElementExistException``
             com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
         """
-        if not name:
+        if not aName:
             raise IllegalArgumentException("Name cannot be empty", self, 0)
-        if name in self._dict:
-            raise ElementExistException(f"Element '{name}' already exists", self)
+        if aName in self._dict:
+            raise ElementExistException(f"Element '{aName}' already exists", self)
         try:
-            self._dict[name] = element
-        except Exception as e:
-            raise IllegalArgumentException(f"Error inserting element '{name}'", self, 0)
+            self._dict[aName] = aElement
+        except Exception:
+            raise IllegalArgumentException(f"Error inserting element '{aName}'", self, 0)
 
-    def removeByName(self, name: str) -> None:
+    def removeByName(self, Name: str) -> None:
         """
         removes the element with the specified name.
 
@@ -97,8 +100,8 @@ class NameContainerImpl(Base, XNameContainer):
             com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
             com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
         """
-        if name not in self._dict:
-            raise NoSuchElementException(f"Element '{name}' not found", self)
-        del self._dict[name]
+        if Name not in self._dict:
+            raise NoSuchElementException(f"Element '{Name}' not found", self)
+        del self._dict[Name]
 
     # endregion XNameContainer

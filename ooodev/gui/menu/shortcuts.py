@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, Dict, List, TYPE_CHECKING, Tuple, Union
 
-import uno
 from ooo.dyn.awt.key_event import KeyEvent
 from ooo.dyn.awt.key_modifier import KeyModifierEnum
 from com.sun.star.awt import Key

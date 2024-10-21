@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from com.sun.star.util import XReplaceable
 from ooodev.adapter.util.searchable_partial import SearchablePartial
 from ooodev.adapter.util.replace_descriptor_comp import ReplaceDescriptorComp

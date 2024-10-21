@@ -5,19 +5,11 @@ from typing import cast, TYPE_CHECKING
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooo.dyn.style.graphic_location import GraphicLocation
 
 from ooodev.format.writer.direct.table.background import (
     Img,
     PresetImageKind,
-    ImgStyleKind,
-    SizeMM,
-    SizePercent,
-    Offset,
-    OffsetColumn,
-    OffsetRow,
-    RectanglePoint,
 )
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

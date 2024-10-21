@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.text import text_range_partial as mTextRangePartial
 from ooodev.adapter.style.character_properties_partial import CharacterPropertiesPartial
@@ -34,6 +41,7 @@ class TextRangeComp(
         ParagraphPropertiesPartial.__init__(self, component=component)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         # validated by mTextRangePartial.TextRangePartial
@@ -43,6 +51,7 @@ class TextRangeComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> TextRange:
         """TextRange Component"""
         # pylint: disable=no-member

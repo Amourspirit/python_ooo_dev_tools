@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 from ooodev.format.inner.direct.structs.side import Side
 from ooodev.format.inner.modify.write.frame.frame_style_base_multi import FrameStyleBaseMulti
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind

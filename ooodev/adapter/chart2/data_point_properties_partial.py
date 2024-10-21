@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 
 from ooodev.adapter.drawing.fill_properties_partial import FillPropertiesPartial
 from ooodev.adapter.beans.property_set_partial import PropertySetPartial

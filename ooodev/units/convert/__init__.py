@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from .unit_area_kind import UnitAreaKind as UnitAreaKind
 from .unit_length_kind import UnitLengthKind as UnitLengthKind
 from .unit_energy_kind import UnitEnergyKind as UnitEnergyKind

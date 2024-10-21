@@ -3,7 +3,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
@@ -67,7 +73,8 @@ class DrawPages(
         TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
-    def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:
+    @override
+    def __getitem__(self, _itm: int | str) -> mDrawPage.DrawPage[_T]:  # type: ignore
         if isinstance(_itm, str):
             return self.get_by_name(_itm)
         return self.get_by_index(idx=_itm)
@@ -79,7 +86,8 @@ class DrawPages(
         self._current_index = 0
         return self
 
-    def __next__(self) -> mDrawPage.DrawPage[_T]:
+    @override
+    def __next__(self) -> mDrawPage.DrawPage[_T]:  # type: ignore
         if self._current_index >= len(self):
             self._current_index = 0
             raise StopIteration
@@ -161,7 +169,8 @@ class DrawPages(
 
     # region XNameAccess overrides
 
-    def get_by_name(self, name: str) -> mDrawPage.DrawPage[_T]:
+    @override
+    def get_by_name(self, name: str) -> mDrawPage.DrawPage[_T]:  # type: ignore
         """
         Gets the element with the specified name.
 
@@ -184,7 +193,8 @@ class DrawPages(
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:
+    @override
+    def get_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:  # type: ignore
         """
         Gets the element with the specified index.
 
@@ -205,7 +215,8 @@ class DrawPages(
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:
+    @override
+    def insert_new_by_index(self, idx: int) -> mDrawPage.DrawPage[_T]:  # type: ignore
         """
         Creates and inserts a new DrawPage or MasterPage into this container.
 

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from com.sun.star.lang import XComponent
 from com.sun.star.frame import XFrame
 

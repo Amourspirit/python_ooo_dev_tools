@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.kind.format_kind import FormatKind

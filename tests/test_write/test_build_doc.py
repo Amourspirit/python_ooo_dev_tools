@@ -1,4 +1,3 @@
-import os
 import pytest
 from pathlib import Path
 from typing import cast
@@ -15,7 +14,6 @@ from ooodev.utils.color import CommonColor
 from ooodev.utils.images_lo import ImagesLo
 from ooodev.utils.info import Info
 from ooodev.exceptions import ex
-from ooodev.utils.color import CommonColor
 from ooodev.utils.date_time_util import DateUtil
 from functools import partial
 
@@ -156,7 +154,7 @@ def test_build_doc(loader, props_str_to_dict, fix_image_path, capsys: pytest.Cap
             para(f'The following image comes from "{im_fnm.name}":')
             np()
 
-            append(f"Image as a link: ")
+            append("Image as a link: ")
 
             img_size = ImagesLo.get_size_100mm(im_fnm=im_fnm)
             assert img_size.Height == 5751

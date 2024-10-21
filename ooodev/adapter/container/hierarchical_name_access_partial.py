@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Generic, TypeVar, TYPE_CHECKING
-import uno
 
 from com.sun.star.container import XHierarchicalNameAccess
 

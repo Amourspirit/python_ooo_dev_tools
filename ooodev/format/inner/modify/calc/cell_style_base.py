@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Any, Tuple
-import uno
 from com.sun.star.beans import XPropertySet
 
 from ooodev.exceptions import ex as mEx

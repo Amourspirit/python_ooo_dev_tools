@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
@@ -89,6 +94,7 @@ class WriteTextRanges(LoInstPropsPartial, IndexAccessComp, WriteDocPropPartial, 
 
     # region XIndexAccess overrides
 
+    @override
     def get_by_index(self, idx: int) -> WriteTextRange:
         """
         Gets the element at the specified index.

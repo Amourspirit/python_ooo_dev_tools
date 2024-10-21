@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.awt import XFixedText
 
@@ -9,7 +8,6 @@ from ooodev.exceptions import ex as mEx
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
-    from com.sun.star.awt import XActionListener
     from ooodev.utils.type_var import UnoInterface
 
 

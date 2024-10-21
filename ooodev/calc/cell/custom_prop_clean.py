@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any, Dict, List, cast, Set, TYPE_CHECKING
 import contextlib
 
-import uno
 from com.sun.star.drawing import XControlShape
 from com.sun.star.uno import RuntimeException
 

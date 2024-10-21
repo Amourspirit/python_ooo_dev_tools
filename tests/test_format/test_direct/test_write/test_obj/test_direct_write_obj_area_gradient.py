@@ -4,14 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.obj.area import (
     Gradient,
-    GradientStyle,
     PresetGradientKind,
-    Offset,
-    ColorRange,
-    IntensityRange,
 )
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

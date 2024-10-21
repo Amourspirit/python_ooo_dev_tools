@@ -7,7 +7,6 @@ Module for managing character border side.
 # region imports
 from __future__ import annotations
 from typing import Any, Tuple, cast, overload, Type, TypeVar
-import uno
 from ooo.dyn.table.border_line2 import BorderLine2
 from ooodev.exceptions import ex as mEx
 from ooodev.format.inner.kind.format_kind import FormatKind

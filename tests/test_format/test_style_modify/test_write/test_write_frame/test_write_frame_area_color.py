@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.frame.area import Color, InnerColor, StyleFrameKind
 from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI

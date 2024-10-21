@@ -7,3 +7,5 @@ from .popup_menu import PopupMenu as PopupMenu
 from .shortcuts import Shortcuts as Shortcuts
 
 __all__ = ["BarKind", "Menu", "MenuApp", "MenuBar", "Menus", "PopupMenu", "Shortcuts"]
+
+import uno  # noqa # type: ignore

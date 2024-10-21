@@ -1,6 +1,5 @@
 # region Import
 from __future__ import annotations
-import uno
 from ooo.dyn.drawing.hatch_style import HatchStyle as HatchStyle
 
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps

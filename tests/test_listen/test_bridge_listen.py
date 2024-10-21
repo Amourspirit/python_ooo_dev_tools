@@ -8,7 +8,6 @@ from ooodev.events.event_singleton import _Events
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.listeners.x_event_adapter import XEventAdapter
 from ooodev.adapter.lang.event_events import EventEvents
 

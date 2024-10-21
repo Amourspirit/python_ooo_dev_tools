@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import patch
-import uno
 
 
 # from ooodev.office.write import Write
@@ -9,7 +8,6 @@ if __name__ == "__main__":
 
 
 def test_get_doc_type(loader, fix_writer_path) -> None:
-    from ooodev.loader.lo import Lo
     from ooodev.utils.info import Info
 
     test_doc = fix_writer_path("story.odt")

@@ -4,3 +4,5 @@ from ooodev.format.inner.direct.write.image.crop.crop import CropOpt as CropOpt
 from ooodev.format.inner.direct.write.image.crop.crop import ImageCrop as ImageCrop
 
 __all__ = ["CropOpt", "ImageCrop"]
+
+import uno  # noqa # type: ignore

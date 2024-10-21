@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Any, Tuple, TYPE_CHECKING
 
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.utils.color import Color

@@ -4,8 +4,7 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
-from ooodev.format.writer.modify.para.font import FontOnly, InnerFontOnly, FontLang, StyleParaKind
+from ooodev.format.writer.modify.para.font import FontOnly, InnerFontOnly, StyleParaKind
 
 # from ooodev.format.writer.direct.char.font import FontOnly as DirectFontOnly
 from ooodev.gui.gui import GUI

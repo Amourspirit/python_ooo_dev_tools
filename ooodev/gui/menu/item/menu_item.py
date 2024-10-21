@@ -1,7 +1,13 @@
 from __future__ import annotations
-from typing import Any, Tuple, List, TYPE_CHECKING
+from typing import Any, Tuple, TYPE_CHECKING
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import PropertyValue
 from ooo.dyn.util.url import URL
 
@@ -157,6 +163,7 @@ class MenuItem(MenuItemBase):
         self._menu_data["Style"] = int(value)
 
     @property
+    @override
     def item_kind(self) -> MenuItemKind:
         """
         Get item kind.

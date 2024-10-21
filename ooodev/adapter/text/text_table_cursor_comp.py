@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -48,6 +53,7 @@ class TextTableCursorComp(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextTableCursor",)
@@ -60,6 +66,7 @@ class TextTableCursorComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> TextTableCursor:
         """TextTableCursor Component"""
         # pylint: disable=no-member

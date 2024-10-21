@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XBorderResizeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -41,15 +46,17 @@ class BorderResizeListener(AdapterBase, XBorderResizeListener):
         if subscriber is not None:
             subscriber.addBorderResizeListener(self)
 
-    def borderWidthsChanged(self, obj: XInterface, new_size: BorderWidths) -> None:
+    @override
+    def borderWidthsChanged(self, Object: XInterface, NewSize: BorderWidths) -> None:
         """
         notifies the listener that the controller's border widths have been changed.
         """
         event = EventArgs(self)
-        event.event_data = {"obj": obj, "new_size": new_size}
+        event.event_data = {"obj": Object, "new_size": NewSize}
         self._trigger_direct_event("borderWidthsChanged", event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -61,4 +68,4 @@ class BorderResizeListener(AdapterBase, XBorderResizeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

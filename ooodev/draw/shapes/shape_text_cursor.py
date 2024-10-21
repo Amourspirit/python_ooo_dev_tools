@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, TypeVar, Generic
-import uno
 
 from ooodev.utils.context.lo_context import LoContext
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ShapeTextCursor(
+class ShapeTextCursor(  # type: ignore
     LoInstPropsPartial,
     TextCursorPartial[_T],
     Generic[_T],

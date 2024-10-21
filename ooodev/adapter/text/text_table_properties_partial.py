@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 from ooo.dyn.style.graphic_location import GraphicLocation
 from ooo.dyn.style.break_type import BreakType
 from ooo.dyn.text.hori_orientation import HoriOrientationEnum
@@ -66,7 +65,7 @@ class TextTablePropertiesPartial:
 
     @table_column_separators.setter
     def table_column_separators(self, value: Tuple[TableColumnSeparator, ...]) -> None:
-        self.__init__.TableColumnSeparators = value
+        self.__component.TableColumnSeparators = value
 
     @property
     def table_interop_grab_bag(self) -> Tuple[PropertyValue, ...] | None:
@@ -84,7 +83,7 @@ class TextTablePropertiesPartial:
     @table_interop_grab_bag.setter
     def table_interop_grab_bag(self, value: Tuple[PropertyValue, ...]) -> None:
         with contextlib.suppress(AttributeError):
-            self.__init__.TableInteropGrabBag = value
+            self.__component.TableInteropGrabBag = value
 
     @property
     def back_color(self) -> Color:

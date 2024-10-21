@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Union
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import unohelper
 from com.sun.star.view import XSelectionChangeListener
 from ooo.dyn.table.cell_content_type import CellContentType
@@ -106,7 +111,8 @@ class SelectionChangeListener(unohelper.Base, XSelectionChangeListener):
             return getattr(self._prev_addr, "typeName") == "com.sun.star.table.CellAddress"
         return False
 
-    def selectionChanged(self, event: EventObject) -> None:
+    @override
+    def selectionChanged(self, aEvent: EventObject) -> None:
         """
         Is called when the selection changes.
 
@@ -118,8 +124,8 @@ class SelectionChangeListener(unohelper.Base, XSelectionChangeListener):
         # Does not have a way to get the previous selection.
         # Does not notify when the selection is complete in a drag.
         # Maybe would have to be combines with mouse events.
-        src = cast("Union[SpreadsheetView, SpreadsheetViewSettings]", event.Source)
-        sheet = src.getActiveSheet()  # type: ignore
+        src = cast("Union[SpreadsheetView, SpreadsheetViewSettings]", aEvent.Source)
+        _ = src.getActiveSheet()  # type: ignore
 
         sel = src.getSelection()  # type: ignore
         if sel is None:
@@ -170,7 +176,8 @@ class SelectionChangeListener(unohelper.Base, XSelectionChangeListener):
 
         # print(event.Source)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 

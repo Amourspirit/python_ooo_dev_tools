@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ucb import XContentEventListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -35,13 +40,15 @@ class ContentEventListener(AdapterBase, XContentEventListener):
         if subscriber:
             subscriber.addContentEventListener(self)
 
-    def contentEvent(self, event: ContentEvent) -> None:
+    @override
+    def contentEvent(self, evt: ContentEvent) -> None:
         """
         Event is invoked when a content wishes to notify changes.
         """
-        self._trigger_event("contentEvent", event)
+        self._trigger_event("contentEvent", evt)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -53,4 +60,4 @@ class ContentEventListener(AdapterBase, XContentEventListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

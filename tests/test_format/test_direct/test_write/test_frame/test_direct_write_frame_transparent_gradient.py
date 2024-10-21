@@ -4,17 +4,13 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.frame.transparency import (
     Gradient,
     GradientStyle,
     Angle,
-    Intensity,
     IntensityRange,
-    Offset,
 )
 from ooodev.format.writer.direct.frame.area import Color
-from ooodev.format import Styler
 from ooodev.utils.color import StandardColor
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

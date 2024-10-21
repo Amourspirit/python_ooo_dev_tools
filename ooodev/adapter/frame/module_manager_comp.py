@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XModuleManager2
 from ooodev.utils.builder.default_builder import DefaultBuilder
 
@@ -30,6 +36,7 @@ class ModuleManagerComp(ComponentProp, module_manager2_partial.ModuleManager2Par
         module_manager2_partial.ModuleManager2Partial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.frame.ModuleManager",)
@@ -58,6 +65,7 @@ class ModuleManagerComp(ComponentProp, module_manager2_partial.ModuleManager2Par
 
     # region Properties
     @property
+    @override
     def component(self) -> ModuleManager:
         """ModuleManager Component"""
         # pylint: disable=no-member

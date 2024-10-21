@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, Tuple
-import uno
+from typing import Tuple
 
 from ooo.dyn.chart.chart_axis_label_position import ChartAxisLabelPosition as ChartAxisLabelPosition
 

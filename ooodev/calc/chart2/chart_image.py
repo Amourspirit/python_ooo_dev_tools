@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 from ooodev.adapter.graphic.graphic_comp import GraphicComp
 from ooodev.loader import lo as mLo
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial

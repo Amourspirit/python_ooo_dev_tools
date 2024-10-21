@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from com.sun.star.frame import XLayoutManager2
 
 from ooodev.utils.builder.default_builder import DefaultBuilder

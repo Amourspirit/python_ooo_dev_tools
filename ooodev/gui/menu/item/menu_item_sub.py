@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Tuple, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import PropertyValue
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
@@ -45,6 +51,7 @@ class MenuItemSub(MenuItem):
         return self._sub_menu
 
     @property
+    @override
     def item_kind(self) -> MenuItemKind:
         """
         Get item kind.

@@ -1,10 +1,8 @@
-from unicodedata import name
 import pytest
 
 # from ooodev.office.write import Write
 if __name__ == "__main__":
     pytest.main([__file__])
-import uno
 
 from com.sun.star.util import XSearchable
 from com.sun.star.text import XTextRange

@@ -2,7 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 import contextlib
 from logging import DEBUG
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
@@ -53,6 +59,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
 
     # region Protected Methods
 
+    @override
     def _get_index(self, idx: int, allow_greater: bool = False) -> int:
         """
         Gets the index.
@@ -212,6 +219,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
     # endregion Find methods
 
     # region MenuPartial Overrides
+    @override
     def get_popup_menu(self, menu_id: int) -> PopupMenu | None:
         """
         Gets the popup menu from the menu item.
@@ -225,6 +233,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         menu = self.component.getPopupMenu(menu_id)
         return None if menu is None else PopupMenu(menu)
 
+    @override
     def clear(self) -> None:
         """
         Removes all items from the menu.
@@ -232,7 +241,8 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         super().clear()  # type: ignore
         self._cache.clear()
 
-    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind = 0, item_pos: int = -1) -> int:
+    @override
+    def insert_item(self, menu_id: int, text: str, item_style: int | MenuItemStyleKind = 0, item_pos: int = -1) -> int:  # type: ignore
         """
         Insert an item into the menu.
 
@@ -252,6 +262,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         self._cache.clear()
         return menu_id
 
+    @override
     def insert_item_after(
         self, menu_id: int, text: str, item_style: int | MenuItemStyleKind = 0, after: str | int = -1
     ) -> int:
@@ -279,10 +290,12 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         self._cache.clear()
         return menu_id
 
+    @override
     def remove_item(self, item_pos: int, count: int) -> None:
         super().remove_item(item_pos=item_pos, count=count)  # type: ignore
         self._cache.clear()
 
+    @override
     def set_popup_menu(self, menu_id: int, popup_menu: XPopupMenu | ComponentProp) -> None:
         """
         Sets the popup menu for a specified menu item.

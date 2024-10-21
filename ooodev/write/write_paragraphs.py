@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, TypeVar, Generic, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.text.text_comp import TextComp
 from ooodev.utils import info as mInfo
@@ -53,6 +58,7 @@ class WriteParagraphs(
         TheDictionaryPartial.__init__(self)
 
     # region Overrides
+    @override
     def _is_next_element_valid(self, element: Any) -> bool:
         """
         Gets if the next element is valid.
@@ -66,6 +72,7 @@ class WriteParagraphs(
         """
         return mInfo.Info.support_service(element, "com.sun.star.text.Paragraph")
 
+    @override
     def __next__(self) -> mWriteParagraph.WriteParagraph[T]:
         """
         Gets the next Paragraph.

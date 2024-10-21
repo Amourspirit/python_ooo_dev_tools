@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Generic
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -19,7 +24,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class PolyLineShape(
+class PolyLineShape(  # type: ignore
     ShapeBase,
     PolyLineShapeComp,
     Generic[_T],
@@ -39,14 +44,15 @@ class PolyLineShape(
         ShapePartialProps.__init__(self, component=component)  # type: ignore
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         DrawShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         QiPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)
         StyledShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
 
+    @override
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.PolyLineShape``."""
         return "com.sun.star.drawing.PolyLineShape"

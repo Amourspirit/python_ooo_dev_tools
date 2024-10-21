@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Tuple
-import uno
 
 from ooodev.format.inner.common.props.area_hatch_props import AreaHatchProps
 from ooodev.format.inner.direct.write.fill.area.hatch import Hatch as InnerHatch

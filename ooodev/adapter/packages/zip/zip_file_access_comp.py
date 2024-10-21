@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.packages.zip import XZipFileAccess2
 
 from ooodev.adapter.component_prop import ComponentProp
@@ -33,6 +39,7 @@ class ZipFileAccessComp(ComponentProp, ZipFileAccess2Partial):
         ZipFileAccess2Partial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.packages.zip.ZipFileAccess",)
@@ -75,6 +82,7 @@ class ZipFileAccessComp(ComponentProp, ZipFileAccess2Partial):
 
     # region Properties
     @property
+    @override
     def component(self) -> ZipFileAccess:
         """ZipFileAccess Component"""
         # pylint: disable=no-member

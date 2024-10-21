@@ -2,6 +2,13 @@ from __future__ import annotations
 import contextlib
 from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_convert import UnitLength
@@ -35,6 +42,7 @@ class UnitInch100(BaseFloatValue):
     # endregion Overrides
 
     # region math and comparison
+    @override
     def __int__(self) -> int:
         return round(self.value)
 
@@ -50,6 +58,7 @@ class UnitInch100(BaseFloatValue):
             return self.almost_equal(float(other))  # type: ignore
         return False
 
+    @override
     def __add__(self, other: object) -> UnitInch100:
         if isinstance(other, UnitInch100):
             return self.from_inch100(self.value + other.value)
@@ -65,9 +74,11 @@ class UnitInch100(BaseFloatValue):
             return self.from_inch100(self.value + other)  # type: ignore
         return NotImplemented
 
+    @override
     def __radd__(self, other: object) -> UnitInch100:
         return self if other == 0 else self.__add__(other)
 
+    @override
     def __sub__(self, other: object) -> UnitInch100:
         if isinstance(other, UnitInch100):
             return self.from_inch100(self.value - other.value)
@@ -83,11 +94,13 @@ class UnitInch100(BaseFloatValue):
             return self.from_inch100(self.value - other)  # type: ignore
         return NotImplemented
 
+    @override
     def __rsub__(self, other: object) -> UnitInch100:
         if isinstance(other, (int, float)):
             return self.from_inch100(other - self.value)  # type: ignore
         return NotImplemented
 
+    @override
     def __mul__(self, other: object) -> UnitInch100:
         if isinstance(other, UnitInch100):
             return self.from_inch100(self.value * other.value)
@@ -104,9 +117,11 @@ class UnitInch100(BaseFloatValue):
 
         return NotImplemented
 
+    @override
     def __rmul__(self, other: int) -> UnitInch100:
         return self if other == 0 else self.__mul__(other)
 
+    @override
     def __truediv__(self, other: object) -> UnitInch100:
         if isinstance(other, UnitInch100):
             if other.value == 0:
@@ -129,6 +144,7 @@ class UnitInch100(BaseFloatValue):
             return self.from_inch100(self.value / other)  # type: ignore
         return NotImplemented
 
+    @override
     def __rtruediv__(self, other: object) -> UnitInch100:
         if isinstance(other, (int, float)):
             if self.value == 0:
@@ -136,9 +152,11 @@ class UnitInch100(BaseFloatValue):
             return self.from_inch100(other / self.value)  # type: ignore
         return NotImplemented
 
-    def __abs__(self) -> float:
+    @override
+    def __abs__(self) -> float:  # type: ignore
         return abs(self.value)
 
+    @override
     def __lt__(self, other: object) -> bool:
         if isinstance(other, UnitInch100):
             return self.value < other.value
@@ -151,6 +169,7 @@ class UnitInch100(BaseFloatValue):
             return self.value < float(other)  # type: ignore
         return False
 
+    @override
     def __le__(self, other: object) -> bool:
         if isinstance(other, UnitInch100):
             return True if self.almost_equal(other.value) else self.value < other.value
@@ -164,6 +183,7 @@ class UnitInch100(BaseFloatValue):
             return True if self.almost_equal(oth_val) else self.value < oth_val
         return False
 
+    @override
     def __gt__(self, other: object) -> bool:
         if isinstance(other, UnitInch100):
             return self.value > other.value
@@ -176,6 +196,7 @@ class UnitInch100(BaseFloatValue):
             return self.value > float(other)  # type: ignore
         return False
 
+    @override
     def __ge__(self, other: object) -> bool:
         if isinstance(other, UnitInch100):
             return True if self.almost_equal(other.value) else self.value > other.value

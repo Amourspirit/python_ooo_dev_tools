@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.lang import XMultiServiceFactory
 
 from ooodev.adapter._helper.builder import builder_helper
@@ -35,7 +41,7 @@ class _ConfigurationProviderComp(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a ConfigurationProviderComp class
         return ConfigurationProviderComp
 
@@ -109,6 +115,7 @@ class ConfigurationProviderComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> ConfigurationProvider:
         """ConfigurationProvider Component"""
         # pylint: disable=no-member

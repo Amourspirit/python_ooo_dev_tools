@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, TypeVar, Generic, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.container import XEnumerationAccess
 
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
@@ -50,6 +56,7 @@ class WriteTextPortions(
         TheDictionaryPartial.__init__(self)
 
     # region Overrides
+    @override
     def _is_next_element_valid(self, element: Any) -> bool:
         """
         Gets if the next element is valid.
@@ -63,6 +70,7 @@ class WriteTextPortions(
         """
         return mInfo.Info.support_service(element, "com.sun.star.text.TextPortion")
 
+    @override
     def __next__(self) -> mWriteTextPortion.WriteTextPortion[T]:
         """
         Gets the next element.

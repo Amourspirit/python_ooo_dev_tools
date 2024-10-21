@@ -1,7 +1,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TypeVar, Generic, Union
-import uno
 from ooo.dyn.awt.rectangle import Rectangle as UnoRectangle
 
 # https://github.com/Amourspirit/python_ooo_dev_tools/issues/640

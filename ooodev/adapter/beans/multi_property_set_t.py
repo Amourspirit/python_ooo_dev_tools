@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, Protocol
-import uno
 
 from com.sun.star.beans import XPropertiesChangeListener
 from com.sun.star.beans import XPropertySetInfo

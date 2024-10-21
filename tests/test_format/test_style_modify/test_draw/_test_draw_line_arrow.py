@@ -4,10 +4,9 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.loader.lo import Lo
 from ooodev.draw import Draw, DrawDoc, ZoomKind
-from ooodev.format.draw.modify.line import ArrowStyles, GraphicArrowStyleKind
+from ooodev.format.draw.modify.line import ArrowStyles
 from ooodev.format.draw.modify import FamilyGraphics, DrawStyleFamilyKind
 from ooodev.utils.color import StandardColor
 

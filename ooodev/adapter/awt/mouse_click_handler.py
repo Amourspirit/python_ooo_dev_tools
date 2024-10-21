@@ -2,12 +2,18 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMouseClickHandler
 
 from ooodev.events.args.event_args import EventArgs as EventArgs
 from ooodev.adapter.adapter_base import AdapterBase
 from ooodev.events.args.generic_args import GenericArgs
+from ooodev.events.args.cancel_event_args import CancelEventArgs
 
 if TYPE_CHECKING:
     from com.sun.star.lang import EventObject
@@ -47,19 +53,38 @@ class MouseClickHandler(AdapterBase, XMouseClickHandler):
                 subscriber.addMouseClickHandler(self)
 
     # region XMouseClickHandler
-    def mousePressed(self, event: MouseEvent) -> None:
+    @override
+    def mousePressed(self, e: MouseEvent) -> bool:
         """
         Event is invoked when a mouse button has been pressed on a window.
         """
-        self._trigger_event("mousePressed", event)
+        cancel_args = CancelEventArgs(self.__class__.__qualname__)
+        cancel_args.event_data = e
+        self._trigger_direct_event("mousePressed", cancel_args)
+        if cancel_args.cancel:
+            if CancelEventArgs.handled:
+                # if the cancel event was handled then we return True to indicate that the update should be performed
+                return True
+            return False
+        return True
 
-    def mouseReleased(self, event: MouseEvent) -> None:
+    @override
+    def mouseReleased(self, e: MouseEvent) -> bool:
         """
         Event is invoked when a mouse button has been released on a window.
         """
-        self._trigger_event("mouseReleased", event)
+        cancel_args = CancelEventArgs(self.__class__.__qualname__)
+        cancel_args.event_data = e
+        self._trigger_direct_event("mouseReleased", cancel_args)
+        if cancel_args.cancel:
+            if CancelEventArgs.handled:
+                # if the cancel event was handled then we return True to indicate that the update should be performed
+                return True
+            return False
+        return True
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -71,6 +96,6 @@ class MouseClickHandler(AdapterBase, XMouseClickHandler):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XMouseClickHandler

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Tuple, Type, TypeVar, overload, TYPE_CHECKING
-import uno
 
 from ooo.dyn.i18n.number_format_index import NumberFormatIndexEnum
 from ooo.dyn.lang.locale import Locale

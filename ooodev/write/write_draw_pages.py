@@ -3,7 +3,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
@@ -47,7 +53,8 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
         TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
-    def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:
+    @override
+    def __getitem__(self, idx: int) -> WriteDrawPage[WriteDoc]:  # type: ignore
         """
         Gets the draw page at the specified index.
 
@@ -83,7 +90,8 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
         self._current_index = 0
         return self
 
-    def __next__(self) -> WriteDrawPage[WriteDoc]:
+    @override
+    def __next__(self) -> WriteDrawPage[WriteDoc]:  # type: ignore
         """
         Gets the next draw page.
 
@@ -170,7 +178,8 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:
+    @override
+    def get_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:  # type: ignore
         """
         Gets the element with the specified index.
 
@@ -194,7 +203,8 @@ class WriteDrawPages(LoInstPropsPartial, DrawPagesComp, WriteDocPropPartial, QiP
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:
+    @override
+    def insert_new_by_index(self, idx: int) -> WriteDrawPage[WriteDoc]:  # type: ignore
         """
         Creates and inserts a new GenericDrawPage or MasterPage into this container.
 

@@ -172,7 +172,6 @@ def test_column_separators(loader):
 
 
 def test_set_table_array(loader, bond_movies_table: list):
-    from ooodev.utils.table_helper import TableHelper
 
     doc = WriteDoc.create_doc(loader)
     try:
@@ -199,7 +198,6 @@ def test_set_table_array(loader, bond_movies_table: list):
 
 
 def test_set_array_by_cell(loader, bond_movies_table: list):
-    from ooodev.utils.table_helper import TableHelper
 
     doc = WriteDoc.create_doc(loader)
     try:

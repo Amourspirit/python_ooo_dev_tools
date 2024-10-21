@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.office import draw as mDraw
 from ooodev.loader.inst.lo_inst import LoInst

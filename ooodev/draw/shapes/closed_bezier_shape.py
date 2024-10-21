@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Generic
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
@@ -20,7 +25,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class ClosedBezierShape(
+class ClosedBezierShape(  # type: ignore
     ShapeBase,
     ClosedBezierShapeComp,
     Generic[_T],
@@ -48,6 +53,7 @@ class ClosedBezierShape(
         StylePartial.__init__(self, component=component)
         StyledShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
 
+    @override
     def get_shape_type(self) -> str:
         """Returns the shape type of ``com.sun.star.drawing.ClosedBezierShape``."""
         return "com.sun.star.drawing.ClosedBezierShape"

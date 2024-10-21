@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, Dict, List, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 import unohelper
 from com.sun.star.container import XContainerListener
 from com.sun.star.drawing import XControlShape

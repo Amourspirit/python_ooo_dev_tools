@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, List, TYPE_CHECKING, TypeVar, Generic
-import uno
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.document.document_event_events import DocumentEventEvents
 from ooodev.adapter.util.close_events import CloseEvents
@@ -25,13 +24,13 @@ from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.utils.partial.json_custom_props_partial import JsonCustomPropsPartial
 
 if TYPE_CHECKING:
-    from com.sun.star.drawing import XShape
     from com.sun.star.lang import XComponent
     from com.sun.star.drawing import GenericDrawingDocument
     from ooodev.draw.shapes.shape_base import ShapeBase
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.events.args.generic_args import GenericArgs
     from ooodev.proto.component_proto import ComponentT
+    from com.sun.star.drawing import XShape  # noqa # type: ignore
 
 _T = TypeVar("_T", bound="ComponentT")
 

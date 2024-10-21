@@ -1,11 +1,9 @@
 from __future__ import annotations
 import pytest
-from typing import cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.table.borders import (
     Borders,
     Shadow,

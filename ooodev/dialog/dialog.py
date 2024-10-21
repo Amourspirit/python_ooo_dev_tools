@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
-import uno
 from com.sun.star.awt import XControl
 from com.sun.star.awt import XControlModel
 from com.sun.star.beans import XPropertySet

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.awt.combo_box_partial import ComboBoxPartial
 from ooodev.adapter.awt.uno_control_edit_comp import UnoControlEditComp
 
@@ -21,6 +27,7 @@ class UnoControlComboBoxComp(UnoControlEditComp, ComboBoxPartial):
         ComboBoxPartial.__init__(self, component=self.component, interface=None)
 
     @property
+    @override
     def component(self) -> UnoControlComboBox:
         """UnoControlComboBox Component"""
         # pylint: disable=no-member

@@ -1,11 +1,10 @@
 from __future__ import annotations
 import pytest
-from os import getenv
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-from ooodev.theme import ThemeBasic, ThemeKind
+from ooodev.theme import ThemeBasic
 from ooodev.utils.info import Info
 
 

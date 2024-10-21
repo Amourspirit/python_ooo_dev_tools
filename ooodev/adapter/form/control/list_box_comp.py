@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.awt.uno_control_list_box_comp import UnoControlListBoxComp
 from ooodev.adapter.form.bound_control_partial import BoundControlPartial
 from ooodev.adapter.form.change_events import ChangeEvents
@@ -36,11 +43,13 @@ class ListBoxComp(UnoControlListBoxComp, BoundControlPartial, ChangeEvents):
 
     # endregion Lazy Listeners
 
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.form.control.ListBox",)
 
     @property
+    @override
     def component(self) -> ListBox:
         """ListBox Component"""
         # pylint: disable=no-member

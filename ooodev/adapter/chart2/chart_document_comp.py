@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.style.style_families_supplier_partial import StyleFamiliesSupplierPartial
 from ooodev.adapter.util.number_formats_supplier_partial import NumberFormatsSupplierPartial
@@ -40,6 +47,7 @@ class ChartDocumentComp(
         NumberFormatsSupplierPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.ChartDocument",)
@@ -47,6 +55,7 @@ class ChartDocumentComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> ChartDocument:
         """ChartDocument Component"""
         # pylint: disable=no-member

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.tab.tab_page_container_partial import TabPageContainerPartial
 
@@ -25,6 +31,7 @@ class UnoControlTabPageContainerComp(UnoControlComp, TabPageContainerPartial):
         return ("com.sun.star.awt.tab.UnoControlTabPageContainer",)
 
     @property
+    @override
     def component(self) -> UnoControlTabPageContainer:
         """UnoControlTabPageContainer Component"""
         # pylint: disable=no-member

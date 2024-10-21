@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast
-import uno
 
 from ooodev.format.writer.style.para.kind.style_para_kind import StyleParaKind
 from ooodev.format.inner.direct.structs.side import Side

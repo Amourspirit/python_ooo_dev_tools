@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar
-import uno
 from ooodev.format.inner.common.abstract.abstract_fill_color import AbstractColor
 from ooodev.format.inner.common.props.fill_color_props import FillColorProps
 from ooodev.format.inner.kind.format_kind import FormatKind

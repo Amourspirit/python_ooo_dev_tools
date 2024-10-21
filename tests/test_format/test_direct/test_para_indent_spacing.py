@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.para.indent_space import Spacing, Indent, LineSpacing, ModeKind
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo

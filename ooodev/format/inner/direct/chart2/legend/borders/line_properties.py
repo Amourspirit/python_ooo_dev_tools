@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from ooodev.utils.data_type.intensity import Intensity
 from ooodev.utils.color import Color
 from ooodev.units.unit_obj import UnitT

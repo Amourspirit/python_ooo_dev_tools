@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Callable, Tuple
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMenuBar
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
@@ -27,7 +33,6 @@ if TYPE_CHECKING:
 
 
 class _MenuBar(ComponentProp):
-
     NODE = "private:resource/menubar/menubar"
 
     # region Dunder Methods
@@ -384,7 +389,7 @@ class _MenuBar(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a MenuBar class
         return MenuBar
 
@@ -401,7 +406,7 @@ class _MenuBar(ComponentProp):
     # endregion Properties
 
 
-class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, MenuEvents):
+class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, MenuEvents):  # type: ignore
     """
     Class for managing MenuBar Component.
 
@@ -477,6 +482,7 @@ class MenuBar(_MenuBar, MenuBarPartial, ServiceInfoPartial, LoInstPropsPartial, 
     # region Properties
 
     @property
+    @override
     def component(self) -> UnoMenuBar:
         """MenuBar Component"""
         # pylint: disable=no-member

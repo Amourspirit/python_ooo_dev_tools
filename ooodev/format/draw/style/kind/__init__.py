@@ -13,3 +13,6 @@ class DrawStyleFamilyKind(Enum):
 
     def __str__(self) -> str:
         return self.value
+
+
+import uno  # noqa # type: ignore

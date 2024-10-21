@@ -6,7 +6,6 @@ from __future__ import annotations
 import contextlib
 from typing import Any, TYPE_CHECKING, Iterable, List, Optional, Sequence, cast, overload, Union
 import re
-import uno
 from com.sun.star.awt import FontWeight
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XEnumerationAccess
@@ -2139,7 +2138,7 @@ class Write(mSel.Selection):
             para_c = cls.get_paragraph_cursor(cursor)
 
         if fill_lst:
-            if has_prev := para_c.gotoPreviousParagraph(False):
+            if para_c.gotoPreviousParagraph(False):
                 para_c.gotoEndOfParagraph(True)
                 for style in fill_lst:
                     cargs = CancelEventArgs(c_styles_args.source)
@@ -2152,7 +2151,7 @@ class Write(mSel.Selection):
 
                 para_c.gotoNextParagraph(False)
 
-        if has_prev := para_c.gotoPreviousParagraph(False):
+        if para_c.gotoPreviousParagraph(False):
             if style_lst:
                 para_c.gotoEndOfParagraph(True)
                 for style in style_lst:
@@ -4062,8 +4061,8 @@ class Write(mSel.Selection):
             loc (Iterable[Locale]): Locale's.
         """
         countries: List[str] = []
-        for l in loc:
-            if c_str := l.Country.strip():
+        for locale in loc:
+            if c_str := locale.Country.strip():
                 countries.append(c_str)
         countries.sort()
 

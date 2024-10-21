@@ -7,7 +7,6 @@ Module for Fill Transparency.
 # region Imports
 from __future__ import annotations
 from typing import cast
-import uno
 
 from ooodev.format.inner.direct.write.image.image_type.size import AbsoluteSize
 from ooodev.format.inner.direct.write.image.image_type.size import RelativeSize

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 
 from ooodev.format.inner.direct.draw.shape.text.animation.no_effect import NoEffect as ShapeNoEffect
 

@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import NamedTuple, TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt.tree import XTreeEditListener
 from com.sun.star.awt.tree import XTreeNode
 
@@ -46,7 +51,8 @@ class TreeEditListener(AdapterBase, XTreeEditListener):
             subscriber.addTreeEditListener(self)
 
     # region XTreeEditListener
-    def nodeEdited(self, node: XTreeNode, new_text: str) -> None:
+    @override
+    def nodeEdited(self, Node: XTreeNode, NewText: str) -> None:
         """
         This method is called from the TreeControl implementation when editing of Node is finished and was not canceled.
 
@@ -55,19 +61,21 @@ class TreeEditListener(AdapterBase, XTreeEditListener):
         Note:
             ``EventArgs.event_data`` will contain a :py:class:`~.NodeEditedArgs` object.
         """
-        args = NodeEditedArgs(node=node, new_text=new_text)
+        args = NodeEditedArgs(node=Node, new_text=NewText)
         self._trigger_event("nodeEdited", args)
 
-    def nodeEditing(self, node: XTreeNode) -> None:
+    @override
+    def nodeEditing(self, Node: XTreeNode) -> None:
         """
         This method is invoked from the TreeControl implementation when editing of Node is requested by calling XTreeControl.startEditingAtNode().
 
         Raises:
             com.sun.star.util.VetoException: ``VetoException``
         """
-        self._trigger_event("nodeEditing", node)
+        self._trigger_event("nodeEditing", Node)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -79,6 +87,6 @@ class TreeEditListener(AdapterBase, XTreeEditListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XTreeEditListener

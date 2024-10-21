@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, cast, TYPE_CHECKING
-import uno
+from typing import Any, TYPE_CHECKING
 from com.sun.star.text import XSimpleText
 
 from ooodev.events.args.cancel_event_args import CancelEventArgs

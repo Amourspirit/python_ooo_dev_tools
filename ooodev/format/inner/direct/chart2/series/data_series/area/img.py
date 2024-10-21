@@ -1,13 +1,11 @@
 # region Imports
 from __future__ import annotations
-import uno
 from com.sun.star.awt import XBitmap
 from com.sun.star.chart2 import XChartDocument
 from ooo.dyn.drawing.rectangle_point import RectanglePoint
 
 from ooodev.format.inner.common.format_types.offset_column import OffsetColumn
 from ooodev.format.inner.common.format_types.offset_row import OffsetRow
-from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.common.format_types.size_percent import SizePercent
 from ooodev.format.inner.direct.chart2.chart.area.img import Img as ChartImg
 from ooodev.format.inner.direct.write.fill.area.img import ImgStyleKind

@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
@@ -190,6 +195,7 @@ class CalcCellRange(
 
     # region StylePropertyPartial overrides
 
+    @override
     def style_by_name(self, name: str | StyleCellKind = "") -> None:
         """
         Assign a style by name to the component.
@@ -1128,6 +1134,4 @@ class CalcCellRange(
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.office.chart2 import Chart2
-    from ooodev.calc.export.range_jpg import RangeJpg
-    from ooodev.calc.export.range_png import RangePng
+    pass

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XShape
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -22,7 +28,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteTextFrame(
+class WriteTextFrame(  # type: ignore
     ShapeBase,
     WriteDocPropPartial,
     Generic[T],
@@ -64,6 +70,7 @@ class WriteTextFrame(
         StylePartial.__init__(self, component=component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_is_supported(self, component: Any) -> bool:
         if component is None:
             return False

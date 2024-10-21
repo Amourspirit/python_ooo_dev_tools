@@ -5,7 +5,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format import Styler
 from ooodev.format.calc.modify.cell.font import (
     FontEffects,

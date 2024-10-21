@@ -2,7 +2,6 @@ from __future__ import annotations
 import contextlib
 import datetime
 from typing import Any, cast, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from ooo.dyn.text.font_emphasis import FontEmphasisEnum
 from ooo.dyn.text.font_relief import FontReliefEnum
 from ooo.dyn.style.vertical_alignment import VerticalAlignment

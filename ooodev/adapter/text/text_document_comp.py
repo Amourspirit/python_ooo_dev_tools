@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.text.generic_text_document_comp import GenericTextDocumentComp
 
 
@@ -25,6 +32,7 @@ class TextDocumentComp(GenericTextDocumentComp):
         super().__init__(component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextDocument",)
@@ -33,6 +41,7 @@ class TextDocumentComp(GenericTextDocumentComp):
     # region Properties
 
     @property
+    @override
     def component(self) -> TextDocument:
         """TextDocument Component"""
         # override to satisfy documentation and type

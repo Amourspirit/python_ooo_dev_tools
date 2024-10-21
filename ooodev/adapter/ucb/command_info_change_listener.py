@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ucb import XCommandInfoChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -37,13 +42,15 @@ class CommandInfoChangeListener(AdapterBase, XCommandInfoChangeListener):
         if subscriber:
             subscriber.addCommandInfoChangeListener(self)
 
-    def commandInfoChange(self, event: CommandInfoChangeEvent) -> None:
+    @override
+    def commandInfoChange(self, evt: CommandInfoChangeEvent) -> None:
         """
         Event is invoked when changes of a ``XCommandInfo`` shall be propagated.
         """
-        self._trigger_event("commandInfoChange", event)
+        self._trigger_event("commandInfoChange", evt)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -55,4 +62,4 @@ class CommandInfoChangeListener(AdapterBase, XCommandInfoChangeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

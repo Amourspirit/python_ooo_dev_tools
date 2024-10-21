@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 
 from ooodev.utils.kind.shape_base_point_kind import ShapeBasePointKind
 from ooodev.format.inner.direct.draw.shape.text.text.text_anchor import TextAnchor as ShapeTextAnchor

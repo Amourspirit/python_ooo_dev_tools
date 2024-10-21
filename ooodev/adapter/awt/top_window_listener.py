@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XExtendedToolkit
 from com.sun.star.awt import XTopWindowListener
 
@@ -42,6 +47,7 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
                 self._tk.addTopWindowListener(self)
 
     # region overrides
+    @override
     def _trigger_event(self, name: str, event: EventObject) -> None:
         # any trigger args passed in will be passed to callback event via Events class.
         event_arg = EventArgs(self.__class__.__qualname__)
@@ -50,39 +56,46 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
 
     # endregion overrides
 
-    def windowActivated(self, event: EventObject) -> None:
+    @override
+    def windowActivated(self, e: EventObject) -> None:
         """Event is invoked when a window is activated."""
-        self._trigger_event("windowActivated", event)
+        self._trigger_event("windowActivated", e)
 
-    def windowClosed(self, event: EventObject) -> None:
+    @override
+    def windowClosed(self, e: EventObject) -> None:
         """Event is invoked when a window has been closed."""
-        self._trigger_event("windowClosed", event)
+        self._trigger_event("windowClosed", e)
 
-    def windowClosing(self, event: EventObject) -> None:
+    @override
+    def windowClosing(self, e: EventObject) -> None:
         """
         Event is invoked when a window is in the process of being closed.
 
         The close operation can be overridden at this point.
         """
-        self._trigger_event("windowClosing", event)
+        self._trigger_event("windowClosing", e)
 
-    def windowDeactivated(self, event: EventObject) -> None:
+    @override
+    def windowDeactivated(self, e: EventObject) -> None:
         """Event is invoked when a window is deactivated."""
-        self._trigger_event("windowDeactivated", event)
+        self._trigger_event("windowDeactivated", e)
 
-    def windowMinimized(self, event: EventObject) -> None:
+    @override
+    def windowMinimized(self, e: EventObject) -> None:
         """Event is invoked when a window is iconified."""
-        self._trigger_event("windowMinimized", event)
+        self._trigger_event("windowMinimized", e)
 
-    def windowNormalized(self, event: EventObject) -> None:
+    @override
+    def windowNormalized(self, e: EventObject) -> None:
         """Event is invoked when a window is deiconified."""
-        self._trigger_event("windowNormalized", event)
+        self._trigger_event("windowNormalized", e)
 
-    def windowOpened(self, event: EventObject) -> None:
+    def windowOpened(self, e: EventObject) -> None:
         """Event is is invoked when a window has been opened."""
-        self._trigger_event("windowOpened", event)
+        self._trigger_event("windowOpened", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -94,7 +107,7 @@ class TopWindowListener(AdapterBase, XTopWindowListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # region Properties
     @property

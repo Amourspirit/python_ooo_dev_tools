@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
 from com.sun.star.frame import XUIControllerFactory
 
 from ooodev.adapter.lang.multi_component_factory_partial import MultiComponentFactoryPartial

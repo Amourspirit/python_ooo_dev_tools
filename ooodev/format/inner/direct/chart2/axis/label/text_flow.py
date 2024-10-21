@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Tuple
-import uno
 
 from ooodev.format.inner.kind.format_kind import FormatKind
 from ooodev.format.inner.style_base import StyleBase

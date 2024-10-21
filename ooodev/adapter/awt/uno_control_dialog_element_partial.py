@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from ooodev.units.unit_app_font_height import UnitAppFontHeight
 from ooodev.units.unit_app_font_width import UnitAppFontWidth
 from ooodev.units.unit_app_font_x import UnitAppFontX

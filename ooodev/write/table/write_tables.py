@@ -1,6 +1,11 @@
 from __future__ import annotations
-from typing import Any, TypeVar, Generic, Sequence, TYPE_CHECKING
-import uno
+from typing import Any, TypeVar, Generic, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.text.text_tables_comp import TextTablesComp
 from ooodev.loader import lo as mLo
@@ -68,7 +73,8 @@ class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPar
 
     # region Overrides
 
-    def __next__(self) -> WriteTable[WriteTables[T]]:
+    @override
+    def __next__(self) -> WriteTable[WriteTables[T]]:  # type: ignore
         """
         Gets the next element.
 
@@ -78,7 +84,8 @@ class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPar
         result = super().__next__()
         return WriteTable(owner=self, component=result, lo_inst=self.lo_inst)
 
-    def __getitem__(self, key: str | int) -> WriteTable[WriteTables[T]]:
+    @override
+    def __getitem__(self, key: str | int) -> WriteTable[WriteTables[T]]:  # type: ignore
         """
         Gets the table at the specified index or name.
 
@@ -115,7 +122,8 @@ class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPar
         count = len(self)
         return mGenUtil.Util.get_index(idx, count, allow_greater)
 
-    def get_by_index(self, idx: int) -> WriteTable[WriteTables[T]]:
+    @override
+    def get_by_index(self, idx: int) -> WriteTable[WriteTables[T]]:  # type: ignore
         """
         Gets the element at the specified index.
 
@@ -130,7 +138,8 @@ class WriteTables(LoInstPropsPartial, WriteDocPropPartial, TextTablesComp, QiPar
         result = super().get_by_index(idx)
         return WriteTable(owner=self, component=result, lo_inst=self.lo_inst)
 
-    def get_by_name(self, name: str) -> WriteTable[WriteTables[T]]:
+    @override
+    def get_by_name(self, name: str) -> WriteTable[WriteTables[T]]:  # type: ignore
         """
         Gets the element with the specified name.
 

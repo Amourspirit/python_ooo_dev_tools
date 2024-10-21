@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypeVar, Generic
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XShapes
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -68,12 +74,14 @@ class DrawPage(
     def __len__(self) -> int:
         return self.component.getCount()
 
-    def __next__(self) -> ShapeBase[DrawPage[_T]]:
+    @override
+    def __next__(self) -> ShapeBase[DrawPage[_T]]:  # type: ignore
         shape = super().__next__()
         return self.shape_factory(shape)
 
     # region Overrides
-    def group(self, shapes: XShapes) -> GroupShape:
+    @override
+    def group(self, shapes: XShapes) -> GroupShape:  # type: ignore
         """
         Groups shapes.
 
@@ -218,7 +226,8 @@ class DrawPage(
 
     # region Properties
     @property
-    def owner(self) -> _T:
+    @override
+    def owner(self) -> _T:  # type: ignore
         """Component Owner"""
         return self.__owner
 
@@ -327,9 +336,8 @@ class DrawPage(
     # endregion Properties
 
 
-from ooodev.draw.shape_collection import ShapeCollection
-from ooodev.draw.shapes.group_shape import GroupShape
+from ooodev.draw.shape_collection import ShapeCollection  # noqa # type: ignore
+from ooodev.draw.shapes.group_shape import GroupShape  # noqa # type: ignore
 
 if mock_g.FULL_IMPORT:
-    from ooodev.draw.export.page_jpg import PageJpg
-    from ooodev.draw.export.page_png import PagePng
+    pass

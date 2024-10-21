@@ -4,7 +4,6 @@ import contextlib
 from random import random
 from typing import Any, List, Sequence, Tuple, cast, overload, TYPE_CHECKING
 
-import uno
 
 # XChartTypeTemplate import error in LO 7.4.0 to 7.4.3, Corrected in Lo 7.5
 from com.sun.star.beans import XPropertySet
@@ -2348,7 +2347,7 @@ class Chart2:
             if coord_sys:
                 if len(coord_sys) > 1:
                     mLo.Lo.print(f"No. of coord systems: {len(coord_sys)}; using first.")
-            return coord_sys[0]  # will raise error if coord_sys is empty or none
+            return coord_sys[0]  # type: ignore # will raise error if coord_sys is empty or none
         except Exception as e:
             raise mEx.ChartError("Error unable to get coord_system") from e
 
@@ -2465,7 +2464,7 @@ class Chart2:
             for ct in chart_types:
                 print(f"  {ct.getChartType()}")
         else:
-            print(f"Chart Type: {chart_types[0].getChartType()}")
+            print(f"Chart Type: {chart_types[0].getChartType()}")  # type: ignore
         print()
 
     # region add_chart_type()

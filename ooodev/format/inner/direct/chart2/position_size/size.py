@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, Tuple, overload, TYPE_CHECKING
-import uno  # pylint: disable=unused-import
 from ooo.dyn.awt.size import Size as UnoSize
 
 from ooodev.format.inner.kind.format_kind import FormatKind

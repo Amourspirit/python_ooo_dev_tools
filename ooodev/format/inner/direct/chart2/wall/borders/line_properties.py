@@ -1,5 +1,4 @@
 from __future__ import annotations
-import uno
 from typing import Any, Tuple
 
 from ooodev.format.inner.direct.chart2.chart.borders.line_properties import (

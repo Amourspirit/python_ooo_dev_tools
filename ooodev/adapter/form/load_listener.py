@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XLoadListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -37,7 +42,8 @@ class LoadListener(AdapterBase, XLoadListener):
         if subscriber:
             subscriber.addLoadListener(self)
 
-    def loaded(self, event: EventObject) -> None:
+    @override
+    def loaded(self, aEvent: EventObject) -> None:
         """
         Event is invoked when the object has successfully connected to a datasource.
 
@@ -47,9 +53,10 @@ class LoadListener(AdapterBase, XLoadListener):
         Returns:
             None:
         """
-        self._trigger_event("loaded", event)
+        self._trigger_event("loaded", aEvent)
 
-    def reloaded(self, event: EventObject) -> None:
+    @override
+    def reloaded(self, aEvent: EventObject) -> None:
         """
         Event is invoked when the object has been reloaded.
 
@@ -59,9 +66,10 @@ class LoadListener(AdapterBase, XLoadListener):
         Returns:
             None:
         """
-        self._trigger_event("reloaded", event)
+        self._trigger_event("reloaded", aEvent)
 
-    def reloading(self, event: EventObject) -> None:
+    @override
+    def reloading(self, aEvent: EventObject) -> None:
         """
         Event is invoked when the object is about to be reloaded.
 
@@ -74,9 +82,10 @@ class LoadListener(AdapterBase, XLoadListener):
         Returns:
             None:
         """
-        self._trigger_event("reloading", event)
+        self._trigger_event("reloading", aEvent)
 
-    def unloaded(self, event: EventObject) -> None:
+    @override
+    def unloaded(self, aEvent: EventObject) -> None:
         """
         Event is invoked after the object has disconnected from a datasource.
 
@@ -86,9 +95,10 @@ class LoadListener(AdapterBase, XLoadListener):
         Returns:
             None:
         """
-        self._trigger_event("unloaded", event)
+        self._trigger_event("unloaded", aEvent)
 
-    def unloading(self, event: EventObject) -> None:
+    @override
+    def unloading(self, aEvent: EventObject) -> None:
         """
         Event is invoked when the object is about to be unloaded.
 
@@ -101,9 +111,10 @@ class LoadListener(AdapterBase, XLoadListener):
         Returns:
             None:
         """
-        self._trigger_event("unloading", event)
+        self._trigger_event("unloading", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -121,4 +132,4 @@ class LoadListener(AdapterBase, XLoadListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from ooodev.format.inner.direct.calc.border.padding import Padding as DirectPadding
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, Any, TYPE_CHECKING
-import uno
 from com.sun.star.lang import XServiceInfo
 from ooo.dyn.form.form_component_type import FormComponentType
 from ooodev.loader.inst.lo_inst import LoInst

@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, overload, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
@@ -53,7 +58,6 @@ if TYPE_CHECKING:
 
 
 class _CalcSheetView(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -64,6 +68,7 @@ class _CalcSheetView(ComponentProp):
         return self.component == other.component
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.SpreadsheetView",)
@@ -143,7 +148,7 @@ class _CalcSheetView(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a CalcSheetView class
         return CalcSheetView
 

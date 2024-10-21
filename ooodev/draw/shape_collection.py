@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.drawing import XShapes
 from com.sun.star.drawing import XShape
 
@@ -158,5 +157,5 @@ class ShapeCollection(
         return self._owner
 
 
-from ooodev.draw.shapes.group_shape import GroupShape
-from ooodev.draw.shapes.draw_shape import DrawShape
+from ooodev.draw.shapes.group_shape import GroupShape  # noqa # type: ignore
+from ooodev.draw.shapes.draw_shape import DrawShape  # noqa # type: ignore

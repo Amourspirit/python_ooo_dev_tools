@@ -3,7 +3,6 @@ import contextlib
 from typing import cast, overload, TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
-import uno
 from ooo.dyn.table.cell_address import CellAddress
 
 from ooodev.loader import lo as mLo
@@ -560,7 +559,7 @@ class CellObj:
     # endregion properties
 
 
-from ooodev.utils.data_type import cell_values as mCellVals
-from ooodev.utils.data_type import col_obj as mCol
-from ooodev.utils.data_type import range_obj as mRngObj
-from ooodev.utils.data_type import row_obj as mRow
+from ooodev.utils.data_type import cell_values as mCellVals  # noqa # type: ignore
+from ooodev.utils.data_type import col_obj as mCol  # noqa # type: ignore
+from ooodev.utils.data_type import range_obj as mRngObj  # noqa # type: ignore
+from ooodev.utils.data_type import row_obj as mRow  # noqa # type: ignore

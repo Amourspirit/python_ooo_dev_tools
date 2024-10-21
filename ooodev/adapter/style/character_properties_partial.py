@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
-import uno
 
 from ooo.dyn.awt.font_underline import FontUnderlineEnum
 from ooo.dyn.awt.font_strikeout import FontStrikeoutEnum
@@ -27,7 +26,6 @@ if TYPE_CHECKING:
     from ooodev.utils.color import Color  # type def
     from ooodev.units.unit_obj import UnitT
     from ooodev.units.angle_t import AngleT
-    from ooodev.units.unit_obj import UnitT
 
 
 class CharacterPropertiesPartial:

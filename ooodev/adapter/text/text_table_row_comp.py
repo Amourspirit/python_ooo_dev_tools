@@ -2,6 +2,12 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Tuple
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.beans.property_set_comp import PropertySetComp
 from ooodev.units.unit_mm100 import UnitMM100
 
@@ -34,6 +40,7 @@ class TextTableRowComp(PropertySetComp):
         PropertySetComp.__init__(self, component=component)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextTableRow",)
@@ -43,7 +50,8 @@ class TextTableRowComp(PropertySetComp):
     # region Properties
 
     @property
-    def component(self) -> TextTableRow:
+    @override
+    def component(self) -> TextTableRow:  # type: ignore
         """TextTableRow Component"""
         # pylint: disable=no-member
         return super().component  # type: ignore

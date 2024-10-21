@@ -3,7 +3,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 
 from ooodev.format.draw.style.kind import DrawStyleFamilyKind

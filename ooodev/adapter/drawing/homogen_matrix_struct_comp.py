@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.drawing.homogen_matrix import HomogenMatrix
 from ooo.dyn.drawing.homogen_matrix_line import HomogenMatrixLine
 
@@ -51,12 +57,15 @@ class HomogenMatrixStructComp(StructBase[HomogenMatrix]):
         self._events.subscribe_event("com_sun_star_drawing_HomogenMatrixLine_changed", self._fn_on_changed)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_drawing_HomogenMatrix_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_drawing_HomogenMatrix_changed"
 
+    @override
     def _copy(self, src: HomogenMatrix | None = None) -> HomogenMatrix:
         if src is None:
             src = self.component

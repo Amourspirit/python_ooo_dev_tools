@@ -1,6 +1,12 @@
 from __future__ import annotations
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from com.sun.star.sheet import XNamedRange
 
 from ooodev.adapter._helper.builder import builder_helper
@@ -29,6 +35,7 @@ class _NamedRangeComp(ComponentProp):
         # ContentProviderPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.NamedRange",)
@@ -38,13 +45,14 @@ class _NamedRangeComp(ComponentProp):
     # region Properties
 
     @property
+    @override
     def component(self) -> NamedRange:
         """NamedRange Component"""
         # pylint: disable=no-member
         return cast("NamedRange", self._ComponentBase__get_component())  # type: ignore
 
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a NamedRangeComp class
         return NamedRangeComp
 

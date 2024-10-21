@@ -5,7 +5,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from com.sun.star.beans import XPropertySet
 
 from ooodev.loader.lo import Lo

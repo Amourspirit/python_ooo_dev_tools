@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any
 from abc import ABC
 
-import uno  # pylint: disable=unused-import
 from ooodev.events.args.generic_args import GenericArgs
 
 
@@ -64,5 +63,5 @@ class ComponentBase(ABC):
 
 
 # Leave this import here to avoid circular imports.
-from ooodev.utils import info as mInfo
-from ooodev.exceptions import ex as mEx
+from ooodev.utils import info as mInfo  # noqa # type: ignore
+from ooodev.exceptions import ex as mEx  # noqa # type: ignore

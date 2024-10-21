@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -38,7 +43,8 @@ class ChangeListener(AdapterBase, XChangeListener):
         if subscriber:
             subscriber.addChangeListener(self)
 
-    def changed(self, event: EventObject) -> None:
+    @override
+    def changed(self, rEvent: EventObject) -> None:
         """
         Event is invoked when the data of a component has been changed.
 
@@ -48,9 +54,10 @@ class ChangeListener(AdapterBase, XChangeListener):
         Returns:
             None:
         """
-        self._trigger_event("changed", event)
+        self._trigger_event("changed", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -68,4 +75,4 @@ class ChangeListener(AdapterBase, XChangeListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

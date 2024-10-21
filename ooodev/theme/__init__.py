@@ -21,3 +21,5 @@ __all__ = [
     "ThemeCalc",
     "ThemeBasic",
 ]
+
+import uno  # noqa # type: ignore

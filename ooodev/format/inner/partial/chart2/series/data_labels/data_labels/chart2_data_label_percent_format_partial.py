@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, Dict, TYPE_CHECKING
-import uno
 
 from ooodev.mock import mock_g
 from ooodev.events.gbl_named_event import GblNamedEvent

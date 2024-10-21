@@ -5,14 +5,11 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.obj.options import Names
 from ooodev.format.writer.direct.obj.type import (
     Anchor,
     AnchorKind,
     Size,
-    RelativeKind,
-    RelativeSize,
     AbsoluteSize,
     Position,
     HoriOrient,

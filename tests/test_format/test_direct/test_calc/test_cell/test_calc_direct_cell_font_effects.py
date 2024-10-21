@@ -5,16 +5,12 @@ from typing import TYPE_CHECKING, cast
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 
 # simpler test then test_char_font because it is testing the same font class under the hood.
 from ooodev.format.calc.direct.cell.font import (
-    Font,
     FontOnly,
     FontUnderlineEnum,
-    FontWeightEnum,
     FontStrikeoutEnum,
-    FontSlant,
     FontEffects,
     FontLine,
 )

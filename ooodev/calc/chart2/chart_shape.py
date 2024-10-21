@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from com.sun.star.graphic import XGraphic
 
 from ooodev.mock import mock_g

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from com.sun.star.awt import XWindow
 from ooo.dyn.awt.pos_size import PosSize

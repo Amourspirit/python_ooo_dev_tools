@@ -1,7 +1,12 @@
 from __future__ import annotations
-from re import sub
 from typing import Dict, List, Any
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.menu_item_style import MenuItemStyleEnum
 
 from ooodev.gui.menu.popup.builder.item import Item
@@ -87,7 +92,7 @@ class BuilderItem(Item):
                     self._process_sub_menu(new_parent, menu.submenu)
 
     # region Public Methods
-
+    @override
     def _to_dict(self) -> Dict[str, Any]:
         """
         Gets the PopupItem as a dictionary

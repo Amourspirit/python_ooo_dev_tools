@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Set
-import uno
 from ooo.dyn.drawing.text_animation_kind import TextAnimationKind
 from ooo.dyn.drawing.text_animation_direction import TextAnimationDirection
 from ooodev.format.inner.direct.draw.shape.text.animation.blink import Blink

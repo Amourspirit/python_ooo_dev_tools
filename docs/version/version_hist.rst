@@ -2,6 +2,20 @@
 Version History
 ***************
 
+Version 0.49.0
+==============
+
+This release is mostly update for Type Hints and some minor updates. The New ``overrides`` descriptor was added to most all file in the library that have overridden methods.
+
+All unused ``uno`` imports were removed from modules. All ``__init__.py`` files were updated to import ``uno`` so all imported modules have access to ``uno``.
+
+In summary no new functionality was added in this release. However thousands for file were modified.
+
+Version 0.48.1
+==============
+
+Fix for ``ooodev.utils.props`` module. Removed unused import ``attr``.
+
 Version 0.48.0
 ==============
 

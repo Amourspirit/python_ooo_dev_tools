@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.table.table_border import TableBorder
 from ooo.dyn.table.border_line import BorderLine
 
@@ -56,13 +62,15 @@ class TableBorderStructComp(StructBase[TableBorder]):
         self._events.subscribe_event("com_sun_star_table_BorderLine_changed", self.__fn_on_border_line_changed)
 
     # region Overrides
-
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_TableBorder_changed"
 
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_table_TableBorder_changing"
 
+    @override
     def _copy(self, src: TableBorder | None = None) -> TableBorder:
         if src is None:
             src = self.component

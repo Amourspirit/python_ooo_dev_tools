@@ -1,7 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
 
-import uno
 from com.sun.star.text import XText
 from com.sun.star.lang import XComponent
 

@@ -1,11 +1,10 @@
 from __future__ import annotations
 import pytest
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.para.transparency import Transparency
 
 # from ooodev.format.inner.direct.write.para.area.color import Color

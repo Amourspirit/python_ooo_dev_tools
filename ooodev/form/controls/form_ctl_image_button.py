@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from pathlib import Path
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooo.dyn.awt.image_scale_mode import ImageScaleModeEnum as ImageScaleModeEnum
 from ooodev.adapter.form.approve_action_events import ApproveActionEvents
@@ -59,14 +64,17 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
 
     if TYPE_CHECKING:
         # override the methods to provide type hinting
+        @override
         def get_view(self) -> ControlView:
             """Gets the view of this control"""
             return cast("ControlView", super().get_view())
 
+        @override
         def get_model(self) -> ControlModel:
             """Gets the model for this control"""
             return cast("ControlModel", super().get_model())
 
+    @override
     def get_form_component_kind(self) -> FormComponentKind:
         """Gets the kind of form component this control is"""
         return FormComponentKind.IMAGE_BUTTON
@@ -181,7 +189,7 @@ class FormCtlImageButton(FormCtlBase, ApproveActionEvents):
             if not FileIO.is_valid_path_or_str(value):
                 raise ValueError(f"Invalid path or str: {value}")
             self.model.ImageURL = FileIO.fnm_to_url(value)
-        except:
+        except Exception:
             self.model.ImageURL = ""
 
     @property

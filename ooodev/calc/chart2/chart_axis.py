@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Tuple
-import uno
 from com.sun.star.chart2 import XScaling
 
 from ooodev.mock import mock_g
@@ -281,7 +280,4 @@ class ChartAxis(
 
 
 if mock_g.FULL_IMPORT:
-    from com.sun.star.chart2 import XFormattedString
-    from com.sun.star.chart2 import XTitle
-    from com.sun.star.chart2 import XTitled
     from ooodev.calc.chart2.chart_title import ChartTitle

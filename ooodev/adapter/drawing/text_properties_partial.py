@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.utils import info as mInfo
 from ooodev.adapter.container.index_replace_comp import IndexReplaceComp

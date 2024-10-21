@@ -5,7 +5,6 @@ if __name__ == "__main__":
     pytest.main([__file__])
 
 from typing import cast, TYPE_CHECKING
-import uno
 
 from ooodev.format.writer.direct.frame.borders import Padding
 from ooodev.format.writer.direct.frame.borders import Side, Sides, BorderLineKind, LineSize

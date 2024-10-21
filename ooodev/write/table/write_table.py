@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING, Tuple, TypeVar, Generic, Generator
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.lang import IndexOutOfBoundsException
 from ooo.dyn.table.cell_content_type import CellContentType
 
@@ -120,13 +126,15 @@ class WriteTable(
             yield self.get_cell_by_name(cell)
 
     # region TextTablePartial overrides
-    def get_columns(self) -> WriteTableColumns:
+    @override
+    def get_columns(self) -> WriteTableColumns:  # type: ignore
         """
         Gets the columns of the table.
         """
         return self.columns
 
-    def get_rows(self) -> WriteTableRows:
+    @override
+    def get_rows(self) -> WriteTableRows:  # type: ignore
         """
         Gets the rows of this table.
 
@@ -241,7 +249,7 @@ class WriteTable(
         col_index = cell_obj.col_obj.index
         row_index = cell_obj.row - 1
 
-        return self.get_cell_by_position(column=col_index, row=row_index)
+        return self.get_cell_by_position(col=col_index, row=row_index)
 
     # endregion get_cell()
 
@@ -350,7 +358,8 @@ class WriteTable(
     # endregion get Table Cell Range
 
     # region TextTablePartial Overrides
-    def create_cursor_by_cell_name(self, name: str) -> WriteTextTableCursor:
+    @override
+    def create_cursor_by_cell_name(self, name: str) -> WriteTextTableCursor:  # type: ignore
         """
         Creates a text table cursor and returns the XTextTableCursor interface.
 
@@ -359,7 +368,8 @@ class WriteTable(
         comp = self.component.createCursorByCellName(name)
         return WriteTextTableCursor(owner=self, cursor=comp)
 
-    def get_cell_by_name(self, name: str) -> WriteTableCell:
+    @override
+    def get_cell_by_name(self, name: str) -> WriteTableCell:  # type: ignore
         """
         Returns the cell with the specified name.
 
@@ -389,7 +399,8 @@ class WriteTable(
     # endregion TextTablePartial Overrides
 
     # region CellRangePartial Overrides
-    def get_cell_by_position(self, column: int, row: int) -> WriteTableCell:
+    @override
+    def get_cell_by_position(self, col: int, row: int) -> WriteTableCell:  # type: ignore
         """
         Returns a single cell within the range.
 
@@ -397,16 +408,17 @@ class WriteTable(
             com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
         """
         try:
-            cell_obj = self.range_converter.get_cell_obj(values=(column, row))
+            cell_obj = self.range_converter.get_cell_obj(values=(col, row))
             return WriteTableCell(
                 owner=self,
-                component=self.component.getCellByPosition(column, row),
+                component=self.component.getCellByPosition(col, row),
                 cell_obj=cell_obj,
             )  # type: ignore
         except IndexOutOfBoundsException as e:
-            raise IndexError(f"Index out of range. column={column}, row={row}") from e
+            raise IndexError(f"Index out of range. column={col}, row={row}") from e
 
-    def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:
+    @override
+    def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:  # type: ignore
         """
         Returns a sub-range of cells within the range.
 
@@ -420,7 +432,8 @@ class WriteTable(
             range_obj=self.range_converter.get_offset_range_obj(range_obj),
         )
 
-    def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:
+    @override
+    def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:  # type: ignore
         """
         Returns a sub-range of cells within the range.
 
@@ -727,7 +740,8 @@ class WriteTable(
         return self._rows
 
     @property
-    def table_column_separators(self) -> TableColumnSeparators:
+    @override
+    def table_column_separators(self) -> TableColumnSeparators:  # type: ignore
         """
         Table Column Separators
 
@@ -751,7 +765,8 @@ class WriteTable(
         return TableColumnSeparators(self.component)
 
     @property
-    def table_column_relative_sum(self) -> int:
+    @override
+    def table_column_relative_sum(self) -> int:  # type: ignore
         """Gets the sum of the relative widths of all columns."""
         return self.component.TableColumnRelativeSum
 

@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, List, overload
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.presentation.presentation_document_comp import PresentationDocumentComp
 from ooodev.adapter.util.modify_events import ModifyEvents
@@ -40,7 +45,7 @@ class ImpressDoc(
 ):
     """Impress Document Class"""
 
-    DOC_TYPE: DocType = DocType.IMPRESS
+    DOC_TYPE: DocType = DocType.IMPRESS  # type: ignore
     DOC_CLSID: CLSID = CLSID.IMPRESS
 
     def __init__(self, doc: XComponent, lo_inst: LoInst | None = None) -> None:
@@ -90,7 +95,8 @@ class ImpressDoc(
 
     # region DrawDocPartial Overrides
 
-    def get_slides(self) -> ImpressPages[ImpressDoc]:
+    @override
+    def get_slides(self) -> ImpressPages[ImpressDoc]:  # type: ignore
         """
         Gets the impress pages of a document.
 
@@ -207,7 +213,8 @@ class ImpressDoc(
 
     # endregion get_slide()
 
-    def get_slides_list(self) -> List[mImpressPage.ImpressPage[ImpressDoc]]:
+    @override
+    def get_slides_list(self) -> List[mImpressPage.ImpressPage[ImpressDoc]]:  # type: ignore
         """
         Gets all the slides as a list of XDrawPage
 
@@ -230,7 +237,8 @@ class ImpressDoc(
         page = mDraw.Draw.get_viewed_page(self.component)
         return mImpressPage.ImpressPage(owner=self, component=page, lo_inst=self.lo_inst)
 
-    def get_handout_master_page(self) -> mMasterDrawPage.MasterDrawPage[ImpressDoc]:
+    @override
+    def get_handout_master_page(self) -> mMasterDrawPage.MasterDrawPage[ImpressDoc]:  # type: ignore
         """
         Gets handout master page for an impress document.
 

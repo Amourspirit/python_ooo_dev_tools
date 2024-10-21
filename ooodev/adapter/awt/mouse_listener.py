@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMouseListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -40,19 +45,22 @@ class MouseListener(AdapterBase, XMouseListener):
             subscriber.addMouseListener(self)
 
     # region XMouseListener
-    def mouseEntered(self, event: MouseEvent) -> None:
+    @override
+    def mouseEntered(self, e: MouseEvent) -> None:
         """
         is invoked when the mouse enters a window.
         """
-        self._trigger_event("mouseEntered", event)
+        self._trigger_event("mouseEntered", e)
 
-    def mouseExited(self, event: MouseEvent) -> None:
+    @override
+    def mouseExited(self, e: MouseEvent) -> None:
         """
         is invoked when the mouse exits a window.
         """
-        self._trigger_event("mouseExited", event)
+        self._trigger_event("mouseExited", e)
 
-    def mousePressed(self, event: MouseEvent) -> None:
+    @override
+    def mousePressed(self, e: MouseEvent) -> None:
         """
         is invoked when a mouse button has been pressed on a window.
 
@@ -62,15 +70,17 @@ class MouseListener(AdapterBase, XMouseListener):
         the mouse click, and another one indicating the context menu request. For the latter, the MouseEvent.
         PopupTrigger member of the event will be set to TRUE.
         """
-        self._trigger_event("mousePressed", event)
+        self._trigger_event("mousePressed", e)
 
-    def mouseReleased(self, event: MouseEvent) -> None:
+    @override
+    def mouseReleased(self, e: MouseEvent) -> None:
         """
         is invoked when a mouse button has been released on a window.
         """
-        self._trigger_event("mouseReleased", event)
+        self._trigger_event("mouseReleased", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -82,6 +92,6 @@ class MouseListener(AdapterBase, XMouseListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XMouseListener

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.script import XStorageBasedLibraryContainer
 from com.sun.star.container import XNameAccess
 
@@ -35,6 +41,7 @@ class _DocumentScriptLibraryContainerComp(ComponentProp):
             return True
         return self.component == other.component
 
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.script.DocumentScriptLibraryContainer",)
@@ -91,7 +98,7 @@ class _DocumentScriptLibraryContainerComp(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a DocumentScriptLibraryContainerComp class
         return DocumentScriptLibraryContainerComp
 
@@ -162,6 +169,7 @@ class DocumentScriptLibraryContainerComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> DocumentScriptLibraryContainer:
         """DocumentScriptLibraryContainer Component"""
         # pylint: disable=no-member

@@ -1,13 +1,18 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.sheet import XDatabaseRange
 
 from ooodev.adapter.component_prop import ComponentProp
 
 from ooodev.adapter._helper.builder import builder_helper
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
-from ooodev.adapter.sheet.named_range_comp import NamedRangeComp
 from ooodev.adapter.sheet.database_range_partial import DatabaseRangePartial
 from ooodev.adapter.sheet.cell_range_referrer_partial import CellRangeReferrerPartial
 from ooodev.adapter.beans.property_set_partial import PropertySetPartial
@@ -34,6 +39,7 @@ class _DatabaseRangeComp(ComponentProp):
         ComponentProp.__init__(self, component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.DatabaseRange",)
@@ -43,13 +49,14 @@ class _DatabaseRangeComp(ComponentProp):
     # region Properties
 
     @property
+    @override
     def component(self) -> DatabaseRange:
         """DatabaseRange Component"""
         # pylint: disable=no-member
         return cast("DatabaseRange", self._ComponentBase__get_component())  # type: ignore
 
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a DatabaseRangeComp class
         return DatabaseRangeComp
 

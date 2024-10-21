@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form.submission import XSubmissionVetoListener
 
 from ooo.dyn.util.veto_exception import VetoException
@@ -38,6 +43,7 @@ class SubmissionVetoListener(AdapterBase, XSubmissionVetoListener):
         if subscriber:
             subscriber.addSubmissionVetoListener(self)
 
+    @override
     def submitting(self, event: EventObject) -> None:
         """
         Is invoked when a component, at which the listener has been registered, is about to submit its data.
@@ -91,7 +97,8 @@ class SubmissionVetoListener(AdapterBase, XSubmissionVetoListener):
                 msg = cancel_args.get("message", "VetoException Raise due to CancelEventArgs")
                 raise VetoException(msg, self)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -109,4 +116,4 @@ class SubmissionVetoListener(AdapterBase, XSubmissionVetoListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

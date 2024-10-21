@@ -6,7 +6,6 @@ from pathlib import Path
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.image.options import Names
 from ooodev.format.writer.direct.image.options import Properties
 from ooodev.gui.gui import GUI

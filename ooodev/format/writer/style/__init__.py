@@ -11,3 +11,5 @@ from .bullet_list.bullet_list import BulletList as BulletList
 from .family_names_kind import FamilyNamesKind as FamilyNamesKind
 
 __all__ = ["BulletList", "Char", "Frame", "Page", "Para", "FamilyNamesKind"]
+
+import uno  # noqa # type: ignore

@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
 from ooodev.utils.kind.line_spacing_mode_kind import ModeKind
 from ooodev.format.inner.direct.write.para.indent_space.line_spacing import LineSpacing as InnerLineSpacing
 from ooodev.format.inner.modify.write.para.para_style_base_multi import ParaStyleBaseMulti

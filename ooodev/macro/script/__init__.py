@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from .basic import Basic as Basic
 from .macro_script import MacroScript as MacroScript
 

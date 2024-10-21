@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Callable, Protocol, Sequence, TypeVar, Union, Any, Tuple, List, Dict, TYPE_CHECKING
 from os import PathLike
 
-import uno
 
 
 if TYPE_CHECKING:

@@ -11,7 +11,9 @@ from .form_ctl_group_box import FormCtlGroupBox as FormCtlGroupBox
 from .form_ctl_hidden import FormCtlHidden as FormCtlHidden
 from .form_ctl_image_button import FormCtlImageButton as FormCtlImageButton
 from .form_ctl_list_box import FormCtlListBox as FormCtlListBox
-from .form_ctl_navigation_tool_bar import FormCtlNavigationToolBar as FormCtlNavigationToolBar
+from .form_ctl_navigation_tool_bar import (
+    FormCtlNavigationToolBar as FormCtlNavigationToolBar,
+)
 from .form_ctl_numeric_field import FormCtlNumericField as FormCtlNumericField
 from .form_ctl_pattern_field import FormCtlPatternField as FormCtlPatternField
 from .form_ctl_radio_button import FormCtlRadioButton as FormCtlRadioButton
@@ -47,3 +49,5 @@ __all__ = [
     "FormCtlTextField",
     "FormCtlTimeField",
 ]
+
+import uno  # noqa # type: ignore

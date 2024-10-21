@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, overload, TypeVar, Type, Any, Tuple
 import contextlib
-import uno
 from com.sun.star.text import XTextColumns
 
 from ooodev.exceptions import ex as mEx

@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import Tuple, cast
-import uno
 from ooo.dyn.drawing.fill_style import FillStyle
 
 from ooodev.format.calc.style.page.kind.calc_style_page_kind import CalcStylePageKind

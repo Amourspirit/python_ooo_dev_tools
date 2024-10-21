@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XWindowListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -38,31 +43,36 @@ class WindowListener(AdapterBase, XWindowListener):
             subscriber.addWindowListener(self)
 
     # region XPaintListener
-    def windowHidden(self, event: EventObject) -> None:
+    @override
+    def windowHidden(self, e: EventObject) -> None:
         """
         is invoked when the window has been hidden.
         """
-        self._trigger_event("windowHidden", event)
+        self._trigger_event("windowHidden", e)
 
-    def windowMoved(self, event: WindowEvent) -> None:
+    @override
+    def windowMoved(self, e: WindowEvent) -> None:
         """
         is invoked when the window has been moved.
         """
-        self._trigger_event("windowMoved", event)
+        self._trigger_event("windowMoved", e)
 
-    def windowResized(self, event: WindowEvent) -> None:
+    @override
+    def windowResized(self, e: WindowEvent) -> None:
         """
         is invoked when the window has been resized.
         """
-        self._trigger_event("windowResized", event)
+        self._trigger_event("windowResized", e)
 
-    def windowShown(self, event: WindowEvent) -> None:
+    @override
+    def windowShown(self, e: EventObject) -> None:
         """
         is invoked when the window has been shown.
         """
-        self._trigger_event("windowShown", event)
+        self._trigger_event("windowShown", e)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -74,6 +84,6 @@ class WindowListener(AdapterBase, XWindowListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XPaintListener

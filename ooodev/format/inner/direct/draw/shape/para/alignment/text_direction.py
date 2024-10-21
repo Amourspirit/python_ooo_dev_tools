@@ -10,7 +10,6 @@ however it seems not possible to set this property manually.
 
 from __future__ import annotations
 from typing import Any, Tuple, overload, Type, TypeVar
-import uno
 
 from ooo.dyn.text.writing_mode import WritingMode
 

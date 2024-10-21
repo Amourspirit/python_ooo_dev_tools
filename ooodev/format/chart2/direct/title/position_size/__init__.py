@@ -1,5 +1,7 @@
-import uno
-
-from ooodev.format.inner.direct.chart2.title.position_size.position import Position as Position
+from ooodev.format.inner.direct.chart2.title.position_size.position import (
+    Position as Position,
+)
 
 __all__ = ["Position"]
+
+import uno  # noqa # type: ignore

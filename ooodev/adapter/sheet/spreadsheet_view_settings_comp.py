@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.sheet.spreadsheet_view_objects_mode import SpreadsheetViewObjectsModeEnum
 from ooo.dyn.view.document_zoom_type import DocumentZoomTypeEnum
 
@@ -42,6 +48,7 @@ class SpreadsheetViewSettingsComp(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.SpreadsheetViewSettings",)
@@ -50,6 +57,7 @@ class SpreadsheetViewSettingsComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> SpreadsheetViewSettings:
         """Spreadsheet View Component"""
         # pylint: disable=no-member

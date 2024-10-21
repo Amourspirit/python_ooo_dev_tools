@@ -1,14 +1,18 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XStatusListener
 
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
 
 if TYPE_CHECKING:
-    from com.sun.star.frame import XDispatch
     from com.sun.star.lang import EventObject
     from com.sun.star.frame import FeatureStateEvent
 
@@ -32,13 +36,15 @@ class StatusListener(AdapterBase, XStatusListener):
         """
         super().__init__(trigger_args=trigger_args)
 
-    def statusChanged(self, event: FeatureStateEvent) -> None:
+    @override
+    def statusChanged(self, State: FeatureStateEvent) -> None:
         """
         Event is invoked when the status of the feature changes.
         """
-        self._trigger_event("statusChanged", event)
+        self._trigger_event("statusChanged", State)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -50,4 +56,4 @@ class StatusListener(AdapterBase, XStatusListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

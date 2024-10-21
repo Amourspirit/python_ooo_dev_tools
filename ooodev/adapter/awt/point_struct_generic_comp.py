@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, Generic, Type, TypeVar, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.point import Point
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.unit_mm100 import UnitMM100
@@ -50,12 +56,15 @@ class PointStructGenericComp(StructBase[Point], Generic[_T]):
         return f"{self.__class__.__name__}[{self._unit.__name__}] {repr(self.component)}"
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "generic_com_sun_star_awt_Point_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "generic_com_sun_star_awt_Point_changed"
 
+    @override
     def _copy(self, src: Point | None = None) -> Point:
         if src is None:
             src = self.component

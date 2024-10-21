@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Sequence
 import sys
 from contextlib import contextmanager
-import uno
 
 # import pythonscript  # type: ignore
 from ooodev.uno_helper.py_script import python_script

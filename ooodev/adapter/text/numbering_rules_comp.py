@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.index_replace_partial import IndexReplacePartial
 
@@ -30,6 +37,7 @@ class NumberingRulesComp(ComponentBase, IndexReplacePartial[T], Generic[T]):
         IndexReplacePartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.NumberingRules",)
@@ -37,6 +45,7 @@ class NumberingRulesComp(ComponentBase, IndexReplacePartial[T], Generic[T]):
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> NumberingRules:
         """Sheet Cell Cursor Component"""
         # pylint: disable=no-member

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, cast, overload, TypeVar, Type
-import uno
 from ooo.dyn.util.cell_protection import CellProtection as UnoCellProtection
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import props as mProps

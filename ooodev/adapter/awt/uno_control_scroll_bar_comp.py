@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.scroll_bar_partial import ScrollBarPartial
 
@@ -21,6 +27,7 @@ class UnoControlScrollBarComp(UnoControlComp, ScrollBarPartial):
         ScrollBarPartial.__init__(self, component=self.component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.awt.UnoControlScrollBar",)
@@ -28,6 +35,7 @@ class UnoControlScrollBarComp(UnoControlComp, ScrollBarPartial):
     # endregion Overrides
 
     @property
+    @override
     def component(self) -> UnoControlScrollBar:
         """UnoControlScrollBar Component"""
         # pylint: disable=no-member

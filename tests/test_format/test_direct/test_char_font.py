@@ -1,12 +1,10 @@
 from __future__ import annotations
-import sys
 import pytest
 from typing import TYPE_CHECKING, cast
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.char.font import (
     Font,
     FontStrikeoutEnum,

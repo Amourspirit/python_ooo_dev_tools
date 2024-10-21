@@ -470,13 +470,13 @@ class Calc:
     def get_doc_from_sheet(cls, sheet: XSpreadsheetDocument) -> XSpreadsheetDocument:
         """
         Gets the document from a sheet.
-        
+
         Args:
             sheet (XSpreadsheetDocument): Sheet to get document from.
-        
+
         Returns:
             XSpreadsheetDocument: Spreadsheet Document.
-        
+
         .. versionadded:: 0.46.0
         """
         sht = cast(Any, sheet)
@@ -5016,7 +5016,7 @@ class Calc:
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Row) -> FloatList:
+    def convert_to_floats(cls, vals: Row) -> FloatList:  # type: ignore
         """
         Converts a 1-Dimensional array into List of float.
 
@@ -5032,7 +5032,7 @@ class Calc:
 
     @overload
     @classmethod
-    def convert_to_floats(cls, vals: Table) -> FloatTable:
+    def convert_to_floats(cls, vals: Table) -> FloatTable:  # type: ignore
         """
         Converts a 2-Dimensional array into List of float.
 
@@ -8610,7 +8610,6 @@ class Calc:
         """
 
         def get_range(range_obj: mRngObj.RangeObj) -> mRngObj.RangeObj:
-
             if range_obj.sheet_idx < 0:
                 return range_obj.set_sheet_index()
             return range_obj
@@ -9039,7 +9038,6 @@ class Calc:
             return ka
 
         def get_cell(cell_obj: mCellObj.CellObj) -> mCellObj.CellObj:
-
             if cell_obj.sheet_idx < 0:
                 return cell_obj.set_sheet_index()
             return cell_obj

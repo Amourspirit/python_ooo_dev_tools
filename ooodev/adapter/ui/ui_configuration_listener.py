@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ui import XUIConfigurationListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -36,25 +41,29 @@ class UIConfigurationListener(AdapterBase, XUIConfigurationListener):
 
     # region XUIConfigurationListener
 
-    def elementInserted(self, event: ConfigurationEvent) -> None:
+    @override
+    def elementInserted(self, Event: ConfigurationEvent) -> None:
         """
         Invoked when a configuration has inserted an user interface element.
         """
-        self._trigger_event("elementInserted", event)
+        self._trigger_event("elementInserted", Event)
 
-    def elementRemoved(self, event: ConfigurationEvent) -> None:
+    @override
+    def elementRemoved(self, Event: ConfigurationEvent) -> None:
         """
         is invoked when a configuration has removed an user interface element.
         """
-        self._trigger_event("elementRemoved", event)
+        self._trigger_event("elementRemoved", Event)
 
-    def elementReplaced(self, event: ConfigurationEvent) -> None:
+    @override
+    def elementReplaced(self, Event: ConfigurationEvent) -> None:
         """
         is invoked when a configuration has replaced an user interface element.
         """
-        self._trigger_event("elementReplaced", event)
+        self._trigger_event("elementReplaced", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -66,6 +75,6 @@ class UIConfigurationListener(AdapterBase, XUIConfigurationListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XUIConfigurationListener

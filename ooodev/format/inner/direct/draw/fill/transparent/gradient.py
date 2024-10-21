@@ -3,7 +3,6 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.format.inner.direct.write.fill.transparent.gradient import Gradient as FillGradient
 

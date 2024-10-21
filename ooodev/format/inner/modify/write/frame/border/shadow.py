@@ -1,7 +1,6 @@
 # region Imports
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.writer.style.frame.style_frame_kind import StyleFrameKind

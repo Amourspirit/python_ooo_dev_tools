@@ -4,15 +4,12 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.modify.para.borders import (
     Borders,
     InnerPadding,
     InnerShadow,
     ShadowLocation,
-    ShadowFormat,
     Side,
-    Sides,
     BorderLineKind,
     LineSize,
 )

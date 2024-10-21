@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.script import XScriptListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -42,7 +47,8 @@ class ScriptListener(AdapterBase, XScriptListener):
         if subscriber:
             subscriber.addScriptListener(self)
 
-    def approveFiring(self, event: ScriptEvent) -> bool:
+    @override
+    def approveFiring(self, aEvent: ScriptEvent) -> bool:
         """
         Event is invoked when a ``vetoable event`` occurs at the object.
         If event is canceled then the firing will be canceled.
@@ -61,7 +67,7 @@ class ScriptListener(AdapterBase, XScriptListener):
             that triggered the update.
         """
         cancel_args = CancelEventArgs(self.__class__.__qualname__)
-        cancel_args.event_data = event
+        cancel_args.event_data = aEvent
         self._trigger_direct_event("approveFiring", cancel_args)
         if cancel_args.cancel:
             if CancelEventArgs.handled:
@@ -70,7 +76,8 @@ class ScriptListener(AdapterBase, XScriptListener):
             return False
         return True
 
-    def firing(self, event: ScriptEvent) -> None:
+    @override
+    def firing(self, aEvent: ScriptEvent) -> None:
         """
         Event is invoked when an event takes place.
 
@@ -82,9 +89,10 @@ class ScriptListener(AdapterBase, XScriptListener):
         Returns:
             None:
         """
-        self._trigger_event("firing", event)
+        self._trigger_event("firing", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -102,4 +110,4 @@ class ScriptListener(AdapterBase, XScriptListener):
             None:
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 import contextlib
-import uno
 
 from ooodev.units.unit_mm100 import UnitMM100
 from ooodev.units.angle100 import Angle100

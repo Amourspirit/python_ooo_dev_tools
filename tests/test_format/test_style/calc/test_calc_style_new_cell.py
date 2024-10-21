@@ -4,9 +4,8 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format import Styler
-from ooodev.format.calc.style import Cell, StyleCellKind
+from ooodev.format.calc.style import Cell
 
 # from ooodev.format.calc.style import Page
 from ooodev.format.calc.modify.cell.background import Color as BgColor

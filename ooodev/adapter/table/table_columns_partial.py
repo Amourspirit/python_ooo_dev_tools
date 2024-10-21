@@ -1,13 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
 
 from com.sun.star.table import XTableColumns
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
 if TYPE_CHECKING:
     from ooodev.utils.type_var import UnoInterface
-    from com.sun.star.table import TableColumn
 
 
 class TableColumnsPartial(IndexAccessPartial["TableColumn"]):

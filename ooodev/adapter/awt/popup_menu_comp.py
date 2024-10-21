@@ -1,9 +1,14 @@
 from __future__ import annotations
-from re import T
 from typing import Any, cast, TYPE_CHECKING, Callable
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+
 import contextlib
-import uno
 from com.sun.star.awt import XPopupMenu
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
@@ -18,7 +23,11 @@ from ooodev.events.args.listener_event_args import ListenerEventArgs
 if TYPE_CHECKING:
     from com.sun.star.awt import PopupMenu
     from ooodev.loader.inst.lo_inst import LoInst
-    from typing_extensions import Self
+
+    try:
+        from typing import Self  # noqa # type: ignore
+    except ImportError:
+        from typing_extensions import Self  # noqa # type: ignore
 
 
 class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
@@ -61,6 +70,7 @@ class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
     # endregion Dunder Methods
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.awt.PopupMenu",)
@@ -77,7 +87,8 @@ class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
     # endregion Lazy Listeners
 
     # region MenuPartial Overrides
-    def get_popup_menu(self, menu_id: int) -> Self | None:
+    @override
+    def get_popup_menu(self, menu_id: int) -> Self | None:  # type: ignore
         """
         Gets the popup menu from the menu item.
         """
@@ -399,6 +410,7 @@ class PopupMenuComp(ComponentProp, PopupMenuPartial, MenuEvents):
     # region Properties
 
     @property
+    @override
     def component(self) -> PopupMenu:
         """PopupMenu Component"""
         # overrides base class property

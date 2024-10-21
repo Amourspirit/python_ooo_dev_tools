@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 
 from com.sun.star.awt.tab import XTabPageContainer
 
@@ -10,7 +9,6 @@ from ooodev.adapter.awt.tab.uno_control_tab_page_comp import UnoControlTabPageCo
 
 if TYPE_CHECKING:
     from com.sun.star.awt.tab import XTabPageContainerListener
-    from com.sun.star.awt.tab import XTabPage
     from ooodev.utils.type_var import UnoInterface
 
 

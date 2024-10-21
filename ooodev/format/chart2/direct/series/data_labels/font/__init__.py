@@ -1,4 +1,3 @@
-import uno
 from ooo.dyn.awt.char_set import CharSetEnum as CharSetEnum
 from ooo.dyn.awt.font_family import FontFamilyEnum as FontFamilyEnum
 from ooo.dyn.awt.font_relief import FontReliefEnum as FontReliefEnum
@@ -10,9 +9,15 @@ from ooo.dyn.style.case_map import CaseMapEnum as CaseMapEnum
 from ooo.dyn.table.shadow_format import ShadowFormat as ShadowFormat
 from ooo.dyn.table.shadow_location import ShadowLocation as ShadowLocation
 
-from ooodev.format.inner.direct.chart2.series.data_labels.font.font_effects import FontEffects as FontEffects
-from ooodev.format.inner.direct.chart2.series.data_labels.font.font_only import FontOnly as FontOnly
+from ooodev.format.inner.direct.chart2.series.data_labels.font.font_effects import (
+    FontEffects as FontEffects,
+)
+from ooodev.format.inner.direct.chart2.series.data_labels.font.font_only import (
+    FontOnly as FontOnly,
+)
 from ooodev.format.inner.direct.write.char.font.font_effects import FontLine as FontLine
 from ooodev.format.inner.direct.write.char.font.font_only import FontLang as FontLang
 
 __all__ = ["FontOnly", "FontEffects"]
+
+import uno  # noqa # type: ignore

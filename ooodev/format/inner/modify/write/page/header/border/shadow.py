@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, Tuple, cast, Type, TypeVar, TYPE_CHECKING
-import uno
 from ooo.dyn.table.shadow_location import ShadowLocation
 
 from ooodev.format.inner.direct.structs.shadow_struct import ShadowStruct

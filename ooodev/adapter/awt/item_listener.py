@@ -1,7 +1,13 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XItemListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -38,13 +44,15 @@ class ItemListener(AdapterBase, XItemListener):
                 subscriber.addItemListener(self)
 
     # region XItemListener
-    def itemStateChanged(self, event: ItemEvent) -> None:
+    @override
+    def itemStateChanged(self, rEvent: ItemEvent) -> None:
         """
         Event is invoked when an item changes its state.
         """
-        self._trigger_event("itemStateChanged", event)
+        self._trigger_event("itemStateChanged", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -56,6 +64,6 @@ class ItemListener(AdapterBase, XItemListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XItemListener

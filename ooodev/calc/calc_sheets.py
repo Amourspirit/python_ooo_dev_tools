@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING, Tuple
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.sheet import XSpreadsheet
 
 from ooodev.adapter.container.element_index_partial import ElementIndexPartial
@@ -23,8 +29,8 @@ from ooodev.calc import calc_sheet as mCalcSheet
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import XSpreadsheets
-    from com.sun.star.sheet import Spreadsheet  # service
     from ooodev.calc.calc_doc import CalcDoc
+    from com.sun.star.sheet import Spreadsheet  # noqa # type: ignore
 
 
 class CalcSheets(
@@ -94,7 +100,8 @@ class CalcSheets(
         ElementIndexPartial.__init__(self, component=self)  # type: ignore
         CalcDocPropPartial.__init__(self, obj=owner)
 
-    def __next__(self) -> mCalcSheet.CalcSheet:
+    @override
+    def __next__(self) -> mCalcSheet.CalcSheet:  # type: ignore
         """
         Gets the next sheet.
 
@@ -103,7 +110,8 @@ class CalcSheets(
         """
         return mCalcSheet.CalcSheet(owner=self._owner, sheet=super().__next__(), lo_inst=self.lo_inst)
 
-    def __getitem__(self, key: str | int) -> mCalcSheet.CalcSheet:
+    @override
+    def __getitem__(self, key: str | int) -> mCalcSheet.CalcSheet:  # type: ignore
         """
         Gets the sheet at the specified index or name.
 
@@ -166,6 +174,7 @@ class CalcSheets(
         return mGenUtil.Util.get_index(idx, count, allow_greater)
 
     # region XSpreadsheets Overrides
+    @override
     def copy_by_name(self, name: str, copy: str, idx: int) -> None:
         """
         Copies the sheet with the specified name.
@@ -180,6 +189,7 @@ class CalcSheets(
         idx = self._get_index(idx)
         super().copy_by_name(name, copy, idx)
 
+    @override
     def insert_new_by_name(self, name: str, idx: int) -> None:
         """
         Inserts a new sheet with the specified name.
@@ -192,6 +202,7 @@ class CalcSheets(
         idx = self._get_index(idx=idx, allow_greater=True)
         super().insert_new_by_name(name, idx)
 
+    @override
     def move_by_name(self, name: str, idx: int) -> None:
         """
         Moves the sheet with the specified name.
@@ -208,7 +219,8 @@ class CalcSheets(
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> mCalcSheet.CalcSheet:
+    @override
+    def get_by_index(self, idx: int) -> mCalcSheet.CalcSheet:  # type: ignore
         """
         Gets the element at the specified index.
 
@@ -227,6 +239,7 @@ class CalcSheets(
 
     # region XNameAccess overrides
 
+    @override
     def get_by_name(self, name: str) -> mCalcSheet.CalcSheet:
         """
         Gets the element with the specified name.

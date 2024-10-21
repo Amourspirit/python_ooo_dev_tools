@@ -1,11 +1,9 @@
 from __future__ import annotations
-from typing import cast
 import pytest
 
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.format.writer.direct.page.footer import Footer
 from ooodev.format.writer.direct.page.footer.area import Img, PresetImageKind
 from ooodev.format.writer.direct.char.font import Font

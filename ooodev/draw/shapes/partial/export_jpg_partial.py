@@ -137,4 +137,4 @@ class ExportJpgPartial:
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.draw.export.shape_jpg import ShapeJpg
+    pass

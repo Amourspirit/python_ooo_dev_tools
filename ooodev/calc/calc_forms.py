@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import overload, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.form import XForm
 
 from ooodev.adapter.form.forms_comp import FormsComp
@@ -231,6 +237,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, TheDictionaryPart
 
     # region XIndexAccess overrides
 
+    @override
     def get_by_index(self, idx: int) -> CalcForm:
         """
         Gets the element at the specified index.
@@ -250,6 +257,7 @@ class CalcForms(LoInstPropsPartial, FormsComp, ServicePartial, TheDictionaryPart
 
     # region XNameAccess overrides
 
+    @override
     def get_by_name(self, name: str) -> CalcForm:
         """
         Gets the element with the specified name.

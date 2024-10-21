@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-import uno
 from ooodev.adapter.sheet.function_access_comp import FunctionAccessComp
 from ooodev.loader import lo as mLo
 from ooodev.exceptions import ex as mEx

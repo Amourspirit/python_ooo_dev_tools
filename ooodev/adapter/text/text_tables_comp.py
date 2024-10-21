@@ -1,13 +1,18 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.container.index_access_comp import IndexAccessComp
 from ooodev.adapter.container.name_access_partial import NameAccessPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextTables  # service
-    from com.sun.star.text import TextTable  # service
+    from com.sun.star.text import TextTable  # noqa # type: ignore
 
 
 class TextTablesComp(IndexAccessComp["TextTable"], NameAccessPartial["TextTable"]):
@@ -29,6 +34,7 @@ class TextTablesComp(IndexAccessComp["TextTable"], NameAccessPartial["TextTable"
         NameAccessPartial.__init__(self, component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextTables",)
@@ -41,6 +47,7 @@ class TextTablesComp(IndexAccessComp["TextTable"], NameAccessPartial["TextTable"
 
     # region Properties
     @property
+    @override
     def component(self) -> TextTables:
         """TextTables Component"""
         # pylint: disable=no-member

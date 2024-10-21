@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import uno
 from com.sun.star.container import XNameContainer
 from com.sun.star.drawing import XDrawPage
 from com.sun.star.drawing import XShape
@@ -16,7 +15,6 @@ from ooodev.gui.gui import GUI
 from ooodev.utils.info import Info
 from ooodev.loader.lo import Lo
 from ooodev.utils.props import Props
-from ooodev.utils.info import Info
 from ooodev.utils.kind.graphic_arrow_style_kind import GraphicArrowStyleKind
 
 

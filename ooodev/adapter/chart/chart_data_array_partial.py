@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 
-import uno
 from com.sun.star.chart import XChartDataArray
 
 from ooodev.adapter.chart.chart_data_partial import ChartDataPartial

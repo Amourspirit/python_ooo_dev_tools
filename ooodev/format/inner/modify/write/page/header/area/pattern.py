@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, Type, TypeVar
-import uno
 from com.sun.star.awt import XBitmap
 
 from ooodev.format.inner.common.props.area_pattern_props import AreaPatternProps

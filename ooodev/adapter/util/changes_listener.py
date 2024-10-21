@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.util import XChangesListener
 from com.sun.star.util import XChangesNotifier
 
@@ -48,13 +53,15 @@ class ChangesListener(AdapterBase, XChangesListener):
         mb = mLo.Lo.qi(XChangesNotifier, doc, True)
         mb.addChangesListener(self)
 
-    def changesOccurred(self, event: ChangesEvent) -> None:
+    @override
+    def changesOccurred(self, Event: ChangesEvent) -> None:
         """
         Is invoked when a batch of changes occurred.
         """
-        self._trigger_event("changesOccurred", event)
+        self._trigger_event("changesOccurred", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets invoked when the broadcaster is about to be disposed.
 
@@ -66,4 +73,4 @@ class ChangesListener(AdapterBase, XChangesListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import cast, overload, TYPE_CHECKING
-import uno
 
 from ooodev.adapter.table.table_row_comp import TableRowComp
 from ooodev.format.inner.style_partial import StylePartial

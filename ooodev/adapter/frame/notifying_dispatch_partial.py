@@ -1,16 +1,11 @@
 from __future__ import annotations
-from enum import unique
-from typing import Any, cast, TYPE_CHECKING, Set
-import uno
+from typing import TYPE_CHECKING
 from com.sun.star.frame import XNotifyingDispatch
 
-from ooodev.exceptions import ex as mEx
-from ooodev.loader import lo as mLo
 
 
 from ooodev.adapter.frame.dispatch_partial import DispatchPartial
 from ooodev.events.args.generic_args import GenericArgs
-from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.utils import gen_util as gUtil
 from ooodev.adapter.frame.dispatch_result_listener import DispatchResultListener
 

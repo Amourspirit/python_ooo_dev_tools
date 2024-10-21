@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.mock import mock_g
 from ooodev.utils.context.lo_context import LoContext
@@ -141,6 +146,7 @@ class CalcCharts(
 
     # region XIndexAccess overrides
 
+    @override
     def get_by_index(self, idx: int) -> TableChart:
         """
         Gets the element at the specified index.
@@ -160,6 +166,7 @@ class CalcCharts(
 
     # region XNameAccess overrides
 
+    @override
     def get_by_name(self, name: str) -> TableChart:
         """
         Gets the element with the specified name.
@@ -276,4 +283,4 @@ class CalcCharts(
 
 
 if mock_g.FULL_IMPORT:
-    from ooodev.office.chart2 import Chart2
+    pass

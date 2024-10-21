@@ -15,24 +15,18 @@ from typing import TYPE_CHECKING
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.gui.gui import GUI
 from ooodev.loader.lo import Lo
 from ooodev.office.draw import Draw
 
 from ooodev.format.draw.direct.area import (
     Gradient,
-    GradientStyle,
     PresetGradientKind,
-    Offset,
-    ColorRange,
-    IntensityRange,
 )
 
-from ooodev.utils.color import StandardColor
 
 if TYPE_CHECKING:
-    from com.sun.star.drawing import FillProperties  # service
+    pass  # service
 
 
 def test_draw(loader) -> None:

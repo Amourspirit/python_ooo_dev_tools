@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_prop import ComponentProp
 from com.sun.star.container import XEnumerationAccess
 from com.sun.star.container import XContainer
@@ -84,6 +90,7 @@ class ContextMenuExecuteEventComp(ComponentProp):
 
     # region Properties
     @property
+    @override
     def component(self) -> ContextMenuExecuteEvent:
         """ContextMenuExecuteEvent Component"""
         # pylint: disable=no-member
@@ -113,7 +120,7 @@ class ContextMenuExecuteEventComp(ComponentProp):
         return SelectionSupplierComp(self.component.Selection)
 
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a ContextMenuExecuteEventComp class
         return ContextMenuExecuteEventComp
 

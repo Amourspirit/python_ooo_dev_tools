@@ -1,6 +1,5 @@
 # region Import
 from __future__ import annotations
-import uno
 
 from ooodev.format.inner.common.props.area_img_props import AreaImgProps
 from ooodev.format.inner.kind.format_kind import FormatKind

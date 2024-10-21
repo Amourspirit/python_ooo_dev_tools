@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.uno import RuntimeException
 
 from ooodev.mock import mock_g
@@ -148,7 +154,8 @@ class CalcCell(
 
     # region SimpleTextPartial Overrides
 
-    def create_text_cursor(self) -> CalcCellTextCursor:
+    @override
+    def create_text_cursor(self) -> CalcCellTextCursor:  # type: ignore
         """
         Creates a text cursor to travel in the given range context.
 
@@ -165,7 +172,8 @@ class CalcCell(
         cursor = self.component.createTextCursor()
         return CalcCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
 
-    def create_text_cursor_by_range(self, text_position: XTextRange) -> CalcCellTextCursor:
+    @override
+    def create_text_cursor_by_range(self, text_position: XTextRange) -> CalcCellTextCursor:  # type: ignore
         """
         The initial position is set to ``text_position``.
 
@@ -198,6 +206,7 @@ class CalcCell(
 
     # region StylePropertyPartial overrides
 
+    @override
     def style_by_name(self, name: str | StyleCellKind = "") -> None:
         """
         Assign a style by name to the component.

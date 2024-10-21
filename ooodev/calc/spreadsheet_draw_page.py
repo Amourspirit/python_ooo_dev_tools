@@ -1,6 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
@@ -77,7 +82,8 @@ class SpreadsheetDrawPage(
         """
         return self.get_count()
 
-    def __getitem__(self, idx: int) -> ShapeBase[SpreadsheetDrawPage[_T]]:
+    @override
+    def __getitem__(self, idx: int) -> ShapeBase[SpreadsheetDrawPage[_T]]:  # type: ignore
         """
         Gets the shape at the specified index.
 
@@ -90,7 +96,8 @@ class SpreadsheetDrawPage(
         shape = self.component.getByIndex(idx)  # type: ignore
         return self.shape_factory(shape)
 
-    def __next__(self) -> ShapeBase[SpreadsheetDrawPage[_T]]:
+    @override
+    def __next__(self) -> ShapeBase[SpreadsheetDrawPage[_T]]:  # type: ignore
         """
         Gets the next shape in the draw page.
 

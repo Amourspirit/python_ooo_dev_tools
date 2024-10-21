@@ -4,7 +4,6 @@ import pytest
 if __name__ == "__main__":
     pytest.main([__file__])
 
-import uno
 from ooodev.draw import Draw, DrawDoc
 from ooodev.format.draw.direct.position_size.position_size import Protect
 

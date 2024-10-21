@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XPropertySet
 
 from ooodev.adapter.beans.property_set_partial import PropertySetPartial
@@ -50,6 +56,7 @@ class ErrorBarComp(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.ErrorBar",)
@@ -57,6 +64,7 @@ class ErrorBarComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> ErrorBar:
         """ErrorBar Component"""
         # pylint: disable=no-member

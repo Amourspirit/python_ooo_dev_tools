@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import uno
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XTopWindowListener
 from ooodev.mock import mock_g
 
@@ -21,27 +27,33 @@ class XTopWindowAdapter(unohelper.Base, XTopWindowListener):  # type: ignore
     This class is meant a parent class.
     """
 
-    def windowOpened(self, event: EventObject) -> None:
+    @override
+    def windowOpened(self, e: EventObject) -> None:
         """is invoked when a window is activated."""
         pass
 
-    def windowActivated(self, event: EventObject) -> None:
+    @override
+    def windowActivated(self, e: EventObject) -> None:
         """is invoked when a window is activated."""
         pass
 
-    def windowDeactivated(self, event: EventObject) -> None:
+    @override
+    def windowDeactivated(self, e: EventObject) -> None:
         """is invoked when a window is deactivated."""
         pass
 
-    def windowMinimized(self, event: EventObject) -> None:
+    @override
+    def windowMinimized(self, e: EventObject) -> None:
         """is invoked when a window is iconified."""
         pass
 
-    def windowNormalized(self, event: EventObject) -> None:
+    @override
+    def windowNormalized(self, e: EventObject) -> None:
         """is invoked when a window is deiconified."""
         pass
 
-    def windowClosing(self, event: EventObject) -> None:
+    @override
+    def windowClosing(self, e: EventObject) -> None:
         """
         is invoked when a window is in the process of being closed.
 
@@ -49,11 +61,13 @@ class XTopWindowAdapter(unohelper.Base, XTopWindowListener):  # type: ignore
         """
         pass
 
-    def windowClosed(self, event: EventObject) -> None:
+    @override
+    def windowClosed(self, e: EventObject) -> None:
         """is invoked when a window has been closed."""
         pass
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         gets called when the broadcaster is about to be disposed.
 

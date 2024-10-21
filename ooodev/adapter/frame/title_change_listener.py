@@ -1,7 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import uno
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XTitleChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -38,13 +43,15 @@ class TitleChangeListener(AdapterBase, XTitleChangeListener):
         if subscriber is not None:
             subscriber.addTitleChangeListener(self)
 
-    def titleChanged(self, event: TitleChangedEvent) -> None:
+    @override
+    def titleChanged(self, aEvent: TitleChangedEvent) -> None:
         """
         Is invoked whenever the frame title has changed.
         """
-        self._trigger_event("titleChanged", event)
+        self._trigger_event("titleChanged", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -56,4 +63,4 @@ class TitleChangeListener(AdapterBase, XTitleChangeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

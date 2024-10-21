@@ -3,7 +3,6 @@
 from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Iterable, List, overload, Any
-import uno
 
 from com.sun.star.accessibility import XAccessible
 from com.sun.star.awt import PosSize  # const
@@ -1081,7 +1080,7 @@ class GUI:
         if top2 is None:
             mLo.Lo.print("Unable to get top window (2)")
             return
-        if top2.IsMinimized == False:
+        if top2.IsMinimized is False:
             cls.set_visible(visible=True, doc=odoc)
             top2.IsMinimized = True
 

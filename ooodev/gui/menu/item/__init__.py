@@ -5,4 +5,13 @@ from .menu_item_sep import MenuItemSep as MenuItemSep
 from .menu_item_sub import MenuItemSub as MenuItemSub
 from .menu_items import MenuItems as MenuItems
 
-__all__ = ["MenuItem", "MenuItemBase", "MenuItemKind", "MenuItems", "MenuItemSep", "MenuItemSub"]
+__all__ = [
+    "MenuItem",
+    "MenuItemBase",
+    "MenuItemKind",
+    "MenuItems",
+    "MenuItemSep",
+    "MenuItemSub",
+]
+
+import uno  # noqa # type: ignore

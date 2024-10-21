@@ -1,7 +1,6 @@
 # region Import
 from __future__ import annotations
 from typing import Any, cast, Type, TypeVar
-import uno
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.format.inner.common.props.area_gradient_props import AreaGradientProps
 from ooodev.format.inner.direct.write.fill.area.gradient import Gradient as InnerGradient

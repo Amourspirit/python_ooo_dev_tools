@@ -1,3 +1,5 @@
+import uno  # noqa # type: ignore
+
 KNOWN_SHAPES = set(
     [
         "com.sun.star.drawing.ClosedBezierShape",

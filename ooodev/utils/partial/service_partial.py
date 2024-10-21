@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, List
 import contextlib
-import uno
 from com.sun.star.lang import XServiceInfo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.loader import lo as mLo
