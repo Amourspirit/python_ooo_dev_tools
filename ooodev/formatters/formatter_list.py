@@ -8,6 +8,25 @@ from ooodev.formatters.format_list_item import FormatListItem as FormatListItem
 
 @dataclass
 class FormatterList:
+    """
+    FormatterList class is used to apply formatting to values based on specified formats and rules.
+    Attributes:
+        format (str | Tuple[str, ...]): Format option such as ``.2f``. Multiple formats can be added such as ``(".2f", "<10")``. Formats are applied in the order they are added. In this case, first float is formatted as a string with two decimal places, and then the value is padded to the right with spaces.
+        idx_rule (OnlyIgnoreKind): Determines what indexes are affected.
+        idxs (Tuple[int, ...]): Indexes to apply formatting to or ignore, depending on ``index_rule``.
+        custom_formats (List[FormatListItem]): Custom formats to apply based on specific indexes.
+    Methods:
+        __post_init__() -> None:
+            Validates that all indexes in `idxs` are of type int.
+        _custom_format(current_index: int) -> FormatListItem | None:
+            Retrieves a custom format for the given index if it exists.
+        apply_format(val: Any, current_index: int = -1) -> str:
+            Applies formatting to `val` if `format` has been set.
+                val (Any): Any value.
+                current_index (int, optional): When value is equal or greater than ``0``, formatting is applied following rules for indexes.
+                str: Formatted string.
+    """
+
     format: str | Tuple[str, ...]
     """
     Format option such as ``.2f``

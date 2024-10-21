@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import json
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.events.args.event_args import EventArgs
@@ -31,12 +38,13 @@ class JsonEncoder(json.JSONEncoder):
         """
         return NULL_OBJ
 
-    def default(self, obj: Any) -> Any:
+    @override
+    def default(self, o: Any) -> Any:
         """
         JsonEncoder default method.
 
         Args:
-            obj (Any): Data to be encoded.
+            o (Any): Data to be encoded.
 
         Returns:
             Any: Encoded data.
@@ -49,13 +57,13 @@ class JsonEncoder(json.JSONEncoder):
         """
         if isinstance(self, EventsPartial):
             eargs = EventArgs(self)
-            eargs.event_data = DotDict(obj=obj)
+            eargs.event_data = DotDict(obj=o)
             self.trigger_event("json_encoding", eargs)
             if "result" in eargs.event_data:
                 return eargs.event_data["result"]
-        if hasattr(obj, "to_json"):
-            return obj.to_json()
-        result = self.on_json_encode(obj)
+        if hasattr(o, "to_json"):
+            return o.to_json()
+        result = self.on_json_encode(o)
         if result is not NULL_OBJ:
             return result
-        return super().default(obj)
+        return super().default(o)

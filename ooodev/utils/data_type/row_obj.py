@@ -3,6 +3,13 @@ from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 from weakref import ref
 import numbers
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils.validation import check
 from ooodev.utils.data_type.base_int_value import BaseIntValue
 
@@ -71,14 +78,17 @@ class RowObj(BaseIntValue):
     def __str__(self) -> str:
         return str(self.value)
 
+    @override
     def __int__(self) -> int:
         return self.value
 
+    @override
     def __eq__(self, other: object) -> bool:
         if isinstance(other, int):
             return self.value == other
         return self.value == other.value if isinstance(other, RowObj) else False
 
+    @override
     def __lt__(self, other: object) -> bool:
         try:
             i = int(other)  # type: ignore
@@ -86,6 +96,7 @@ class RowObj(BaseIntValue):
         except Exception:
             return NotImplemented
 
+    @override
     def __le__(self, other: object) -> bool:
         try:
             i = int(other)  # type: ignore
@@ -93,6 +104,7 @@ class RowObj(BaseIntValue):
         except Exception:
             return NotImplemented
 
+    @override
     def __gt__(self, other: object) -> bool:
         try:
             i = int(other)  # type: ignore
@@ -100,6 +112,7 @@ class RowObj(BaseIntValue):
         except Exception:
             return NotImplemented
 
+    @override
     def __ge__(self, other: object) -> bool:
         try:
             i = int(other)  # type: ignore
@@ -107,6 +120,7 @@ class RowObj(BaseIntValue):
         except Exception:
             return NotImplemented
 
+    @override
     def __add__(self, other: object) -> RowObj:
         if isinstance(other, RowObj):
             return RowObj.from_int(self.value + other.value)
@@ -122,12 +136,14 @@ class RowObj(BaseIntValue):
             pass
         return NotImplemented
 
+    @override
     def __radd__(self, other: object) -> RowObj:
         # angle = sum([col1, col2, col3])
         # will result in TypeError becuase sum() start with 0
         # this will force a call to __radd__
         return self if other == 0 else self.__add__(other)
 
+    @override
     def __sub__(self, other: object) -> RowObj:
         try:
             if isinstance(other, RowObj):
@@ -143,6 +159,7 @@ class RowObj(BaseIntValue):
             pass
         return NotImplemented
 
+    @override
     def __rsub__(self, other: object) -> RowObj:
         try:
             i = round(other)  # type: ignore
@@ -156,21 +173,24 @@ class RowObj(BaseIntValue):
             pass
         return NotImplemented
 
+    @override
     def __mul__(self, other: object) -> RowObj:
         try:
             if isinstance(other, RowObj):
                 return RowObj.from_int(self.value * other.value)
             if isinstance(other, numbers.Real):
-                return RowObj.from_int(round(self.value * other))
+                return RowObj.from_int(round(self.value * other))  # type: ignore
         except AssertionError as e:
             raise IndexError from e
         except Exception:
             pass
         return NotImplemented
 
+    @override
     def __rmul__(self, other: object) -> RowObj:
         return self if other == 0 else self.__mul__(other)
 
+    @override
     def __truediv__(self, other: object):
         try:
             if isinstance(other, RowObj):
@@ -186,6 +206,7 @@ class RowObj(BaseIntValue):
             pass
         return NotImplemented
 
+    @override
     def __rtruediv__(self, other: object) -> RowObj:
         try:
             if isinstance(other, (int, float)):

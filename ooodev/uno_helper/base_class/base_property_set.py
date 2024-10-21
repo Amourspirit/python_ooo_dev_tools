@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XPropertySet
 from ooodev.uno_helper.base_class.base import Base
 
@@ -24,8 +31,11 @@ class BasePropertySet(Base, XPropertySet):
     """
 
     # region XPropertySet
-    def addPropertyChangeListener(self, listener: XPropertyChangeListener, prop_name: str = "") -> None:
+    @override
+    def addPropertyChangeListener(self, aPropertyName: str, xListener: XPropertyChangeListener) -> None:
         """
+        Not Implemented.
+
         Adds an XPropertyChangeListener to the specified property.
 
         An empty name registers the listener to all bound properties. If the property is not bound, the behavior is not specified.
@@ -33,81 +43,91 @@ class BasePropertySet(Base, XPropertySet):
         It is suggested to allow multiple registration of the same listener, thus for each time a listener is added, it has to be removed.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
-    def removePropertyChangeListener(self, listener: XPropertyChangeListener, prop_name: str = "") -> None:
+    @override
+    def removePropertyChangeListener(self, aPropertyName: str, aListener: XPropertyChangeListener) -> None:
         """
-        removes an XPropertyChangeListener from the listener list.
+        Not Implemented.
+
+        Removes an XPropertyChangeListener from the listener list.
 
         It is a ``noop`` if the listener is not registered.
 
         It is suggested to allow multiple registration of the same listener, thus for each time a listener is added, it has to be removed.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
-    def addVetoableChangeListener(self, listener: XVetoableChangeListener, prop_name: str = "") -> None:
+    @override
+    def addVetoableChangeListener(self, PropertyName: str, aListener: XVetoableChangeListener) -> None:
         """
+        Not Implemented.
+
         Adds an XVetoableChangeListener to the specified property with the name PropertyName.
 
         An empty name registers the listener to all constrained properties.
         If the property is not constrained, the behavior is not specified.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
-    def removeVetoableChangeListener(self, listener: XVetoableChangeListener, prop_name: str = "") -> None:
+    @override
+    def removeVetoableChangeListener(self, PropertyName: str, aListener: XVetoableChangeListener) -> None:
         """
-        removes an XVetoableChangeListener from the listener list.
+        Not Implemented.
+
+        Removes an XVetoableChangeListener from the listener list.
 
         It is a ``noop`` if the listener is not registered.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
+    @override
     def getPropertySetInfo(self) -> XPropertySetInfo:
         """
+        Not Implemented.
+
         Gets the complete information of the properties provided by this object.
 
-        Returns:
-            XPropertySetInfo: Property set info.
+        Raises:
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
-    def setPropertyValue(self, name: str, value: Any) -> None:
+    @override
+    def setPropertyValue(self, aPropertyName: str, aValue: Any) -> None:
         """
+        Not Implemented.
+
         Sets the value of the property with the specified name.
 
         If it is a bound property the value will be changed before the change event is fired.
         If it is a constrained property a vetoable event is fired before the property value can be changed.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.beans.PropertyVetoException: ``PropertyVetoException``
-            com.sun.star.lang.IllegalArgumentException: ``IllegalArgumentException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 
-    def getPropertyValue(self, name: str) -> Any:
+    @override
+    def getPropertyValue(self, PropertyName: str) -> Any:
         """
+        Not Implemented.
+
         Gets a property value.
 
         Raises:
-            com.sun.star.beans.UnknownPropertyException: ``UnknownPropertyException``
-            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+            NotImplementedError: ``NotImplementedError``
         """
         raise NotImplementedError
 

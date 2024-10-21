@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.text.table_columns_comp import TableColumnsComp
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
@@ -94,6 +100,7 @@ class WriteTableColumns(WriteDocPropPartial, WriteTablePropPartial, TableColumns
         self.remove_by_index(key)
 
     # region XTableColumns Overrides
+    @override
     def insert_by_index(self, idx: int, count: int = 1) -> None:
         """
         Inserts a new column at the specified index.
@@ -105,6 +112,7 @@ class WriteTableColumns(WriteDocPropPartial, WriteTablePropPartial, TableColumns
         index = self._get_index(idx, True)
         self.component.insertByIndex(index, count)
 
+    @override
     def remove_by_index(self, idx: int, count: int = 1) -> None:
         """
         Removes columns from the specified idx.

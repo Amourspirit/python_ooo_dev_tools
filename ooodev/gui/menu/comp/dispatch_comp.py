@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.adapter.frame.notifying_dispatch_partial import NotifyingDispatchPartial
@@ -11,7 +18,6 @@ if TYPE_CHECKING:
 
 
 class _DispatchComp(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -71,6 +77,7 @@ class DispatchComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> XNotifyingDispatch:
         """XNotifyingDispatch Component"""
         # pylint: disable=no-member

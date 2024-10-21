@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.table import XCell
 
 from ooodev.mock import mock_g
@@ -123,8 +130,8 @@ class WriteTableCell(
 
     # endregion get Other Cell
     # region SimpleTextPartial Overrides
-
-    def create_text_cursor(self) -> WriteCellTextCursor:
+    @override
+    def create_text_cursor(self) -> WriteCellTextCursor:  # type: ignore
         """
         Creates a text cursor to travel in the given range context.
 
@@ -139,7 +146,8 @@ class WriteTableCell(
         cursor = self.component.createTextCursor()  # type: ignore
         return WriteCellTextCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)
 
-    def create_text_cursor_by_range(self, text_position: XTextRange) -> WriteCellTextCursor:
+    @override
+    def create_text_cursor_by_range(self, text_position: XTextRange) -> WriteCellTextCursor:  # type: ignore
         """
         The initial position is set to ``text_position``.
 

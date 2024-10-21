@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Sequence, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
@@ -175,6 +181,7 @@ class WriteTextFrames(
 
     # region XIndexAccess overrides
 
+    @override
     def get_by_index(self, idx: int) -> WriteTextFrame[WriteDoc]:
         """
         Gets the element at the specified index.
@@ -194,6 +201,7 @@ class WriteTextFrames(
 
     # region XNameAccess overrides
 
+    @override
     def get_by_name(self, name: str) -> WriteTextFrame[WriteDoc]:
         """
         Gets the element with the specified name.

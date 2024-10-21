@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from ooodev.write.style.write_cell_style import WriteCellStyle as WriteCellStyle
 from ooodev.write.style.write_character_style import (
     WriteCharacterStyle as WriteCharacterStyle,
@@ -25,5 +26,3 @@ __all__ = [
     "WriteStyleFamilies",
     "WriteStyleFamily",
 ]
-
-import uno  # noqa # type: ignore

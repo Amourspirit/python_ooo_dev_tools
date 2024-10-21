@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import uno
 
 from com.sun.star.beans import XPropertySet
@@ -130,7 +137,7 @@ class WriteDoc(
 ):
     """A class to represent a Write document."""
 
-    DOC_TYPE: DocType = DocType.WRITER
+    DOC_TYPE: DocType = DocType.WRITER  # type: ignore
     DOC_CLSID: CLSID = CLSID.WRITER
 
     def __init__(self, doc: XTextDocument, lo_inst: LoInst | None = None) -> None:
@@ -233,7 +240,8 @@ class WriteDoc(
 
     # region SearchablePartial Overrides
 
-    def create_search_descriptor(self) -> WriteSearchReplace:
+    @override
+    def create_search_descriptor(self) -> WriteSearchReplace:  # type: ignore
         """
         Creates a Search Descriptor which contains properties that specify a search in this container.
 
@@ -263,7 +271,8 @@ class WriteDoc(
 
         return WriteSearchReplace(doc=self, desc=self.component.createSearchDescriptor())  # type: ignore
 
-    def create_replace_descriptor(self) -> WriteSearchReplace:
+    @override
+    def create_replace_descriptor(self) -> WriteSearchReplace:  # type: ignore
         """
         Creates a Search Descriptor which contains properties that specify a search in this container.
 
@@ -284,7 +293,8 @@ class WriteDoc(
 
         return WriteSearchReplace(doc=self, desc=self.component.createReplaceDescriptor())  # type: ignore
 
-    def find_first(self, desc: XSearchDescriptor | WriteSearchReplace) -> WriteTextRange[WriteDoc] | None:
+    @override
+    def find_first(self, desc: XSearchDescriptor | WriteSearchReplace) -> WriteTextRange[WriteDoc] | None:  # type: ignore
         """
         Searches the contained texts for the next occurrence of whatever is specified.
 
@@ -312,7 +322,8 @@ class WriteDoc(
         result = mLo.Lo.qi(XTextRange, searchable.findFirst(desc_comp))
         return None if result is None else WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
-    def find_next(
+    @override
+    def find_next(  # type: ignore
         self, start: XInterface | ComponentT, desc: XSearchDescriptor | WriteSearchReplace
     ) -> WriteTextRange[WriteDoc] | None:
         """
@@ -346,6 +357,7 @@ class WriteDoc(
         result = mLo.Lo.qi(XTextRange, searchable.findNext(start_component, desc_comp))
         return None if result is None else WriteTextRange(owner=self, component=result, lo_inst=self.lo_inst)  # type: ignore
 
+    @override
     def find_all(self, desc: XSearchDescriptor | WriteSearchReplace) -> WriteTextRanges | None:
         """
         Searches the contained texts for all occurrences of whatever is specified.
@@ -443,6 +455,7 @@ class WriteDoc(
     # endregion get_cursor()
 
     # region DocIoPartial overrides
+    @override
     def _on_io_saving(self, event_args: CancelEventArgs) -> None:
         """
         Event called before document is saved.
@@ -456,6 +469,7 @@ class WriteDoc(
         event_args.event_data["text_doc"] = self.component
         self.trigger_event(WriteNamedEvent.DOC_SAVING, event_args)
 
+    @override
     def _on_io_saved(self, event_args: EventArgs) -> None:
         """
         Event called after document is saved.
@@ -465,6 +479,7 @@ class WriteDoc(
         """
         self.trigger_event(WriteNamedEvent.DOC_SAVED, event_args)
 
+    @override
     def _on_io_closing(self, event_args: CancelEventArgs) -> None:
         """
         Event called before document is closed.
@@ -478,6 +493,7 @@ class WriteDoc(
         event_args.event_data["text_doc"] = self.component
         self.trigger_event(WriteNamedEvent.DOC_CLOSING, event_args)
 
+    @override
     def _on_io_closed(self, event_args: EventArgs) -> None:
         """
         Event called after document is closed.

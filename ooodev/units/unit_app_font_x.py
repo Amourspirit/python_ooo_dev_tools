@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.units._app_font.unit_app_font_base import UnitAppFontBase
 from ooodev.utils.kind.point_size_kind import PointSizeKind
 
@@ -72,49 +79,63 @@ class UnitAppFontX(UnitAppFontBase):
     # region math and comparison Overrides
 
     # not sure why but dataclasses does not recognize all __dunder__ methods unless they are overrides.
-
+    @override
     def __int__(self) -> int:
         return super().__int__()
 
+    @override
     def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
 
+    @override
     def __add__(self, other: object) -> Self:
         return super().__add__(other)
 
+    @override
     def __radd__(self, other: object) -> Self:
         return super().__radd__(other)
 
+    @override
     def __sub__(self, other: object) -> Self:
         return super().__sub__(other)
 
+    @override
     def __rsub__(self, other: object) -> Self:
         return super().__rsub__(other)
 
+    @override
     def __mul__(self, other: object) -> Self:
         return super().__mul__(other)
 
+    @override
     def __rmul__(self, other: int) -> Self:
         return super().__rmul__(other)
 
+    @override
     def __truediv__(self, other: object) -> Self:
         return super().__truediv__(other)
 
+    @override
     def __rtruediv__(self, other: object) -> Self:
         return super().__rtruediv__(other)
 
+    @override
     def __abs__(self) -> float:
         return super().__abs__()
 
+    @override
     def __lt__(self, other: object) -> bool:
         return super().__lt__(other)
 
+    @override
     def __le__(self, other: object) -> bool:
         return super().__le__(other)
 
+    @override
     def __gt__(self, other: object) -> bool:
         return super().__gt__(other)
 
+    @override
     def __ge__(self, other: object) -> bool:
         return super().__ge__(other)
 

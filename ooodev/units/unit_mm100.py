@@ -3,6 +3,12 @@ import contextlib
 from typing import TypeVar, Type, TYPE_CHECKING
 from dataclasses import dataclass
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils.decorator import enforce
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_convert import UnitLength
@@ -33,6 +39,7 @@ class UnitMM100:
     """Int value."""
 
     # region math and comparison
+    @override
     def __int__(self) -> int:
         return self.value
 
@@ -43,6 +50,7 @@ class UnitMM100:
             return self.get_value_mm100() == int(other)  # type: ignore
         return False
 
+    @override
     def __add__(self, other: object) -> UnitMM100:
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
@@ -53,9 +61,11 @@ class UnitMM100:
 
         return NotImplemented
 
+    @override
     def __radd__(self, other: object) -> UnitMM100:
         return self if other == 0 else self.__add__(other)
 
+    @override
     def __sub__(self, other: object) -> UnitMM100:
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
@@ -65,12 +75,14 @@ class UnitMM100:
             return self.from_mm100(self.value - int(other))  # type: ignore
         return NotImplemented
 
+    @override
     def __rsub__(self, other: object) -> UnitMM100:
         if isinstance(other, (int, float)):
             self_val = self.get_value_mm100()
             return self.from_mm100(int(other) - self_val)  # type: ignore
         return NotImplemented
 
+    @override
     def __mul__(self, other: object) -> UnitMM100:
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
@@ -81,9 +93,11 @@ class UnitMM100:
 
         return NotImplemented
 
+    @override
     def __rmul__(self, other: int) -> UnitMM100:
         return self if other == 0 else self.__mul__(other)
 
+    @override
     def __truediv__(self, other: object) -> UnitMM100:
         if hasattr(other, "get_value_mm100"):
             oth_val = other.get_value_mm100()  # type: ignore
@@ -96,6 +110,7 @@ class UnitMM100:
             return self.from_mm100(self.value // other)  # type: ignore
         return NotImplemented
 
+    @override
     def __rtruediv__(self, other: object) -> UnitMM100:
         if isinstance(other, (int, float)):
             if self.value == 0:
@@ -103,9 +118,11 @@ class UnitMM100:
             return self.from_mm100(other // self.value)  # type: ignore
         return NotImplemented
 
+    @override
     def __abs__(self) -> int:
         return abs(self.value)
 
+    @override
     def __lt__(self, other: object) -> bool:
         if hasattr(other, "get_value_mm100"):
             return self.value < other.get_value_mm100()  # type: ignore
@@ -113,6 +130,7 @@ class UnitMM100:
             return self.value < int(other)  # type: ignore
         return False
 
+    @override
     def __le__(self, other: object) -> bool:
         if hasattr(other, "get_value_mm100"):
             return self.value <= other.get_value_mm100()  # type: ignore
@@ -120,6 +138,7 @@ class UnitMM100:
             return self.value <= int(other)  # type: ignore
         return False
 
+    @override
     def __gt__(self, other: object) -> bool:
         if hasattr(other, "get_value_mm100"):
             return self.value > other.get_value_mm100()  # type: ignore
@@ -127,6 +146,7 @@ class UnitMM100:
             return self.value > int(other)  # type: ignore
         return False
 
+    @override
     def __ge__(self, other: object) -> bool:
         if hasattr(other, "get_value_mm100"):
             return self.value >= other.get_value_mm100()  # type: ignore
