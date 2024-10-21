@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.drawing.draw_page_comp import DrawPageComp
 from ooodev.adapter.drawing.shapes2_partial import Shapes2Partial
 from ooodev.adapter.drawing.shapes3_partial import Shapes3Partial
@@ -69,7 +75,8 @@ class GenericDrawPage(
     def __len__(self) -> int:
         return self.get_count()
 
-    def __getitem__(self, index: int) -> ShapeBase[_T]:
+    @override
+    def __getitem__(self, index: int) -> ShapeBase[_T]:  # type: ignore
         idx = mGenUtil.Util.get_index(index, len(self))
         shape = self.component.getByIndex(idx)  # type: ignore
         return self.shape_factory(shape)

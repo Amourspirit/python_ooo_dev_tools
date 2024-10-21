@@ -3,6 +3,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import contextlib
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
@@ -54,7 +61,8 @@ class SpreadsheetDrawPages(
         CalcDocPropPartial.__init__(self, obj=owner.calc_doc)
         self._current_index = 0
 
-    def __getitem__(self, idx: int) -> SpreadsheetDrawPage[_T]:
+    @override
+    def __getitem__(self, idx: int) -> SpreadsheetDrawPage[_T]:  # type: ignore
         """
         Gets the draw page at the specified index.
 
@@ -90,7 +98,8 @@ class SpreadsheetDrawPages(
         self._current_index = 0
         return self
 
-    def __next__(self) -> SpreadsheetDrawPage[_T]:
+    @override
+    def __next__(self) -> SpreadsheetDrawPage[_T]:  # type: ignore
         """
         Gets the next draw page.
 
@@ -175,7 +184,8 @@ class SpreadsheetDrawPages(
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> SpreadsheetDrawPage[_T]:
+    @override
+    def get_by_index(self, idx: int) -> SpreadsheetDrawPage[_T]:  # type: ignore
         """
         Gets the element with the specified index.
 
@@ -199,7 +209,8 @@ class SpreadsheetDrawPages(
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> SpreadsheetDrawPage[_T]:
+    @override
+    def insert_new_by_index(self, idx: int) -> SpreadsheetDrawPage[_T]:  # type: ignore
         """
         Creates and inserts a new GenericDrawPage or MasterPage into this container.
 

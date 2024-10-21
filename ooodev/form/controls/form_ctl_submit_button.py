@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XControl
 
 from ooodev.adapter.form.submission.submission_veto_events import SubmissionVetoEvents
@@ -52,14 +59,17 @@ class FormCtlSubmitButton(FormCtlBase, SubmissionVetoEvents):
 
     if TYPE_CHECKING:
         # override the methods to provide type hinting
-        def get_view(self) -> ControlView:
+        @override
+        def get_view(self) -> ControlView:  # type: ignore
             """Gets the view of this control"""
             return cast("ControlView", super().get_view())
 
+        @override
         def get_model(self) -> ControlModel:
             """Gets the model for this control"""
             return cast("ControlModel", super().get_model())
 
+    @override
     def get_form_component_kind(self) -> FormComponentKind:
         """Gets the kind of form component this control is"""
         return FormComponentKind.SUBMIT_BUTTON
