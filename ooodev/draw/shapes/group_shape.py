@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 from ooo.dyn.awt.size import Size
 from ooo.dyn.awt.point import Point
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class GroupShape(
+class GroupShape(  # type: ignore
     LoInstPropsPartial,
     GroupShapeComp,
     ShapePartialProps,

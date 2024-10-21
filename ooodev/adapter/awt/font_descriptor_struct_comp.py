@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.char_set import CharSetEnum
 from ooo.dyn.awt.font_descriptor import FontDescriptor
 from ooo.dyn.awt.font_family import FontFamilyEnum
@@ -47,12 +54,15 @@ class FontDescriptorStructComp(StructBase[FontDescriptor]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_awt_FontDescriptor_changed"
 
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_awt_FontDescriptor_changing"
 
+    @override
     def _copy(self, src: FontDescriptor | None = None) -> FontDescriptor:
         if src is None:
             src = self.component

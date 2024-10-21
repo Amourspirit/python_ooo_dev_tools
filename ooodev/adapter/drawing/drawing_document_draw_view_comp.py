@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.point import Point
 
 from ooodev.adapter.frame.controller_comp import ControllerComp
@@ -45,6 +52,7 @@ class DrawingDocumentDrawViewComp(
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.DrawingDocumentDrawView",)
@@ -53,6 +61,7 @@ class DrawingDocumentDrawViewComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> DrawingDocumentDrawView:
         """DrawingDocumentDrawView Component"""
         # override to satisfy documentation and type

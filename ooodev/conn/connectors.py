@@ -7,6 +7,12 @@ import json
 import uuid
 from abc import ABC, abstractmethod
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils import paths
 
 
@@ -230,6 +236,7 @@ class ConnectSocket(ConnectorBridgeBase):
         self._host = host
         self._port = port
 
+    @override
     def get_connection_identifier(self) -> str:
         """
         Gets connection identifier
@@ -238,6 +245,7 @@ class ConnectSocket(ConnectorBridgeBase):
         """
         return f"socket,host={self.host},port={self.port}"
 
+    @override
     def get_connection_str(self) -> str:
         """
         Gets connection string.
@@ -320,6 +328,7 @@ class ConnectPipe(ConnectorBridgeBase):
         super().__init__(**kwargs)
         self._pipe = uuid.uuid4().hex if pipe is None else pipe
 
+    @override
     def get_connection_identifier(self) -> str:
         """
         Gets connection identifier
@@ -328,6 +337,7 @@ class ConnectPipe(ConnectorBridgeBase):
         """
         return f"pipe,name={self.pipe}"
 
+    @override
     def get_connection_str(self) -> str:
         identifier = self.get_connection_identifier()
         return f"uno:{identifier};urp;StarOffice.ServiceManager"

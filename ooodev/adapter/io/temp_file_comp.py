@@ -1,7 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from com.sun.star.io import XTempFile
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+from com.sun.star.io import XTempFile
 
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.io.temp_file_partial import TempFilePartial
@@ -29,6 +35,7 @@ class TempFileComp(ComponentProp, TempFilePartial):
         TempFilePartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.io.TempFile",)

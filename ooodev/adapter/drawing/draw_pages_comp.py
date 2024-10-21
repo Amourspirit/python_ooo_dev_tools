@@ -3,6 +3,12 @@ from typing import Any, cast, TYPE_CHECKING
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.draw_pages_partial import DrawPagesPartial
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import DrawPages  # service
@@ -28,6 +34,7 @@ class DrawPagesComp(ComponentBase, DrawPagesPartial):
         DrawPagesPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.DrawPages",)
@@ -36,6 +43,7 @@ class DrawPagesComp(ComponentBase, DrawPagesPartial):
     # region Properties
 
     @property
+    @override
     def component(self) -> DrawPages:
         """DrawPages Component"""
         # pylint: disable=no-member

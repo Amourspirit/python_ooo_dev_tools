@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XVetoableChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -31,16 +37,18 @@ class VetoableChangeListener(AdapterBase, XVetoableChangeListener):
         super().__init__(trigger_args=trigger_args)
 
     # region XVetoableChangeListener
-    def vetoableChange(self, event: PropertyChangeEvent) -> None:
+    @override
+    def vetoableChange(self, aEvent: PropertyChangeEvent) -> None:
         """
         gets called when a constrained property is changed.
 
         Raises:
             com.sun.star.beans.PropertyVetoException: ``PropertyVetoException``
         """
-        self._trigger_event("vetoableChange", event)
+        self._trigger_event("vetoableChange", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -52,6 +60,6 @@ class VetoableChangeListener(AdapterBase, XVetoableChangeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XVetoableChangeListener

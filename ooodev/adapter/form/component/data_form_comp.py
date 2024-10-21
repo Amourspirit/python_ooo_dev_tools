@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.form.component.form_comp import FormComp
 from ooodev.adapter.form.reset_partial import ResetPartial
 from ooodev.adapter.form.loadable_partial import LoadablePartial
@@ -60,6 +66,7 @@ class DataFormComp(
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.form.component.DataForm",)
@@ -68,12 +75,11 @@ class DataFormComp(
 
     # region Properties
 
-    if TYPE_CHECKING:
-
-        @property
-        def component(self) -> DataForm:
-            """DataForm Component"""
-            # pylint: disable=no-member
-            return cast("DataForm", self._ComponentBase__get_component())  # type: ignore
+    @property
+    @override
+    def component(self) -> DataForm:
+        """DataForm Component"""
+        # pylint: disable=no-member
+        return cast("DataForm", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

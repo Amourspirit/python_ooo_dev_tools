@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Generic
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XShape
 
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -21,7 +28,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class DrawShape(
+class DrawShape(  # type: ignore
     ShapeBase,
     Generic[_T],
     ShapeComp,
@@ -42,14 +49,15 @@ class DrawShape(
         ShapeComp.__init__(self, component)
         # pylint: disable=no-member
         generic_args = self._ComponentBase__get_generic_args()  # type: ignore
-        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
-        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
+        PropertyChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
+        VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)  # type: ignore
         DrawShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         PropPartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
         StylePartial.__init__(self, component=component)
         StyledShapePartial.__init__(self, component=component, lo_inst=self.get_lo_inst())
 
     # region Overrides
+    @override
     def _ComponentBase__get_is_supported(self, component: Any) -> bool:
         """
         Gets whether the component supports a service.
@@ -69,13 +77,16 @@ class DrawShape(
         shape = self.qi(XShape)
         return shape is not None
 
+    @override
     def get_shape_type(self) -> str:
         """Returns the shape type of ``general``."""
         return "general"
 
+    @override
     def _generate_shape_name(self) -> str:
         return f"DrawShape_{gUtil.Util.generate_random_string(10)}"
 
+    @override
     def is_know_shape(self) -> bool:
         """
         Returns True if the shape is known.
@@ -88,6 +99,7 @@ class DrawShape(
         """
         return self.component.getShapeType() in KNOWN_SHAPES
 
+    @override
     def get_known_shape(self) -> ShapeBase[_T]:
         """
         The ``DrawShape`` class is a general class for all shapes.

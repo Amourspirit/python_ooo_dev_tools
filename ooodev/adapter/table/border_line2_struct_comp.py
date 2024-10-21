@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.table.border_line2 import BorderLine2
 from ooo.dyn.table.border_line_style import BorderLineStyleEnum
 from ooodev.adapter.table.border_line_struct_comp import BorderLineStructComp
@@ -40,13 +47,16 @@ class BorderLine2StructComp(BorderLineStructComp):
 
     # region Overrides
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_table_BorderLine2_changed"
 
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_table_BorderLine2_changing"
 
-    def _copy(self, src: BorderLine2 | None = None) -> BorderLine2:
+    @override
+    def _copy(self, src: BorderLine2 | None = None) -> BorderLine2:  # type: ignore
         if src is None:
             src = self.component
         return BorderLine2(
@@ -58,6 +68,7 @@ class BorderLine2StructComp(BorderLineStructComp):
             LineStyle=src.LineStyle,
         )
 
+    @override
     def copy(self) -> BorderLine2:
         """
         Makes a copy of the Border Line.
@@ -72,13 +83,14 @@ class BorderLine2StructComp(BorderLineStructComp):
     # region Properties
 
     @property
+    @override
     def component(self) -> BorderLine2:
         """BorderLine Component"""
         # pylint: disable=no-member
         return self._get_component()  # type: ignore
 
     @component.setter
-    def component(self, value: BorderLine2) -> None:
+    def component(self, value: BorderLine2) -> None:  # type: ignore
         # pylint: disable=no-member
         self._set_component(value, True)
 

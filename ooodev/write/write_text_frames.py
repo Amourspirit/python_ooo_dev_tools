@@ -1,13 +1,19 @@
 from __future__ import annotations
 from typing import Sequence, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.exceptions import ex as mEx
 from ooodev.utils import gen_util as mGenUtil
 from ooodev.loader import lo as mLo
 from ooodev.loader.inst.lo_inst import LoInst
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.utils.partial.qi_partial import QiPartial
-from ooodev.adapter.text.text_frames import TextFramesComp
+from ooodev.adapter.text.text_frames_comp import TextFramesComp
 from ooodev.utils.partial.service_partial import ServicePartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
@@ -175,6 +181,7 @@ class WriteTextFrames(
 
     # region XIndexAccess overrides
 
+    @override
     def get_by_index(self, idx: int) -> WriteTextFrame[WriteDoc]:
         """
         Gets the element at the specified index.
@@ -194,6 +201,7 @@ class WriteTextFrames(
 
     # region XNameAccess overrides
 
+    @override
     def get_by_name(self, name: str) -> WriteTextFrame[WriteDoc]:
         """
         Gets the element with the specified name.

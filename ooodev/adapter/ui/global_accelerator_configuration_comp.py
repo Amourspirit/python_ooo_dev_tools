@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ui import XAcceleratorConfiguration
 
 from ooodev.adapter._helper.builder import builder_helper
@@ -16,7 +23,6 @@ if TYPE_CHECKING:
 
 
 class _GlobalAcceleratorConfigurationComp(ComponentProp):
-
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, ComponentProp):
             return False
@@ -26,6 +32,7 @@ class _GlobalAcceleratorConfigurationComp(ComponentProp):
             return True
         return self.component == other.component
 
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.ui.GlobalAcceleratorConfiguration",)
@@ -97,6 +104,7 @@ class GlobalAcceleratorConfigurationComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> GlobalAcceleratorConfiguration:
         """GlobalAcceleratorConfiguration Component"""
         # pylint: disable=no-member

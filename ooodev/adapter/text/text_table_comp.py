@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.table.cell_comp import CellComp
@@ -72,7 +78,8 @@ class TextTableComp(
 
     # region Methods
     # region TextTablePartial Overrides
-    def get_cell_by_name(self, name: str) -> CellComp:
+    @override
+    def get_cell_by_name(self, name: str) -> CellComp:  # type: ignore
         """
         Returns the cell with the specified name.
 
@@ -99,12 +106,12 @@ class TextTableComp(
     # endregion Methods
 
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> TextTable:
-            """TextTable Component"""
-            # pylint: disable=no-member
-            return cast("TextTable", self._ComponentBase__get_component())  # type: ignore
+    @property
+    @override
+    def component(self) -> TextTable:
+        """TextTable Component"""
+        # pylint: disable=no-member
+        return cast("TextTable", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt.grid import XGridDataListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -36,31 +42,36 @@ class GridDataListener(AdapterBase, XGridDataListener):
         super().__init__(trigger_args=trigger_args)
 
     # region XGridDataListener
-    def dataChanged(self, event: GridDataEvent) -> None:
+    @override
+    def dataChanged(self, Event: GridDataEvent) -> None:
         """
         Event is invoked when existing data in a grid control's data model has been modified.
         """
-        self._trigger_event("dataChanged", event)
+        self._trigger_event("dataChanged", Event)
 
-    def rowHeadingChanged(self, event: GridDataEvent) -> None:
+    @override
+    def rowHeadingChanged(self, Event: GridDataEvent) -> None:
         """
         Event is invoked when the title of one or more rows changed.
         """
-        self._trigger_event("rowHeadingChanged", event)
+        self._trigger_event("rowHeadingChanged", Event)
 
-    def rowsInserted(self, event: GridDataEvent) -> None:
+    @override
+    def rowsInserted(self, Event: GridDataEvent) -> None:
         """
         is called when one or more rows of data have been inserted into a grid control's data model.
         """
-        self._trigger_event("rowsInserted", event)
+        self._trigger_event("rowsInserted", Event)
 
-    def rowsRemoved(self, event: GridDataEvent) -> None:
+    @override
+    def rowsRemoved(self, Event: GridDataEvent) -> None:
         """
         is called when one or more rows of data have been removed from a grid control's data model.
         """
-        self._trigger_event("rowsRemoved", event)
+        self._trigger_event("rowsRemoved", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -72,6 +83,6 @@ class GridDataListener(AdapterBase, XGridDataListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XGridDataListener

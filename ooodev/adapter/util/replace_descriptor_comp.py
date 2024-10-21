@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.util.search_descriptor_comp import SearchDescriptorComp
 from ooodev.adapter.util.replace_descriptor_partial import ReplaceDescriptorPartial
 
@@ -27,6 +34,7 @@ class ReplaceDescriptorComp(SearchDescriptorComp, ReplaceDescriptorPartial):
         ReplaceDescriptorPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.util.ReplaceDescriptor",)
@@ -39,6 +47,7 @@ class ReplaceDescriptorComp(SearchDescriptorComp, ReplaceDescriptorPartial):
 
     # region Properties
     @property
+    @override
     def component(self) -> ReplaceDescriptor:
         """ReplaceDescriptor Component"""
         # pylint: disable=no-member

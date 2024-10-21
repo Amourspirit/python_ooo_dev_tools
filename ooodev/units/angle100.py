@@ -2,6 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import contextlib
 from dataclasses import dataclass
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils.data_type.base_int_value import BaseIntValue
 
 if TYPE_CHECKING:
@@ -45,7 +52,7 @@ class Angle100(BaseIntValue):
         return Angle100(_to_positive_angle(value))
 
     # region math and comparison
-
+    @override
     def __eq__(self, other: object) -> bool:
         # for some reason BaseIntValue __eq__ is not picked up.
         # I suspect this is due to this class being a dataclass.
@@ -59,6 +66,7 @@ class Angle100(BaseIntValue):
             return self.value == other
         return False
 
+    @override
     def __add__(self, other: object) -> Angle100:
         if hasattr(other, "get_angle100"):
             oth_val = other.get_angle100()  # type: ignore
@@ -73,9 +81,11 @@ class Angle100(BaseIntValue):
 
         return NotImplemented
 
+    @override
     def __radd__(self, other: object) -> Angle100:
         return self if other == 0 else self.__add__(other)
 
+    @override
     def __sub__(self, other: object) -> Angle100:
         if hasattr(other, "get_angle100"):
             oth_val = other.get_angle100()  # type: ignore
@@ -89,12 +99,14 @@ class Angle100(BaseIntValue):
             return self.from_angle100(self.value - int(other))  # type: ignore
         return NotImplemented
 
+    @override
     def __rsub__(self, other: object) -> Angle100:
         if isinstance(other, (int, float)):
             self_val = self.get_angle100()
             return self.from_angle100(int(other) - self_val)  # type: ignore
         return NotImplemented
 
+    @override
     def __mul__(self, other: object) -> Angle100:
         if hasattr(other, "get_angle100"):
             oth_val = other.get_angle100()  # type: ignore
@@ -109,9 +121,11 @@ class Angle100(BaseIntValue):
 
         return NotImplemented
 
+    @override
     def __rmul__(self, other: int) -> Angle100:
         return self if other == 0 else self.__mul__(other)
 
+    @override
     def __truediv__(self, other: object) -> Angle100:
         if hasattr(other, "get_angle100"):
             oth_val = other.get_angle100()  # type: ignore
@@ -130,6 +144,7 @@ class Angle100(BaseIntValue):
             return self.from_angle100(self.value // other)  # type: ignore
         return NotImplemented
 
+    @override
     def __rtruediv__(self, other: object) -> Angle100:
         if isinstance(other, (int, float)):
             if self.value == 0:
@@ -137,9 +152,11 @@ class Angle100(BaseIntValue):
             return self.from_angle100(other // self.value)  # type: ignore
         return NotImplemented
 
+    @override
     def __abs__(self) -> int:
         return abs(self.value)
 
+    @override
     def __lt__(self, other: object) -> bool:
         if hasattr(other, "get_angle100"):
             return self.value < other.get_angle100()  # type: ignore
@@ -149,6 +166,7 @@ class Angle100(BaseIntValue):
             return self.value < int(other)  # type: ignore
         return False
 
+    @override
     def __le__(self, other: object) -> bool:
         if hasattr(other, "get_angle100"):
             return self.value <= other.get_angle100()  # type: ignore
@@ -158,6 +176,7 @@ class Angle100(BaseIntValue):
             return self.value <= int(other)  # type: ignore
         return False
 
+    @override
     def __gt__(self, other: object) -> bool:
         if hasattr(other, "get_angle100"):
             return self.value > other.get_angle100()  # type: ignore
@@ -167,6 +186,7 @@ class Angle100(BaseIntValue):
             return self.value > int(other)  # type: ignore
         return False
 
+    @override
     def __ge__(self, other: object) -> bool:
         if hasattr(other, "get_angle100"):
             return self.value >= other.get_angle100()  # type: ignore

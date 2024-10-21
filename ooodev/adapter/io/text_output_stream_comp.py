@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.io import XTextOutputStream2
 
 from ooodev.adapter.component_prop import ComponentProp
@@ -31,6 +38,7 @@ class TextOutputStreamComp(ComponentProp, TextOutputStream2Partial, ActiveDataSo
         ActiveDataSourcePartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.io.TextOutputStream",)
@@ -61,6 +69,7 @@ class TextOutputStreamComp(ComponentProp, TextOutputStream2Partial, ActiveDataSo
 
     # region Properties
     @property
+    @override
     def component(self) -> TextOutputStream:
         """TextOutputStream Component"""
         # pylint: disable=no-member

@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, Type
 import contextlib
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XPropertySet
 from com.sun.star.container import XChild
 from com.sun.star.container import XNamed
@@ -362,14 +369,17 @@ class FormCtlBase(
     # endregion other methods
 
     # region Overrides
+    @override
     def get_uno_srv_name(self) -> str:
         """Get Uno service name"""
         return self.get_form_component_kind().to_namespace()
 
+    @override
     def _get_tab_index(self) -> int:
         """Gets the tab index"""
         return self.get_model().TabIndex
 
+    @override
     def _set_tab_index(self, value: int) -> None:
         """Sets the tab index"""
         self.get_model().TabIndex = value

@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.drawing.draw_pages_partial import DrawPagesPartial
 
@@ -26,6 +33,7 @@ class MasterPagesComp(ComponentBase, DrawPagesPartial):
         DrawPagesPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.drawing.MasterPages",)
@@ -34,6 +42,7 @@ class MasterPagesComp(ComponentBase, DrawPagesPartial):
     # region Properties
 
     @property
+    @override
     def component(self) -> MasterPages:
         """MasterPages Component"""
         # pylint: disable=no-member

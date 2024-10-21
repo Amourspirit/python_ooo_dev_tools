@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, Tuple
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 import uno
 from com.sun.star.container import XIndexContainer
 from com.sun.star.lang import XMultiServiceFactory
@@ -19,20 +26,23 @@ class ActionTriggerContainer(Base, BaseServiceInfo, XIndexContainer, XMultiServi
     # endregion Init
 
     # region BaseServiceInfo
+    @override
     def getImplementationName(self) -> str:
         """
         Provides the implementation name of the service implementation.
         """
         return "action_trigger_container"
 
-    def supportsService(self, name: str) -> bool:
+    @override
+    def supportsService(self, ServiceName: str) -> bool:
         """
         Tests whether the specified service is supported, i.e.
 
         implemented by the implementation.
         """
-        return name in self.getAvailableServiceNames()
+        return ServiceName in self.getAvailableServiceNames()
 
+    @override
     def getSupportedServiceNames(self) -> Tuple[str]:
         """
         Provides the supported service names of the implementation, including also indirect service names.
@@ -42,13 +52,17 @@ class ActionTriggerContainer(Base, BaseServiceInfo, XIndexContainer, XMultiServi
     # endregion BaseServiceInfo
 
     # region XMultiServiceFactory
-    def createInstance(self, name: str):
+    @override
+    def createInstance(self, aServiceSpecifier: str):
+        """Raises NotImplementedError"""
         self._logger.warning("createInstance is not implement in this context")
-        return None
+        raise NotImplementedError
 
-    def createInstanceWithArguments(self, name: str, args: Any):
+    @override
+    def createInstanceWithArguments(self, ServiceSpecifier: str, Arguments: Any):
+        """Raises NotImplementedError"""
         self._logger.warning("createInstanceWithArguments is not implement in this context")
-        return None
+        raise NotImplementedError
 
     def getAvailableServiceNames(self):
         return ()
@@ -57,31 +71,38 @@ class ActionTriggerContainer(Base, BaseServiceInfo, XIndexContainer, XMultiServi
 
     # region XIndexContainer
 
+    @override
     def hasElements(self) -> bool:
         return len(self._items) != 0
 
+    @override
     def getElementType(self) -> Any:
         return uno.getTypeByName("com.sun.star.beans.XPropertyValue")
 
-    def getCount(self):
+    @override
+    def getCount(self) -> int:
         return len(self._items)
 
-    def getByIndex(self, n) -> Any:
-        if 0 <= n < len(self._items):
-            return self._items[n]
+    @override
+    def getByIndex(self, Index: int) -> Any:
+        if 0 <= Index < len(self._items):
+            return self._items[Index]
         return None  # should be raise IllegalArgumentException
 
-    def replaceByIndex(self, n, item) -> None:
-        if 0 <= n < len(self._items):
-            self._items[n] = item
+    @override
+    def replaceByIndex(self, Index: int, Element: Any) -> None:
+        if 0 <= Index < len(self._items):
+            self._items[Index] = Element
 
-    def insertByIndex(self, n, item) -> None:
-        if 0 <= n <= len(self._items):
-            self._items.insert(n, item)
+    @override
+    def insertByIndex(self, Index: int, Element: Any) -> None:
+        if 0 <= Index <= len(self._items):
+            self._items.insert(Index, Element)
 
-    def removeByIndex(self, n) -> None:
-        if 0 <= n < len(self._items):
-            self._items.pop(n)
+    @override
+    def removeByIndex(self, Index: int) -> None:
+        if 0 <= Index < len(self._items):
+            self._items.pop(Index)
 
     # endregion XIndexContainer
 

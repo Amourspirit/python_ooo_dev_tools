@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from typing import cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.style.numbering_type import NumberingTypeEnum
 from ooo.dyn.text.page_number_type import PageNumberType
 from ooodev.adapter.text.text_field_comp import TextFieldComp
@@ -29,6 +35,7 @@ class PageNumberComp(TextFieldComp):
         TextFieldComp.__init__(self, component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.textfield.PageNumber",)
@@ -77,12 +84,11 @@ class PageNumberComp(TextFieldComp):
     def user_text(self, value: str) -> None:
         self.component.UserText = value
 
-    if TYPE_CHECKING:
-
-        @property
-        def component(self) -> PageNumber:
-            """PageNumber Component"""
-            # pylint: disable=no-member
-            return cast("PageNumber", self._ComponentBase__get_component())  # type: ignore
+    @property
+    @override
+    def component(self) -> PageNumber:
+        """PageNumber Component"""
+        # pylint: disable=no-member
+        return cast("PageNumber", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

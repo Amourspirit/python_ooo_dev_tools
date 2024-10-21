@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.container.element_access_partial import ElementAccessPartial
 from ooodev.adapter.style.paragraph_properties_partial import ParagraphPropertiesPartial
@@ -31,6 +38,7 @@ class ParagraphComp(ComponentBase, ParagraphPropertiesPartial, CharacterProperti
         ElementAccessPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.Paragraph",)
@@ -43,6 +51,7 @@ class ParagraphComp(ComponentBase, ParagraphPropertiesPartial, CharacterProperti
 
     # region Properties
     @property
+    @override
     def component(self) -> Paragraph:
         """Paragraph Component"""
         # pylint: disable=no-member

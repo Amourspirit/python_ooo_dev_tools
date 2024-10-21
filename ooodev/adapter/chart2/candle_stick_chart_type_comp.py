@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.component_base import ComponentBase
@@ -30,6 +37,7 @@ class CandleStickChartTypeComp(ComponentBase, PropertyChangeImplement, VetoableC
         VetoableChangeImplement.__init__(self, component=self.component, trigger_args=generic_args)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.chart2.CandleStickChartType",)
@@ -37,6 +45,7 @@ class CandleStickChartTypeComp(ComponentBase, PropertyChangeImplement, VetoableC
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> CandleStickChartType:
         """CandleStickChartType Component"""
         # pylint: disable=no-member

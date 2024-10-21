@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
 from ooo.dyn.form.form_component_type import FormComponentType
 
 from ooodev.adapter.beans.properties_change_implement import PropertiesChangeImplement
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
 
 
-class FormCtlHidden(
+class FormCtlHidden(  # type: ignore
     LoInstPropsPartial,
     PropPartial,
     NamedPartial,

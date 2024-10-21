@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, overload, Generator, TYPE_CHECKING, Tuple, Sequence
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.lang import IndexOutOfBoundsException
 
 # from ooodev.mock import mock_g
@@ -120,6 +127,7 @@ class WriteTableCellRange(
         return f"{self.__class__.__name__}(range={self.range_obj})"
 
     # region CellRangeDataPartial overrides
+    @override
     def set_data_array(self, array: Sequence[Sequence[Any]]) -> None:
         """
         Fills the cell range with values from an array.
@@ -397,7 +405,8 @@ class WriteTableCellRange(
     # endregion Get Row or Column
 
     # region CellRangePartial Overrides
-    def get_cell_by_position(self, col: int, row: int) -> WriteTableCell:
+    @override
+    def get_cell_by_position(self, col: int, row: int) -> WriteTableCell:  # type: ignore
         """
         Returns a single cell within the range.
 
@@ -430,7 +439,8 @@ class WriteTableCellRange(
         except IndexOutOfBoundsException as e:
             raise IndexError(f"Index out of range. column={col}, row={row}") from e
 
-    def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:
+    @override
+    def get_cell_range_by_name(self, rng: str) -> WriteTableCellRange:  # type: ignore
         """
         Returns a sub-range of cells within the range.
 
@@ -486,7 +496,8 @@ class WriteTableCellRange(
         result._parent = self
         return result
 
-    def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:
+    @override
+    def get_cell_range_by_position(self, left: int, top: int, right: int, bottom: int) -> WriteTableCellRange:  # type: ignore
         """
         Returns a sub-range of cells within the range.
 

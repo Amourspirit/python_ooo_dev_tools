@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="ComponentT")
 
 
-class WriteParagraph(
+class WriteParagraph(  # type: ignore
     Generic[T],
     LoInstPropsPartial,
     WriteDocPropPartial,

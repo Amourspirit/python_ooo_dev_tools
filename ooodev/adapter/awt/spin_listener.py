@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XSpinListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -34,31 +40,36 @@ class SpinListener(AdapterBase, XSpinListener):
             subscriber.addSpinListener(self)
 
     # region XSpinListener
-    def down(self, event: SpinEvent) -> None:
+    @override
+    def down(self, rEvent: SpinEvent) -> None:
         """
         Event is invoked when the spin field is spun down.
         """
-        self._trigger_event("down", event)
+        self._trigger_event("down", rEvent)
 
-    def first(self, event: SpinEvent) -> None:
+    @override
+    def first(self, rEvent: SpinEvent) -> None:
         """
         Event is invoked when the spin field is set to the lower value.
         """
-        self._trigger_event("first", event)
+        self._trigger_event("first", rEvent)
 
-    def last(self, event: SpinEvent) -> None:
+    @override
+    def last(self, rEvent: SpinEvent) -> None:
         """
         Event is invoked when the spin field is set to the upper value.
         """
-        self._trigger_event("last", event)
+        self._trigger_event("last", rEvent)
 
-    def up(self, event: SpinEvent) -> None:
+    @override
+    def up(self, rEvent: SpinEvent) -> None:
         """
         Event is invoked when the spin field is spun up.
         """
-        self._trigger_event("up", event)
+        self._trigger_event("up", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -70,6 +81,6 @@ class SpinListener(AdapterBase, XSpinListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XSpinListener

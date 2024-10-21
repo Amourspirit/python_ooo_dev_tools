@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.events.args.listener_event_args import ListenerEventArgs
 from ooodev.adapter.document.events_supplier_partial import EventsSupplierPartial
@@ -67,15 +74,17 @@ class TheGlobalEventBroadcasterComp(
     # endregion context manage
 
     # region XDocumentEventListener
-    def document_event_occured(self, event: DocumentEvent) -> None:
+    @override
+    def document_event_occured(self, Event: DocumentEvent) -> None:
         """
         Event is invoked when a document event occurred
         """
-        self.component.documentEventOccured(event)
+        self.component.documentEventOccured(Event)
 
     # endregion XDocumentEventListener
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ()
@@ -105,6 +114,7 @@ class TheGlobalEventBroadcasterComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> theGlobalEventBroadcaster:
         """theGlobalEventBroadcaster Component"""
         # pylint: disable=no-member

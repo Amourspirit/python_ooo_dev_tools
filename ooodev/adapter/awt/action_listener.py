@@ -2,6 +2,12 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 import contextlib
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XActionListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -39,14 +45,15 @@ class ActionListener(AdapterBase, XActionListener):
                 subscriber.addActionListener(self)
 
     # region XActionListener
-
-    def actionPerformed(self, event: ActionEvent) -> None:
+    @override
+    def actionPerformed(self, rEvent: ActionEvent) -> None:
         """
         is invoked when an action is performed.
         """
-        self._trigger_event("actionPerformed", event)
+        self._trigger_event("actionPerformed", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -58,6 +65,6 @@ class ActionListener(AdapterBase, XActionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XActionListener

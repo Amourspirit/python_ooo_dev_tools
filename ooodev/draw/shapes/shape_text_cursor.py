@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 _T = TypeVar("_T", bound="ComponentT")
 
 
-class ShapeTextCursor(
+class ShapeTextCursor(  # type: ignore
     LoInstPropsPartial,
     TextCursorPartial[_T],
     Generic[_T],

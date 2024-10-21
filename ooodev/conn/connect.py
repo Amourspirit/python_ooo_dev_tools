@@ -10,6 +10,14 @@ from abc import ABC, abstractmethod
 import subprocess
 import signal
 from pathlib import Path
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+
 import uno
 from com.sun.star.connection import NoConnectException  # type: ignore
 from ooodev.conn import connectors
@@ -371,6 +379,7 @@ class LoBridgeCommon(ConnectBase):
         else:
             return True
 
+    @override
     def kill_soffice(self) -> None:
         """
         Attempts to kill instance of soffice created by this instance
@@ -394,6 +403,7 @@ class LoBridgeCommon(ConnectBase):
                 # no SIGLILL on windows.
                 # because process is started including; preexec_fn=os.setsid
                 # we can use the os.killpg to kill the process group which include libreOffice.
+                assert self._soffice_process is not None
                 os.killpg(self._soffice_process.pid, signal.SIGKILL)
                 # os.kill(pid, signal.SIGKILL)  # type: ignore
         except Exception as e:  # pylint: disable=invalid-name
@@ -425,36 +435,43 @@ class LoBridgeCommon(ConnectBase):
         return self._connector.soffice
 
     @property
+    @override
     def start_office(self) -> bool:
         """Gets if office is to be started. Default is True"""
         return self._connector.start_office
 
     @property
+    @override
     def no_restore(self) -> bool:
         """Gets if office is started with norestore Option. Default is True"""
         return self._connector.no_restore
 
     @property
+    @override
     def no_first_start_wizard(self) -> bool:
         """Gets if office is started with nofirststartwizard option. Default is True"""
         return self._connector.no_first_start_wizard
 
     @property
+    @override
     def no_logo(self) -> bool:
         """Gets if office is started with nologo option. Default is True"""
         return self._connector.no_logo
 
     @property
+    @override
     def invisible(self) -> bool:
         """Gets if office is started with invisible option. Default is True"""
         return self._connector.invisible
 
     @property
+    @override
     def headless(self) -> bool:
         """Gets/Sets if the connection is made using headless option. Default is False"""
         return self._connector.headless
 
     @property
+    @override
     def start_as_service(self) -> bool:
         """
         Gets if office is started as service (StarOffice.Service).
@@ -463,6 +480,7 @@ class LoBridgeCommon(ConnectBase):
         return self._connector.start_as_service
 
     @property
+    @override
     def is_remote(self) -> bool:
         """Gets if connection is connection to remote server. Default is False"""
         return self._connector.remote_connection
@@ -482,6 +500,7 @@ class LoDirectStart(ConnectBase):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, LoDirectStart)
 
+    @override
     def connect(self):
         """
         Makes a connection to soffice
@@ -493,6 +512,7 @@ class LoDirectStart(ConnectBase):
         self._ctx = uno.getComponentContext()
         self.log.info("connect() Connection Established")
 
+    @override
     def kill_soffice(self) -> None:
         """
         Inherited
@@ -504,6 +524,7 @@ class LoDirectStart(ConnectBase):
         raise NotImplementedError("kill_soffice is not implemented in this child class")
 
     @property
+    @override
     def is_remote(self) -> bool:
         """Returns False"""
         return False
@@ -538,6 +559,7 @@ class LoPipeStart(LoBridgeCommon):
         """
         return self._connector.get_connection_identifier()
 
+    @override
     def connect(self) -> None:
         """
         Connects to office using a pipe
@@ -611,11 +633,13 @@ class LoPipeStart(LoBridgeCommon):
         self._opened_office = not shutdown
 
     @property
+    @override
     def connector(self) -> connectors.ConnectPipe:
         """Gets the current Connector"""
         return self._connector  # type: ignore
 
     @property
+    @override
     def is_remote(self) -> bool:
         """Gets if the connection is remote"""
         return self.connector.remote_connection
@@ -651,6 +675,7 @@ class LoSocketStart(LoBridgeCommon):
         """
         return self._connector.get_connection_identifier()
 
+    @override
     def connect(self) -> None:
         """
         Connects to office using a pipe
@@ -726,11 +751,13 @@ class LoSocketStart(LoBridgeCommon):
         self._opened_office = not shutdown
 
     @property
+    @override
     def connector(self) -> connectors.ConnectSocket:
         """Gets the current Connector"""
         return self._connector  # type: ignore
 
     @property
+    @override
     def is_remote(self) -> bool:
         """Gets if the connection is remote"""
         return self.connector.remote_connection

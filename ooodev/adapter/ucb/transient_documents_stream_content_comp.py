@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.ucb import XContent
 
 from ooodev.adapter._helper.builder import builder_helper
@@ -25,7 +32,6 @@ if TYPE_CHECKING:
 
 
 class _TransientDocumentsStreamContentComp(ComponentProp):
-
     def __init__(self, component: XContent) -> None:
         """
         Constructor
@@ -37,6 +43,7 @@ class _TransientDocumentsStreamContentComp(ComponentProp):
         ComponentProp.__init__(self, component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.ucb.TransientDocumentsStreamContent",)
@@ -45,13 +52,14 @@ class _TransientDocumentsStreamContentComp(ComponentProp):
 
     # region Properties
     @property
+    @override
     def component(self) -> TransientDocumentsStreamContent:
         """TransientDocumentsStreamContent Component"""
         # pylint: disable=no-member
         return cast("TransientDocumentsStreamContent", self._ComponentBase__get_component())  # type: ignore
 
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a TransientDocumentsStreamContentComp class
         return TransientDocumentsStreamContentComp
 
@@ -88,7 +96,6 @@ class TransientDocumentsStreamContentComp(
     # pylint: disable=unused-argument
 
     def __new__(cls, component: XContent, *args, **kwargs):
-
         new_class = type("TransientDocumentsStreamContentComp", (_TransientDocumentsStreamContentComp,), {})
 
         builder = get_builder(component)

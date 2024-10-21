@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
 from ooodev.adapter.beans.vetoable_change_implement import VetoableChangeImplement
 from ooodev.adapter.chart.chart_data_change_event_events import ChartDataChangeEventEvents
@@ -51,6 +58,7 @@ class SpreadsheetComp(
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.Spreadsheet",)
@@ -59,6 +67,7 @@ class SpreadsheetComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> Spreadsheet:
         """Spreadsheet Component"""
         # pylint: disable=no-member

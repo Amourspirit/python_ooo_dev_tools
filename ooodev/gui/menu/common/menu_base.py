@@ -173,13 +173,15 @@ class MenuBase(LoInstPropsPartial):
             if submenu:
                 idc = self._config.component.createSettings()
                 menu["ItemDescriptorContainer"] = idc
+            else:
+                idc = None
             menu["Type"] = 0
             if menu["Label"][0] == "-":
                 menu["Type"] = 1
             else:
                 menu["CommandURL"] = self._get_command_url(menu)
             self._save(parent, menu, i)
-            if submenu:
+            if submenu and idc is not None:
                 self._insert_submenu(idc, submenu)
 
     def _get_first_command(self, command: Union[str, CommandDict]):
@@ -213,8 +215,10 @@ class MenuBase(LoInstPropsPartial):
         if submenu:
             idc = self._config.component.createSettings()
             menu["ItemDescriptorContainer"] = idc
+        else:
+            idc = None
         self._save(parent, menu, index)
-        if submenu:
+        if submenu and idc is not None:
             self._insert_submenu(idc, submenu)
 
     def remove(self, parent: Any, name: Union[str, CommandDict], save: bool = False) -> None:

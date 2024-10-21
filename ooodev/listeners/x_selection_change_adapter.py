@@ -1,5 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+
 from ooodev.mock import mock_g
 
 if mock_g.DOCS_BUILDING:
@@ -20,7 +28,7 @@ class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):  # type
     This class is meant a parent class.
     """
 
-    def selectionChanged(self, event: EventObject) -> None:
+    def selectionChanged(self, aEvent: EventObject) -> None:
         """
         is called when the selection changes.
 
@@ -28,7 +36,7 @@ class XSelectionChangeAdapter(unohelper.Base, XSelectionChangeListener):  # type
         """
         pass
 
-    def disposing(self, event: EventObject) -> None:
+    def disposing(self, Source: EventObject) -> None:
         """
         gets called when the broadcaster is about to be disposed.
 

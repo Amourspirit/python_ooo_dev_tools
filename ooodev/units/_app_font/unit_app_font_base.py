@@ -3,16 +3,25 @@ from abc import abstractmethod
 import contextlib
 from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass, field
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.utils.data_type.base_float_value import BaseFloatValue
 from ooodev.units.unit_convert import UnitConvert
 from ooodev.units.unit_convert import UnitLength
 from ooodev.utils.kind.point_size_kind import PointSizeKind
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
     from ooodev.units.unit_obj import UnitT
-else:
-    Self = Any
+
+    try:
+        from typing import Self  # noqa # type: ignore
+    except ImportError:
+        from typing_extensions import Self  # noqa # type: ignore
 
 
 @dataclass(unsafe_hash=True)
@@ -40,7 +49,6 @@ class UnitAppFontBase(BaseFloatValue):
     _ratio: float = field(init=False, repr=False, hash=False)
 
     def __post_init__(self):
-
         if not isinstance(self.value, float):
             object.__setattr__(self, "value", float(self.value))
         self._set_ratio()
@@ -60,6 +68,7 @@ class UnitAppFontBase(BaseFloatValue):
     # endregion Overrides
 
     # region math and comparison
+    @override
     def __int__(self) -> int:
         return round(self.value)
 
@@ -78,6 +87,7 @@ class UnitAppFontBase(BaseFloatValue):
             return self.almost_equal(float(other))  # type: ignore
         return False
 
+    @override
     def __add__(self, other: object) -> Self:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value + other.value)
@@ -93,9 +103,11 @@ class UnitAppFontBase(BaseFloatValue):
             return self.from_app_font(self.value + other)  # type: ignore
         return NotImplemented
 
+    @override
     def __radd__(self, other: object) -> Self:
         return self if other == 0 else self.__add__(other)
 
+    @override
     def __sub__(self, other: object) -> Self:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value - other.value)
@@ -111,11 +123,13 @@ class UnitAppFontBase(BaseFloatValue):
             return self.from_app_font(self.value - other)  # type: ignore
         return NotImplemented
 
+    @override
     def __rsub__(self, other: object) -> Self:
         if isinstance(other, (int, float)):
             return self.from_app_font(other - self.value)  # type: ignore
         return NotImplemented
 
+    @override
     def __mul__(self, other: object) -> Self:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return self.from_app_font(self.value * other.value)
@@ -133,6 +147,7 @@ class UnitAppFontBase(BaseFloatValue):
 
         return NotImplemented
 
+    @override
     def __rmul__(self, other: int) -> Self:
         return self if other == 0 else self.__mul__(other)
 
@@ -164,9 +179,11 @@ class UnitAppFontBase(BaseFloatValue):
             return self.from_app_font(other / self.value)  # type: ignore
         return NotImplemented
 
-    def __abs__(self) -> float:
+    @override
+    def __abs__(self) -> float:  # type: ignore
         return abs(self.value)
 
+    @override
     def __lt__(self, other: object) -> bool:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return self.value < other.value
@@ -179,6 +196,7 @@ class UnitAppFontBase(BaseFloatValue):
             return self.value < float(other)  # type: ignore
         return False
 
+    @override
     def __le__(self, other: object) -> bool:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return True if self.almost_equal(other.value) else self.value < other.value
@@ -189,6 +207,7 @@ class UnitAppFontBase(BaseFloatValue):
             return True if self.almost_equal(oth_val) else self.value < oth_val
         return False
 
+    @override
     def __gt__(self, other: object) -> bool:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return self.value > other.value
@@ -198,6 +217,7 @@ class UnitAppFontBase(BaseFloatValue):
             return self.value > float(other)  # type: ignore
         return False
 
+    @override
     def __ge__(self, other: object) -> bool:
         if isinstance(other, UnitAppFontBase) and other.__class__.__name__ == self.__class__.__name__:
             return True if self.almost_equal(other.value) else self.value > other.value

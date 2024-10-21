@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.script import XStorageBasedLibraryContainer
 from com.sun.star.container import XNameAccess
 
@@ -20,7 +27,11 @@ if TYPE_CHECKING:
     from com.sun.star.document import XStorageBasedDocument
     from ooodev.utils.builder.default_builder import DefaultBuilder
     from ooodev.loader.inst.lo_inst import LoInst
-    from typing_extensions import Self
+
+    try:
+        from typing import Self  # noqa # type: ignore
+    except ImportError:
+        from typing_extensions import Self  # noqa # type: ignore
 
 
 class _DocumentDialogLibraryContainerComp(ComponentProp):
@@ -90,7 +101,7 @@ class _DocumentDialogLibraryContainerComp(ComponentProp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a DocumentScriptLibraryContainerComp class
         return DocumentDialogLibraryContainerComp
 
@@ -149,6 +160,7 @@ class DocumentDialogLibraryContainerComp(
 
     # region Properties
     @property
+    @override
     def component(self) -> DocumentDialogLibraryContainer:
         """DocumentDialogLibraryContainer Component"""
         # pylint: disable=no-member

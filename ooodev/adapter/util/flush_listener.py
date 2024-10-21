@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.util import XFlushListener
 
 from ooodev.adapter.adapter_base import AdapterBase
@@ -32,13 +38,15 @@ class FlushListener(AdapterBase, XFlushListener):
         if subscriber:
             subscriber.addFlushListener(self)
 
-    def flushed(self, event: EventObject) -> None:
+    @override
+    def flushed(self, rEvent: EventObject) -> None:
         """
         Event is invoked when the object data is flushed.
         """
-        self._trigger_event("flushed", event)
+        self._trigger_event("flushed", rEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -50,4 +58,4 @@ class FlushListener(AdapterBase, XFlushListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

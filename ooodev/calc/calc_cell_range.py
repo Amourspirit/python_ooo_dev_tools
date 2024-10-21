@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, List, overload, Sequence, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.sheet import XCellSeries
 from com.sun.star.table import XCellRange
 from ooo.dyn.sheet.cell_flags import CellFlagsEnum as CellFlagsEnum
@@ -189,6 +195,7 @@ class CalcCellRange(
 
     # region StylePropertyPartial overrides
 
+    @override
     def style_by_name(self, name: str | StyleCellKind = "") -> None:
         """
         Assign a style by name to the component.

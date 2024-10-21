@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
+
 from com.sun.star.form import XApproveActionListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -39,7 +46,8 @@ class ApproveActionListener(AdapterBase, XApproveActionListener):
         if subscriber:
             subscriber.addApproveActionListener(self)
 
-    def approveAction(self, event: EventObject) -> bool:
+    @override
+    def approveAction(self, aEvent: EventObject) -> bool:
         """
         Event is invoked when an action is preformed.
         If event is canceled then the action will be canceled.
@@ -58,7 +66,7 @@ class ApproveActionListener(AdapterBase, XApproveActionListener):
             that triggered the update.
         """
         cancel_args = CancelEventArgs(self.__class__.__qualname__)
-        cancel_args.event_data = event
+        cancel_args.event_data = aEvent
         self._trigger_direct_event("approveAction", cancel_args)
         if cancel_args.cancel:
             if CancelEventArgs.handled:
@@ -67,7 +75,8 @@ class ApproveActionListener(AdapterBase, XApproveActionListener):
             return False
         return True
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -79,4 +88,4 @@ class ApproveActionListener(AdapterBase, XApproveActionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)

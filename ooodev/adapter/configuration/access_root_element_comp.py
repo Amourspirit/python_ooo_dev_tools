@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.beans import property_with_state_partial
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.adapter.component_prop import ComponentProp
@@ -32,7 +38,7 @@ class _AccessRootElementComp(hierarchy_element_comp._HierarchyElementComp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a AccessRootElementComp class
         return AccessRootElementComp
 
@@ -66,7 +72,7 @@ class AccessRootElementComp(
     def __new__(cls, component: Any, *args, **kwargs):
         builder = cast(
             DefaultBuilder,
-            hierarchy_element_comp.HierarchyElementComp.__new__(cls, component, _builder_only=True, *args, **kwargs),
+            hierarchy_element_comp.HierarchyElementComp.__new__(cls, component, _builder_only=True, *args, **kwargs),  # type: ignore
         )
 
         local_builder = get_builder(component=component, _for_new=True)
@@ -96,6 +102,7 @@ class AccessRootElementComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> AccessRootElement:
         """AccessRootElement Component"""
         # pylint: disable=no-member

@@ -2,8 +2,13 @@ from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 import contextlib
 
-from ooodev.adapter.component_base import ComponentBase
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
 
+from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.text.text_range_comp import TextRangeComp
 from ooodev.adapter.text.text_portion_type_kind import TextPortionTypeKind
 
@@ -31,6 +36,7 @@ class TextPortionComp(TextRangeComp):
         TextRangeComp.__init__(self, component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextPortion",)
@@ -55,12 +61,11 @@ class TextPortionComp(TextRangeComp):
             return TextPortionTypeKind(self.component.TextPortionType)
         return TextPortionTypeKind.UNKNOWN
 
-    if TYPE_CHECKING:
-
-        @property
-        def component(self) -> TextPortion:
-            """Sheet Cell Cursor Component"""
-            # pylint: disable=no-member
-            return cast("TextPortion", self._ComponentBase__get_component())  # type: ignore
+    @property
+    @override
+    def component(self) -> TextPortion:
+        """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
+        return cast("TextPortion", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

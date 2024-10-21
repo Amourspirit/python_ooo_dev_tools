@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from ooo.dyn.awt.gradient import Gradient
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooo.dyn.awt.gradient_style import GradientStyle
 from ooodev.adapter.struct_base import StructBase
 from ooodev.units.angle10 import Angle10
@@ -37,12 +44,15 @@ class GradientStructComp(StructBase[Gradient]):
         super().__init__(component=component, prop_name=prop_name, event_provider=event_provider)
 
     # region Overrides
+    @override
     def _get_on_changing_event_name(self) -> str:
         return "com_sun_star_awt_Gradient_changing"
 
+    @override
     def _get_on_changed_event_name(self) -> str:
         return "com_sun_star_awt_Gradient_changed"
 
+    @override
     def _copy(self, src: Gradient | None = None) -> Gradient:
         if src is None:
             src = self.component

@@ -8,7 +8,7 @@ from ooodev.adapter.awt.mouse_click_handler import MouseClickHandler
 
 if TYPE_CHECKING:
     from com.sun.star.awt import XUserInputInterception
-    from ooodev.utils.type_var import EventArgsCallbackT, ListenerEventCallbackT
+    from ooodev.utils.type_var import EventArgsCallbackT, CancelEventArgsCallbackT, ListenerEventCallbackT
 
 
 class MouseClickEvents:
@@ -47,13 +47,18 @@ class MouseClickEvents:
         self.__name = gUtil.Util.generate_random_string(10)
 
     # region Manage Events
-    def add_event_mouse_pressed(self, cb: EventArgsCallbackT) -> None:
+    def add_event_mouse_pressed(self, cb: CancelEventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
         Event is invoked when a mouse button has been pressed on a window.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.MouseEvent`` struct.
+        The callback ``CancelEventArgs.event_data`` will contain a UNO ``com.sun.star.awt.MouseEvent`` struct.
+
+        Note:
+            The callback event will be :py:class:`~ooodev.events.args.cancel_event_args.CancelEventArgs`.
+            If the ``CancelEventArgs.cancel`` is set to ``True`` then the action will be canceled if the ``CancelEventArgs.handled``
+            is set to ``True`` then the action will be performed.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mousePressed")
@@ -62,13 +67,18 @@ class MouseClickEvents:
                 self.__callback = None
         self.__listener.on("mousePressed", cb)
 
-    def add_event_mouse_released(self, cb: EventArgsCallbackT) -> None:
+    def add_event_mouse_released(self, cb: CancelEventArgsCallbackT) -> None:
         """
         Adds a listener for an event.
 
         Event is invoked when a mouse button has been released on a window.
 
-        The callback ``EventArgs.event_data`` will contain a UNO ``com.sun.star.awt.MouseEvent`` struct.
+        The callback ``CancelEventArgs.event_data`` will contain a UNO ``com.sun.star.awt.MouseEvent`` struct.
+
+        Note:
+            The callback event will be :py:class:`~ooodev.events.args.cancel_event_args.CancelEventArgs`.
+            If the ``CancelEventArgs.cancel`` is set to ``True`` then the action will be canceled if the ``CancelEventArgs.handled``
+            is set to ``True`` then the action will be performed.
         """
         if self.__callback:
             args = ListenerEventArgs(source=self.__name, trigger_name="mouseReleased")

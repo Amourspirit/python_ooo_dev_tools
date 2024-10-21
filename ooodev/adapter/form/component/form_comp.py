@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.awt.tab_controller_model_partial import TabControllerModelPartial
 from ooodev.adapter.beans.property_bag_partial import PropertyBagPartial
 from ooodev.adapter.beans.property_change_implement import PropertyChangeImplement
@@ -87,6 +94,7 @@ class FormComp(
     # endregion Lazy Listeners
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.form.component.Form",)
@@ -94,6 +102,7 @@ class FormComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> Form:
         """Form Component"""
         # pylint: disable=no-member

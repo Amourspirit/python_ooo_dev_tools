@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt.tree import XTreeExpansionListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -34,45 +40,51 @@ class TreeExpansionListener(AdapterBase, XTreeExpansionListener):
             subscriber.addTreeExpansionListener(self)
 
     # region XTreeExpansionListener
-    def requestChildNodes(self, event: TreeExpansionEvent) -> None:
+    @override
+    def requestChildNodes(self, Event: TreeExpansionEvent) -> None:
         """
         Invoked when a node with children on demand is about to be expanded.
 
         This event is invoked before the treeExpanding() event.
         """
-        self._trigger_event("requestChildNodes", event)
+        self._trigger_event("requestChildNodes", Event)
 
-    def treeCollapsed(self, event: TreeExpansionEvent) -> None:
+    @override
+    def treeCollapsed(self, Event: TreeExpansionEvent) -> None:
         """
         Called whenever a node in the tree has been successfully collapsed.
         """
-        self._trigger_event("treeCollapsed", event)
+        self._trigger_event("treeCollapsed", Event)
 
-    def treeCollapsing(self, event: TreeExpansionEvent) -> None:
+    @override
+    def treeCollapsing(self, Event: TreeExpansionEvent) -> None:
         """
         Invoked whenever a node in the tree is about to be collapsed.
 
         Raises:
             ExpandVetoException: ``ExpandVetoException``
         """
-        self._trigger_event("treeCollapsing", event)
+        self._trigger_event("treeCollapsing", Event)
 
-    def treeExpanded(self, event: TreeExpansionEvent) -> None:
+    @override
+    def treeExpanded(self, Event: TreeExpansionEvent) -> None:
         """
         Invoked whenever a node in the tree has been successfully expanded.
         """
-        self._trigger_event("treeExpanded", event)
+        self._trigger_event("treeExpanded", Event)
 
-    def treeExpanding(self, event: TreeExpansionEvent) -> None:
+    @override
+    def treeExpanding(self, Event: TreeExpansionEvent) -> None:
         """
         Invoked whenever a node in the tree is about to be expanded.
 
         Raises:
             ExpandVetoException: ``ExpandVetoException``
         """
-        self._trigger_event("treeExpanding", event)
+        self._trigger_event("treeExpanding", Event)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -84,6 +96,6 @@ class TreeExpansionListener(AdapterBase, XTreeExpansionListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XTreeExpansionListener

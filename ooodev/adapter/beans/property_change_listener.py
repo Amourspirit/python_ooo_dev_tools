@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.beans import XPropertyChangeListener
 
 from ooodev.events.args.generic_args import GenericArgs
@@ -29,13 +35,15 @@ class PropertyChangeListener(AdapterBase, XPropertyChangeListener):
         super().__init__(trigger_args=trigger_args)
 
     # region XPropertyChangeListener
-    def propertyChange(self, event: PropertyChangeEvent) -> None:
+    @override
+    def propertyChange(self, evt: PropertyChangeEvent) -> None:
         """
         Gets called when bound property is changed.
         """
-        self._trigger_event("propertyChange", event)
+        self._trigger_event("propertyChange", evt)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -47,6 +55,6 @@ class PropertyChangeListener(AdapterBase, XPropertyChangeListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XPropertyChangeListener

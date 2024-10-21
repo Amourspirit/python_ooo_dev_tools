@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.frame import XTransientDocumentsDocumentContentFactory
 
 from ooodev.adapter.component_base import ComponentBase
@@ -33,6 +40,7 @@ class TransientDocumentsDocumentContentFactoryComp(ComponentBase, TransientDocum
         TransientDocumentsDocumentContentFactoryPartial.__init__(self, component=component, interface=None)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ()
@@ -62,7 +70,8 @@ class TransientDocumentsDocumentContentFactoryComp(ComponentBase, TransientDocum
         return cls(transient_doc)
 
     # region XTransientDocumentsDocumentContentFactory overrides
-    def create_document_content(self, model: XModel) -> TransientDocumentsDocumentContentComp:
+    @override
+    def create_document_content(self, model: XModel) -> TransientDocumentsDocumentContentComp:  # type: ignore
         """
         Creates a ``TransientDocumentsDocumentContentComp`` based on a given ``com.sun.star.document.OfficeDocument``.
 
@@ -78,6 +87,7 @@ class TransientDocumentsDocumentContentFactoryComp(ComponentBase, TransientDocum
 
     # region Properties
     @property
+    @override
     def component(self) -> TransientDocumentsDocumentContentFactory:
         """TransientDocumentsDocumentContentFactory Component"""
         # pylint: disable=no-member

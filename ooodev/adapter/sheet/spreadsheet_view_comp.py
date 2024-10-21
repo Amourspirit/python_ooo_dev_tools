@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter._helper.builder.comp_defaults_partial import CompDefaultsPartial
 from ooodev.utils.builder.default_builder import DefaultBuilder
 from ooodev.utils.builder.init_kind import InitKind
@@ -27,11 +33,13 @@ from ooodev.adapter.awt.key_handler_events import KeyHandlerEvents
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SpreadsheetView  # service
+    from com.sun.star.sheet import SpreadsheetViewPane  # noqa # type: ignore
 
 
 class _SpreadsheetViewComp(spreadsheet_view_pane_comp._SpreadsheetViewPaneComp):
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.SpreadsheetView",)
@@ -40,7 +48,7 @@ class _SpreadsheetViewComp(spreadsheet_view_pane_comp._SpreadsheetViewPaneComp):
 
     # region Properties
     @property
-    def __class__(self):
+    def __class__(self):  # type: ignore
         # pretend to be a SpreadsheetViewComp class
         return SpreadsheetViewComp
 
@@ -78,7 +86,7 @@ class SpreadsheetViewComp(
         builder = cast(
             DefaultBuilder,
             spreadsheet_view_pane_comp.SpreadsheetViewPaneComp.__new__(
-                cls, component, _builder_only=True, *args, **kwargs
+                cls, component, _builder_only=True, *args, **kwargs  # type: ignore
             ),
         )
 
@@ -108,6 +116,7 @@ class SpreadsheetViewComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> SpreadsheetView:
         """Spreadsheet View Component"""
         # pylint: disable=no-member

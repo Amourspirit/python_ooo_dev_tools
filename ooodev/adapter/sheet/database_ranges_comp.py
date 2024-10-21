@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_base import ComponentBase
 from ooodev.adapter.sheet.database_ranges_partial import DatabaseRangesPartial
 from ooodev.adapter.container.enumeration_access_partial import EnumerationAccessPartial
@@ -42,6 +49,7 @@ class DatabaseRangesComp(
         TypeProviderPartial.__init__(self, component=component, interface=None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.sheet.DatabaseRanges",)
@@ -79,6 +87,7 @@ class DatabaseRangesComp(
     # endregion Overrides
     # region Properties
     @property
+    @override
     def component(self) -> DatabaseRanges:
         """Sheet Cell Component"""
         # pylint: disable=no-member

@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING, Generic, TypeVar
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.index_access_partial import IndexAccessPartial
 
@@ -33,6 +39,7 @@ class IndexAccessComp(
         IndexAccessPartial.__init__(self, component=self.component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ()
@@ -42,6 +49,7 @@ class IndexAccessComp(
     # region Properties
 
     @property
+    @override
     def component(self) -> XIndexAccess:
         """XIndexAccess Component"""
         # overrides base property

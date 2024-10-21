@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XMenuListener
 from ooodev.events.args.generic_args import GenericArgs
 from ooodev.adapter.adapter_base import AdapterBase
@@ -34,31 +40,36 @@ class MenuListener(AdapterBase, XMenuListener):
             subscriber.addMenuListener(self)
 
     # region XMenuListener
-    def itemActivated(self, event: MenuEvent) -> None:
+    @override
+    def itemActivated(self, aEvent: MenuEvent) -> None:
         """
         Invoked when a menu is activated.
         """
-        self._trigger_event("itemActivated", event)
+        self._trigger_event("itemActivated", aEvent)
 
-    def itemDeactivated(self, event: MenuEvent) -> None:
+    @override
+    def itemDeactivated(self, aEvent: MenuEvent) -> None:
         """
         Invoked when a menu is deactivated.
         """
-        self._trigger_event("itemDeactivated", event)
+        self._trigger_event("itemDeactivated", aEvent)
 
-    def itemHighlighted(self, event: MenuEvent) -> None:
+    @override
+    def itemHighlighted(self, aEvent: MenuEvent) -> None:
         """
         Invoked when a menu item is highlighted.
         """
-        self._trigger_event("itemHighlighted", event)
+        self._trigger_event("itemHighlighted", aEvent)
 
-    def itemSelected(self, event: MenuEvent) -> None:
+    @override
+    def itemSelected(self, aEvent: MenuEvent) -> None:
         """
         Invoked when a menu item is selected.
         """
-        self._trigger_event("itemSelected", event)
+        self._trigger_event("itemSelected", aEvent)
 
-    def disposing(self, event: EventObject) -> None:
+    @override
+    def disposing(self, Source: EventObject) -> None:
         """
         Gets called when the broadcaster is about to be disposed.
 
@@ -70,6 +81,6 @@ class MenuListener(AdapterBase, XMenuListener):
         interfaced, not only for registrations at ``XComponent``.
         """
         # from com.sun.star.lang.XEventListener
-        self._trigger_event("disposing", event)
+        self._trigger_event("disposing", Source)
 
     # endregion XMenuListener

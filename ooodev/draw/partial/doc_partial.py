@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from ooodev.loader.inst.lo_inst import LoInst
     from ooodev.events.args.generic_args import GenericArgs
     from ooodev.proto.component_proto import ComponentT
+    from com.sun.star.drawing import XShape  # noqa # type: ignore
 
 _T = TypeVar("_T", bound="ComponentT")
 

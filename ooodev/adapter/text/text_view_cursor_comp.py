@@ -1,18 +1,19 @@
 from __future__ import annotations
 from typing import cast, TYPE_CHECKING
 
-# from .text_cursor_comp import TextCursorComp
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.text import text_view_cursor_partial as mTextViewCursorPartial
 from ooodev.adapter.text.page_cursor_partial import PageCursorPartial
 from ooodev.adapter.view.screen_cursor_partial import ScreenCursorPartial
 
-# from .word_cursor_partial import WordCursorPartial
 
 from ooodev.adapter.text.text_range_comp import TextRangeComp
 
-# from .text_cursor_partial import TextCursorPartial
-# from .sentence_cursor_partial import SentenceCursorPartial
-# from .paragraph_cursor_partial import ParagraphCursorPartial
 
 if TYPE_CHECKING:
     from com.sun.star.text import TextViewCursor  # service
@@ -45,6 +46,7 @@ class TextViewCursorComp(
         ScreenCursorPartial.__init__(self, component, None)  # type: ignore
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ("com.sun.star.text.TextViewCursor",)
@@ -52,12 +54,12 @@ class TextViewCursorComp(
     # endregion Overrides
 
     # region Properties
-    if TYPE_CHECKING:
 
-        @property
-        def component(self) -> TextViewCursor:
-            """Sheet Cell Cursor Component"""
-            # pylint: disable=no-member
-            return cast("TextViewCursor", self._ComponentBase__get_component())  # type: ignore
+    @property
+    @override
+    def component(self) -> TextViewCursor:
+        """Sheet Cell Cursor Component"""
+        # pylint: disable=no-member
+        return cast("TextViewCursor", self._ComponentBase__get_component())  # type: ignore
 
     # endregion Properties

@@ -1,3 +1,4 @@
+import uno  # noqa # type: ignore
 from ooo.dyn.linguistic2.dictionary_type import DictionaryType as DictionaryType
 from ooo.dyn.style.numbering_type import NumberingTypeEnum as NumberingTypeEnum
 from ooo.dyn.style.paragraph_adjust import ParagraphAdjust as ParagraphAdjust
@@ -79,5 +80,3 @@ __all__ = [
     "WriteTextViewCursor",
     "WriteWordCursor",
 ]
-
-import uno  # noqa # type: ignore

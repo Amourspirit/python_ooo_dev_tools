@@ -1,6 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from ooodev.adapter.component_prop import ComponentProp
 from ooodev.adapter.container.name_container_partial import NameContainerPartial
 
@@ -27,6 +33,7 @@ class NameContainerComp(ComponentProp, NameContainerPartial[Any]):
         NameContainerPartial.__init__(self, component=self.component)
 
     # region Overrides
+    @override
     def _ComponentBase__get_supported_service_names(self) -> tuple[str, ...]:
         """Returns a tuple of supported service names."""
         return ()
@@ -36,6 +43,7 @@ class NameContainerComp(ComponentProp, NameContainerPartial[Any]):
     # region Properties
 
     @property
+    @override
     def component(self) -> XNameContainer:
         """XNameContainer Component"""
         # overrides base property

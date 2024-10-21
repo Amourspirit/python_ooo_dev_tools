@@ -3,6 +3,12 @@ from typing import cast, TYPE_CHECKING
 from ooodev.adapter.awt.uno_control_comp import UnoControlComp
 from ooodev.adapter.awt.animation_partial import AnimationPartial
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 if TYPE_CHECKING:
     from com.sun.star.awt import AnimatedImagesControl
 
@@ -20,6 +26,7 @@ class AnimatedImagesControlComp(UnoControlComp, AnimationPartial):
         AnimationPartial.__init__(self, component=self.component, interface=None)
 
     @property
+    @override
     def component(self) -> AnimatedImagesControl:
         """AnimatedImagesControl Component"""
         # pylint: disable=no-member

@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Tuple
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.lang import XServiceInfo
 
 
@@ -12,13 +19,15 @@ class BaseServiceInfo(XServiceInfo):
     """
 
     # region XServiceInfo
+    @override
     def getImplementationName(self) -> str:
         """
         Provides the implementation name of the service implementation.
         """
         raise NotImplementedError
 
-    def supportsService(self, name: str) -> bool:
+    @override
+    def supportsService(self, ServiceName: str) -> bool:
         """
         Tests whether the specified service is supported, i.e.
 
@@ -26,6 +35,7 @@ class BaseServiceInfo(XServiceInfo):
         """
         raise NotImplementedError
 
+    @override
     def getSupportedServiceNames(self) -> Tuple[str]:
         """
         Provides the supported service names of the implementation, including also indirect service names.

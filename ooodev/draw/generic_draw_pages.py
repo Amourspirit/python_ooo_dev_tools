@@ -3,6 +3,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar, Generic
 import contextlib
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.adapter.drawing.draw_pages_comp import DrawPagesComp
@@ -62,7 +69,8 @@ class GenericDrawPages(
         TheDictionaryPartial.__init__(self)
         self._current_index = 0
 
-    def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    @override
+    def __getitem__(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:  # type: ignore
         return self.get_by_index(idx=idx)
 
     def __len__(self) -> int:
@@ -72,7 +80,8 @@ class GenericDrawPages(
         self._current_index = 0
         return self
 
-    def __next__(self) -> mGenericDrawPage.GenericDrawPage[_T]:
+    @override
+    def __next__(self) -> mGenericDrawPage.GenericDrawPage[_T]:  # type: ignore
         if self._current_index >= len(self):
             self._current_index = 0
             raise StopIteration
@@ -148,7 +157,8 @@ class GenericDrawPages(
 
     # region XIndexAccess overrides
 
-    def get_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    @override
+    def get_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:  # type: ignore
         """
         Gets the element with the specified index.
 
@@ -172,7 +182,8 @@ class GenericDrawPages(
     # endregion XIndexAccess overrides
 
     # region XDrawPages overrides
-    def insert_new_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:
+    @override
+    def insert_new_by_index(self, idx: int) -> mGenericDrawPage.GenericDrawPage[_T]:  # type: ignore
         """
         Creates and inserts a new GenericDrawPage or MasterPage into this container.
 

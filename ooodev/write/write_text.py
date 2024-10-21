@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING, TypeVar, Generic, overload
 import contextlib
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.text import XTextRange
 
 from ooodev.adapter.text.relative_text_content_insert_partial import RelativeTextContentInsertPartial
@@ -107,7 +114,8 @@ class WriteText(
         """
         ...
 
-    def insert_text_content(self, content: XTextContent, absorb: bool, rng: XTextRange | None = None) -> None:
+    @override
+    def insert_text_content(self, content: XTextContent, absorb: bool, rng: XTextRange | None = None) -> None:  # type: ignore
         """
         Inserts a content, such as a text table, text frame or text field.
 
@@ -128,7 +136,8 @@ class WriteText(
         TextComp.insert_text_content(self, rng, content, absorb)
 
     # region SimpleTextPartial overrides
-    def create_text_cursor(self) -> WriteTextCursor[WriteText]:
+    @override
+    def create_text_cursor(self) -> WriteTextCursor[WriteText]:  # type: ignore
         """
         Creates a new text cursor.
 
@@ -141,7 +150,8 @@ class WriteText(
         cursor = self.component.createTextCursor()
         return WriteTextCursor(owner=self, component=cursor, lo_inst=self.lo_inst)
 
-    def create_text_cursor_by_range(self, text_position: WriteTextRange | XTextRange) -> WriteTextCursor[WriteText]:
+    @override
+    def create_text_cursor_by_range(self, text_position: WriteTextRange | XTextRange) -> WriteTextCursor[WriteText]:  # type: ignore
         """
         The initial position is set to ``text_position``.
 
@@ -166,6 +176,7 @@ class WriteText(
     # endregion SimpleTextPartial overrides
 
     # region EnumerationAccessPartial overrides
+    @override
     def _is_next_element_valid(self, element: Any) -> bool:
         """
         Gets if the next element is valid.
@@ -181,6 +192,7 @@ class WriteText(
             return element.supportsService("com.sun.star.text.TextContent")
         return False
 
+    @override
     def __next__(self) -> WriteTextContent[WriteText[T]]:
         """
         Gets the next element.

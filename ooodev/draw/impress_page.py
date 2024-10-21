@@ -1,6 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import TypeVar, Generic
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.drawing import XDrawPage
 
 from ooodev.draw.draw_page import DrawPage
@@ -28,6 +35,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         self._owner = owner
         DrawPage.__init__(self, owner=owner, component=component, lo_inst=lo_inst)
 
+    @override
     def get_master_page(self) -> ImpressPage[_T]:
         """
         Gets master page
@@ -41,6 +49,7 @@ class ImpressPage(DrawPage[_T], Generic[_T]):
         page = mDraw.Draw.get_master_page(self.component)  # type: ignore
         return ImpressPage(owner=self._owner, component=page, lo_inst=self.lo_inst)
 
+    @override
     def get_notes_page(self) -> ImpressPage[_T]:
         """
         Gets the notes page of a slide.

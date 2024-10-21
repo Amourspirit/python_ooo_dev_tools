@@ -1,5 +1,12 @@
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
+
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 from com.sun.star.awt import XControl
 
 from ooodev.adapter.awt.text_events import TextEvents
@@ -54,14 +61,17 @@ class FormCtlRichText(FormCtlBase, TextEvents):
 
     if TYPE_CHECKING:
         # override the methods to provide type hinting
+        @override
         def get_view(self) -> ControlView:
             """Gets the view of this control"""
             return cast("ControlView", super().get_view())
 
+        @override
         def get_model(self) -> ControlModel:
             """Gets the model for this control"""
             return cast("ControlModel", super().get_model())
 
+    @override
     def get_form_component_kind(self) -> FormComponentKind:
         """Gets the kind of form component this control is"""
         return FormComponentKind.RICH_TEXT_CONTROL

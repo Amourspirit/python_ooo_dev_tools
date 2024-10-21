@@ -55,4 +55,13 @@ class TextLayoutConstrainsPartial:
         sz = self.__component.getMinimumSize(cols, lines)
         return SizePX(UnitPX(sz.Width), UnitPX(sz.Height))
 
+    def get_minimum_size_text_layout(self, cols: int, lines: int) -> SizePX:
+        """
+        Returns the minimum size for a given number of columns and lines.
+        """
+        # same as get_minimum_size() but this class is a partial class for XTextLayoutConstrains
+        # Some other classes such as UnoControlEditComp override get_minimum_size via LayoutConstrainsPartial.
+        sz = self.__component.getMinimumSize(cols, lines)
+        return SizePX(UnitPX(sz.Width), UnitPX(sz.Height))
+
     # endregion XTextLayoutConstrains
