@@ -21,9 +21,22 @@ class DocJsonFile:
         self._doc = doc
         self._root_uri = f"vnd.sun.star.tdoc:/{self._doc.runtime_uid}/{root_dir}"
         self._sfa = Sfa()
-        if not self._sfa.exists(self._root_uri):
+        self._folder_exist = self._sfa.exists(self._root_uri)
+
+    def _ensure_folder_exists(self) -> None:
+        """
+        Ensures that root_dir dir exists in the document.
+
+        Args:
+            file_name (str): The name of the file.
+
+        Returns:
+            None
+        """
+        if not self._folder_exist:
             self._log.debug(f"Creating folder: {self._root_uri}")
             self._sfa.inst.create_folder(self._root_uri)
+            self._folder_exist = True
 
     def read_json(self, file_name: str) -> Any:
         """
@@ -40,6 +53,10 @@ class DocJsonFile:
         Returns:
             dict: The JSON data or None if the file does not exist or there is an error reading the file.
         """
+        if not self._folder_exist:
+            self._log.error(f"Folder does not exist: {self._root_uri}")
+            raise FileNotFoundError(f"Folder does not exist: {self._root_uri}")
+
         file_uri = f"{self._root_uri}/{file_name}"
         if not self._sfa.exists(file_uri):
             self._log.error(f"File does not exist: {file_uri}")
@@ -76,6 +93,8 @@ class DocJsonFile:
         Returns:
             None
         """
+        self._ensure_folder_exists()
+
         file_pth = Path(file_name)
         if file_pth.suffix != ".json":
             file_name = f"{file_name}.json"
@@ -104,6 +123,8 @@ class DocJsonFile:
         Returns:
             bool: True if the file exists, False otherwise.
         """
+        if not self._folder_exist:
+            return False
         if not file_name:
             return False
         file_uri = f"{self._root_uri}/{file_name}"
