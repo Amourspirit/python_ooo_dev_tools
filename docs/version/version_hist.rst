@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.49.1
+==============
+
+Minor update for ``ooodev.io.json.doc_json_fileDocJsonFile``. Now the class will not add a folder to the document until a json file is being written.
+
 Version 0.49.0
 ==============
 
