@@ -78,6 +78,7 @@ esbonio = ">=0.16.1"
 sphinx-substitution-extensions = ">=2022.2.16"
 sphinx-copybutton = "^0.5.2"
 sphinx-design = "^0.5.0"
+sphinx-build-compatibility = { git = "https://github.com/readthedocs/sphinx-build-compatibility#egg=sphinx-build-compatibility", branch = "main" }
 
 
 [tool.poetry.group.dev_extra.dependencies]
