@@ -23,6 +23,7 @@ from ooodev.utils.partial.qi_partial import QiPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.write.partial.write_doc_prop_partial import WriteDocPropPartial
 from ooodev.write.write_forms import WriteForms
+from ooodev.adapter.util.theme_comp import ThemeComp
 
 if TYPE_CHECKING:
     from com.sun.star.drawing import XDrawPage
@@ -73,6 +74,7 @@ class WriteDrawPage(
         StylePartial.__init__(self, component=component)
         ShapeFactoryPartial.__init__(self, owner=self, lo_inst=self.lo_inst)
         self._forms = None
+        self._theme_comp = None
 
     def __len__(self) -> int:
         """
@@ -138,5 +140,25 @@ class WriteDrawPage(
         if self._forms is None:
             self._forms = WriteForms(owner=self, forms=self.component.getForms(), lo_inst=self.lo_inst)  # type: ignore
         return self._forms
+
+    @property
+    def theme(self) -> ThemeComp | None:
+        """
+        Gets document theme.
+
+
+        Returns:
+            ThemeComp | None: Document Theme or ``None`` if not available.
+
+        Note:
+            Theme is only supported in LibreOffice ``7.6`` and later.
+
+        .. versionadded:: 0.50.0
+        """
+        if not hasattr(self.component, "Theme"):
+            return None
+        if self._theme_comp is None:
+            self._theme_comp = ThemeComp(component=self.component.Theme)  # type: ignore
+        return self._theme_comp  # type: ignore
 
     # endregion Properties

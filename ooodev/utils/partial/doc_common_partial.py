@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Tuple
 from ooodev.io.log.named_logger import NamedLogger
+from ooodev.utils import info as mInfo
 
 
 class DocCommonPartial:
@@ -15,6 +16,7 @@ class DocCommonPartial:
         """
         self.__component = component
         self.__log = NamedLogger(name=self.__class__.__name__)
+        self.__lo_version_info = mInfo.Info.version_info
 
     def __bool__(self) -> bool:
         return True
@@ -48,3 +50,13 @@ class DocCommonPartial:
             NamedLogger: The logger.
         """
         return self.__log
+
+    @property
+    def version_info(self) -> Tuple[int, ...]:
+        """
+        Gets the running LibreOffice version.
+
+        Returns:
+            tuple: version as tuple such as ``(24, 2, 6, 2)``
+        """
+        return self.__lo_version_info

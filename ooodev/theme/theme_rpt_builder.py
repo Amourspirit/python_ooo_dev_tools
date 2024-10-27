@@ -2,6 +2,12 @@ from __future__ import annotations
 from ooodev.theme.theme import ThemeBase
 from ooodev.utils.info import Info
 
+try:
+    # python 3.12+
+    from typing import override  # noqa # type: ignore
+except ImportError:
+    from typing_extensions import override  # noqa # type: ignore
+
 
 class ThemeRptBuilder(ThemeBase):
     """
@@ -13,6 +19,7 @@ class ThemeRptBuilder(ThemeBase):
     All other values are positive numbers.
     """
 
+    @override
     def _get_color(self, prop_name: str) -> int:
         val = Info.get_config(
             node_str="Color",
@@ -31,15 +38,6 @@ class ThemeRptBuilder(ThemeBase):
         return self._detail_color
 
     @property
-    def page_header_color(self) -> int:
-        """Page Header color."""
-        try:
-            return self._page_header_color
-        except AttributeError:
-            self._page_header_color = self._get_color("PageHeader")
-        return self._page_header_color
-
-    @property
     def page_footer_color(self) -> int:
         """Page Footer color."""
         try:
@@ -49,13 +47,13 @@ class ThemeRptBuilder(ThemeBase):
         return self._page_footer_color
 
     @property
-    def group_header_color(self) -> int:
-        """Group Header color."""
+    def page_header_color(self) -> int:
+        """Page Header color."""
         try:
-            return self._group_header_color
+            return self._page_header_color
         except AttributeError:
-            self._group_header_color = self._get_color("GroupHeader")
-        return self._group_header_color
+            self._page_header_color = self._get_color("PageHeader")
+        return self._page_header_color
 
     @property
     def group_footer_color(self) -> int:
@@ -67,13 +65,13 @@ class ThemeRptBuilder(ThemeBase):
         return self._group_footer_color
 
     @property
-    def column_header_color(self) -> int:
-        """Column Header color."""
+    def group_header_color(self) -> int:
+        """Group Header color."""
         try:
-            return self._column_header_color
+            return self._group_header_color
         except AttributeError:
-            self._column_header_color = self._get_color("ColumnHeader")
-        return self._column_header_color
+            self._group_header_color = self._get_color("GroupHeader")
+        return self._group_header_color
 
     @property
     def column_footer_color(self) -> int:
@@ -85,13 +83,13 @@ class ThemeRptBuilder(ThemeBase):
         return self._column_footer_color
 
     @property
-    def report_header_color(self) -> int:
-        """Report Header color."""
+    def column_header_color(self) -> int:
+        """Column Header color."""
         try:
-            return self._report_header_color
+            return self._column_header_color
         except AttributeError:
-            self._report_header_color = self._get_color("ReportHeader")
-        return self._report_header_color
+            self._column_header_color = self._get_color("ColumnHeader")
+        return self._column_header_color
 
     @property
     def report_footer_color(self) -> int:
@@ -101,6 +99,15 @@ class ThemeRptBuilder(ThemeBase):
         except AttributeError:
             self._report_footer_color = self._get_color("ReportFooter")
         return self._report_footer_color
+
+    @property
+    def report_header_color(self) -> int:
+        """Report Header color."""
+        try:
+            return self._report_header_color
+        except AttributeError:
+            self._report_header_color = self._get_color("ReportHeader")
+        return self._report_header_color
 
     @property
     def overlap_control_color(self) -> int:

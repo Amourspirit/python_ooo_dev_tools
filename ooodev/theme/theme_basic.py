@@ -14,22 +14,13 @@ class ThemeBasic(ThemeBase):
 
     # region Properties
     @property
-    def comment_color(self) -> int:
+    def editor_color(self) -> int:
         """Comment color."""
         try:
             return self._comment_color
         except AttributeError:
-            self._comment_color = self._get_color("BASICComment")
+            self._comment_color = self._get_color("BASICEditor")
         return self._comment_color
-
-    @property
-    def error_color(self) -> int:
-        """Error color."""
-        try:
-            return self._error_color
-        except AttributeError:
-            self._error_color = self._get_color("BASICError")
-        return self._error_color
 
     @property
     def identifier_color(self) -> int:
@@ -41,13 +32,13 @@ class ThemeBasic(ThemeBase):
         return self._identifier_color
 
     @property
-    def keyword_color(self) -> int:
-        """Keyword color."""
+    def comment_color(self) -> int:
+        """Comment color."""
         try:
-            return self._keyword_color
+            return self._comment_color
         except AttributeError:
-            self._keyword_color = self._get_color("BASICKeyword")
-        return self._keyword_color
+            self._comment_color = self._get_color("BASICComment")
+        return self._comment_color
 
     @property
     def number_color(self) -> int:
@@ -59,6 +50,15 @@ class ThemeBasic(ThemeBase):
         return self._number_color
 
     @property
+    def string_color(self) -> int:
+        """String color."""
+        try:
+            return self._string_color
+        except AttributeError:
+            self._string_color = self._get_color("BASICString")
+        return self._string_color
+
+    @property
     def operator_color(self) -> int:
         """Operator color."""
         try:
@@ -68,12 +68,21 @@ class ThemeBasic(ThemeBase):
         return self._operator_color
 
     @property
-    def string_color(self) -> int:
-        """String color."""
+    def keyword_color(self) -> int:
+        """Keyword color."""
         try:
-            return self._string_color
+            return self._keyword_color
         except AttributeError:
-            self._string_color = self._get_color("BASICString")
-        return self._string_color
+            self._keyword_color = self._get_color("BASICKeyword")
+        return self._keyword_color
+
+    @property
+    def error_color(self) -> int:
+        """Error color."""
+        try:
+            return self._error_color
+        except AttributeError:
+            self._error_color = self._get_color("BASICError")
+        return self._error_color
 
     # endregion Properties

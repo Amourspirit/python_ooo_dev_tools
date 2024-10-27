@@ -627,6 +627,30 @@ class Info(metaclass=StaticProperty):
             return ""
 
     @classmethod
+    def is_office_theme(cls, name: str) -> bool:
+        """
+        Gets if the theme is available in LibreOffice.
+
+        |lo_unsafe|
+
+        Returns:
+            bool: LibreOffice Theme Name such as ``My Dark Theme``
+
+        Note:
+            Older Version of LibreOffice will return ``False``.
+
+        .. versionadded:: 0.50.0
+        """
+        if not name:
+            return False
+        try:
+            props = cls.get_config_props(f"/org.openoffice.Office.UI/ColorScheme/ColorSchemes/{name}")
+            return props.Name == name  # type: ignore
+        except mEx.PropertyError:
+            # most likely pre LO 7.4
+            return False
+
+    @classmethod
     def get_gallery_dir(cls) -> Path:
         """
         Get the first directory that contain the Gallery database and multimedia files.
@@ -716,7 +740,7 @@ class Info(metaclass=StaticProperty):
             raise mEx.ConfigError(f"Unable to set configuration property for '{node_path}'") from e
 
     @classmethod
-    def set_config(cls, node_path: str, node_str: str, val: object) -> bool:
+    def set_config(cls, node_path: str, node_str: str, val: Any) -> bool:
         """
         Sets config.
 
@@ -1493,6 +1517,7 @@ class Info(metaclass=StaticProperty):
         if not obj:
             return
         from ooodev.utils.kind.enum_helper import EnumHelper
+
         name = ""
         try:
             if isinstance(obj, str):
