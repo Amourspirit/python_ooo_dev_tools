@@ -58,6 +58,7 @@ from ooodev.utils.partial.doc_common_partial import DocCommonPartial
 from ooodev.utils.partial.the_dictionary_partial import TheDictionaryPartial
 from ooodev.utils.partial.json_custom_props_partial import JsonCustomPropsPartial
 from ooodev.calc.partial.popup_rng_sel_partial import PopupRngSelPartial
+from ooodev.adapter.util.theme_comp import ThemeComp
 
 if TYPE_CHECKING:
     from com.sun.star.beans import PropertyValue
@@ -95,7 +96,7 @@ class CalcDoc(
 ):
     """Defines a Calc Document"""
 
-    DOC_TYPE: DocType = DocType.CALC
+    DOC_TYPE: DocType = DocType.CALC  # type: ignore
     DOC_CLSID: CLSID = CLSID.CALC
 
     def __init__(self, doc: XSpreadsheetDocument, lo_inst: LoInst | None = None) -> None:
@@ -142,6 +143,7 @@ class CalcDoc(
         self._shortcuts = None
         self._named_ranges = None
         self._database_ranges = None
+        self._theme_comp = None
 
     # region context manage
     def __enter__(self) -> CalcDoc:
@@ -1192,7 +1194,11 @@ class CalcDoc(
             CalcSheetView: Current Controller
         """
         if self._current_controller is None:
-            self._current_controller = mCalcSheetView.CalcSheetView(owner=self, view=self.component.getCurrentController(), lo_inst=self.lo_inst)  # type: ignore
+            self._current_controller = mCalcSheetView.CalcSheetView(
+                owner=self,
+                view=self.component.getCurrentController(),  # type: ignore
+                lo_inst=self.lo_inst,  # type: ignore
+            )  # type: ignore
         return self._current_controller
 
     @property
@@ -1269,6 +1275,25 @@ class CalcDoc(
         if self._database_ranges is None:
             self._database_ranges = DatabaseRangesComp(component=self.component.DatabaseRanges)  # type: ignore
         return self._database_ranges  # type: ignore
+
+    @property
+    def theme(self) -> ThemeComp | None:
+        """
+        Gets document theme.
+
+        Returns:
+            ThemeComp | None: Document Theme or ``None`` if not available.
+
+        Note:
+            Theme is only supported in LibreOffice ``7.6`` and later.
+
+        .. versionadded:: 0.50.0
+        """
+        if not hasattr(self.component, "Theme"):
+            return None
+        if self._theme_comp is None:
+            self._theme_comp = ThemeComp(component=self.component.Theme)  # type: ignore
+        return self._theme_comp  # type: ignore
 
     # endregion Properties
 

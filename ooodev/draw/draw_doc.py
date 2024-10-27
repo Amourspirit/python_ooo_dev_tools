@@ -21,6 +21,7 @@ from ooodev.draw.draw_doc_view import DrawDocView
 from ooodev.draw.partial.draw_doc_prop_partial import DrawDocPropPartial
 from ooodev.draw.partial.doc_partial import DocPartial
 from ooodev.office.partial.office_document_prop_partial import OfficeDocumentPropPartial
+from ooodev.adapter.util.theme_comp import ThemeComp
 
 if TYPE_CHECKING:
     from com.sun.star.lang import XComponent
@@ -73,6 +74,7 @@ class DrawDoc(
         self._pages = None
         self._menu = None
         self._shortcuts = None
+        self._theme_comp = None
 
     # region Lazy Listeners
 
@@ -225,5 +227,24 @@ class DrawDoc(
         if self._shortcuts is None:
             self._shortcuts = Shortcuts(app=LoService.DRAW, lo_inst=self.lo_inst)
         return self._shortcuts
+
+    @property
+    def theme(self) -> ThemeComp | None:
+        """
+        Gets document theme.
+
+        Returns:
+            ThemeComp | None: Document Theme or ``None`` if not available.
+
+        Note:
+            Theme is only supported in LibreOffice ``7.6`` and later.
+
+        .. versionadded:: 0.50.0
+        """
+        if not hasattr(self.component, "Theme"):
+            return None
+        if self._theme_comp is None:
+            self._theme_comp = ThemeComp(component=self.component.Theme)  # type: ignore
+        return self._theme_comp  # type: ignore
 
     # endregion Properties

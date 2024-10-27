@@ -14,6 +14,15 @@ class ThemeHtml(ThemeBase):
 
     # region Properties
     @property
+    def sgml_color(self) -> int:
+        """SGML syntax highlighting color."""
+        try:
+            return self._sgml_color
+        except AttributeError:
+            self._sgml_color = self._get_color("HTMLSGML")
+        return self._sgml_color
+
+    @property
     def comment_color(self) -> int:
         """Comment color."""
         try:
@@ -30,15 +39,6 @@ class ThemeHtml(ThemeBase):
         except AttributeError:
             self._keyword_color = self._get_color("HTMLKeyword")
         return self._keyword_color
-
-    @property
-    def sgml_color(self) -> int:
-        """SGML syntax highlighting color."""
-        try:
-            return self._sgml_color
-        except AttributeError:
-            self._sgml_color = self._get_color("HTMLSGML")
-        return self._sgml_color
 
     @property
     def unknown_color(self) -> int:
