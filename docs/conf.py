@@ -86,6 +86,7 @@ extensions = [
     "sphinx-prompt",
     "sphinx_substitution_extensions",
     "sphinx_copybutton",
+    "sphinx_build_compatibility.extension",
 ]
 # "sphinx.ext.linkcode",
 # sphinx_tabs.tabs docs: https://sphinx-tabs.readthedocs.io/en/latest/
@@ -321,6 +322,19 @@ copybutton_prompt_is_regexp = True
 
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-python_display_short_literal_types
 python_display_short_literal_types = True
+
+# region Read the Docs Addons
+
+# Define the canonical URL if you are using a custom domain on Read the Docs
+html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
+
+# Tell Jinja2 templates the build is running on Read the Docs
+if os.environ.get("READTHEDOCS", "") == "True":
+    if "html_context" not in globals():
+        html_context = {}
+    html_context["READTHEDOCS"] = True  # type: ignore
+
+# endregion Read the Docs Addons
 
 
 def skip(app, what, name, obj, would_skip, options):

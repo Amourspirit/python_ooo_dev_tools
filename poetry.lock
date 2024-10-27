@@ -1743,6 +1743,25 @@ testing = ["covdefaults (>=2.2)", "coverage (>=6.4.4)", "diff-cover (>=7.0.1)", 
 type-comment = ["typed-ast (>=1.5.4)"]
 
 [[package]]
+name = "sphinx-build-compatibility"
+version = "0.0.1"
+description = "Sphinx extension to keep Read the Docs compatibility"
+optional = false
+python-versions = ">=3.8"
+files = []
+develop = false
+
+[package.dependencies]
+requests = "*"
+sphinx = ">=5"
+
+[package.source]
+type = "git"
+url = "https://github.com/readthedocs/sphinx-build-compatibility#egg=sphinx-build-compatibility"
+reference = "main"
+resolved_reference = "58aabc5f207c6c2421f23d3578adc0b14af57047"
+
+[[package]]
 name = "sphinx-copybutton"
 version = "0.5.2"
 description = "Add a copy button to each of your code cells."
@@ -2219,4 +2238,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0368c91ade5b5f003a746d7985af82cb49aaaaacf100b539ed37a0e21d1f9f3e"
+content-hash = "aa59bed37977085e43d8db0f8ddd43368ce6444a5a98677e4770bceb4f9e3fee"

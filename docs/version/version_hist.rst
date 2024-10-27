@@ -2,6 +2,18 @@
 Version History
 ***************
 
+Version 0.50.0
+==============
+
+New and updated classes for working with LibreOffice Theme and colors. These features require LibreOffice ``7.6`` or later.
+
+Braking Changes
+---------------
+
+The Theme classes in the ``ooodev.theme`` namespace have been updated.
+Initially the classes were created for LibreOffice ``7.5`` but the classes have been updated to work with LibreOffice ``7.6`` or later.
+If you are using LibreOffice ``7.5`` and any of the theme classes then you will need to update to LibreOffice ``7.6`` or later.
+
 Version 0.49.1
 ==============
 

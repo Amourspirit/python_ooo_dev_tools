@@ -4,7 +4,7 @@ import uno  # noqa # type: ignore
 # with open(os.path.join(os.path.dirname(__file__), "VERSION"), "r", encoding="utf-8") as f:
 #     version = f.read().strip()
 
-__version__ = "0.49.1"
+__version__ = "0.50.0"
 
 
 def get_version() -> str:
