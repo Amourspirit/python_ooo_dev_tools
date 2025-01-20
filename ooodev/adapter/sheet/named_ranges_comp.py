@@ -28,7 +28,6 @@ if TYPE_CHECKING:
 
 
 class _NamedRangesComp(ComponentProp):
-
     def __init__(self, component: XNamedRanges) -> None:
         """
         Constructor
@@ -54,6 +53,10 @@ class _NamedRangesComp(ComponentProp):
         Args:
             name (str): The name of the element.
 
+        Raises:
+            com.sun.star.container.NoSuchElementException: ``NoSuchElementException``
+            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+
         Returns:
             Any: The element with the specified name.
         """
@@ -69,12 +72,14 @@ class _NamedRangesComp(ComponentProp):
         Args:
             idx (int): The Zero-based index of the element.
 
+        Raises:
+            com.sun.star.lang.IndexOutOfBoundsException: ``IndexOutOfBoundsException``
+            com.sun.star.lang.WrappedTargetException: ``WrappedTargetException``
+
         Returns:
             Any: The element at the specified index.
         """
         result = self.component.getByIndex(idx)
-        if result is None:
-            return None  # type: ignore
         return NamedRangeComp(result)  # type: ignore
 
     # endregion Overrides
@@ -96,7 +101,7 @@ class _NamedRangesComp(ComponentProp):
     # endregion Properties
 
 
-class NamedRangesComp(
+class NamedRangesComp(  # type: ignore
     _NamedRangesComp,
     IndexAccessPartial[NamedRangeComp],
     EnumerationAccessPartial[NamedRangeComp],
@@ -120,7 +125,6 @@ class NamedRangesComp(
     # pylint: disable=unused-argument
 
     def __new__(cls, component: XNamedRanges, *args, **kwargs):
-
         new_class = type("NamedRangesComp", (_NamedRangesComp,), {})
 
         builder = get_builder(component)

@@ -3397,7 +3397,10 @@ class Calc:
             return None
         if t == CellContentType.VALUE:
             return cls.convert_to_float(cell.getValue())
-        if t in (CellContentType.TEXT, CellContentType.FORMULA):
+        if t == CellContentType.FORMULA:
+            # if the cell formula result is a float then getValue() will return a float.
+            return cell.getValue()
+        if t == CellContentType.TEXT:
             return cell.getFormula()
         mLo.Lo.print("Unknown cell type; returning None")
         return None

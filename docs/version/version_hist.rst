@@ -2,6 +2,21 @@
 Version History
 ***************
 
+Version 0.51.0
+==============
+
+``ooodev.calc.CalcSheet.get_range()`` and ``ooodev.calc.CalcSheet.create_cursor_by_range()`` now have
+an overload that can take a ``named_range`` that can be called and retrieve data from a named range
+in the sheet.
+
+Braking Changes
+---------------
+
+``ooodev.office.calc.get_val()`` now returns the value of of the cell when the cell contains a formula. Previously the the formula was returned.
+
+This also is true for ``ooodev.calc.calc_cell.value`` and ``ooodev.calc.calc_cell.get_val()``
+
+
 Version 0.50.0
 ==============
 

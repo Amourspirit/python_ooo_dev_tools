@@ -16,7 +16,6 @@ def test_cell_obj(loader) -> None:
     sheet = Calc.get_sheet(doc)
 
     try:
-
         name = "B22"
         addr = Calc.get_cell_address(sheet, name)
         cell = CellObj.from_cell(addr)
@@ -113,7 +112,6 @@ def test_cell_obj_to_cell_values(loader) -> None:
     _ = Calc.get_sheet(doc)
 
     try:
-
         name = "B2"
         cell1 = CellObj.from_cell(name)
         cv1 = cell1.get_cell_values()
@@ -346,7 +344,6 @@ def test_range_convertor_idx(loader) -> None:
     doc = CalcDoc.create_doc()
 
     try:
-
         name = "B22"
         cell = doc.range_converter.get_cell_obj(name)
         assert cell.col == "B"
@@ -381,7 +378,7 @@ def test_cell_less_then(loader) -> None:
         A1 = CellObj.from_cell("A1")
         A2 = CellObj.from_cell("A2")
         A7 = CellObj.from_cell("A7")
-        B1 = CellObj.from_cell("B1")
+        B1 = CellObj.from_cell("$B$1")
 
         assert A1 < A2
         assert A1 <= A2
@@ -417,7 +414,7 @@ def test_cell_greater_then(loader) -> None:
         A1 = CellObj.from_cell("A1")
         A2 = CellObj.from_cell("A2")
         A7 = CellObj.from_cell("A7")
-        B1 = CellObj.from_cell("B1")
+        B1 = CellObj.from_cell("$B$1")
         C2 = CellObj.from_cell("C2")
 
         assert A2 > A1
@@ -454,7 +451,7 @@ def test_cell_sort(loader) -> None:
 
         A1 = CellObj.from_cell("A1")
         A2 = CellObj.from_cell("A2")
-        A7 = CellObj.from_cell("A7")
+        A7 = CellObj.from_cell("$A$7")
         B1 = CellObj.from_cell("B1")
         D2 = CellObj.from_cell("D2")
 
@@ -518,6 +515,11 @@ def test_cell_sheet_name(loader) -> None:
         assert ro.start.sheet_name == sheet_name
         assert ro.start.to_string(True) == f"{sheet_name}.A3"
         assert str(ro.start) == "A3"
+
+        A1 = CellObj.from_cell(f"${sheet_name}.$A$1")
+        assert A1.sheet_name == sheet_name
+        assert A1.to_string(True) == f"{sheet_name}.A1"
+        assert str(A1) == "A1"
 
     finally:
         if doc is not None:

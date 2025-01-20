@@ -41,6 +41,7 @@ from ooodev.calc.partial import sheet_cell_partial as mSheetCellPartial
 from ooodev.calc.partial.calc_doc_prop_partial import CalcDocPropPartial
 from ooodev.calc.partial.calc_sheet_prop_partial import CalcSheetPropPartial
 from ooodev.calc.partial.popup_rng_sel_partial import PopupRngSelPartial
+from ooodev.exceptions import ex as mEx
 
 if TYPE_CHECKING:
     from com.sun.star.sheet import SolverConstraint  # struct
@@ -678,11 +679,28 @@ class CalcSheet(
         """
         ...
 
+    @overload
+    def get_range(self, *, named_range: str) -> mCalcCellRange.CalcCellRange:
+        """
+        Gets a range Object representing a range.
+
+        Args:
+            named_range (str): Named Range that exist in the sheet.
+
+        Raises:
+            MissingNameError: if named range is not in sheet named ranges.
+
+        Returns:
+            RangeObj: Range object.
+        """
+        ...
+
     def get_range(self, **kwargs) -> mCalcCellRange.CalcCellRange:
         """
         Gets a range Object representing a range.
 
         Args:
+            named_range (str): Named Range that exist in the sheet.
             range_name (str): Cell range as string.
             cell_range (XCellRange): Cell Range.
             cr_addr (CellRangeAddress): Cell Range Address.
@@ -693,13 +711,29 @@ class CalcSheet(
             col_end (int): Zero-based end column index.
             row_end (int): Zero-based end row index.
 
+        Raises:
+            MissingNameError: if named range is not in sheet named ranges.
+
         Returns:
             RangeObj: Range object.
+
+        .. versionchanged:: 0.51.0
+            Now has overload for Name ranges in the sheet
         """
         sheet_names = {"cell_range", "col_start"}
         if kwargs.keys() & sheet_names:
             if "sheet" not in kwargs:
                 kwargs["sheet"] = self.component
+
+        if "named_range" in kwargs:
+            named_range = kwargs["named_range"]
+            if not self.named_ranges.has_by_name(named_range):
+                raise mEx.MissingNameError(f"{named_range} not found")
+
+            named_rng = self.named_ranges.get_by_name(named_range)
+            rng_str = named_rng.get_content()  #  "$Marks.$A$2:$E$7"
+            range_obj = mRngObj.RangeObj.from_range(rng_str)
+            return mCalcCellRange.CalcCellRange(owner=self, rng=range_obj, lo_inst=self.lo_inst)
 
         # use context manage to get this sheet index for the range
         with event_ctx(
@@ -3516,6 +3550,22 @@ class CalcSheet(
         ...
 
     @overload
+    def create_cursor_by_range(self, *, named_range: str) -> mCalcCellCursor.CalcCellCursor:
+        """
+        Gets a cell cursor.
+
+        Args:
+            named_range (str): Named Range that exist in the sheet.
+
+        Raises:
+            MissingNameError: if names range is not in sheet named ranges.
+
+        Returns:
+            CalcCellCursor: Cell Cursor.
+        """
+        ...
+
+    @overload
     def create_cursor_by_range(self, *, range_obj: mRngObj.RangeObj) -> mCalcCellCursor.CalcCellCursor:
         """
         Gets a cell cursor.
@@ -3615,13 +3665,24 @@ class CalcSheet(
             col_end (int): End Column.
             row_end (int): End Row.
 
+        Raises:
+            MissingNameError: if named range is not in sheet named ranges.
+
         Returns:
             CalcCellCursor: Cell cursor
+
+        .. versionchanged:: 0.51.0
+            Now has overload for Name ranges in the sheet
         """
         sheet_names = {"range_name", "range_obj", "cell_obj", "cr_addr", "col_start"}
         if kwargs.keys() & sheet_names:
             kwargs["sheet"] = self.component
-        cell_range = mCalc.Calc.get_cell_range(**kwargs)
+        if "named_range" in kwargs:
+            named_range = kwargs["named_range"]
+            ro = self.get_range(named_range=named_range)
+            cell_range = ro.get_cell_range()
+        else:
+            cell_range = mCalc.Calc.get_cell_range(**kwargs)
         sheet_cell_range = mLo.Lo.qi(XSheetCellRange, cell_range, True)
         cursor = self.component.createCursorByRange(sheet_cell_range)
         return mCalcCellCursor.CalcCellCursor(owner=self, cursor=cursor, lo_inst=self.lo_inst)

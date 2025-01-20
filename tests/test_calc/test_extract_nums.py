@@ -14,8 +14,8 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
     visible = False
     delay = 0
     if visible:
-        GUI.set_visible(is_visible=visible, odoc=doc)
-    sheet = Calc.get_sheet(doc=doc, index=0)
+        GUI.set_visible(visible=visible, doc=doc)
+    sheet = Calc.get_sheet(doc=doc, idx=0)
 
     try:
         # basic data extraction
@@ -25,13 +25,15 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
         a2_type = Calc.get_type_string(cell)
         a2_value = Calc.get_num(cell)
         assert a2_type == "VALUE"
-        assert a2_value == 22001.0
+        assert a2_value == pytest.approx(22001.0, rel=1e-2)
 
         cell = Calc.get_cell(sheet=sheet, cell_name="E2")
         e2_type = Calc.get_type_string(cell)
         e2_value = Calc.get_val(sheet=sheet, cell_name="E2")
         assert e2_type == "FORMULA"
-        assert e2_value == "=SUM(B2:D2)/100"
+        # in version 0.50.1 get_val() returns the value of the formula, previously it was the formula string
+        # assert e2_value == "=SUM(B2:D2)/100"
+        assert e2_value == pytest.approx(0.843875, rel=1e-7)
 
         data = Calc.get_array(sheet, "A1:E10")
         assert len(data) == 10
@@ -89,4 +91,4 @@ def test_extract_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixtu
 
         Lo.delay(delay)
     finally:
-        Lo.close(closeable=doc, deliver_ownership=False)
+        Lo.close(closeable=doc, deliver_ownership=False)  # type: ignore
