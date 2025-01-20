@@ -67,8 +67,15 @@ class TableHelper:
 
             Column name is upper case.
 
+        .. versionchanged:: 0.51.3:: Now supports range names with ``$`` in them.
+
         .. versionadded:: 0.8.3
         """
+        if not cell_name:
+            raise ValueError("Cell name cannot be empty")
+
+        cell_name = cell_name.replace("$", "")
+
         doc_idx = cell_name.find(".")
 
         if doc_idx >= 0:
@@ -90,7 +97,10 @@ class TableHelper:
         Gets range parts from a range name.
 
         Args:
-            range_name (str): Range name such as ``A23:G45`` or ``Sheet1.A23:G45``
+            range_name (str): Range name such as ``A23:G45`` or ``Sheet1.A23:G45`` or ``$Marks.$A$2:$E$7``
+
+        Raises:
+            ValueError: If range name is empty.
 
         Returns:
             RangeParts: Range Parts
@@ -98,8 +108,14 @@ class TableHelper:
         Notes:
             Column names are upper case.
 
+        .. versionchanged:: 0.51.3:: Now supports range names with ``$`` in them.
+
         .. versionadded:: 0.8.2
         """
+        if not range_name:
+            raise ValueError("Range name cannot be empty")
+
+        range_name = range_name.replace("$", "")
         doc_idx = range_name.find(".")
 
         if doc_idx >= 0:
@@ -109,6 +125,9 @@ class TableHelper:
             sheet_name = ""
 
         cells = range_name.split(":")
+        if len(cells) == 1:
+            # if single cell to convert to single cell range
+            cells.append(cells[0])
         col_start = cells[0].rstrip(string.digits).upper()
         col_end = cells[1].rstrip(string.digits).upper()
         row_start = cls.row_name_to_int(cells[0])
@@ -306,7 +325,7 @@ class TableHelper:
 
     @overload
     @staticmethod
-    def make_2d_array(num_rows: int, num_cols: int, val: Callable[[int, int, Any], Any]) -> List[List[Any]]:
+    def make_2d_array(num_rows: int, num_cols: int, val: Callable[[int, int, Any], Any]) -> List[List[Any]]:  # type: ignore
         """
         Make a 2-Dimensional List of values
 
@@ -773,6 +792,6 @@ class TableHelper:
         var_lst = [col_count for _ in range(rows)]
 
         new_lst = list(convert(lst, var_lst))
-        return new_lst
+        return new_lst  # type: ignore
 
     # endregion convert_1d_to_2d()

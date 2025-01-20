@@ -275,6 +275,13 @@ def test_get_range_obj(loader) -> None:
 
         ro3 = RangeObj.from_range(rv2)
         assert ro3 == ro2
+
+        range_name = f"${sheet_name}.$a$2:$d$6"
+        ro2 = RangeObj.from_range(range_val=range_name)
+        assert ro2.col_start == "A"
+        assert ro2.row_start == 2
+        assert ro2.col_end == "D"
+        assert ro2.row_end == 6
     finally:
         doc.close()
 
@@ -287,7 +294,6 @@ def test_get_range_values_cell_address(loader) -> None:
     doc = Calc.create_doc()
 
     try:
-
         rng_name = "A2:D6"
         rv1 = RangeValues.from_range(range_val=rng_name)
         assert rv1.col_start == 0
@@ -319,7 +325,6 @@ def test_get_range_obj_cell_address(loader) -> None:
     sheet = Calc.get_sheet(doc)
 
     try:
-
         rng_name = "A2:D6"
         rv1 = RangeObj(col_start="A", col_end="D", row_start=2, row_end=6, sheet_idx=-1)
         cr1 = rv1.get_cell_range_address()
@@ -343,7 +348,6 @@ def test_range_obj_is_methods(loader) -> None:
     doc = Calc.create_doc()
 
     try:
-
         rng_name = "A1:AA1"
         rng = RangeObj.from_range(range_val=rng_name)
         assert rng.is_single_cell() is False
@@ -991,14 +995,15 @@ def test_combine_errors() -> None:
 
     rng1 = RangeObj(col_start="C", col_end="F", row_start=2, row_end=2, sheet_idx=0)
 
-    with pytest.raises(ValueError):
-        _ = rng1 / "B2"
+    # as of 0.51.0 single cell range is converted to a single range
+    # with pytest.raises(ValueError):
+    #     _ = rng1 / "B2"
+
+    # with pytest.raises(ValueError):
+    #     _ = "B2" / rng1
 
     with pytest.raises(ValueError):
         _ = rng1 / "B"
-
-    with pytest.raises(ValueError):
-        _ = "B2" / rng1
 
     with pytest.raises(TypeError):
         _ = "B2:C4" / "a1:d7" / rng1  # type: ignore

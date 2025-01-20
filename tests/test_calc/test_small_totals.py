@@ -39,7 +39,9 @@ def test_small_totals(copy_fix_calc, loader, capsys: pytest.CaptureFixture) -> N
     assert type_str == "FORMULA"
     assert type_enum == Calc.CellTypeEnum.FORMULA
     val = Calc.get_val(sheet=sheet, cell_name="E2")
-    assert val == "=SUM(B2:D2)/100"
+    # in version 0.50.1 get_val() returns the value of the formula, previously it was the formula string
+    # assert val == "=SUM(B2:D2)/100"
+    assert val == pytest.approx(0.843875, rel=1e-7)
 
     data = Calc.get_array(sheet=sheet, range_name="A1:E10")
     capsys.readouterr()  # clear buffer
