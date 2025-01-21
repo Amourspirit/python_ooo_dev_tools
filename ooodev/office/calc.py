@@ -3397,11 +3397,16 @@ class Calc:
             return None
         if t == CellContentType.VALUE:
             return cls.convert_to_float(cell.getValue())
-        if t == CellContentType.FORMULA:
-            # if the cell formula result is a float then getValue() will return a float.
-            return cell.getValue()
-        if t == CellContentType.TEXT:
-            return cell.getFormula()
+        if t in (CellContentType.TEXT, CellContentType.FORMULA):
+            # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1FormulaResult.html
+            ft = cell.FormulaResultType2  # type: ignore
+            if ft == 1:  # VALUE
+                return cell.getValue()
+            if ft == 2:  # STRING
+                return cell.String  # type: ignore
+                # return cell.getFormula()
+            if ft == 4:  # ERROR
+                return f"(Error: {cell.getError()})"
         mLo.Lo.print("Unknown cell type; returning None")
         return None
 
