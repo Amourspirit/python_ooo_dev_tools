@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.51.1
+==============
+
+Fix for ``ooodev.office.calc.get_val()`` when a formulas was in the cell that resulted in text output.
+
 Version 0.51.0
 ==============
 
