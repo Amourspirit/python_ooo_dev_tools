@@ -3396,7 +3396,7 @@ class Calc:
         if t == CellContentType.EMPTY:
             return None
         if t == CellContentType.VALUE:
-            return cls.convert_to_float(cell.getValue())
+            return cell.getValue()
         if t in (CellContentType.TEXT, CellContentType.FORMULA):
             # https://api.libreoffice.org/docs/idl/ref/namespacecom_1_1sun_1_1star_1_1sheet_1_1FormulaResult.html
             ft = cell.FormulaResultType2  # type: ignore
