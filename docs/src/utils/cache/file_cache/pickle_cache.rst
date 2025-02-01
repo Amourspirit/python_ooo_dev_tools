@@ -1,8 +1,4 @@
 Class PickleCache
 =================
 
-.. autoclass:: ooodev.utils.cache.file_cache.PickleCache
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+This class was deprecated in version ``0.52.0``. Use :ref:`ooodev.utils.cache.singleton.file_cache` instead.

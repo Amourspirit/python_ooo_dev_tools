@@ -13,18 +13,21 @@ from ooodev.meta.constructor_singleton import ConstructorSingleton
 class CacheBase(metaclass=ConstructorSingleton):
     """
     Caches files and retrieves cached files.
-    Cached file are in a subfolder of system tmp dir.
+    Cached file are in ``ooo_uno_tmpl` subdirectory of LibreOffice tmp dir.
     """
 
-    def __init__(self, tmp_dir: str = "", lifetime: float = -1) -> None:
+    def __init__(self, tmp_dir: Union[Path, str] = "", lifetime: float = -1, **kwargs: Any) -> None:
         """
         Constructor
 
         Args:
-            tmp_dir (str, optional): Dir name to create in tmp folder. Defaults to 'ooo_uno_tmpl'.
+            tmp_dir (Path, str, optional): Dir name to create in tmp folder.
             lifetime (float): Time in seconds that cache is good for.
+            kwargs (Any): Additional keyword arguments. The arguments are used to create a unique instance of the singleton class.
+
+        Note:
+            The cache root temp folder is the LibreOffice temp folder.
         """
-        uno.fileUrlToSystemPath
         self._ps = ThePathSettingsComp.from_lo()
         t_path = Path(uno.fileUrlToSystemPath(self._ps.temp[0]))
         self._tmp_dir = tmp_dir
@@ -38,25 +41,25 @@ class CacheBase(metaclass=ConstructorSingleton):
         self._logger = NamedLogger(self.__class__.__name__)
 
     @abstractmethod
-    def get(self, filename: Union[str, Path]):
+    def get(self, filename: str) -> Any:
         """
         Fetches file contents from cache if it exist and is not expired
 
         Args:
-            filename (Union[str, Path]): File to retrieve
+            filename (str): File to retrieve
 
         Returns:
-            Union[str, None]: File contents if retrieved; Otherwise, ``None``
+            Any: File contents if retrieved; Otherwise, ``None``
         """
         ...
 
     @abstractmethod
-    def put(self, filename: Union[str, Path], content: Any):
+    def put(self, filename: str, content: Any) -> None:
         """
         Saves file contents into cache
 
         Args:
-            filename (Union[str, Path]): filename to write.
+            filename (str): filename to write.
             content (Any): Contents to write into file.
         """
         ...
@@ -68,12 +71,14 @@ class CacheBase(metaclass=ConstructorSingleton):
         Args:
             filename (Union[str, Path]): file to delete.
         """
+        if not filename:
+            raise ValueError("filename is required")
         try:
             f = Path(self.path, filename)
             if os.path.exists(f):
                 os.remove(f)
         except Exception as e:
-            self.logger.warning(f"Not able to delete file: {filename}, error: {e}")
+            self.logger.warning("Not able to delete file: %s, error: %s", filename, e)
 
     # region Dunder Methods
     def __contains__(self, key: Any) -> bool:
@@ -93,6 +98,7 @@ class CacheBase(metaclass=ConstructorSingleton):
 
     # endregion Dunder Methods
 
+    # region Properties
     @property
     def seconds(self) -> float:
         """Gets/Sets cache time in seconds"""
@@ -121,3 +127,5 @@ class CacheBase(metaclass=ConstructorSingleton):
     def logger(self) -> NamedLogger:
         """Gets logger"""
         return self._logger
+
+    # endregion Properties
