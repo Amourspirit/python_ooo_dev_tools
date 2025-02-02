@@ -153,3 +153,4 @@ dist/
 .~lock.*
 .test.env
 .python-version
+.ruff_cache
