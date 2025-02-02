@@ -1,7 +1,7 @@
 .. _ooodev.utils.cache.singleton.lru_cache:
 
-LRUCache
-========
+Singleton LRUCache
+==================
 
 Introduction
 ------------
@@ -15,6 +15,8 @@ Custom key value pairs can be passed to the constructor to create a new instance
 Custom key value pairs must be hashable.
 
 This class is functionally the same as the :ref:`ooodev.utils.cache.lru_cache` with the exception that it is a singleton class.
+
+.. versionadded:: 0.52.0
 
 
 Examples
@@ -66,7 +68,7 @@ This example demonstrates the use of custom key value pairs to create a new sing
     assert "key1" not in cache
 
     cache2 = LRUCache()
-    assert cache Not is cache2 # True
+    assert cache not is cache2 # True
 
     cache3 = LRUCache(custom1="custom1", custom2="custom2")
     assert cache is cache3 # True

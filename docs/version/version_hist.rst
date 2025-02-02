@@ -2,6 +2,22 @@
 Version History
 ***************
 
+Version 0.52.0
+==============
+
+Caching updates.
+
+Added singleton Caching Classes.
+
+- :ref:`ooodev.utils.cache.singleton.file_cache`
+- :ref:`ooodev.utils.cache.singleton.file_change_aware_cache`
+- :ref:`ooodev.utils.cache.singleton.lru_cache`
+- :ref:`ooodev.utils.cache.singleton.text_cache`
+- :ref:`ooodev.utils.cache.singleton.time_cache`
+
+
+``ooodev.utils.cache.PickleCache`` has been renamed to ``ooodev.utils.cache.FileCache``
+
 Version 0.51.1
 ==============
 

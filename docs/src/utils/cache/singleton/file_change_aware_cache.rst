@@ -1,7 +1,7 @@
 .. _ooodev.utils.cache.singleton.file_change_aware_cache:
 
-FileChangeAwareCache
-====================
+Singleton FileChangeAwareCache
+==============================
 
 Introduction
 ------------
@@ -17,6 +17,8 @@ When the same parameter is passed to the constructor, the same instance is retur
 If the parameter is different, a new instance is created.
 Custom key value pairs can be passed to the constructor to create a new instance.
 Custom key value pairs must be hashable.
+
+.. versionadded:: 0.52.0
 
 Examples
 --------

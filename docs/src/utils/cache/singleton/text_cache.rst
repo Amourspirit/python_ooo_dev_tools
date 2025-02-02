@@ -1,7 +1,7 @@
 .. _ooodev.utils.cache.singleton.text_cache:
 
-TextCache
-=========
+Singleton TextCache
+===================
 
 Introduction
 ------------
@@ -13,6 +13,8 @@ It is used to store data that is not sensitive and can be shared between differe
 This class is more of a dynamic singleton class. When the same parameter is passed to the constructor, the same instance is returned.
 If the parameter is different, a new instance is created. Custom key value pairs can be passed to the constructor to create a new instance.
 Custom key value pairs must be hashable.
+
+.. versionadded:: 0.52.0
 
 Examples
 --------

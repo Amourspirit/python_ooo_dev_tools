@@ -1,7 +1,7 @@
 .. _ooodev.utils.cache.singleton.file_cache:
 
-Class FileCache
-===============
+Singleton FileCache
+===================
 
 Introduction
 ------------
@@ -14,6 +14,8 @@ This class is more of a dynamic singleton class. When the same parameter is pass
 If the parameter is different, a new instance is created.
 Custom key value pairs can be passed to the constructor to create a new instance.
 Custom key value pairs must be hashable.
+
+.. versionadded:: 0.52.0
 
 Examples
 --------

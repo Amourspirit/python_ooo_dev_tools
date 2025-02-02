@@ -13,7 +13,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.gui.commands.cmd_data import CmdData
 from ooodev.utils import props as mProps
-from ooodev.utils.cache.file_cache.pickle_cache import FileCache
+from ooodev.utils.cache.file_cache.file_cache import FileCache
 from ooodev.utils.cache.time_cache import TimeCache
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
 from ooodev.utils.string.str_list import StrList

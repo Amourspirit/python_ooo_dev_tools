@@ -8,6 +8,8 @@ class PickleCache(FileCache):
     """
     Please use ``ooodev.utils.cache.file_cache.file_cache.FileCache`` instead.
 
+    See Also :ref:`ooodev.utils.cache.singleton.file_change_aware_cache`
+
     .. versionchanged:: 0.52.0
         Deprecated
     """

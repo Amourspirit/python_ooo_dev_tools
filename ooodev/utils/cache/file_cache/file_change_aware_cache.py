@@ -14,7 +14,9 @@ class FileChangeAwareCache(metaclass=ConstructorSingleton):
     """
     Singleton Class.
     Caches files and retrieves cached files.
-    Cached file are in a subfolder of LibreOffice tmp dir.
+    Cached file are in ``ooo_uno_tmpl` subdirectory of LibreOffice tmp dir.
+
+    See Also :ref:`ooodev.utils.cache.singleton.file_change_aware_cache`
 
     .. versionadded:: 0.52.0
     """
