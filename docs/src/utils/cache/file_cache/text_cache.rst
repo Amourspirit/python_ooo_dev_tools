@@ -1,8 +1,4 @@
 Class TextCache
 ===============
 
-.. autoclass:: ooodev.utils.cache.file_cache.TextCache
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
+This class has been moved to :ref:`ooodev.utils.cache.singleton.text_cache` in version ``0.52.0``.

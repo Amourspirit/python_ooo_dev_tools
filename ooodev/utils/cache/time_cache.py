@@ -18,27 +18,9 @@ class TimeCache(EventsPartial):
     Each time an element is accessed, the timestamp is updated. If the element has expired, it is removed from the cache.
 
     When an item expires, the event ``cache_items_expired`` is triggered.
-    This event is called on a separate thread. for this reason it is important to make sure that the event handler is thread safe.
-
-    Example:
-
-        .. code-block:: python
-
-            import threading
-            from ooodev.utils.cache.time_cache import TimeCache
-
-            LOCK = threading.Lock()
-
-            def on_items_expired(source, event):
-                with LOCK:
-                    keys = event.event_data.keys
-                    for key in keys:
-                        print(f"Expired: {key}")
-
-            cache = TimeCache(60.0)  # 60 seconds
-            cache.subscribe_event("cache_items_expired", on_items_expired)
-            cache["key"] = "value"
-            value = cache["key"]
+    This event is called on a separate thread. for this reason it is important to make sure that the event handler is thread safe.\
+    
+    See Also :ref:`ooodev.utils.cache.time_cache`
     """
 
     def __init__(self, seconds: float, cleanup_interval: float = 60.0) -> None:

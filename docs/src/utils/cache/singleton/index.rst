@@ -1,0 +1,8 @@
+singleton
+=========
+
+.. toctree::
+    :titlesonly:
+    :glob:
+
+    *

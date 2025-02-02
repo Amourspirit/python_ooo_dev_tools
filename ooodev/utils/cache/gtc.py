@@ -35,12 +35,12 @@ class GTC(TimeCache):
 
     # region Override properties
     @property
-    def cleanup_interval(self):
+    def cleanup_interval(self) -> float:  # type: ignore
         """Gets the cache cleanup interval in seconds."""
         return super().cleanup_interval
 
     @property
-    def seconds(self):
+    def seconds(self) -> float:  # type: ignore
         """Gets the cache expiration time in seconds."""
         return super().seconds
 

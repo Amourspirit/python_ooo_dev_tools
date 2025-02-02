@@ -3406,7 +3406,7 @@ class Calc:
                 return cell.String  # type: ignore
                 # return cell.getFormula()
             if ft == 4:  # ERROR
-                return f"(Error: {cell.getError()})"
+                return f"Err:{cell.getError()}"
         mLo.Lo.print("Unknown cell type; returning None")
         return None
 

@@ -6,4 +6,5 @@ cache
     :glob:
 
     file_cache/index
+    singleton/index
     *

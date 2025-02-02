@@ -13,7 +13,7 @@ from ooodev.events.args.cancel_event_args import CancelEventArgs
 from ooodev.events.partial.events_partial import EventsPartial
 from ooodev.gui.commands.cmd_data import CmdData
 from ooodev.utils import props as mProps
-from ooodev.utils.cache.file_cache.pickle_cache import PickleCache
+from ooodev.utils.cache.file_cache.file_cache import FileCache
 from ooodev.utils.cache.time_cache import TimeCache
 from ooodev.utils.kind.module_names_kind import ModuleNamesKind
 from ooodev.utils.string.str_list import StrList
@@ -82,7 +82,7 @@ class CmdInfo(EventsPartial):
         self._cmf = TheModuleUIConfigurationManagerSupplierComp.from_lo()
         self._ui_cmd_desc = TheUICommandDescriptionComp.from_lo()
         delta = timedelta(days=5)
-        self._file_cache = PickleCache(tmp_dir="ooodev/gui/commands_cmd_info", lifetime=delta.total_seconds())
+        self._file_cache = FileCache(tmp_dir="ooodev/gui/commands_cmd_info", lifetime=delta.total_seconds())
         # using mem cache is many times faster than using file cache alone.
         self._mem_cache = TimeCache(300, 300)
         self._file_prefix = "uurt54_cmds_"
