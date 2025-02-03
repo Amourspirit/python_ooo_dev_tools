@@ -19,7 +19,7 @@ from ooodev.io.log.named_logger import NamedLogger
 from ooodev.io.log import logging as logger
 from ooodev.adapter.awt.popup_menu_comp import PopupMenuComp
 from ooodev.utils import gen_util as mGenUtil
-from ooodev.utils.cache.singleton.lru_cache import LRUCache
+from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.utils.partial.lo_inst_props_partial import LoInstPropsPartial
 from ooodev.macro.script.macro_script import MacroScript
 from ooodev.loader import lo as mLo
@@ -60,7 +60,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         else:
             self._logger = NamedLogger(self.__class__.__name__)
 
-        self._cache = LRUCache(capacity=30, name="PopupMenu", key="ooodev.gui.menu.popup_menu.PopupMenu")
+        self._cache = LRUCache(capacity=30)
 
     # region Protected Methods
 
