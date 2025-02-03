@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Tuple
+from typing import Any, cast, TYPE_CHECKING, Tuple
 import contextlib
+import threading
 from logging import DEBUG
 
 try:
@@ -10,6 +11,7 @@ except ImportError:
     from typing_extensions import override  # noqa # type: ignore
 
 from com.sun.star.awt import XPopupMenu
+from com.sun.star.frame import XDispatchHelper
 from ooo.dyn.awt.menu_item_type import MenuItemType
 
 from ooodev.adapter.component_prop import ComponentProp
@@ -23,6 +25,9 @@ from ooodev.macro.script.macro_script import MacroScript
 from ooodev.loader import lo as mLo
 
 if TYPE_CHECKING:
+    from com.sun.star.beans import PropertyValue
+    from com.sun.star.frame import XDispatchProvider
+    from com.sun.star.frame import DispatchHelper  # service
     from ooodev.utils.kind.menu_item_style_kind import MenuItemStyleKind
     from ooodev.loader.inst.lo_inst import LoInst
 
@@ -55,7 +60,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         else:
             self._logger = NamedLogger(self.__class__.__name__)
 
-        self._cache = LRUCache(30)
+        self._cache = LRUCache(capacity=30)
 
     # region Protected Methods
 
@@ -138,42 +143,42 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
             result = -1
             submenu = None
             if self._logger.is_debug:
-                self._logger.debug(f"Searching for command: {str_cmd}")
+                self._logger.debug("Searching for command: %s", str_cmd)
             cmd = str_cmd.casefold()
             for i, menu_id in enumerate(pop_mnu):
                 if search_sub_menu:
                     if self._logger.is_debug:
-                        self._logger.debug(f"Searching {str_cmd} in sub menu: {menu_id}")
+                        self._logger.debug("Searching %s in sub menu: %i", str_cmd, menu_id)
                     submenu = pop_mnu.get_popup_menu(menu_id)
                     if submenu is not None and len(submenu) > 0:
                         # turn of caching for sub menu when searching. No real value.
                         submenu.cache.capacity = 0
                         if self._logger.is_debug:
-                            self._logger.debug(f"Found a sub Menu {str_cmd}, Searching in sub menu: {menu_id}")
+                            self._logger.debug("Found a sub Menu %s, Searching in sub menu: %i", str_cmd, menu_id)
                         result, sub = submenu.find_item_pos(cmd, search_sub_menu)
                         if result != -1:
                             if self._logger.is_debug:
-                                self._logger.debug(f"Found {str_cmd} in sub menu in position: {result}")
+                                self._logger.debug("Found %s in sub menu in position: %i", str_cmd, result)
                             return result, sub
                         else:
                             if self._logger.is_debug:
-                                self._logger.debug(f"Command {str_cmd} not found in sub menu: {menu_id}")
+                                self._logger.debug("Command $s not found in sub menu: %i", str_cmd, menu_id)
                 menu_type = pop_mnu.get_item_type(i)
                 if menu_type == MenuItemType.SEPARATOR:
                     continue
                 command = pop_mnu.get_command(menu_id)
                 if cmd == command.casefold():
                     if self._logger.is_debug:
-                        self._logger.debug(f"Found {str_cmd} in menu: {menu_id}")
+                        self._logger.debug("Found %s in menu: %i", str_cmd, menu_id)
                     result = i
                     submenu = pop_mnu
                     return result, submenu
             if result == -1:
                 if self._logger.is_debug:
-                    self._logger.debug(f"Command {str_cmd} not found.")
+                    self._logger.debug("Command %s not found.", str_cmd)
                 return -1, None
             if self._logger.is_debug:
-                self._logger.debug(f"Command {str_cmd} found.")
+                self._logger.debug("Command %s found.", str_cmd)
             return result, submenu
 
         if cmd.startswith(".custom:"):
@@ -184,7 +189,7 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         if found_mnu is not None:
             found_mnu.cache.capacity = 30
             if self._logger.is_debug:
-                self._logger.debug(f"Setting cache capacity back to {found_mnu.cache.capacity} for found menu")
+                self._logger.debug("Setting cache capacity back to %i for found menu", found_mnu.cache.capacity)
         srch_result = (pos, found_mnu)
         self._cache[key] = srch_result
         return srch_result
@@ -206,14 +211,14 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
         result, submenu = self.find_item_pos(cmd, search_sub_menu)
         if result == -1:
             if self._logger.is_debug:
-                self._logger.debug(f"Command {cmd} not found.")
+                self._logger.debug("Command %s not found.", cmd)
             return -1, None
         if submenu is not None:
             if self._logger.is_debug:
-                self._logger.debug(f"Found {cmd} in sub menu. Menu ID: {submenu.get_item_id(result)}")
+                self._logger.debug("Found %s in sub menu. Menu ID: %i", cmd, submenu.get_item_id(result))
             return (submenu.get_item_id(result), submenu)  # type: ignore
         if self._logger.is_debug:
-            self._logger.debug(f"Found {cmd} in this menu. Menu ID: {self.get_item_id(result)}")
+            self._logger.debug("Found %s in this menu. Menu ID: %i", cmd, self.get_item_id(result))
         return (self.get_item_id(result), submenu)  # type: ignore
 
     # endregion Find methods
@@ -336,6 +341,13 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
 
         Args:
             cmd (str, int): Command or the Menu id to get the command from that is to be executed.
+
+        Returns:
+            bool: ``True`` if the command was executed; Otherwise, ``False``.
+                if ``in_thread`` is True then it will always return ``True``.
+
+        Note:
+            If the command is not a dispatch command that is listed in :meth:`~ooodev.loader.inst.lo_inst.get_supported_dispatch_prefixes`, it will be executed as a Macro URL.
         """
         if isinstance(cmd, int):
             cmd = self.get_command(cmd)
@@ -349,8 +361,67 @@ class PopupMenu(LoInstPropsPartial, PopupMenuComp):
             _ = MacroScript.call_url(cmd, in_thread=in_thread)
             return True
         except Exception as e:
-            self._logger.error(f"Error executing menu item with command value of '{cmd}': {e}")
+            self._logger.error("Error executing menu item with command value of '%s': %s", cmd, e)
         return False
+
+    def dispatch_cmd(
+        self,
+        cmd: str | int,
+        in_thread: bool = False,
+        *props: PropertyValue,
+    ) -> bool:
+        """
+        Executes a command using a new Dispatch Helper.
+
+        Args:
+            cmd (str, int): Command or the Menu id to get the command from that is to be executed.
+            in_thread (bool, optional): If ``True``, the command will be executed in a new thread. Defaults to ``False``.
+            *props (PropertyValue): Additional properties.
+
+        Returns:
+            bool: ``True`` if the command was executed; Otherwise, ``False``.
+                if ``in_thread`` is True then it will always return ``True``.
+
+        Note:
+            Unlike :meth:`execute_cmd`, this method uses a new Dispatch Helper to execute the command.
+            There is no check for supported dispatches. Macro URL's are NOT supported.
+        """
+        if isinstance(cmd, int):
+            cmd = self.get_command(cmd)
+        if not cmd:
+            return False
+
+        self._logger.debug("Dispatching command: %s", cmd)
+
+        helper = cast(
+            "DispatchHelper", mLo.Lo.create_instance_mcf(XDispatchHelper, "com.sun.star.frame.DispatchHelper")
+        )
+
+        if in_thread:
+
+            def worker(callback, helper: DispatchHelper, provider: XDispatchProvider, cmd: str, props: tuple) -> None:
+                result = helper.executeDispatch(provider, cmd, "", 0, props)
+                callback(result, cmd)
+
+            def callback(result: Any, cmd: str) -> None:
+                # runs after the threaded dispatch is finished
+                self._logger.debug("Finished Dispatched in thread: %s", cmd)
+
+            self._logger.debug("Dispatching in thread: %s", cmd)
+
+            t = threading.Thread(
+                target=worker, args=(callback, helper, self.lo_inst.desktop.get_active_frame(), cmd, props)
+            )
+            t.start()
+            return True
+        else:
+            try:
+                frame = cast("XDispatchProvider", self.lo_inst.desktop.get_active_frame())
+                helper.executeDispatch(frame, cmd, "", 0, props)
+            except Exception as e:
+                self._logger.error("Error executing menu item with command value of '%s': %s", cmd, e)
+                return False
+        return True
 
     # endregion execute command
 

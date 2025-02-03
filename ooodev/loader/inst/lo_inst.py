@@ -349,9 +349,7 @@ class LoInst(EventsPartial):
             if hasattr(self, "_bridge_component") and self.bridge is not None:
                 self.bridge.removeEventListener(self._event_listener)
 
-    def on_global_document_event(
-        self, src: Any, event: EventArgs, *args, **kwargs
-    ) -> None:  # pylint: disable=unused-argument
+    def on_global_document_event(self, src: Any, event: EventArgs, *args, **kwargs) -> None:  # pylint: disable=unused-argument
         with contextlib.suppress(Exception):
             doc_event = cast("DocumentEvent", event.event_data)
             name = doc_event.EventName
@@ -1392,9 +1390,7 @@ class LoInst(EventsPartial):
     @overload
     def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool: ...
 
-    def store_doc_format(
-        self, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None
-    ) -> bool:  # pylint: disable=W0622
+    def store_doc_format(self, store: XStorable, fnm: PathOrStr, format: str, password: str | None = None) -> bool:  # pylint: disable=W0622
         # sourcery skip: raise-specific-error
         cargs = CancelEventArgs(self.store_doc_format.__qualname__)
         cargs.event_data = {
@@ -1543,6 +1539,13 @@ class LoInst(EventsPartial):
         Returns:
             Tuple[str, ...]: Tuple of supported dispatch prefixes.
 
+        Note:
+            The current supported prefixes are:
+
+            - ``.uno:``
+            - ``vnd.sun.star.``
+            - ``service:``
+
         .. versionadded:: 0.40.0
         """
         return (
@@ -1610,8 +1613,8 @@ class LoInst(EventsPartial):
         # sourcery skip: assign-if-exp, extract-method, remove-unnecessary-cast
         if not cmd:
             raise mEx.DispatchError("cmd must not be empty or None")
+        str_cmd = str(cmd).replace(".uno:", "")  # make sure and enum or other lookup did not get passed by mistake
         try:
-            str_cmd = str(cmd).replace(".uno:", "")  # make sure and enum or other lookup did not get passed by mistake
             cargs = DispatchCancelArgs(self.dispatch_cmd.__qualname__, str_cmd)
             cargs.event_data = props
             self.on_dispatching(cargs)
@@ -1652,18 +1655,18 @@ class LoInst(EventsPartial):
 
                 def worker(callback, cancel_args, helper, provider, cmd, props) -> None:
                     result = helper.executeDispatch(provider, cmd, "", 0, props)
-                    callback(result, cancel_args)
+                    callback(result, cancel_args, cmd)
 
-                def callback(result: Any, cancel_args: DispatchCancelArgs) -> None:
+                def callback(result: Any, cancel_args: DispatchCancelArgs, cmd: str) -> None:
                     # runs after the threaded dispatch is finished
                     eargs = DispatchArgs.from_args(cancel_args)
                     eargs.event_data = result
                     self.on_dispatched(eargs)
                     if self._logger.debug:
-                        self._logger.debug(f"Finished Dispatched in thread: {str_cmd}")
+                        self._logger.debug("Finished Dispatched in thread: %s", cmd)
 
                 if self._logger.is_debug:
-                    self._logger.debug(f"Dispatching in thread: {dispatch_cmd}")
+                    self._logger.debug("Dispatching in thread: %s", dispatch_cmd)
                 # t = threading.Thread(
                 #     target=helper.executeDispatch, args=(provider, dispatch_cmd, "", 0, dispatch_props)
                 # )
@@ -1674,17 +1677,17 @@ class LoInst(EventsPartial):
                 return None
             else:
                 if self._logger.is_debug:
-                    self._logger.debug(f"Dispatching in main thread: {dispatch_cmd}")
+                    self._logger.debug("Dispatching in main thread: %s", dispatch_cmd)
                 result = helper.executeDispatch(provider, dispatch_cmd, "", 0, dispatch_props)
             eargs = DispatchArgs.from_args(cargs)
             eargs.event_data = result
             self.on_dispatched(eargs)
             return result
         except mEx.CancelEventError:
-            self._logger.info(f'Dispatch Command "{str_cmd}" has been canceled')
+            self._logger.info('Dispatch Command "%s" has been canceled', str_cmd)
             raise
         except Exception as e:
-            self._logger.error(f'Error dispatching "{cmd}"', exc_info=True)
+            self._logger.error('Error dispatching "%s"', cmd, exc_info=True)
             raise mEx.DispatchError(f'Error dispatching "{cmd}"') from e
 
     # endregion dispatch_cmd()
