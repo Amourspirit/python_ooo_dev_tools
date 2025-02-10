@@ -6,6 +6,7 @@ from shutil import copytree
 import shutil
 import tempfile
 from typing import Tuple
+import contextlib
 from ooodev.utils.type_var import PathOrStr
 from ooodev.utils import sys_info
 from ooodev.cfg import config
@@ -133,14 +134,10 @@ class Cache:
 
         Ignored if :py:attr:`~Cache.use_cache` is ``False``
         """
+        # DO NOT use logging here. The logger may be disposed becuase this is called in __del__
         if self.use_cache and (self.working_dir.exists() and self.working_dir.is_dir()):
-            try:
+            with contextlib.suppress(Exception):
                 shutil.rmtree(self.working_dir)
-                self._log.debug(f"Cache.del_working_dir(): Deleted working dir: {self.working_dir}")
-            except Exception:
-                self._log.exception(f"Cache.del_working_dir(): Error deleting working dir: {self.working_dir}.")
-        else:
-            self._log.debug("Cache.del_working_dir(): working dir does not exist or use_cache is False")
 
     @property
     def user_profile(self) -> Path:
