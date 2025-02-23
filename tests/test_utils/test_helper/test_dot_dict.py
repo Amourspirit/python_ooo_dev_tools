@@ -23,6 +23,8 @@ def test_mixed_types() -> None:
 
     assert d.d is True
 
+    assert len(d) == 4
+
 
 def test_mixed_no_generic_types() -> None:
     d = DotDict(a="hello", b=42, c=3.14, d=True)
@@ -37,8 +39,8 @@ def test_missing_attribute() -> None:
     with pytest.raises(AttributeError):
         _ = d.missing
 
-    # Test with _missing_attrib_value
-    d = DotDict[str](missing_attrib_value="default", a="hello")
+    # Test with missing_attr_val
+    d = DotDict[str](missing_attr_val="default", a="hello")
     assert d.missing == "default"
 
     d = DotDict[str](None, a="hello")
@@ -50,9 +52,11 @@ def test_set_get_del_attribute() -> None:
     d.test = "value"
     assert d.test == "value"
     assert d["test"] == "value"
+    assert len(d) == 1
 
     del d.test
     assert "test" not in d
+    assert len(d) == 0
     with pytest.raises(AttributeError):
         _ = d.test
 
@@ -80,12 +84,24 @@ def test_copy() -> None:
     original = DotDict[str](a="hello", b="world")
     copied = original.copy()
 
+    assert len(original) == 2
+    assert len(copied) == 2
+
     assert original.a == copied.a
     assert original.b == copied.b
+
+    for key in original.keys():
+        assert key in copied
+
+    for key in copied.keys():
+        assert key in original
 
     # Modify copy shouldn't affect original
     copied.c = "new"
     assert "c" not in original
+
+    assert len(original) == 2
+    assert len(copied) == 3
 
 
 def test_dict_methods() -> None:
@@ -114,9 +130,21 @@ def test_update() -> None:
     assert d1.a == "hello"
     assert d1.b == "world"
 
+    assert len(d1) == 1
+    assert len(d2) == 1
+
     # Test update with regular dict
     d1.update({"c": "!"})
     assert d1.c == "!"
+    assert len(d1) == 2
+
+    d3 = DotDict[str](a="nice", b="day")
+    d3.c = "!"
+    d2.update(d3)
+    assert d2.a == "nice"
+    assert d2.b == "day"
+    assert d2.c == "!"
+    assert len(d2) == 3
 
 
 def test_clear() -> None:
@@ -133,14 +161,23 @@ def test_copy_dict() -> None:
     assert copied_dict == {"a": "hello", "b": "world"}
 
 
-def test_protected_attributes() -> None:
-    d = DotDict[str]()
-    # Protected attributes (starting with _) should be set on the instance
-    d._protected = "protected"
-    assert d._protected == "protected"
-    assert "_protected" not in d
+def test_keys() -> None:
+    d = DotDict[str](a="hello")
+    d.b = "world"
+    for key in d.keys():
+        assert key in ["a", "b"]
 
-    # Test deletion of protected attribute
-    del d._protected
-    with pytest.raises(AttributeError):
-        _ = d._protected
+
+def test_override_keys() -> None:
+    d = DotDict[str](a="hello", keys="world")
+    assert d.keys == "world"
+
+
+def test_override_copy() -> None:
+    d = DotDict[str](a="hello", copy="world")
+    assert d.copy == "world"
+
+
+def test_override_items() -> None:
+    d = DotDict[object](a="hello", items=["this", "that"])
+    assert d.items == ["this", "that"]

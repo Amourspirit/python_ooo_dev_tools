@@ -112,7 +112,7 @@ class TimeCache(EventsPartial):
             self._timer.daemon = True  # important for the timer to stop when the main thread exits
             self._timer.start()
             eargs = EventArgs(self)
-            eargs.event_data = DotDict(timer=self._timer)
+            eargs.event_data = DotDict[threading.Timer](timer=self._timer)
             self.trigger_event("time_cache_timer_started", eargs)
             return True
         return False
@@ -163,7 +163,7 @@ class TimeCache(EventsPartial):
                 del self._cache[key]
         if del_keys:
             eargs = EventArgs(self)
-            eargs.event_data = DotDict(keys=del_keys)
+            eargs.event_data = DotDict[list](keys=del_keys)
 
             thread = threading.Thread(target=self._fn_trigger_event, args=("cache_items_expired", eargs), daemon=True)
             thread.start()
@@ -216,14 +216,14 @@ class TimeCache(EventsPartial):
         is_new = self[key] is None
         if is_new:
             cargs = CancelEventArgs(self)
-            cargs.event_data = DotDict(key=key, value=value, is_new=is_new)
+            cargs.event_data = DotDict[object](key=key, value=value, is_new=is_new)
             self.trigger_event("cache_item_adding", cargs)
             if cargs.cancel:
                 return
             eargs = EventArgs.from_args(cargs)
         else:
             cargs = CancelEventArgs(self)
-            cargs.event_data = DotDict(key=key, value=value, is_new=is_new)
+            cargs.event_data = DotDict[object](key=key, value=value, is_new=is_new)
             self.trigger_event("cache_item_updating", cargs)
             if cargs.cancel:
                 return
@@ -261,7 +261,7 @@ class TimeCache(EventsPartial):
             raise TypeError("Key must not be None.")
         if key in self:
             cargs = CancelEventArgs(self)
-            cargs.event_data = DotDict(key=key)
+            cargs.event_data = DotDict[object](key=key)
             self.trigger_event("cache_item_removing", cargs)
             if cargs.cancel:
                 return
