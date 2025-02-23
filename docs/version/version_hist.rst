@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.52.2
+==============
+
+Updated ``ooodev.utils.helper.dot_dict.DotDict`` class. Now the class is generic and can take a missing attribute value.
+
 Version 0.52.1
 ==============
 

@@ -1,106 +1,142 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TypeVar, Generic, Dict, cast
+from ooodev.utils.gen_util import NULL_OBJ
+
+T = TypeVar("T")
 
 
-class DotDict:
+class DotDict(Generic[T]):
     """
-    Class for accessing dictionary keys as attributes or keys as attributes.
+    Generic class for accessing dictionary keys as attributes or keys as attributes.
+
+    Type Parameters:
+        T: Value type
+
+    Args:
+        missing_attr_val (Any, optional): Value to return if attribute is not found.
+            If omitted then AttributeError is raised if attribute is not found.
+        kwargs (T): Keyword arguments.
 
     Example:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                d = DotDict(a=1, b=2)
-                print(d.a)  # Outputs: 1
-                print(d['b'])  # Outputs: 2
-                d['c'] = 3
-                print(d.c)  # Outputs: 3
-                print ('a' in d)  # Outputs: True
-                del d['a']
-                print ('a' in d)  # Outputs: False
-                print(d.a)  # Raises AttributeError
-                d.a = 1
-                print(d.a)  # Outputs: 1
+            # String values
+            d1 = DotDict[str](a="hello", b="world")
+
+            # Integer values
+            d2 = DotDict[int](a=1, b=2)
+
+            # Mixed values with Union
+            d3 = DotDict[Union[str, int]](a="hello", b=2)
+
+            # Mixed values with object
+            d4 = DotDict[object](a="hello", b=2)
+
+            # Mixed values with no generic type
+            d5 = DotDict(a="hello", b=2)
+
+            # Mixed values missing attribute value
+            d6 = DotDict[object](None, a="hello", b=2)
+            assert d6.missing is None
     """
 
-    def __init__(self, **kwargs: Any):
-        self.__dict__.update(kwargs)
+    def __init__(self, missing_attr_val: Any = NULL_OBJ, **kwargs: T) -> None:
+        """
+        Constructor
 
-    def __getitem__(self, key: str):
-        return self.__dict__[key]
+        Args:
+            missing_attr_val (Any, optional): Value to return if attribute is not found.
+                If omitted then AttributeError is raised.
+            kwargs (T): Keyword arguments.
+        """
+        self._missing_attrib_value = missing_attr_val  # kwargs.pop("_missing_attrib_value", NULL_OBJ)
+        self._dict: Dict[str, T] = {}
+        self._dict.update(cast(Dict[str, T], kwargs))
 
-    def __setitem__(self, key: str, value: Any):
-        self.__dict__[key] = value
+    def __getitem__(self, key: str) -> T:
+        return self._dict[key]
 
-    def __delitem__(self, key: str):
-        del self.__dict__[key]
+    def __setitem__(self, key: str, value: T) -> None:
+        self._dict[key] = value
 
-    def __getattr__(self, key: str):
+    def __delitem__(self, key: str) -> None:
+        del self._dict[key]
+
+    def __getattr__(self, key: str) -> T:
         try:
-            return self.__dict__[key]
+            return self._dict[key]  # type: ignore
         except KeyError:
+            if self._missing_attrib_value is not NULL_OBJ:
+                return self._missing_attrib_value  # type: ignore
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
 
-    def __setattr__(self, key: str, value: Any):
-        self.__dict__[key] = value
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("_"):
+            super().__setattr__(key, value)
+        else:
+            self._dict[key] = value  # type: ignore
 
-    def __delattr__(self, key: str):
-        del self.__dict__[key]
+    def __delattr__(self, key: str) -> None:
+        if key.startswith("_"):
+            super().__delattr__(key)
+        else:
+            del self._dict[key]  # type: ignore
 
-    def __contains__(self, key: str):
-        return key in self.__dict__
+    def __contains__(self, key: str) -> bool:
+        return key in self._dict
 
-    def __len__(self):
-        return len(self.__dict__)
+    def __len__(self) -> int:
+        return len(self._dict)
 
-    def __copy__(self):
+    def __copy__(self) -> DotDict[T]:
         return self.copy()
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: T | None = None) -> T | None:
         """
         Get value from dictionary.
 
         Args:
-            key (str): Key to get value.
-            default (Any, optional): Default value if key not found. Defaults to None.
+            key (KT): Key to get value.
+            default (T | None, optional): Default value if key not found. Defaults to None.
 
         Returns:
-            Any: Value of key or default value.
+            T | None: Value of key or default value.
         """
-        return self.__dict__.get(key, default)
+        return self._dict.get(key, default)
 
-    def items(self):
+    def items(self) -> Any:
         """Returns all items in the dictionary in a set like object."""
-        return self.__dict__.items()
+        return self._dict.items()
 
-    def keys(self):
+    def keys(self) -> Any:
         """Returns all keys in the dictionary in a set like object."""
-        return self.__dict__.keys()
+        return self._dict.keys()
 
-    def values(self):
+    def values(self) -> Any:
         """Returns an object providing a view on the dictionary's values."""
-        return self.__dict__.values()
+        return self._dict.values()
 
-    def update(self, other: dict | DotDict):
+    def update(self, other: Dict[str, T] | DotDict[T]) -> None:
         """
         Update dictionary with another dictionary.
 
         Args:
-            other (dict, DotDict): Dictionary to update with.
+            other (Dict[KT, T] | DotDict[KT, T]): Dictionary to update with.
         """
         if isinstance(other, DotDict):
-            self.__dict__.update(other.__dict__)
+            self._dict.update(other._dict)
         else:
-            self.__dict__.update(other)
+            self._dict.update(other)
 
-    def copy(self) -> DotDict:
+    def copy(self) -> DotDict[T]:
         """Returns a shallow copy of the dictionary."""
-        return DotDict(**self.__dict__)
+        return DotDict(**self._dict)
 
-    def copy_dict(self) -> dict:
+    def copy_dict(self) -> Dict[str, T]:
         """Returns a shallow copy of the dictionary."""
-        return self.__dict__.copy()
+        return self._dict.copy()
 
-    def clear(self):
+    def clear(self) -> None:
         """Clears the dictionary"""
-        self.__dict__.clear()
+        self._dict.clear()
