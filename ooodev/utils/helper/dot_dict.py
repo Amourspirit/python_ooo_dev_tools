@@ -1,106 +1,202 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TypeVar, Generic, Dict, cast, Generator
+from collections import OrderedDict
+from ooodev.utils.gen_util import NULL_OBJ
+
+T = TypeVar("T")
+
+_PROTECTED_ATTRIBS = ("_missing_attrib_value", "_internal_keys", "_is_protocol")
 
 
-class DotDict:
+class DotDict(Generic[T]):
     """
-    Class for accessing dictionary keys as attributes or keys as attributes.
+    Generic class for accessing dictionary keys as attributes or keys as attributes.
+
+    Type Parameters:
+        T: Value type
+
+    Args:
+        missing_attr_val (Any, optional): Value to return if attribute is not found.
+            If omitted then AttributeError is raised if attribute is not found.
+        kwargs (T): Keyword arguments.
+
+    Note:
+        It is possible to override class attributes such as keys, copy, and items attributes.
+        This is not recommended.
+
+        .. code-block:: python
+
+            d = DotDict[str](a="hello", keys="world")
+            assert d.keys == "world"
 
     Example:
 
-            .. code-block:: python
+        .. code-block:: python
 
-                d = DotDict(a=1, b=2)
-                print(d.a)  # Outputs: 1
-                print(d['b'])  # Outputs: 2
-                d['c'] = 3
-                print(d.c)  # Outputs: 3
-                print ('a' in d)  # Outputs: True
-                del d['a']
-                print ('a' in d)  # Outputs: False
-                print(d.a)  # Raises AttributeError
-                d.a = 1
-                print(d.a)  # Outputs: 1
+            # String values
+            d1 = DotDict[str](a="hello", b="world")
+
+            # Integer values
+            d2 = DotDict[int](a=1, b=2)
+
+            # Mixed values with Union
+            d3 = DotDict[Union[str, int]](a="hello", b=2)
+
+            # Mixed values with object
+            d4 = DotDict[object](a="hello", b=2)
+
+            # Mixed values with no generic type
+            d5 = DotDict(a="hello", b=2)
+
+            # Mixed values missing attribute value
+            d6 = DotDict[object](None, a="hello", b=2)
+            assert d6.missing is None
     """
 
-    def __init__(self, **kwargs: Any):
-        self.__dict__.update(kwargs)
+    def __init__(self, missing_attr_val: Any = NULL_OBJ, **kwargs: T) -> None:
+        """
+        Constructor
 
-    def __getitem__(self, key: str):
+        Args:
+            missing_attr_val (Any, optional): Value to return if attribute is not found.
+                If omitted then AttributeError is raised.
+            kwargs (T): Keyword arguments.
+        """
+        self._missing_attrib_value = missing_attr_val
+        self._internal_keys: OrderedDict[str, None] = OrderedDict()
+        self.__dict__.update(cast(Dict[str, T], kwargs))
+        for key in kwargs:
+            self._internal_keys[key] = None
+
+    def __getitem__(self, key: str) -> T:
         return self.__dict__[key]
 
-    def __setitem__(self, key: str, value: Any):
+    def __setitem__(self, key: str, value: T) -> None:
         self.__dict__[key] = value
+        self._internal_keys[key] = None
 
-    def __delitem__(self, key: str):
+    def __delitem__(self, key: str) -> None:
         del self.__dict__[key]
+        if key in self._internal_keys:
+            del self._internal_keys[key]
 
-    def __getattr__(self, key: str):
+    def __getattr__(self, key: str) -> T:
         try:
-            return self.__dict__[key]
+            return self.__dict__[key]  # type: ignore
         except KeyError:
+            if self._missing_attrib_value is not NULL_OBJ:
+                return self._missing_attrib_value  # type: ignore
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
 
-    def __setattr__(self, key: str, value: Any):
-        self.__dict__[key] = value
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("__"):
+            super().__setattr__(key, value)
+        else:
+            if key not in _PROTECTED_ATTRIBS:
+                self._internal_keys[key] = None
+            self.__dict__[key] = value  # type: ignore
 
-    def __delattr__(self, key: str):
-        del self.__dict__[key]
+    def __delattr__(self, key: str) -> None:
+        if key in self._internal_keys:
+            del self._internal_keys[key]
+        if key.startswith("__"):
+            super().__delattr__(key)
+        else:
+            del self.__dict__[key]  # type: ignore
 
-    def __contains__(self, key: str):
+    def __contains__(self, key: str) -> bool:
         return key in self.__dict__
 
-    def __len__(self):
-        return len(self.__dict__)
+    def __len__(self) -> int:
+        """Returns the number of items in the dictionary."""
+        return len(self._internal_keys)
+        # length = len(self.__dict__)
+        # for attr in _PROTECTED_ATTRIBS:
+        #     if hasattr(self, attr):
+        #         length -= 1
+        # return length
 
-    def __copy__(self):
+    def __copy__(self) -> DotDict[T]:
         return self.copy()
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: T | None = None) -> T | None:
         """
         Get value from dictionary.
 
         Args:
-            key (str): Key to get value.
-            default (Any, optional): Default value if key not found. Defaults to None.
+            key (KT): Key to get value.
+            default (T | None, optional): Default value if key not found. Defaults to None.
 
         Returns:
-            Any: Value of key or default value.
+            T | None: Value of key or default value.
         """
         return self.__dict__.get(key, default)
 
-    def items(self):
+    def items(self) -> Generator[tuple[str, T], None, None]:
         """Returns all items in the dictionary in a set like object."""
-        return self.__dict__.items()
+        for key in self._internal_keys.keys():
+            if key not in self.__dict__:
+                continue
+            yield key, self.__dict__[key]
 
-    def keys(self):
+    def keys(self) -> Generator[str, None, None]:
         """Returns all keys in the dictionary in a set like object."""
-        return self.__dict__.keys()
+        # filter out _PROTECTED_ATTRIBS and return a generator expression
+        for key in self._internal_keys.keys():
+            yield key
 
-    def values(self):
+    def values(self) -> Generator[T, None, None]:
         """Returns an object providing a view on the dictionary's values."""
-        return self.__dict__.values()
+        # filter out _PROTECTED_ATTRIBS and return a generator expression
+        for key in self._internal_keys.keys():
+            if key not in self.__dict__:
+                continue
+            yield self.__dict__[key]
 
-    def update(self, other: dict | DotDict):
+    def update(self, other: Dict[str, T] | DotDict[T]) -> None:
         """
         Update dictionary with another dictionary.
 
         Args:
-            other (dict, DotDict): Dictionary to update with.
+            other (Dict[KT, T] | DotDict[KT, T]): Dictionary to update with.
         """
         if isinstance(other, DotDict):
             self.__dict__.update(other.__dict__)
-        else:
+            self._internal_keys.update(other._internal_keys)
+        elif isinstance(other, dict):
             self.__dict__.update(other)
+            for key in other.keys():
+                self._internal_keys[key] = None
+        else:
+            raise TypeError(f"Expected dict or DotDict, got {type(other)}")
 
-    def copy(self) -> DotDict:
+    def copy(self) -> DotDict[T]:
         """Returns a shallow copy of the dictionary."""
-        return DotDict(**self.__dict__)
+        copy_dict = {}
+        for key in self._internal_keys.keys():
+            if key not in self.__dict__:
+                continue
+            copy_dict[key] = self.__dict__[key]
+        copy_dict["missing_attr_val"] = self._missing_attrib_value
+        inst = DotDict[T](**copy_dict)
+        return inst
 
-    def copy_dict(self) -> dict:
+    def copy_dict(self) -> Dict[str, T]:
         """Returns a shallow copy of the dictionary."""
-        return self.__dict__.copy()
+        copy_dict = {}
+        for key in self._internal_keys.keys():
+            if key not in self.__dict__:
+                continue
+            copy_dict[key] = self.__dict__[key]
+        return copy_dict
 
-    def clear(self):
+    def clear(self) -> None:
         """Clears the dictionary"""
+
+        protected = {}
+        for attr in _PROTECTED_ATTRIBS:
+            if attr in self.__dict__:
+                protected[attr] = self.__dict__[attr]
+        self._internal_keys.clear()
         self.__dict__.clear()
+        self.__dict__.update(protected)
