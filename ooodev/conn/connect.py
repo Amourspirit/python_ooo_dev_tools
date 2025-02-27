@@ -213,7 +213,7 @@ class LoBridgeCommon(ConnectBase):
                 time.sleep(self._conn_try_sleep)
 
         if last_ex is not None:
-            self.log.error(f"Connection Error: {last_ex}")
+            self.log.error("Connection Error: %s", last_ex)
             raise last_ex
         self.log.info("Connection Established")
 
@@ -279,7 +279,7 @@ class LoBridgeCommon(ConnectBase):
                 time.sleep(self._conn_try_sleep)
 
         if last_ex is not None:
-            self.log.error(f"Connection Error: {last_ex}")
+            self.log.error("Connection Error: %s", last_ex)
             raise last_ex
         self.log.info("Connection Established")
 
@@ -289,26 +289,26 @@ class LoBridgeCommon(ConnectBase):
         # see: https://pastebin.com/tJDwiwvx
 
         def cleanup():
-            # Copilot Comment for cleanup
             # The cleanup function is registered with atexit.register(cleanup), ensuring that it will be called when the main process exits.
             # The cleanup function terminates the subprocesses if they are running.
             # The preexec_fn=os.setsid argument is used on Unix-like systems to set the process group ID,
             # which allows you to terminate the entire process group.
-            self.log.debug("Cleanup popen for LibreOffice")
+
+            # logger is already terminated at this point
+            # self.log.debug("Cleanup popen for LibreOffice")
             try:
                 if hasattr(self, "_soffice_process") and self._soffice_process:
                     self._soffice_process.terminate()
                     self._soffice_process.wait()
-                    self.log.debug(f"Cleanup() Terminated soffice process. shutdown: {shutdown}")
-            except Exception:
-                self.log.exception(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown}")
+                    # self.log.debug(f"Cleanup() Terminated soffice process. shutdown: {shutdown}")
+            except Exception as e:
+                print(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown}, {e}")
             try:
                 if hasattr(self, "_soffice_process_shutdown") and self._soffice_process_shutdown:
                     self._soffice_process_shutdown.terminate()
                     self._soffice_process_shutdown.wait()
-                    self.log.debug(f"Cleanup() Terminated soffice process. shutdown: {shutdown}")
-            except Exception:
-                self.log.exception(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown}")
+            except Exception as e:
+                print(f"Error in cleanup popen for LibreOffice. shutdown: {shutdown} {e}")
 
         atexit.register(cleanup)
 
@@ -334,7 +334,7 @@ class LoBridgeCommon(ConnectBase):
             #     args, env=self._environment, preexec_fn=os.setsid
             # )
             cmd_str = " ".join(args)
-            self.log.debug(f"Starting LibreOffice: {cmd_str}")
+            self.log.debug("Starting LibreOffice: %s", cmd_str)
             if self._platform == SysInfo.PlatformEnum.WINDOWS:
                 self._soffice_process = subprocess.Popen(cmd_str, shell=True, env=self._environment)
             else:
@@ -618,7 +618,7 @@ class LoPipeStart(LoBridgeCommon):
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
-            self.log.debug(f"Using cache: {self._cache.user_profile}")
+            self.log.debug("Using cache: %s", self._cache.user_profile)
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
         if self._cache.no_share_path:
             self.log.debug("Disabling Shared Extensions")
@@ -736,7 +736,7 @@ class LoSocketStart(LoBridgeCommon):
         self._connector.update_startup_args(args)
 
         if self._cache.use_cache:
-            self.log.debug(f"Using cache: {self._cache.user_profile}")
+            self.log.debug("Using cache: %s", self._cache.user_profile)
             args.append(f'-env:UserInstallation="{self._cache.user_profile.as_uri()}"')
         if self._cache.no_share_path:
             self.log.debug("Disabling Shared Extensions")

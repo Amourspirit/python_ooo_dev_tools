@@ -25,6 +25,7 @@ class TLRUCache:
         self._fn_on_ttl_expired = self._on_ttl_expired
         self._lru_cache = LRUCache(capacity)
         self._seconds = seconds
+        self._hits = 0
 
         self._ttl_cache = TimeCache(seconds, self._get_ttl_seconds())
         self._dummy = object()
@@ -48,6 +49,7 @@ class TLRUCache:
         """
         self._lru_cache.clear()
         self._ttl_cache.clear()
+        self._hits = 0
 
     def get(self, key: Any):
         """
@@ -114,6 +116,7 @@ class TLRUCache:
         value = self._ttl_cache[key]
         # update LRU to keep it fresh
         self._lru_cache[key] = self._dummy
+        self._hits += 1
         return value
 
     def __setitem__(self, key: Any, value: Any) -> None:
@@ -143,3 +146,16 @@ class TLRUCache:
         return len(self._lru_cache)
 
     # endregion Dunder Methods
+
+    # region Properties
+    @property
+    def hits(self) -> int:
+        """
+        Hits count.
+
+        Returns:
+            int: Hits count.
+        """
+        return self._hits
+
+    # endregion Properties

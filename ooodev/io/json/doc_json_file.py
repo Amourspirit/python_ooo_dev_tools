@@ -23,6 +23,8 @@ class DocJsonFile:
         self._sfa = Sfa()
         self._folder_exist = self._sfa.exists(self._root_uri)
 
+    # region Methods
+
     def _ensure_folder_exists(self) -> None:
         """
         Ensures that root_dir dir exists in the document.
@@ -129,3 +131,36 @@ class DocJsonFile:
             return False
         file_uri = f"{self._root_uri}/{file_name}"
         return self._sfa.exists(file_uri)
+
+    def delete_file(self, file_name: str) -> None:
+        """
+        Deletes a file from the document.
+
+        Args:
+            file_name (str): The name of the file.
+
+        Returns:
+            None
+        """
+        if not self._folder_exist:
+            return
+        if not file_name:
+            return
+        file_uri = f"{self._root_uri}/{file_name}"
+        self._sfa.delete_file(file_uri)
+
+    # endregion Methods
+
+    # region Properties
+
+    @property
+    def root_uri(self) -> str:
+        """
+        Gets the root uri.
+
+        Returns:
+            str: The root uri.
+        """
+        return self._root_uri
+
+    # endregion Properties
