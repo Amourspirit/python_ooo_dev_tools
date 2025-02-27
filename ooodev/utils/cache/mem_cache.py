@@ -1,23 +1,18 @@
 from __future__ import annotations
-from collections import OrderedDict
 from typing import Any
 
 
-class LRUCache:
+class MemCache:
     """
-    Least Recently Used (LRU) Cache
+    Memory Cache
     """
 
     # region Initialization
-    def __init__(self, capacity: int):
+    def __init__(self) -> None:
         """
-        Least Recently Used (LRU) Cache
-
-        Args:
-            capacity (int): Cache capacity.
+        Memory Cache
         """
-        self._cache = OrderedDict()
-        self._capacity = max(capacity, 0)
+        self._cache = {}
         self._hits = 0
 
     # endregion Initialization
@@ -31,7 +26,7 @@ class LRUCache:
         self._cache.clear()
         self._hits = 0
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Any) -> Any:  # noqa: ANN401
         """
         Get value by key.
 
@@ -47,7 +42,7 @@ class LRUCache:
         """
         return self[key]
 
-    def put(self, key: Any, value: Any) -> None:
+    def put(self, key: Any, value: Any) -> None:  # noqa: ANN401
         """
         Put value by key.
 
@@ -61,7 +56,7 @@ class LRUCache:
         """
         self[key] = value
 
-    def remove(self, key: Any) -> None:
+    def remove(self, key: Any) -> None:  # noqa: ANN401
         """
         Remove key.
 
@@ -78,40 +73,36 @@ class LRUCache:
 
     # region Dunder Methods
 
-    def __getitem__(self, key: Any) -> Any:
+    def __bool__(self) -> bool:
+        return True
+
+    def __getitem__(self, key: Any) -> Any:  # noqa: ANN401
         if key is None:
             raise TypeError("Key must not be None.")
-        if self._capacity <= 0:
-            return None
         if key not in self._cache:
             return None
-        self._cache.move_to_end(key)
         self._hits += 1
         return self._cache[key]
 
-    def __setitem__(self, key: Any, value: Any) -> None:
-        if key is None or value is None:
-            raise TypeError("Key and value must not be None.")
-        if self._capacity <= 0:
-            return
+    def __setitem__(self, key: Any, value: Any) -> None:  # noqa: ANN401
+        if key is None:
+            raise TypeError("Key must not be None.")
         self._cache[key] = value
-        if len(self._cache) > self._capacity:
-            self._cache.popitem(last=False)
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: Any) -> bool:  # noqa: ANN401
         return False if key is None else key in self._cache
 
-    def __delitem__(self, key: Any) -> None:
+    def __delitem__(self, key: Any) -> None:  # noqa: ANN401
         if key is None:
             raise TypeError("Key must not be None.")
         if key in self._cache:
             del self._cache[key]
 
     def __repr__(self) -> str:
-        return f"LRUCache({self._capacity})"
+        return "MemCache()"
 
     def __str__(self) -> str:
-        return f"LRUCache({self._capacity})"
+        return "MemCache()"
 
     def __len__(self) -> int:
         return len(self._cache)
@@ -119,35 +110,6 @@ class LRUCache:
     # endregion Dunder Methods
 
     # region Properties
-    @property
-    def capacity(self) -> int:
-        """
-        Gets/Sets Cache capacity.
-
-        Setting the capacity to 0 or less will clear the cache and effectively turn caching off.
-        Setting the capacity to a lower value will remove the least recently used items.
-
-        Returns:
-            int: Cache capacity.
-        """
-        return self._capacity
-
-    @capacity.setter
-    def capacity(self, value: int) -> None:
-        """
-        Cache capacity.
-
-        Args:
-            value (int): Cache capacity.
-        """
-        self._capacity = value
-        self._capacity = max(self._capacity, 0)
-        if self._capacity == 0:
-            self.clear()
-            return
-        while len(self._cache) > self._capacity:
-            self._cache.popitem(last=False)
-
     @property
     def hits(self) -> int:
         """

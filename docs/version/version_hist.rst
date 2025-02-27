@@ -2,6 +2,15 @@
 Version History
 ***************
 
+Version 0.52.3
+==============
+
+Added new ``ooodev.utils.cache.mem_cache.MemCache`` class.
+
+Added ``delete_file()`` method to ``ooodev.io.json.doc_json_file.DocJsonFile`` class.
+
+Other minor bug fixes.
+
 Version 0.52.2
 ==============
 
@@ -40,8 +49,8 @@ Version 0.51.0
 an overload that can take a ``named_range`` that can be called and retrieve data from a named range
 in the sheet.
 
-Braking Changes
----------------
+Breaking Changes
+----------------
 
 ``ooodev.office.calc.get_val()`` now returns the value of of the cell when the cell contains a formula. Previously the the formula was returned.
 
@@ -53,8 +62,8 @@ Version 0.50.0
 
 New and updated classes for working with LibreOffice Theme and colors. These features require LibreOffice ``7.6`` or later.
 
-Braking Changes
----------------
+Breaking Changes
+----------------
 
 The Theme classes in the ``ooodev.theme`` namespace have been updated.
 Initially the classes were created for LibreOffice ``7.5`` but the classes have been updated to work with LibreOffice ``7.6`` or later.

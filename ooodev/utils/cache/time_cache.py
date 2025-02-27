@@ -40,6 +40,7 @@ class TimeCache(EventsPartial):
         self._expiration_time = datetime.now(timezone.utc) + self._delta
         self._cache = {}
         self._timer = None
+        self._hits = 0
         self._fn_clear_expired = self.clear_expired
         self._fn_trigger_event = self.trigger_event
         self.start_timer()
@@ -51,6 +52,7 @@ class TimeCache(EventsPartial):
         self.stop_timer()
         self._cache.clear()
         self.stop_timer()
+        self._hits = 0
 
     def get(self, key: Any) -> Any:
         """
@@ -161,6 +163,7 @@ class TimeCache(EventsPartial):
             ]
             for key in del_keys:
                 del self._cache[key]
+
         if del_keys:
             eargs = EventArgs(self)
             eargs.event_data = DotDict[list](keys=del_keys)
@@ -180,6 +183,7 @@ class TimeCache(EventsPartial):
             if (now_dt - timestamp).total_seconds() < self.seconds:
                 # update timestamp
                 self._cache[key] = (value, now_dt)
+                self._hits += 1
                 return value
             else:
                 del self._cache[key]  # remove expired item
@@ -313,5 +317,15 @@ class TimeCache(EventsPartial):
             self.start_timer()
         else:
             self.stop_timer()
+
+    @property
+    def hits(self) -> int:
+        """
+        Hits count.
+
+        Returns:
+            int: Hits count.
+        """
+        return self._hits
 
     # endregion Properties
