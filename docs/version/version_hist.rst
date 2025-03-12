@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.52.5
+==============
+
+Updated ``ooodev.utils.gen_util.NULL_OBJ`` constant. This constant is used when ``None`` is not an option.
+Now the constant returns ``False`` in boolean context.
+
 Version 0.52.4
 ==============
 
