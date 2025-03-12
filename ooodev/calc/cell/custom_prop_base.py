@@ -14,12 +14,21 @@ if TYPE_CHECKING:
 class CustomPropBase(TheDictionaryPartial):
     def __init__(self, sheet: CalcSheet) -> None:
         TheDictionaryPartial.__init__(self)
-        self._shape_prefix = "_cprop_"
-        self._shape_suffix = "_id"  # suffix is important for ensure shape duplicates are removed.
         self._sheet = sheet
-        self._form_name = "CellCustomProperties"
         self._cache = {}
         self._draw_page = self._sheet.draw_page
+        self._shape_prefix = self._get_shape_prefix()
+        self._shape_suffix = self._get_shape_suffix()  # suffix is important for ensure shape duplicates are removed.
+        self._form_name = self._get_form_name()
+
+    def _get_shape_suffix(self) -> str:
+        return "_id"
+
+    def _get_shape_prefix(self) -> str:
+        return "_cprop_"
+
+    def _get_form_name(self) -> str:
+        return "CellCustomProperties"
 
     def _get_hidden_control_simple(self, name: str) -> HiddenControl | None:
         frm = self._get_form()
@@ -37,7 +46,6 @@ class CustomPropBase(TheDictionaryPartial):
         return name
 
     def _get_form(self) -> Form:
-
         key = self._form_name
         if key in self._cache:
             return self._cache[key]
