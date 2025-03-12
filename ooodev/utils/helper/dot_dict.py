@@ -5,6 +5,7 @@ from ooodev.utils.gen_util import NULL_OBJ
 
 T = TypeVar("T")
 
+# Protected attributes that should not be included in dictionary operations
 _PROTECTED_ATTRIBS = ("_missing_attrib_value", "_internal_keys", "_is_protocol")
 
 
@@ -68,19 +69,27 @@ class DotDict(Generic[T]):
         for key in kwargs:
             self._internal_keys[key] = None
 
+    def __bool__(self) -> bool:
+        """Returns True if the dictionary is not empty."""
+        return len(self._internal_keys) > 0
+
     def __getitem__(self, key: str) -> T:
+        """Gets item by key using dictionary syntax."""
         return self.__dict__[key]
 
     def __setitem__(self, key: str, value: T) -> None:
+        """Sets item by key using dictionary syntax."""
         self.__dict__[key] = value
         self._internal_keys[key] = None
 
     def __delitem__(self, key: str) -> None:
+        """Deletes item by key using dictionary syntax."""
         del self.__dict__[key]
         if key in self._internal_keys:
             del self._internal_keys[key]
 
     def __getattr__(self, key: str) -> T:
+        """Gets item by key using attribute syntax."""
         try:
             return self.__dict__[key]  # type: ignore
         except KeyError:
@@ -89,6 +98,7 @@ class DotDict(Generic[T]):
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
 
     def __setattr__(self, key: str, value: Any) -> None:
+        """Sets item by key using attribute syntax."""
         if key.startswith("__"):
             super().__setattr__(key, value)
         else:
@@ -97,6 +107,7 @@ class DotDict(Generic[T]):
             self.__dict__[key] = value  # type: ignore
 
     def __delattr__(self, key: str) -> None:
+        """Deletes item by key using attribute syntax."""
         if key in self._internal_keys:
             del self._internal_keys[key]
         if key.startswith("__"):
@@ -105,18 +116,15 @@ class DotDict(Generic[T]):
             del self.__dict__[key]  # type: ignore
 
     def __contains__(self, key: str) -> bool:
+        """Returns True if key exists in dictionary."""
         return key in self.__dict__
 
     def __len__(self) -> int:
         """Returns the number of items in the dictionary."""
         return len(self._internal_keys)
-        # length = len(self.__dict__)
-        # for attr in _PROTECTED_ATTRIBS:
-        #     if hasattr(self, attr):
-        #         length -= 1
-        # return length
 
     def __copy__(self) -> DotDict[T]:
+        """Returns a shallow copy of the dictionary."""
         return self.copy()
 
     def get(self, key: str, default: T | None = None) -> T | None:
@@ -159,6 +167,9 @@ class DotDict(Generic[T]):
 
         Args:
             other (Dict[KT, T] | DotDict[KT, T]): Dictionary to update with.
+
+        Raises:
+            TypeError: If other is not a dict or DotDict
         """
         if isinstance(other, DotDict):
             self.__dict__.update(other.__dict__)
@@ -182,7 +193,7 @@ class DotDict(Generic[T]):
         return inst
 
     def copy_dict(self) -> Dict[str, T]:
-        """Returns a shallow copy of the dictionary."""
+        """Returns a shallow copy as a standard dictionary."""
         copy_dict = {}
         for key in self._internal_keys.keys():
             if key not in self.__dict__:
@@ -191,8 +202,7 @@ class DotDict(Generic[T]):
         return copy_dict
 
     def clear(self) -> None:
-        """Clears the dictionary"""
-
+        """Clears all items from the dictionary while preserving protected attributes."""
         protected = {}
         for attr in _PROTECTED_ATTRIBS:
             if attr in self.__dict__:
