@@ -2,6 +2,11 @@
 Version History
 ***************
 
+Version 0.52.4
+==============
+
+Added ``unique_id`` to ``ooodev.calc.CalcCell``. This unique id is used to identify a cell in a sheet. It will remain constant even if the cell is moved.
+
 Version 0.52.3
 ==============
 

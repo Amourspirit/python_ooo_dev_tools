@@ -4,13 +4,13 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ooo-dev-tools"
-version = "0.52.3"
+version = "0.52.4"
 
 description = "LibreOffice Developer Tools"
 license = "Apache Software License"
 readme = "README.rst"
 authors = [
-    ":Barry-Thomas-Paul: Moss <bigbytetech@gmail.com>"
+    ":Barry-Thomas-Paul: Moss <ooodevtools@pm.amourspirit.net>"
 ]
 keywords = ["ooodev", "libreoffice", "openoffice", "macro", "uno", "ooouno", "pyuno"]
 homepage = "https://github.com/Amourspirit/python_ooo_dev_tools"
