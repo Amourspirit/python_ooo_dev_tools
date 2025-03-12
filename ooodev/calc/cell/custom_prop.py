@@ -18,6 +18,7 @@ from ooodev.utils import gen_util as gUtil
 from ooodev.utils import props as mProps
 from ooodev.utils.gen_util import NULL_OBJ
 from ooodev.utils.helper.dot_dict import DotDict
+from ooodev.meta.custom_ext import override
 
 if TYPE_CHECKING:
     from com.sun.star.container import ContainerEvent
@@ -48,7 +49,6 @@ class CustomProp(CustomPropBase):
     """A partial class for Calc Cell custom properties."""
 
     class ContainerListener(unohelper.Base, XContainerListener):
-
         def __init__(
             self, form_name: str, cp: CustomProp, lo_inst: LoInst, subscriber: XContainer | None = None
         ) -> None:
@@ -69,29 +69,33 @@ class CustomProp(CustomPropBase):
             self._cp._reset()
 
         # region XContainerListener
-        def elementInserted(self, event: ContainerEvent) -> None:
+        @override
+        def elementInserted(self, Event: ContainerEvent) -> None:
             """
             Event is invoked when a container has inserted an element.
             """
             # replaced element should be a form
-            if self.is_element_monitored_form(event.Element):
+            if self.is_element_monitored_form(Event.Element):
                 self.reset()
 
-        def elementRemoved(self, event: ContainerEvent) -> None:
+        @override
+        def elementRemoved(self, Event: ContainerEvent) -> None:
             """
             Event is invoked when a container has removed an element.
             """
-            if self.is_element_monitored_form(event.Element):
+            if self.is_element_monitored_form(Event.Element):
                 self.reset()
 
-        def elementReplaced(self, event: ContainerEvent) -> None:
+        @override
+        def elementReplaced(self, Event: ContainerEvent) -> None:
             """
             Event is invoked when a container has replaced an element.
             """
-            if self.is_element_monitored_form(event.ReplacedElement):
+            if self.is_element_monitored_form(Event.ReplacedElement):
                 self.reset()
 
-        def disposing(self, event: EventObject) -> None:
+        @override
+        def disposing(self, Source: EventObject) -> None:
             """
             Gets called when the broadcaster is about to be disposed.
 
@@ -112,6 +116,7 @@ class CustomProp(CustomPropBase):
         CustomPropBase.__init__(self, cell.calc_sheet)
         self._cell = cell
         self._forbidden_keys = set(("HiddenValue", "Name", "ClassId", "Tag"))
+        self._forbidden_del_keys = set("ooodev.calc.calc_cell.unique_id")
         self._attribute_name = "CustomPropertiesId"
         self._ctl_name = None
         self._row = self._cell.cell_obj.row - 1
@@ -137,7 +142,6 @@ class CustomProp(CustomPropBase):
         return shape, s
 
     def _get_shapes_dict(self) -> Dict[str, List[XControlShape]]:
-
         comp = self.draw_page.component
         shapes = {}
         # find all shapes on the draw page that start with prefix and end with suffix
@@ -474,6 +478,8 @@ class CustomProp(CustomPropBase):
         """
         if name in self._forbidden_keys:
             raise AttributeError(f"Property '{name}' is forbidden. Forbidden keys: {self._forbidden_keys}")
+        if name in self._forbidden_del_keys:
+            raise AttributeError(f"Property '{name}' is forbidden to be removed. This is a protected value.")
         ctl = self._get_hidden_control()
         info = ctl.get_property_set_info()
         if info.hasPropertyByName(name):
@@ -490,11 +496,12 @@ class CustomProp(CustomPropBase):
         # remove form if it is empty
         # remove shape
         forms = self.draw_page.forms
+        form = None
         if forms.has_by_name(self.form_name):
             _, ctl_id = self._get_control_id()
             form = forms[self.form_name]
             form.remove_by_name(ctl_id)
-        if not form.has_elements():
+        if form and not form.has_elements():
             forms.remove_by_name(self.form_name)
             form = None
         shape = self._find_shape_by_cell_row_col(self._row, self._col)

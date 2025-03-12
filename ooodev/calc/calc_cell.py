@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Any, cast, overload, Sequence, TYPE_CHECKING
 
+from ooodev.utils import gen_util
+
 try:
     # python 3.12+
     from typing import override  # noqa # type: ignore
@@ -133,6 +135,7 @@ class CalcCell(
         StylePropertyPartial.__init__(self, component=sheet_cell, property_name="CellStyle")
         self._control = None
         self._custom_properties = None
+        self._unique_id = None
         self._init_events()
 
     def _init_events(self) -> None:
@@ -809,6 +812,32 @@ class CalcCell(
         cp.remove_custom_properties()
 
     # endregion Custom Properties
+
+    # region Unique Id
+    @property
+    def unique_id(self) -> str:
+        """
+        Gets the unique id of the cell.
+
+        This is a lazy method and does not create a unique id until it is accessed.
+
+        Returns:
+            str: Unique ID
+        """
+        if self._unique_id is None:
+            key = "ooodev.calc.calc_cell.unique_id"
+            value = self.get_custom_property(key, default=None)
+            if value is None:
+                # encode the original cell address into the unique id
+
+                abs_name = self.calc_cell.component.AbsoluteName.encode("utf-8").hex()
+                random = gen_util.Util.generate_random_string(10)
+                value = f"uid_{abs_name}_{random}"
+                self.set_custom_property(key, value)
+            self._unique_id = value
+        return self._unique_id
+
+    # endregion Unique Id
 
     # region Static Methods
 

@@ -201,7 +201,7 @@ class CalcSheet(
         ...
 
     @overload
-    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:
+    def rng(self, cell_range: XCellRange) -> mRngObj.RangeObj:  # type: ignore
         """
         Gets a range Object representing a range.
 
@@ -4006,7 +4006,9 @@ class CalcSheet(
     @property
     def unique_id(self) -> str:
         """
-        Gets the unique name of the sheet.
+        Gets the unique id of the cell.
+
+        This is a lazy method and does not create a unique id until it is accessed.
 
         Returns:
             str: Unique Name
