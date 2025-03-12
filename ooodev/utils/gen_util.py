@@ -15,10 +15,30 @@ import string
 _REG_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])|(?<=[A-zA-Z])(?=[0-9])")  # re.compile(r"(?<!^)(?=[A-Z])")
 _REG_LETTER_AFTER_NUMBER = re.compile(r"(?<=\d)(?=[a-zA-Z])")
 
-NULL_OBJ = object()
-"""Null Object uses with None is not an option"""
 
-TNullObj = TypeVar("TNullObj", bound=object)
+class _null_obj:
+    def __bool__(self) -> bool:
+        return False
+
+
+NULL_OBJ = _null_obj()
+"""
+Null Object uses when None is not an option. Truthy value is ``False``
+
+.. versionchanged:: 0.52.5
+    NULL_OBJ now returns ``False`` in boolean context.
+
+.. code-block:: python
+
+    if NULL_OBJ:
+        print("This will never be printed")
+
+    if not NULL_OBJ:
+        print("This will always be printed")
+"""
+# tested in: tests/test_utils/test_null_obj.py
+
+TNullObj = TypeVar("TNullObj", bound=_null_obj)
 
 
 class ArgsHelper:
@@ -26,6 +46,7 @@ class ArgsHelper:
 
     class NameValue(NamedTuple):
         "Name Value pair"
+
         name: str
         """Name component"""
         value: Any
