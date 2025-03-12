@@ -12,6 +12,7 @@ utils
     data_type/index
     dispatch/index
     factory/index
+    helper/index
     inst/index
     partial/index
     kind/index

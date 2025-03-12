@@ -2,6 +2,12 @@
 Version History
 ***************
 
+Version 0.52.6
+==============
+
+Added ``__bool__`` method to ``ooodev.utils.helper.dot_dict.DotDict`` class.
+This method returns ``True`` if the dictionary is not empty; Otherwise, ``False``.
+
 Version 0.52.5
 ==============
 
