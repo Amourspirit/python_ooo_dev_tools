@@ -35,6 +35,15 @@ class Options:
     lo_cache_size: int = 200
     """Lo Instance cache size. Default ``200``, ``0`` or less means no caching. Normally you should not need to change this value. If you do, it should be a power of 2."""
 
+    force_reload: bool = False
+    """
+    Force reload of LibreOffice connection.
+    This can be used to pass a new connection to the library.
+    Default ``False``
+
+    .. versionadded:: 0.53.0
+    """
+
     def serialize(self) -> str:
         """
         Serialize the options to a json string.

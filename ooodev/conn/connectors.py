@@ -7,12 +7,7 @@ import json
 import uuid
 from abc import ABC, abstractmethod
 
-try:
-    # python 3.12+
-    from typing import override  # noqa # type: ignore
-except ImportError:
-    from typing_extensions import override  # noqa # type: ignore
-
+from ooodev.utils.typing.over import override
 from ooodev.utils import paths
 
 

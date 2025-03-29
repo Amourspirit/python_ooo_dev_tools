@@ -723,6 +723,8 @@ class LoInst(EventsPartial):
         if cargs.cancel:
             raise mEx.CancelEventError(cargs)
 
+        self._reset_all()
+
         b_connector = cargs.event_data["connector"]
         lo_loader = LoLoader(connector=b_connector, cache_obj=cache_obj, opt=opt)
         loader = self.load_from_lo_loader(lo_loader)
@@ -731,31 +733,6 @@ class LoInst(EventsPartial):
         self.on_office_loaded(eargs)
         self._logger.debug("load_office() Loaded Office")
         return loader
-
-    def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
-        """
-        Loads Office from a LoLoader instance.
-
-        |lo_unsafe|
-
-        Args:
-            loader (LoLoader): LoLoader instance.
-
-        Returns:
-            XComponentLoader: component loader.
-
-        .. versionadded:: 0.40.0
-        """
-        self._lo_loader = loader
-        self._lo_inst = self._lo_loader.lo_inst
-        self._opt = self._lo_loader.options
-        self._disposed = False
-        self._xcc = self._lo_inst.ctx
-        self._load_from_context()
-        if self._loader is None:
-            self._logger.error("load_from_lo_loader() Unable to access XComponentLoader")
-            raise mEx.LoadingError("Unable to access XComponentLoader")
-        return self._loader
 
     def get_singleton(self, name: str) -> Any:
         """
@@ -773,6 +750,50 @@ class LoInst(EventsPartial):
         with contextlib.suppress(Exception):
             result = self._mc_factory.DefaultContext.getByName(name)  # type: ignore
         return result
+
+    def load_from_lo_loader(self, loader: LoLoader) -> XComponentLoader:
+        """
+        Loads Office from a LoLoader instance.
+
+        |lo_unsafe|
+
+        Args:
+            loader (LoLoader): LoLoader instance.
+
+        Returns:
+            XComponentLoader: component loader.
+
+        .. versionadded:: 0.40.0
+        """
+        if self._lo_loader is not None:
+            self._reset_all()
+        self._lo_loader = loader
+        self._lo_inst = self._lo_loader.lo_inst
+        self._opt = self._lo_loader.options
+        self._disposed = False
+        self._xcc = self._lo_inst.ctx
+        self._load_from_context()
+        if self._loader is None:
+            self._logger.error("load_from_lo_loader() Unable to access XComponentLoader")
+            raise mEx.LoadingError("Unable to access XComponentLoader")
+        return self._loader
+
+    def _reset_all(self) -> None:
+        self._logger.debug("_reset_all()")
+        self._lo_loader = None
+        self._lo_inst = None
+        self._disposed = True
+        self._xcc = None
+        self._mc_factory = None
+        self._xdesktop = None
+        self._glb_event_broadcaster = None
+        self._loader = None
+        self._ms_factory = None
+        self._current_doc = None
+        self._app_font_pixel_ratio = None
+        self._sys_font_pixel_ratio = None
+        self._shared_cache.clear()
+        self._clear_cache()
 
     def _load_from_context(self) -> None:
         if self._xcc is None:
@@ -2234,16 +2255,21 @@ class LoInst(EventsPartial):
                     break
             if doc is None:
                 self._logger.debug("current_doc: Could not access current document. Returning None")
-                return None  # type: ignore
-            self._current_doc = doc_factory(doc=doc, lo_inst=self)
+                self._current_doc = None
+                return self._current_doc
+            try:
+                self._current_doc = doc_factory(doc=doc, lo_inst=self)
+            except (mEx.MissingInterfaceError, ValueError):
+                self._logger.exception("current_doc: Could not get a valid document")
+                self._current_doc = None
             # self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
-        return self._current_doc  # type: ignore
+        return self._current_doc
 
     @current_doc.setter
     def current_doc(self, value: OfficeDocumentT | XComponent) -> None:
         self._clear_cache()
         if hasattr(value, "DOC_TYPE"):
-            self._current_doc = value
+            self._current_doc = cast("OfficeDocumentT", value)
         else:
             try:
                 self._current_doc = doc_factory(doc=value, lo_inst=self)
