@@ -2247,11 +2247,11 @@ class LoInst(EventsPartial):
                     doc = comp
                     if self._logger.is_debug:
                         if hasattr(doc, "getImplementationName"):
-                            self._logger.debug(f"current_doc: Component: {doc.getImplementationName()}")
+                            self._logger.debug("current_doc: Component: %s", doc.getImplementationName())
                         if hasattr(doc, "getURL"):
-                            self._logger.debug(f"current_doc: Component URL: {doc.getURL()}")
+                            self._logger.debug("current_doc: Component URL: %s", doc.getURL())
                         if hasattr(doc, "RuntimeUID"):
-                            self._logger.debug(f"current_doc: Component RuntimeUID: {doc.RuntimeUID}")
+                            self._logger.debug("current_doc: Component RuntimeUID: %s", doc.RuntimeUID)
                     break
             if doc is None:
                 self._logger.debug("current_doc: Could not access current document. Returning None")
@@ -2260,9 +2260,8 @@ class LoInst(EventsPartial):
             try:
                 self._current_doc = doc_factory(doc=doc, lo_inst=self)
             except (mEx.MissingInterfaceError, ValueError):
-                self._logger.exception("current_doc: Could not get a valid document")
+                self._logger.debug("current_doc: Could not get a valid document from doc_factory()")
                 self._current_doc = None
-            # self._current_doc = doc_factory(doc=self.desktop.get_current_component(), lo_inst=self)
         return self._current_doc
 
     @current_doc.setter
