@@ -693,6 +693,11 @@ class Lo(metaclass=StaticProperty):
                 pass
             cls._lo_inst = cast(lo_inst.LoInst, None)
 
+        if connector is None and cache_obj is None and opt is None:
+            # many times a default _ = Lo.load_office() is called.
+            if cls._lo_inst is not None:
+                return cls._lo_inst.loader_current
+
         if cls._lo_inst is not None and isinstance(connector, ConnectBase):
             return cls._lo_inst.loader_current
 
