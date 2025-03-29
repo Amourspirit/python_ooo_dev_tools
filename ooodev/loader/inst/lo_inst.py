@@ -2224,6 +2224,8 @@ class LoInst(EventsPartial):
             However, there may be exceptions this this such as when extension has a OnFocus job.
             In cases such as that the OnFocus may need to set the current document.
 
+        .. versionchanged:: 0.53.0
+            Now if the current document is None is not a valid office document then it will be set to None.
 
         .. versionchanged:: 0.47.4
             It is now possible to set the current document.
@@ -2265,16 +2267,19 @@ class LoInst(EventsPartial):
         return self._current_doc
 
     @current_doc.setter
-    def current_doc(self, value: OfficeDocumentT | XComponent) -> None:
+    def current_doc(self, value: OfficeDocumentT | XComponent | None) -> None:
         self._clear_cache()
+        if value is None:
+            self._current_doc = None
+            return
         if hasattr(value, "DOC_TYPE"):
             self._current_doc = cast("OfficeDocumentT", value)
         else:
             try:
                 self._current_doc = doc_factory(doc=value, lo_inst=self)
             except Exception:
-                self._logger.exception("current_doc: Could not set current document")
-                raise
+                self._logger.debug("current_doc: Could not set current document. Setting to None")
+                self._current_doc = None
 
     @property
     def desktop(self) -> TheDesktop:

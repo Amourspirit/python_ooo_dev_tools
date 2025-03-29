@@ -693,9 +693,12 @@ class Lo(metaclass=StaticProperty):
                 pass
             cls._lo_inst = cast(lo_inst.LoInst, None)
 
+        if cls._lo_inst is not None and isinstance(connector, ConnectBase):
+            return cls._lo_inst.loader_current
+
         if (
             cls._lo_inst is not None
-            and (connector is not None and connector == cls._lo_inst.bridge_connector)
+            and (connector is not None and (connector == cls._lo_inst.bridge_connector))
             and not cls._lo_inst.is_macro_mode
         ):
             return cls._lo_inst.loader_current
