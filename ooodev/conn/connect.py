@@ -11,15 +11,9 @@ import subprocess
 import signal
 from pathlib import Path
 
-try:
-    # python 3.12+
-    from typing import override  # noqa # type: ignore
-except ImportError:
-    from typing_extensions import override  # noqa # type: ignore
-
-
 import uno
 from com.sun.star.connection import NoConnectException  # type: ignore
+from ooodev.utils.typing.over import override
 from ooodev.conn import connectors
 from ooodev.conn import cache
 from ooodev.utils.sys_info import SysInfo
@@ -49,7 +43,7 @@ else:
 class ConnectBase(ABC):
     """Base Abstract Class for all connections to LO"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # https://tinyurl.com/yb897bxw
         # https://tinyurl.com/ybk7zqcg
 
@@ -63,7 +57,7 @@ class ConnectBase(ABC):
         return NotImplemented
 
     @abstractmethod
-    def connect(self):
+    def connect(self) -> None:
         """
         Makes a connection to soffice
 
@@ -137,7 +131,7 @@ class ConnectBase(ABC):
 class LoBridgeCommon(ConnectBase):
     """Base Abstract Class for LoSocketStart and LoPipeStart"""
 
-    def __init__(self, connector: connectors.ConnectorBridgeBase, cache_obj: cache.Cache | None):
+    def __init__(self, connector: connectors.ConnectorBridgeBase, cache_obj: cache.Cache | None) -> None:
         super().__init__()
         self._connector = connector
         self._soffice_process = None
@@ -501,7 +495,7 @@ class LoDirectStart(ConnectBase):
         return isinstance(other, LoDirectStart)
 
     @override
-    def connect(self):
+    def connect(self) -> None:
         """
         Makes a connection to soffice
 
@@ -633,7 +627,6 @@ class LoPipeStart(LoBridgeCommon):
         self._opened_office = not shutdown
 
     @property
-    @override
     def connector(self) -> connectors.ConnectPipe:
         """Gets the current Connector"""
         return self._connector  # type: ignore
@@ -751,7 +744,6 @@ class LoSocketStart(LoBridgeCommon):
         self._opened_office = not shutdown
 
     @property
-    @override
     def connector(self) -> connectors.ConnectSocket:
         """Gets the current Connector"""
         return self._connector  # type: ignore

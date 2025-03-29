@@ -2,6 +2,47 @@
 Version History
 ***************
 
+
+Version 0.53.0
+==============
+
+Added ``ConnectCtx`` class. This class can be used to pass a new connection to the library.
+
+Added ``force_reload`` option to ``Lo.Options``. When set to ``True`` then the office connection will be reloaded with the new connection.
+This can be useful for extensions and testing.
+
+``Lo.current_doc`` now return ``None`` if it is not a valid office document.
+
+Added ``Result`` class. This class can be used to represent the result of an operation.
+The class can represent either a successful operation with data or a failure with an error.
+
+.. code-block:: python
+
+    from ooodev.utils.result import Result
+
+    class QryModuleStateLastItem(QryBase):
+        def __init__(self, mod: PyModuleT) -> None:
+            QryBase.__init__(self)
+            self._mod = mod
+
+        def execute(self) -> Result[ModuleStateItem, None] | Result[None, Exception]:
+            mod_state = PyModuleState(self._mod)
+            result = mod_state.get_last_item()
+            if result is None:
+                return Result.failure(Exception("No state found"))
+            return Result.success(result)
+
+
+    qry = QryModuleStateLastItem(my_mod)
+    qry_result = qry.execute()
+
+    if Result.is_success(qry_result):
+        # qry_result.data has full typing support as ModuleStateItem at this point.
+        mod_date_item = qry_result.data
+    else:
+        # handle error
+        mod_date_item = get_default_state()
+
 Version 0.52.6
 ==============
 

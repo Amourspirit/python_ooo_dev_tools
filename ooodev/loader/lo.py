@@ -27,13 +27,13 @@ from com.sun.star.util import XCloseable
 # this is also true because docs/conf.py ignores com import for autodoc
 # import module and not module content to avoid circular import issue.
 # https://stackoverflow.com/questions/22187279/python-circular-importing
+from ooodev.exceptions import ex as mEx
 from ooodev.loader.inst.options import Options as LoOptions
 from ooodev.loader.inst.doc_type import DocType as LoDocType, DocTypeStr as LoDocTypeStr
 from ooodev.loader.inst.service import Service as LoService
 from ooodev.loader.inst.clsid import CLSID as LoClsid
 from ooodev.conn.connect import ConnectBase
 from ooodev.loader.inst import lo_inst
-
 from ooodev.conn import cache as mCache
 from ooodev.conn import connectors
 from ooodev.events.event_singleton import _Events
@@ -45,10 +45,7 @@ from ooodev.mock import mock_g
 
 
 if TYPE_CHECKING:
-    try:
-        from typing import Literal  # Py >= 3.8
-    except ImportError:
-        from typing_extensions import Literal
+    from ooodev.utils.typing.lit import Literal
     from com.sun.star.container import XChild
     from com.sun.star.container import XIndexAccess
     from com.sun.star.frame import XFrame
@@ -184,7 +181,7 @@ class Lo(metaclass=StaticProperty):
 
         def __init__(
             self,
-            connector: connectors.ConnectPipe | connectors.ConnectSocket | None,
+            connector: connectors.ConnectPipe | connectors.ConnectSocket | ConnectBase | None,
             cache_obj: mCache.Cache | None = None,
             opt: LoOptions | None = None,
         ):
@@ -192,7 +189,7 @@ class Lo(metaclass=StaticProperty):
             Create a connection to office
 
             Args:
-                connector (connectors.ConnectPipe | connectors.ConnectSocket | None): Connection information. Ignore for macros.
+                connector (connectors.ConnectPipe | connectors.ConnectSocket | ConnectBase | None): Connection information. Ignore for macros.
                 cache_obj (~ooodev.conn.cache.Cache | None, optional): Cache instance that determines if LibreOffice profile is to be copied and cached
                     Ignore for macros. Defaults to None.
                 opt (~ooodev.utils.lo.Lo.Options, optional): Extra Load options.
@@ -601,7 +598,7 @@ class Lo(metaclass=StaticProperty):
     @classmethod
     def load_office(
         cls,
-        connector: connectors.ConnectPipe | connectors.ConnectSocket | None = None,
+        connector: connectors.ConnectPipe | connectors.ConnectSocket | ConnectBase | None = None,
         cache_obj: mCache.Cache | None = None,
         opt: Lo.Options | None = None,
     ) -> XComponentLoader:
@@ -616,7 +613,7 @@ class Lo(metaclass=StaticProperty):
         ``using_pipes`` is ignored with running inside office.
 
         Args:
-            connector (connectors.ConnectPipe, connectors.ConnectSocket, optional): Connection information. Ignore for macros.
+            connector (connectors.ConnectPipe, connectors.ConnectSocket, ConnectBase, optional): Connection information. Ignore for macros.
             cache_obj (Cache, optional): Cache instance that determines of LibreOffice profile is to be copied and cached
                 Ignore for macros. Defaults to None.
             opt (Options, optional): Extra Load options.
@@ -648,6 +645,12 @@ class Lo(metaclass=StaticProperty):
                 doc = Write.create_doc(loader)
                 ...
 
+        .. versionchanged:: 0.53.0
+
+            Added force_reload option to Options.
+            When set to ``True`` then the office connection will be reloaded with the new connection.
+            This can be useful for extensions and testing.
+
         .. versionchanged:: 0.6.10
 
             Added ``opt`` parameter.
@@ -676,6 +679,20 @@ class Lo(metaclass=StaticProperty):
 
         # if cls._lo_inst is exist then office is already loaded.
         # Now check to see if options are different.
+        force_reload = False
+        if opt is not None:
+            force_reload = opt.force_reload
+
+        if force_reload:
+            try:
+                if cls._lo_inst is not None:
+                    cls._lo_inst.global_event_broadcaster.remove_event_document_event_occurred(
+                        _on_global_document_event
+                    )
+            except Exception:
+                pass
+            cls._lo_inst = cast(lo_inst.LoInst, None)
+
         if (
             cls._lo_inst is not None
             and (connector is not None and connector == cls._lo_inst.bridge_connector)
@@ -692,17 +709,28 @@ class Lo(metaclass=StaticProperty):
             result = cls._lo_inst.load_office(connector=connector, cache_obj=cache_obj)
             # register global events
             cls._lo_inst.global_event_broadcaster.add_event_document_event_occurred(_on_global_document_event)
-            if "ODEV_CURRENT_CONNECTION" not in os.environ:
-                if connector is not None:
-                    # OOO_DEV_CURRENT_CONNECTION
-                    os.environ["ODEV_CURRENT_CONNECTION"] = connector.serialize()
-                else:
-                    os.environ["ODEV_CURRENT_CONNECTION"] = ""
-                if opt is not None:
-                    os.environ["ODEV_CURRENT_CONNECTION_OPTIONS"] = opt.serialize()
+
+            if isinstance(connector, connectors.ConnectorBridgeBase) and "ODEV_CURRENT_CONNECTION" not in os.environ:
+                os.environ["ODEV_CURRENT_CONNECTION"] = connector.serialize()
+            else:
+                os.environ["ODEV_CURRENT_CONNECTION"] = ""
+
+            if opt is not None:
+                os.environ["ODEV_CURRENT_CONNECTION_OPTIONS"] = opt.serialize()
+            else:
+                os.environ["ODEV_CURRENT_CONNECTION_OPTIONS"] = ""
             return result
         except Exception:
-            raise SystemExit(1)  # pylint: disable=W0707
+            is_bridge = False
+            try:
+                if isinstance(connector, connectors.ConnectorBridgeBase):
+                    is_bridge = True
+            except Exception:
+                is_bridge = False
+            if is_bridge:
+                raise SystemExit(1)  # pylint: disable=W0707
+            else:
+                raise mEx.ConnectionError("load_office() Office context could not be created")
 
     # endregion Start Office
 
@@ -1357,9 +1385,7 @@ class Lo(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def store_doc_format(
-        cls, store: XStorable, fnm: PathOrStr, format: str, password: str
-    ) -> bool:  # pylint: disable=W0622
+    def store_doc_format(cls, store: XStorable, fnm: PathOrStr, format: str, password: str) -> bool:  # pylint: disable=W0622
         """
         Store document as format.
 
@@ -2127,7 +2153,7 @@ class Lo(metaclass=StaticProperty):
         return inst
 
     @classproperty
-    def current_doc(cls) -> OfficeDocumentT:
+    def current_doc(cls) -> OfficeDocumentT | None:
         """
         Gets the current document. Such as ``ooodev.calc.CalcDoc`` or ``ooodev.write.WriteDoc``.
 
@@ -2143,8 +2169,11 @@ class Lo(metaclass=StaticProperty):
                 doc = Lo.current_doc
                 doc.sheets[0]["A1"].Value = "Hello World"
 
+        Raises:
+            LoadingError: If office failed to load.
+
         Returns:
-            OfficeDocumentT: Office Document
+            OfficeDocumentT | None : Office Document or None if not a valid document.
 
         See Also:
             :py:meth:`ooodev.utils.partial.doc_io_partial.from_current_doc`
@@ -2152,6 +2181,8 @@ class Lo(metaclass=StaticProperty):
         if cls._lo_inst is None:
             # for macro mode auto load office
             cls.load_office()
+        if cls._lo_inst is None:
+            raise mEx.LoadingError("Office failed to load")
         return cls._lo_inst.current_doc
 
     @classproperty
