@@ -500,15 +500,22 @@ class DocIoPartial(Generic[_T]):
     # region from_current_doc()
 
     @classmethod
-    def from_current_doc(cls) -> _T:
+    def from_current_doc(cls, uid: str = "") -> _T:
         """
-        Get a document from the current component.
+        Get a document from the current component or from the desktop components.
 
         This method is useful in macros where the access to current document is needed.
         This method does not require the use of the :py:class:`~ooodev.macro.MacroLoader` in macros.
 
         Args:
-            lo_inst (LoInst, optional): Lo Instance. Use when creating multiple documents. Defaults to None.
+            uid (str, optional): Unique ID of document.
+                This is usually a single integer pass as a string.
+                For instance the first open document has a uid of ``'1'``.
+                If empty then the first document found is used.
+                Defaults to "".
+
+        Raises:
+            NotSupportedDocumentError: If no supported document found.
 
         Returns:
             _T: Class instance representing document.
@@ -521,7 +528,10 @@ class DocIoPartial(Generic[_T]):
                 doc.sheets[0]["A1"].Value = "Hello World"
 
         See Also:
-            :py:attr:`ooodev.utils.lo.Lo.current_doc`
+            :py:attr:`ooodev.utils.lo.Lo.get_doc`
+
+        .. versionchanged:: 0.53.3
+            Added uid parameter.
         """
         cargs = CancelEventArgs(cls.from_current_doc.__qualname__)
         cargs.event_data = {"doc_type": None}
@@ -537,7 +547,7 @@ class DocIoPartial(Generic[_T]):
         doc_type = cast(DocType, cargs.event_data["doc_type"])
         doc = None
         if doc_type is None:
-            doc = mLo.Lo.current_doc
+            doc = mLo.Lo.get_doc(uid)
         else:
             doc_service_name = str(doc_type.get_service())
             # if the current doc is a match the prefer it.
@@ -546,17 +556,28 @@ class DocIoPartial(Generic[_T]):
             if module is not None:
                 identifier = module.getIdentifier()
                 if identifier == doc_service_name:
-                    doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                    if uid:
+                        runtime_uid = getattr(comp, "RuntimeUID", None)
+                        if runtime_uid == uid:
+                            doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                    else:
+                        doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
 
             if doc is None:
                 for comp in mLo.Lo.desktop.components:
-                    # if there is more then on component then the first match is used.
+                    # if there is more then on component then the first match is used unless using uid
                     # It seems the last opened document is the first in the list.
                     module = mLo.Lo.qi(XModule, comp, True)
                     identifier = module.getIdentifier()
                     if identifier == doc_service_name:
-                        doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
-                        break
+                        if uid:
+                            runtime_uid = getattr(comp, "RuntimeUID", None)
+                            if runtime_uid == uid:
+                                doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                                break
+                        else:
+                            doc = mDocFactory.doc_factory(doc=comp, lo_inst=mLo.Lo.current_lo)
+                            break
         if doc is None:
             raise mEx.NotSupportedDocumentError("No supported document found")
         args = EventArgs(cls.from_current_doc.__qualname__)
@@ -610,20 +631,6 @@ class DocIoPartial(Generic[_T]):
 
         Returns:
             _T: Class instance representing document.
-        """
-        ...
-
-    @overload
-    @classmethod
-    def open_doc(cls, fnm: PathOrStr) -> _T:
-        """
-        Open a office document.
-
-        Args:
-            fnm (PathOrStr): path of document to open.
-
-        Returns:
-            DrawDoc: Document.
         """
         ...
 

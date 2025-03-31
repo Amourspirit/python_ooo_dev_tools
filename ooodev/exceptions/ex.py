@@ -19,6 +19,12 @@ class NotFoundError(Exception):
     pass
 
 
+class DocumentNotFoundError(NotFoundError):
+    """Generic Document Not Found Error"""
+
+    pass
+
+
 class MissingNameError(NotFoundError):
     """
     Error when a name is not found.

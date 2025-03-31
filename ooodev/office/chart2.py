@@ -174,6 +174,9 @@ class Chart2:
             if cells_range is None:
                 raise mEx.NoneError("unable to obtain cells_range, Calc.get_selected_addr() is None")
 
+            if cells_range.Sheet < 0:
+                raise ValueError("Sheet index must be greater then 0")
+
             if not cell_name:
                 cell_name = mCalc.Calc.get_cell_str(col=cells_range.EndColumn + 1, row=cells_range.StartRow)
 

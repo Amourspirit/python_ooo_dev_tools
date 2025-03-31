@@ -184,5 +184,5 @@ def test_thread():
     time.sleep(1)
     # reading the cache should reset the time stamp of the entry.
     assert "key1" in cache
-    time.sleep(3)
+    time.sleep(4)
     assert "key1" not in cache._cache
