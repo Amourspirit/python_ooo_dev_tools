@@ -2300,10 +2300,9 @@ class LoInst(EventsPartial):
                     self._current_doc = None
             if self._current_doc is None:
                 self._logger.debug("current_doc: Could not access current document. Returning None")
-                return self._current_doc
             else:
                 self._logger.debug("current_doc: Got current document from desktop")
-                return self._current_doc
+        return self._current_doc
 
     @current_doc.setter
     def current_doc(self, value: OfficeDocumentT | XComponent | None) -> None:
