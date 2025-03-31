@@ -347,6 +347,26 @@ class Lo(metaclass=StaticProperty):
         return cls._lo_inst.get_desktop()
 
     @classmethod
+    def get_doc(cls, uid: str = "") -> OfficeDocumentT | None:
+        """
+        Gets a document from the desktop components.
+        If uid is not empty then the document with the matching uid is returned.
+
+        Args:
+            uid (str, optional): Unique ID of document.
+                This is usually a single integer pass as a string.
+                For instance the first open document has a uid of ``'1'``.
+                If empty then the first document found is used.
+                Defaults to "".
+
+        Returns:
+            OfficeDocumentT | None: Office Document or None if not a valid document.
+
+        .. versionadded:: 0.53.3
+        """
+        return cls._lo_inst.get_doc(uid)
+
+    @classmethod
     def get_component_factory(cls) -> XMultiComponentFactory:
         """
         Gets current multi component factory.

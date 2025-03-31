@@ -2,6 +2,14 @@
 Version History
 ***************
 
+Version 0.53.3
+==============
+
+Added ``Lo.get_doc()`` method. This method can be used to get a document from the desktop components.
+If uid is not empty then the document with the matching uid is returned.
+
+Now when using ``from_current_doc()`` to load a document the uid (RuntimeUID) can be used to get a specific document.
+
 Version 0.53.2
 ==============
 

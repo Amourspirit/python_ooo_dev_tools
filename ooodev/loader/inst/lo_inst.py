@@ -73,7 +73,7 @@ from ooodev.utils import info as mInfo
 from ooodev.utils import props as mProps
 from ooodev.utils import script_context
 from ooodev.utils import table_helper as mThelper
-from ooodev.utils.factory.doc_factory import doc_factory
+from ooodev.utils.factory.doc_factory import doc_factory, is_known_doc
 from ooodev.utils.cache.lru_cache import LRUCache
 from ooodev.io.log import logging as logger
 from ooodev.io.log.named_logger import NamedLogger
@@ -471,6 +471,55 @@ class LoInst(EventsPartial):
         # return cls._bridge_component
         doc = self.desktop.get_current_component()
         return self.qi(XMultiServiceFactory, doc, True)
+
+    def get_doc(self, uid: str = "") -> OfficeDocumentT | None:
+        """
+        Gets a document from the desktop components.
+        If uid is not empty then the document with the matching uid is returned.
+
+        Args:
+            uid (str, optional): Unique ID of document.
+                This is usually a single integer pass as a string.
+                For instance the first open document has a uid of ``'1'``.
+                If empty then the first document found is used.
+                Defaults to "".
+
+        Returns:
+            OfficeDocumentT | None: Office Document or None if not a valid document.
+
+
+        .. versionadded:: 0.53.3
+        """
+        doc = None
+
+        for comp in self.desktop.components:
+            # if there is more then on component then the first match is used.
+            # It seems the last opened document is the first in the list.
+            self._logger.debug("current_doc: found a component to use.")
+            doc = comp
+            if self._logger.is_debug:
+                if hasattr(doc, "getImplementationName"):
+                    self._logger.debug("current_doc: Component: %s", doc.getImplementationName())
+                if hasattr(doc, "getURL"):
+                    self._logger.debug("current_doc: Component URL: %s", doc.getURL())
+            if hasattr(doc, "RuntimeUID"):
+                runtime_uid = cast(str, getattr(doc, "RuntimeUID"))
+                if uid and uid != runtime_uid:
+                    continue
+                if not is_known_doc(doc, self):
+                    continue
+
+                self._logger.debug("current_doc: Component RuntimeUID: %s", runtime_uid)
+                break
+
+        if doc is None:
+            self._logger.debug("current_doc: Could not access current document. Returning None")
+            return None
+        try:
+            return doc_factory(doc=doc, lo_inst=self)
+        except (mEx.MissingInterfaceError, ValueError):
+            self._logger.debug("current_doc: Could not get a valid document from doc_factory()")
+        return None
 
     def get_relative_doc(self) -> XComponent:
         """
@@ -2242,29 +2291,19 @@ class LoInst(EventsPartial):
                 self._logger.debug(
                     "current_doc: Could not access current document. Attempting to get from desktop current desktop.components"
                 )
-                for comp in self.desktop.components:
-                    # if there is more then on component then the first match is used.
-                    # It seems the last opened document is the first in the list.
-                    self._logger.debug("current_doc: found a component to use.")
-                    doc = comp
-                    if self._logger.is_debug:
-                        if hasattr(doc, "getImplementationName"):
-                            self._logger.debug("current_doc: Component: %s", doc.getImplementationName())
-                        if hasattr(doc, "getURL"):
-                            self._logger.debug("current_doc: Component URL: %s", doc.getURL())
-                        if hasattr(doc, "RuntimeUID"):
-                            self._logger.debug("current_doc: Component RuntimeUID: %s", doc.RuntimeUID)
-                    break
-            if doc is None:
+                self._current_doc = self.get_doc()
+            else:
+                try:
+                    self._current_doc = doc_factory(doc=doc, lo_inst=self)
+                except (mEx.MissingInterfaceError, ValueError):
+                    self._logger.debug("current_doc: Could not get a valid document from doc_factory()")
+                    self._current_doc = None
+            if self._current_doc is None:
                 self._logger.debug("current_doc: Could not access current document. Returning None")
-                self._current_doc = None
                 return self._current_doc
-            try:
-                self._current_doc = doc_factory(doc=doc, lo_inst=self)
-            except (mEx.MissingInterfaceError, ValueError):
-                self._logger.debug("current_doc: Could not get a valid document from doc_factory()")
-                self._current_doc = None
-        return self._current_doc
+            else:
+                self._logger.debug("current_doc: Got current document from desktop")
+                return self._current_doc
 
     @current_doc.setter
     def current_doc(self, value: OfficeDocumentT | XComponent | None) -> None:
