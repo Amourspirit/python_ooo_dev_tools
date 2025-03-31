@@ -88,7 +88,7 @@ class RangeObj:
         if self.sheet_idx == -1:
             with contextlib.suppress(Exception):
                 # pylint: disable=no-member
-                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:  # type: ignore
                     doc = cast("CalcDoc", mLo.Lo.current_doc)
                     sheet = doc.get_active_sheet()
                     idx = sheet.get_sheet_index()
@@ -155,13 +155,17 @@ class RangeObj:
         if idx is None:
             try:
                 # pylint: disable=no-member
-                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
-                    doc = cast("CalcDoc", mLo.Lo.current_doc)
-                    sheet = doc.get_active_sheet()
-                    idx = sheet.get_sheet_index()
-                    name = sheet.name
-                    object.__setattr__(self, "sheet_idx", idx)
-                    object.__setattr__(self, "_sheet_name", name)
+
+                if mLo.Lo.is_loaded:
+                    if mLo.Lo.current_doc is None:
+                        raise mEx.DocumentNotFoundError("Current document is None")
+                    if mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                        doc = cast("CalcDoc", mLo.Lo.current_doc)
+                        sheet = doc.get_active_sheet()
+                        idx = sheet.get_sheet_index()
+                        name = sheet.name
+                        object.__setattr__(self, "sheet_idx", idx)
+                        object.__setattr__(self, "_sheet_name", name)
             except Exception:
                 object.__setattr__(self, "sheet_idx", -1)
                 if hasattr(self, "_sheet_name"):
@@ -201,7 +205,6 @@ class RangeObj:
         """
 
         def handel_event(args: CancelEventArgs, idx: int) -> tuple:
-
             ret_val = None
             if args.cancel:
                 if args.handled is False:
@@ -259,7 +262,7 @@ class RangeObj:
             if sheet_idx == -1:
                 with contextlib.suppress(Exception):
                     # pylint: disable=no-member
-                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                    if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:  # type: ignore
                         doc = cast("CalcDoc", mLo.Lo.current_doc)
                         sheet = doc.get_sheet(sheet_name=sheet_name)
                         sheet_idx = sheet.get_sheet_index()
@@ -881,7 +884,7 @@ class RangeObj:
                 return name
             with contextlib.suppress(Exception):
                 # pylint: disable=no-member
-                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:
+                if mLo.Lo.is_loaded and mLo.Lo.current_doc.DOC_TYPE == DocType.CALC:  # type: ignore
                     doc = cast("CalcDoc", mLo.Lo.current_doc)
                     sheet = doc.sheets[self.sheet_idx]
                     name = sheet.name

@@ -30,8 +30,9 @@ def test_insert_chart(loader, copy_fix_calc) -> None:
 
     fix_path = cast(Path, copy_fix_calc("chartsData.ods"))
 
-    doc = Calc.open_doc(fix_path)
+    doc = None
     try:
+        doc = Calc.open_doc(fix_path)
         sheet = Calc.get_sheet(doc)
         if not Lo.bridge_connector.headless:
             GUI.set_visible()
@@ -51,7 +52,8 @@ def test_insert_chart(loader, copy_fix_calc) -> None:
 
         Lo.delay(delay)
     finally:
-        Lo.close_doc(doc)
+        if doc is not None:
+            Lo.close_doc(doc)
 
 
 def test_insert_chart_named_sheet(loader, copy_fix_calc) -> None:
