@@ -175,3 +175,31 @@ def test_parese_language_code_error() -> None:
         _ = Info.parse_language_code("en_GB")
     with pytest.raises(ValueError):
         _ = Info.parse_language_code("-GB")
+
+
+def test_parse_version_string_to_int_tuple() -> None:
+    from ooodev.utils.info import Info
+
+    # Test valid version strings
+    assert Info.parse_version_string_to_int_tuple("2025.0.1.alpha1") == (2025, 0, 1)
+    assert Info.parse_version_string_to_int_tuple("1.2.3") == (1, 2, 3)
+    assert Info.parse_version_string_to_int_tuple("5.0beta") == (5,)
+    assert Info.parse_version_string_to_int_tuple("10.20.30.40") == (10, 20, 30, 40)
+
+    # Test invalid version strings
+    assert Info.parse_version_string_to_int_tuple("abc") == ()
+    assert Info.parse_version_string_to_int_tuple("") == ()
+
+    # Test mixed valid and invalid parts
+    assert Info.parse_version_string_to_int_tuple("1.2.alpha.3") == (1, 2)
+    assert Info.parse_version_string_to_int_tuple("1..3") == (1,)
+
+    # Test edge cases
+    assert Info.parse_version_string_to_int_tuple("0") == (0,)
+    assert Info.parse_version_string_to_int_tuple("0.0.0") == (0, 0, 0)
+
+    # Test input type validation
+    with pytest.raises(TypeError):
+        Info.parse_version_string_to_int_tuple(12345)  # Not a string
+    with pytest.raises(TypeError):
+        Info.parse_version_string_to_int_tuple(None)  # Not a string
