@@ -243,31 +243,38 @@ class Info(metaclass=StaticProperty):
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str) -> str: ...
+    def get_reg_item_prop(cls, item: str) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str) -> str: ...
+    def get_reg_item_prop(cls, item: str, prop: str) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str: ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str: ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str: ...
+    def get_reg_item_prop(cls, item: str, *, kind: Info.RegPropKind, idx: int) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str: ...
+    def get_reg_item_prop(cls, item: str, prop: str, *, idx: int) -> str:
+        ...
 
     @overload
     @classmethod
-    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str: ...
+    def get_reg_item_prop(cls, item: str, prop: str, node: str, kind: Info.RegPropKind) -> str:
+        ...
 
     @classmethod
     def get_reg_item_prop(
@@ -2461,19 +2468,23 @@ class Info(metaclass=StaticProperty):
     # region is_type_enum_multi()
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool: ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum) -> bool:
+        ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool: ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str) -> bool:
+        ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool: ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum, arg_name: str) -> bool:
+        ...
 
     @overload
     @staticmethod
-    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool: ...
+    def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: str, arg_name: str) -> bool:
+        ...
 
     @staticmethod
     def is_type_enum_multi(alt_type: str, enum_type: Type[Enum], enum_val: Enum | str, arg_name: str = "") -> bool:
@@ -2721,6 +2732,62 @@ class Info(metaclass=StaticProperty):
         except AttributeError:
             cls._version_info = tuple(int(s) for s in cls.version.split("."))
         return cls._version_info
+
+    @classproperty
+    def version_info(cls) -> Tuple[int, ...]:
+        """
+        Gets the running LibreOffice version.
+
+        |lo_unsafe|
+
+        Returns:
+            tuple: version as tuple such as ``(7, 3, 4, 2)``
+
+        Note:
+            This property only works after Office is Loaded.
+        """
+
+        try:
+            return cls._version_info
+        except AttributeError:
+            cls._version_info = Info.parse_version_string_to_int_tuple(cls.version)
+        return cls._version_info
+
+    @staticmethod
+    def parse_version_string_to_int_tuple(version_string: str) -> tuple[int, ...]:
+        """
+        Parses a version string (e.g., "2025.0.1.alpha1") into a tuple of integers.
+        The string is split by '.', and any non-integer parts are ignored.
+
+        Args:
+            version_string: The string to parse.
+
+        Returns:
+            A tuple of integers representing the version parts.
+            Example: "2025.0.1.alpha1" -> (2025, 0, 1)
+                    "1.2.3"          -> (1, 2, 3)
+                    "5.0beta"        -> (5, 0)
+                    "abc"            -> ()
+
+        Raises:
+            TypeError: If the input is not a string.
+
+        .. versionadded:: 0.53.4
+        """
+        if not isinstance(version_string, str):
+            raise TypeError("Input must be a string.")
+
+        parts = version_string.split(".")
+        int_parts = []
+        for part in parts:
+            try:
+                # Attempt to convert the part to an integer
+                int_parts.append(int(part))
+            except ValueError:
+                # If conversion fails (e.g., "alpha1", "beta"),
+                # stop processing further parts and break the loop.
+                break
+        return tuple(int_parts)
 
 
 def _del_cache_attrs(source: object, e: EventArgs) -> None:
